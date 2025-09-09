@@ -1,13 +1,8 @@
-﻿using Cappuccino.Common.Enum;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Cappuccino.ViewModel
+namespace Cappuccino.Model
 {
-    public class SysRoleViewModel : EntityViewModel
+    public class SysRoleViewModel : BaseEntity
     {
         public string Name { get; set; }
         public string Code { get; set; }

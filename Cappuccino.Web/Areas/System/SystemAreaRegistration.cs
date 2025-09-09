@@ -2,17 +2,17 @@
 
 namespace Cappuccino.Web.Areas.System
 {
-    public class SystemAreaRegistration : AreaRegistration 
+    public class SystemAreaRegistration : AreaRegistration
     {
-        public override string AreaName 
+        public override string AreaName
         {
-            get 
+            get
             {
                 return "System";
             }
         }
 
-        public override void RegisterArea(AreaRegistrationContext context) 
+        public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapRoute(
                 "System_default",

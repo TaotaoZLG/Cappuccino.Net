@@ -1,14 +1,9 @@
-﻿using Cappuccino.Model;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data.Entity.ModelConfiguration;
+using Cappuccino.Entity;
 
 namespace Cappuccino.DAL.Mapping
 {
-    public class SysLogLogonMap : EntityTypeConfiguration<SysLogLogon>
+    public class SysLogLogonMap : EntityTypeConfiguration<SysLogLogonEntity>
     {
         public SysLogLogonMap()
         {

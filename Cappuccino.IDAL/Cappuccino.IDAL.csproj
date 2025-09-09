@@ -56,6 +56,7 @@
     <Compile Include="System\ISysActionMenuDao.cs" />
     <Compile Include="System\ISysDictDao.cs" />
     <Compile Include="System\ISysDictTypeDao.cs" />
+    <Compile Include="System\ISysLogOperateDao.cs" />
     <Compile Include="System\ISysRoleDao.cs" />
     <Compile Include="System\ISysUserActionDao.cs" />
     <Compile Include="System\ISysUserDao.cs" />
@@ -65,11 +66,13 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Model.csproj">
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Entity.csproj">
       <Project>{93FE2CE0-1A84-4138-B18F-D984AE0F4D81}</Project>
-      <Name>Cappuccino.Model</Name>
+      <Name>Cappuccino.Entity</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

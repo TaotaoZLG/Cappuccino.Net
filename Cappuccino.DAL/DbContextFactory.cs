@@ -1,5 +1,4 @@
-﻿using Cappuccino.IDAL;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Runtime.Remoting.Messaging;
 
 namespace Cappuccino.DAL

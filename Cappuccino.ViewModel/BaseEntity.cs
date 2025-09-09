@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Cappuccino.ViewModel
+namespace Cappuccino.Model
 {
     /// <summary>
-    /// ViewModel基类
+    /// Model基类
     /// </summary>
-    public class EntityViewModel
+    public class BaseEntity
     {
         /// <summary>
         /// 主键

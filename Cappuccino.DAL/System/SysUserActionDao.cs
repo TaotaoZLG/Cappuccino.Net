@@ -1,9 +1,9 @@
-﻿using Cappuccino.IDAL;
-using Cappuccino.Model;
+﻿using Cappuccino.Entity;
+using Cappuccino.IDAL;
 
 namespace Cappuccino.DAL.System
 {
-    public class SysUserActionDao : BaseDao<SysUserAction>, ISysUserActionDao
+    public class SysUserActionDao : BaseDao<SysUserActionEntity>, ISysUserActionDao
     {
     }
 }

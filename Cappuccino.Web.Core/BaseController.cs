@@ -1,14 +1,11 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+using Autofac;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.Common.Enum;
 using Cappuccino.IBLL;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 
 namespace Cappuccino.Web.Core
 {
@@ -55,18 +52,6 @@ namespace Cappuccino.Web.Core
             }
             base.Dispose(disposing);
         }
-
-        #region 定义当前系统中所有的业务逻辑层的接口成员
-        protected ISysLogLogonService SysLogLogonService;
-        protected ISysUserService SysUserService;
-        protected ISysActionService SysActionService;
-        protected ISysActionButtonService SysActionButtonService;
-        protected ISysActionMenuService SysActionMenuService;
-        protected ISysDictService SysDictService;
-        protected ISysDictTypeService SysDictTypeService;
-        protected ISysRoleService SysRoleService;
-        protected ISysUserActionService SysUserActionService;
-        #endregion
 
         #region 封装ajax请求的返回方法
         protected ActionResult WriteSuccess(string msg = SuccessText)

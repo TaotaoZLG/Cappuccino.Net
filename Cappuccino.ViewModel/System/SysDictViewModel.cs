@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Cappuccino.ViewModel
+﻿namespace Cappuccino.Model
 {
     /// <summary>
     /// 数据字典
     /// </summary>
-    public class SysDictViewModel : EntityViewModel
+    public class SysDictViewModel : BaseEntity
     {
         /// <summary>
         /// 编码

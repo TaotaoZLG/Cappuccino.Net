@@ -1,12 +1,7 @@
 ﻿using AutoMapper;
-using Cappuccino.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Cappuccino.Entity;
 
-namespace Cappuccino.ViewModel
+namespace Cappuccino.Model
 {
     public static class EntityMapper
     {
@@ -15,135 +10,135 @@ namespace Cappuccino.ViewModel
         /// </summary>
         static EntityMapper()
         {
-            //1.将Model和ViewModel中的所有实体类在AutoMapper内部建立一个关联
-            Mapper.CreateMap<SysUser, SysUserViewModel>();
-            Mapper.CreateMap<SysRole, SysRoleViewModel>();
-            Mapper.CreateMap<SysAction, SysActionViewModel>();
-            Mapper.CreateMap<SysActionMenu, SysActionMenuViewModel>();
-            Mapper.CreateMap<SysActionButton, SysActionButtonViewModel>();
-            Mapper.CreateMap<SysUserAction, SysUserActionViewModel>();
-            Mapper.CreateMap<SysDict, SysDictViewModel>();
-            Mapper.CreateMap<SysDictType, SysDictTypeViewModel>();
-            Mapper.CreateMap<SysLogLogon, SysLogLogonViewModel>();
+            //1.将Model和Model中的所有实体类在AutoMapper内部建立一个关联
+            Mapper.CreateMap<SysUserEntity, SysUserViewModel>();
+            Mapper.CreateMap<SysRoleEntity, SysRoleViewModel>();
+            Mapper.CreateMap<SysActionEntity, SysActionViewModel>();
+            Mapper.CreateMap<SysActionMenuEntity, SysActionMenuViewModel>();
+            Mapper.CreateMap<SysActionButtonEntity, SysActionButtonViewModel>();
+            Mapper.CreateMap<SysUserActionEntity, SysUserActionViewModel>();
+            Mapper.CreateMap<SysDictEntity, SysDictViewModel>();
+            Mapper.CreateMap<SysDictTypeEntity, SysDictTypeViewModel>();
+            Mapper.CreateMap<SysLogLogonEntity, SysLogLogonViewModel>();
 
-            //2.将ViewModel和Model中的所有实体类在AutoMapper内部建立一个关联
-            Mapper.CreateMap<SysUserViewModel, SysUser>();
-            Mapper.CreateMap<SysRoleViewModel, SysRole>();
-            Mapper.CreateMap<SysActionViewModel, SysAction>();
-            Mapper.CreateMap<SysActionMenuViewModel, SysActionMenu>();
-            Mapper.CreateMap<SysActionButtonViewModel, SysActionButton>();
-            Mapper.CreateMap<SysUserActionViewModel, SysUserAction>();
-            Mapper.CreateMap<SysDictViewModel, SysDict>();
-            Mapper.CreateMap<SysDictTypeViewModel, SysDictType>();
-            Mapper.CreateMap<SysLogLogonViewModel, SysLogLogon>();
+            //2.将Model和Model中的所有实体类在AutoMapper内部建立一个关联
+            Mapper.CreateMap<SysUserViewModel, SysUserEntity>();
+            Mapper.CreateMap<SysRoleViewModel, SysRoleEntity>();
+            Mapper.CreateMap<SysActionViewModel, SysActionEntity>();
+            Mapper.CreateMap<SysActionMenuViewModel, SysActionMenuEntity>();
+            Mapper.CreateMap<SysActionButtonViewModel, SysActionButtonEntity>();
+            Mapper.CreateMap<SysUserActionViewModel, SysUserActionEntity>();
+            Mapper.CreateMap<SysDictViewModel, SysDictEntity>();
+            Mapper.CreateMap<SysDictTypeViewModel, SysDictTypeEntity>();
+            Mapper.CreateMap<SysLogLogonViewModel, SysLogLogonEntity>();
         }
 
         #region SysUser
-        public static SysUserViewModel EntityMap(this SysUser model)
+        public static SysUserViewModel EntityMap(this SysUserEntity model)
         {
-            return Mapper.Map<SysUser, SysUserViewModel>(model);
+            return Mapper.Map<SysUserEntity, SysUserViewModel>(model);
         }
 
-        public static SysUser EntityMap(this SysUserViewModel model)
+        public static SysUserEntity EntityMap(this SysUserViewModel model)
         {
-            return Mapper.Map<SysUserViewModel, SysUser>(model);
+            return Mapper.Map<SysUserViewModel, SysUserEntity>(model);
         }
 
         #endregion
 
         #region SysRole
-        public static SysRoleViewModel EntityMap(this SysRole model)
+        public static SysRoleViewModel EntityMap(this SysRoleEntity model)
         {
-            return Mapper.Map<SysRole, SysRoleViewModel>(model);
+            return Mapper.Map<SysRoleEntity, SysRoleViewModel>(model);
         }
 
-        public static SysRole EntityMap(this SysRoleViewModel model)
+        public static SysRoleEntity EntityMap(this SysRoleViewModel model)
         {
-            return Mapper.Map<SysRoleViewModel, SysRole>(model);
+            return Mapper.Map<SysRoleViewModel, SysRoleEntity>(model);
         }
         #endregion
 
         #region SysAction
-        public static SysActionViewModel EntityMap(this SysAction model)
+        public static SysActionViewModel EntityMap(this SysActionEntity model)
         {
-            return Mapper.Map<SysAction, SysActionViewModel>(model);
+            return Mapper.Map<SysActionEntity, SysActionViewModel>(model);
         }
 
-        public static SysAction EntityMap(this SysActionViewModel model)
+        public static SysActionEntity EntityMap(this SysActionViewModel model)
         {
-            return Mapper.Map<SysActionViewModel, SysAction>(model);
+            return Mapper.Map<SysActionViewModel, SysActionEntity>(model);
         }
         #endregion
 
         #region SysActionMenu
-        public static SysActionMenuViewModel EntityMap(this SysActionMenu model)
+        public static SysActionMenuViewModel EntityMap(this SysActionMenuEntity model)
         {
-            return Mapper.Map<SysActionMenu, SysActionMenuViewModel>(model);
+            return Mapper.Map<SysActionMenuEntity, SysActionMenuViewModel>(model);
         }
 
-        public static SysActionMenu EntityMap(this SysActionMenuViewModel model)
+        public static SysActionMenuEntity EntityMap(this SysActionMenuViewModel model)
         {
-            return Mapper.Map<SysActionMenuViewModel, SysActionMenu>(model);
+            return Mapper.Map<SysActionMenuViewModel, SysActionMenuEntity>(model);
         }
         #endregion
 
         #region SysActionButton
-        public static SysActionButtonViewModel EntityMap(this SysActionButton model)
+        public static SysActionButtonViewModel EntityMap(this SysActionButtonEntity model)
         {
-            return Mapper.Map<SysActionButton, SysActionButtonViewModel>(model);
+            return Mapper.Map<SysActionButtonEntity, SysActionButtonViewModel>(model);
         }
 
-        public static SysActionButton EntityMap(this SysActionButtonViewModel model)
+        public static SysActionButtonEntity EntityMap(this SysActionButtonViewModel model)
         {
-            return Mapper.Map<SysActionButtonViewModel, SysActionButton>(model);
+            return Mapper.Map<SysActionButtonViewModel, SysActionButtonEntity>(model);
         }
         #endregion
 
         #region SysUserAction
-        public static SysUserActionViewModel EntityMap(this SysUserAction model)
+        public static SysUserActionViewModel EntityMap(this SysUserActionEntity model)
         {
-            return Mapper.Map<SysUserAction, SysUserActionViewModel>(model);
+            return Mapper.Map<SysUserActionEntity, SysUserActionViewModel>(model);
         }
 
-        public static SysUserAction EntityMap(this SysUserActionViewModel model)
+        public static SysUserActionEntity EntityMap(this SysUserActionViewModel model)
         {
-            return Mapper.Map<SysUserActionViewModel, SysUserAction>(model);
+            return Mapper.Map<SysUserActionViewModel, SysUserActionEntity>(model);
         }
         #endregion
 
         #region SysDict
-        public static SysDictViewModel EntityMap(this SysDict model)
+        public static SysDictViewModel EntityMap(this SysDictEntity model)
         {
-            return Mapper.Map<SysDict, SysDictViewModel>(model);
+            return Mapper.Map<SysDictEntity, SysDictViewModel>(model);
         }
 
-        public static SysDict EntityMap(this SysDictViewModel model)
+        public static SysDictEntity EntityMap(this SysDictViewModel model)
         {
-            return Mapper.Map<SysDictViewModel, SysDict>(model);
+            return Mapper.Map<SysDictViewModel, SysDictEntity>(model);
         }
         #endregion
 
         #region SysDictType
-        public static SysDictTypeViewModel EntityMap(this SysDictType model)
+        public static SysDictTypeViewModel EntityMap(this SysDictTypeEntity model)
         {
-            return Mapper.Map<SysDictType, SysDictTypeViewModel>(model);
+            return Mapper.Map<SysDictTypeEntity, SysDictTypeViewModel>(model);
         }
 
-        public static SysDictType EntityMap(this SysDictTypeViewModel model)
+        public static SysDictTypeEntity EntityMap(this SysDictTypeViewModel model)
         {
-            return Mapper.Map<SysDictTypeViewModel, SysDictType>(model);
+            return Mapper.Map<SysDictTypeViewModel, SysDictTypeEntity>(model);
         }
         #endregion
 
         #region SysLogLogon
-        public static SysLogLogonViewModel EntityMap(this SysLogLogon model)
+        public static SysLogLogonViewModel EntityMap(this SysLogLogonEntity model)
         {
-            return Mapper.Map<SysLogLogon, SysLogLogonViewModel>(model);
+            return Mapper.Map<SysLogLogonEntity, SysLogLogonViewModel>(model);
         }
 
-        public static SysLogLogon EntityMap(this SysLogLogonViewModel model)
+        public static SysLogLogonEntity EntityMap(this SysLogLogonViewModel model)
         {
-            return Mapper.Map<SysLogLogonViewModel, SysLogLogon>(model);
+            return Mapper.Map<SysLogLogonViewModel, SysLogLogonEntity>(model);
         }
         #endregion
     }

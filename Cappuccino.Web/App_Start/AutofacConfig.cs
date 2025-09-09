@@ -1,13 +1,14 @@
-﻿using Autofac;
+﻿using System.Data.Entity;
+using System.Reflection;
+using System.Web.Mvc;
+using Autofac;
 using Autofac.Integration.Mvc;
+using Cappuccino.BLL.System;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Web;
-using System.Web.Mvc;
+using Cappuccino.DAL;
+using Cappuccino.IBLL;
+using Cappuccino.IDAL;
 
 namespace Cappuccino.Web
 {
@@ -39,13 +40,31 @@ namespace Cappuccino.Web
             //创建BLL中的所有类的instance以此类的实现接口存储
             builder.RegisterTypes(serAss.GetTypes()).AsImplementedInterfaces();
 
+            // 注册操作日志服务
+            builder.RegisterType<SysLogOperateService>().As<ISysLogOperateService>().InstancePerRequest();
+
+            // 为 DbContext、BaseDao、BaseService 注册请求生命周期
+            builder.RegisterType<EfDbContext>().As<DbContext>().InstancePerRequest();
+            builder.RegisterGeneric(typeof(BaseDao<>)).As(typeof(IBaseDao<>)).InstancePerRequest();
+            builder.RegisterAssemblyTypes(Assembly.Load("Cappuccino.BLL"))
+                   .Where(t => t.Name.EndsWith("Service"))
+                   .AsImplementedInterfaces()
+                   .InstancePerRequest();
+
+            // 注册MVC控制器并启用属性注入
+            builder.RegisterControllers(Assembly.GetExecutingAssembly())
+                   .PropertiesAutowired();  // 关键：允许控制器中的过滤器属性被注入
+
+            // 注册过滤器提供者
+            builder.RegisterFilterProvider();
+
             //创建一个Autofac的容器
             var container = builder.Build();
 
             //将container对象缓存起来，并永久有效
             CacheManager.Set(KeyManager.AutofacContainer, container);
 
-            //将MVC的控制器对象实例 交由autofac来创建
+            //设置依赖解析器 将MVC的控制器对象实例 交由autofac来创建
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
         }
     }

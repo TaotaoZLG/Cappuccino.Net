@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Cappuccino.Model
+namespace Cappuccino.Entity
 {
     /// <summary>
     /// 登录日志
     /// </summary>
-    public class SysLogLogon
+    [Table("SysLogLogon")]
+    public class SysLogLogonEntity
     {
         /// <summary>
         /// 主键

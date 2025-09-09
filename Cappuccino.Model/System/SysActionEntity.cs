@@ -1,13 +1,11 @@
-﻿using Cappuccino.Common.Enum;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using Cappuccino.Common.Enum;
 
-namespace Cappuccino.Model
+namespace Cappuccino.Entity
 {
-    public class SysAction : Entity
+    [Table("SysAction")]
+    public class SysActionEntity : BaseEntity
     {
 
         /// <summary>
@@ -35,12 +33,12 @@ namespace Cappuccino.Model
         /// </summary>
         public int SortCode { get; set; }
 
-        public SysActionMenu SysActionMenu { get; set; }
+        public SysActionMenuEntity SysActionMenu { get; set; }
 
-        public SysActionButton SysActionButton { get; set; }
+        public SysActionButtonEntity SysActionButton { get; set; }
 
-        public virtual ICollection<SysRole> SysRoles { get; set; } = new List<SysRole>();
+        public virtual ICollection<SysRoleEntity> SysRoles { get; set; } = new List<SysRoleEntity>();
 
-        public virtual ICollection<SysUserAction> SysUserActions { get; set; } = new List<SysUserAction>();
+        public virtual ICollection<SysUserActionEntity> SysUserActions { get; set; } = new List<SysUserActionEntity>();
     }
 }

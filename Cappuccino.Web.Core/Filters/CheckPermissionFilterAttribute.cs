@@ -1,17 +1,16 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using System.Web.Routing;
+using Autofac;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.Common.Enum;
 using Cappuccino.Common.Helper;
 using Cappuccino.Common.Util;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
-using Cappuccino.Model;
-using Cappuccino.Web.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Cappuccino.Web.Core
 {
@@ -40,7 +39,7 @@ namespace Cappuccino.Web.Core
                     ToLogin(filterContext);
                     return;
                 }
-                SysUser userinfo = CacheManager.Get<SysUser>(list[0]);
+                SysUserEntity userinfo = CacheManager.Get<SysUserEntity>(list[0]);
                 if (userinfo != null)
                 {
                     // 0为永久key
@@ -107,9 +106,17 @@ namespace Cappuccino.Web.Core
             }
             else
             {
-                ViewResult view = new ViewResult();
-                view.ViewName = "/Views/Shared/Tip.cshtml";
-                filterContext.Result = view;
+                //ViewResult view = new ViewResult();
+                //view.ViewName = "/Views/Shared/Tip.cshtml";
+                //filterContext.Result = view;
+                var routeValues = new RouteValueDictionary
+                {
+                    { "controller", "Account" },
+                    { "action", "Login" }
+                };
+
+                // 设置重定向结果
+                filterContext.Result = new RedirectToRouteResult(routeValues);
             }
         }
 

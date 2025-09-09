@@ -1,30 +1,29 @@
-﻿using Cappuccino.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using Cappuccino.Common;
+using Cappuccino.Common.Caching;
 using Cappuccino.Common.Enum;
 using Cappuccino.Common.Helper;
 using Cappuccino.Common.Util;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
+using Cappuccino.Web.Attributes;
 using Cappuccino.Web.Core;
-using System;
-using System.Linq;
-using System.Web.Mvc;
-using Cappuccino.ViewModel;
-using Cappuccino.Common.Log;
-using Cappuccino.Common.Caching;
-using System.Collections.Generic;
 
 namespace Cappuccino.Web.Controllers
 {
     public class AccountController : BaseController
     {
+        private readonly ISysUserService _sysUserService;
+        private readonly ISysLogLogonService _sysLogLogonService;
 
         public AccountController(ISysUserService sysUserService, ISysLogLogonService sysLogLogonService)
         {
-            SysUserService = sysUserService;
-            SysLogLogonService = sysLogLogonService;
-            this.AddDisposableObject(SysUserService);
-            this.AddDisposableObject(SysLogLogonService);
-
+            _sysUserService = sysUserService;
+            _sysLogLogonService = sysLogLogonService;
         }
 
         [SkipCheckLogin]
@@ -44,6 +43,7 @@ namespace Cappuccino.Web.Controllers
         }
 
         [HttpPost, SkipCheckLogin]
+        [LogOperate(Title = "登录")]
         public ActionResult Login(LoginViewModel loginViewModel)
         {
             try
@@ -82,7 +82,7 @@ namespace Cappuccino.Web.Controllers
                         CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30);
                         CacheManager.Set(userLoginId, user, new TimeSpan(0, 30, 0));
                     }
-                    SysLogLogonService.WriteDbLog(new SysLogLogon
+                    SysLogLogonService.WriteDbLog(new SysLogLogonEntity
                     {
                         LogType = DbLogType.Login.ToString(),
                         Account = user.UserName,
@@ -98,7 +98,7 @@ namespace Cappuccino.Web.Controllers
             }
             catch (Exception ex)
             {
-                SysLogLogonService.WriteDbLog(new SysLogLogon
+                SysLogLogonService.WriteDbLog(new SysLogLogonEntity
                 {
                     LogType = DbLogType.Exception.ToString(),
                     Account = loginViewModel.LoginName,
@@ -126,9 +126,10 @@ namespace Cappuccino.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [LogOperate(Title = "退出系统")]
         public ActionResult Logout()
         {
-            SysLogLogonService.WriteDbLog(new SysLogLogon
+            SysLogLogonService.WriteDbLog(new SysLogLogonEntity
             {
                 LogType = DbLogType.Exit.ToString(),
                 Account = UserManager.GetCurrentUserInfo().UserName,
@@ -144,6 +145,7 @@ namespace Cappuccino.Web.Controllers
         /// 修改密码
         /// </summary>
         /// <returns></returns>
+        [LogOperate(Title = "修改密码", BusinessType = "EDIT")]
         public ActionResult ChangePassword()
         {
             ViewBag.UserName = UserManager.GetCurrentUserInfo().UserName;
@@ -168,7 +170,7 @@ namespace Cappuccino.Web.Controllers
                     if (list == null || list.Count() != 2)
                     {
                         //获取缓存的用户信息
-                        SysUser userinfo = CacheManager.Get<SysUser>(list[0]);
+                        SysUserEntity userinfo = CacheManager.Get<SysUserEntity>(list[0]);
                         //删除缓存的用户信息
                         CacheManager.Remove(list[0]);
                         //更新缓存用户信息的KEY

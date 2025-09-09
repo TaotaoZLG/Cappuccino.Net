@@ -1,17 +1,14 @@
-﻿using Cappuccino.IBLL;
-using Cappuccino.IDAL;
-using Cappuccino.Model;
-using Cappuccino.ViewModel;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Cappuccino.Entity;
+using Cappuccino.IBLL;
+using Cappuccino.IDAL;
+using Cappuccino.Model;
 
 namespace Cappuccino.BLL
 {
-    public class SysRoleService : BaseService<SysRole>, ISysRoleService
+    public class SysRoleService : BaseService<SysRoleEntity>, ISysRoleService
     {
         #region 依赖注入
         ISysRoleDao dao;

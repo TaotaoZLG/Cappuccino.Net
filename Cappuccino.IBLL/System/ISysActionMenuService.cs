@@ -1,14 +1,10 @@
-﻿using Cappuccino.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Cappuccino.ViewModel;
+﻿using System.Collections.Generic;
+using Cappuccino.Entity;
+using Cappuccino.Model;
 
 namespace Cappuccino.IBLL
 {
-    public interface ISysActionMenuService : IBaseService<SysActionMenu>
+    public interface ISysActionMenuService : IBaseService<SysActionMenuEntity>
     {
         /// <summary>
         /// 根据用户Id，拿到所拥有的菜单

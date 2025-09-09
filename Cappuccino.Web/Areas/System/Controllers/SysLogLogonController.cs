@@ -1,24 +1,23 @@
-﻿using Cappuccino.Common;
+﻿using System.Linq;
+using System.Web.Mvc;
+using Cappuccino.Common;
 using Cappuccino.Common.Helper;
-using Cappuccino.ViewModel;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
 using Cappuccino.Web.Core;
 using Cappuccino.Web.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Cappuccino.Web.Areas.System.Controllers
 {
     public class SysLogLogonController : BaseController
     {
+        private readonly ISysLogLogonService _sysLogLogonService;
+
         public SysLogLogonController(ISysLogLogonService sysLogLogonService)
         {
-            base.SysLogLogonService = sysLogLogonService;
-            this.AddDisposableObject(SysLogLogonService);
+            _sysLogLogonService = sysLogLogonService;
+            this.AddDisposableObject(_sysLogLogonService);
         }
 
         [CheckPermission("system.log.logon")]
@@ -47,7 +46,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 queries.Add(new Query { Name = "CreateTime", Operator = Query.Operators.GreaterThanOrEqual, Value = StartEndDateHelper.GteStartDate(viewModel.StartEndDate) });
                 queries.Add(new Query { Name = "CreateTime", Operator = Query.Operators.LessThanOrEqual, Value = StartEndDateHelper.GteEndDate(viewModel.StartEndDate) });
             }
-            var list = SysLogLogonService.GetListByPage(queries.AsExpression<SysLogLogon>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
+            var list = _sysLogLogonService.GetListByPage(queries.AsExpression<SysLogLogonEntity>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
             {
                 x.Id,
                 x.LogType,

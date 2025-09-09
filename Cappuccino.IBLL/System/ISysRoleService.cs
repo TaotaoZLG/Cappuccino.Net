@@ -1,14 +1,10 @@
-﻿using Cappuccino.Model;
-using Cappuccino.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Cappuccino.Entity;
+using Cappuccino.Model;
 
 namespace Cappuccino.IBLL
 {
-    public interface ISysRoleService : IBaseService<SysRole>
+    public interface ISysRoleService : IBaseService<SysRoleEntity>
     {
         /// <summary>
         /// 根据权限Ids 构建角色权限中间关系

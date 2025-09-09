@@ -1,9 +1,9 @@
-﻿using Cappuccino.IDAL;
-using Cappuccino.Model;
+﻿using Cappuccino.Entity;
+using Cappuccino.IDAL;
 
 namespace Cappuccino.DAL.System
 {
-    public class SysLogLogonDao : BaseDao<SysLogLogon>, ISysLogLogonDao
+    public class SysLogLogonDao : BaseDao<SysLogLogonEntity>, ISysLogLogonDao
     {
     }
 }

@@ -1,14 +1,13 @@
-﻿using Cappuccino.Common;
-using Cappuccino.IBLL;
-using Cappuccino.Model;
-using Cappuccino.ViewModel;
-using Cappuccino.Web.Core;
-using Cappuccino.Web.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using Cappuccino.Common;
+using Cappuccino.Entity;
+using Cappuccino.IBLL;
+using Cappuccino.Model;
+using Cappuccino.Web.Core;
+using Cappuccino.Web.Models;
 
 namespace Cappuccino.Web.Areas.System.Controllers
 {
@@ -40,7 +39,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 queries.Add(new Query { Name = "Code", Operator = Query.Operators.Contains, Value = viewModel.Code });
             }
-            var list = SysRoleService.GetListByPage(queries.AsExpression<SysRole>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
+            var list = SysRoleService.GetListByPage(queries.AsExpression<SysRoleEntity>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
             {
                 x.Id,
                 x.Name,
@@ -66,7 +65,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 {
                     return WriteError("实体验证失败");
                 }
-                SysRole entity = viewModel.EntityMap();
+                SysRoleEntity entity = viewModel.EntityMap();
                 entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.CreateTime = DateTime.Now;
@@ -97,7 +96,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             viewModel.Id = id;
             viewModel.UpdateTime = DateTime.Now;
             viewModel.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
-            SysRole entity = viewModel.EntityMap();
+            SysRoleEntity entity = viewModel.EntityMap();
             SysRoleService.Update(entity, new string[] { "Name", "Code", "EnabledMark", "Remark", "UpdateTime", "UpdateUserId" });
             return WriteSuccess();
         }
@@ -149,7 +148,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [HttpPost, CheckPermission("system.role.edit")]
         public ActionResult UpdateEnabledMark(int id, int enabledMark)
         {
-            SysRole entity = new SysRole
+            SysRoleEntity entity = new SysRoleEntity
             {
                 Id = id,
                 EnabledMark = enabledMark,

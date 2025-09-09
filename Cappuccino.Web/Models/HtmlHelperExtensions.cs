@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
-using System.Text;
-using Cappuccino.ViewModel;
+using Cappuccino.Model;
 
 namespace Cappuccino.Web
 {

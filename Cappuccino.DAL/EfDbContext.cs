@@ -1,11 +1,6 @@
-﻿using Cappuccino.IDAL;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Data.Entity;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using Cappuccino.Common.Reflection;
 
 namespace Cappuccino.DAL
 {
@@ -20,6 +15,15 @@ namespace Cappuccino.DAL
         {
             base.OnModelCreating(modelBuilder);
 
+            // 1. 自动注册所有实体类（继承自Entity）
+            var entityTypes = EntityScanner.GetAllEntityTypes();
+            foreach (var entityType in entityTypes)
+            {
+                // 直接调用非泛型重载：RegisterEntityType(Type)
+                modelBuilder.RegisterEntityType(entityType);
+            }
+
+            // 2. 加载程序集中的 Fluent API 配置（确保存在有效配置类）
             modelBuilder.Configurations.AddFromAssembly(Assembly.GetExecutingAssembly());
         }
     }

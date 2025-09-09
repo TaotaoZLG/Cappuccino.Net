@@ -1,15 +1,10 @@
-﻿using Cappuccino.Model;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Cappuccino.Entity;
 
 namespace Cappuccino.DAL.Mapping
 {
-    public class SysActionMap : EntityTypeConfiguration<SysAction>
+    public class SysActionMap : EntityTypeConfiguration<SysActionEntity>
     {
         public SysActionMap()
         {

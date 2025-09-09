@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Cappuccino.IBLL
@@ -93,5 +91,21 @@ namespace Cappuccino.IBLL
         /// <param name="entities"></param>
         /// <returns></returns>
         int UpdateList(params T[] entities);
+
+        Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda);
+        Task<(IQueryable<T>, int)> GetListByPageAsync<S>(
+            Expression<Func<T, bool>> whereLambada,
+            Expression<Func<T, S>> orderBy,
+            int pageSize,
+            int pageIndex,
+            bool isASC);
+        Task<int> GetRecordCountAsync(Expression<Func<T, bool>> predicate);
+        Task<int> AddAsync(T entity);
+        Task<int> AddListAsync(params T[] entities);
+        Task<int> DeleteAsync(T entity);
+        Task<int> DeleteByAsync(Expression<Func<T, bool>> whereLambda);
+        Task<bool> UpdateAsync(T entity);
+        Task<bool> UpdateAsync(T entity, string[] propertys);
+        Task<int> UpdateListAsync(params T[] entities);
     }
 }

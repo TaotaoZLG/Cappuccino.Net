@@ -1,13 +1,8 @@
-﻿using Cappuccino.Common.Enum;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Cappuccino.ViewModel
+namespace Cappuccino.Model
 {
-    public class SysUserViewModel : EntityViewModel
+    public class SysUserViewModel : BaseEntity
     {
         public string UserName { get; set; }
         public string NickName { get; set; }

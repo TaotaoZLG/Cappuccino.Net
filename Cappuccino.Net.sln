@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30320.27
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.Model", "Cappuccino.Model\Cappuccino.Model.csproj", "{93FE2CE0-1A84-4138-B18F-D984AE0F4D81}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.Entity", "Cappuccino.Model\Cappuccino.Entity.csproj", "{93FE2CE0-1A84-4138-B18F-D984AE0F4D81}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.IDAL", "Cappuccino.IDAL\Cappuccino.IDAL.csproj", "{94C73821-31D6-4F89-887A-FFC96FFAB5D7}"
 EndProject
@@ -27,11 +27,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{F4F3371E-E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Business", "Business", "{C16FB378-045D-4F06-BE0E-BA2DCB372CEF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{12B56218-4818-4405-98AA-06617049FAC7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{12B56218-4818-4405-98AA-06617049FAC7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTest", "UnitTest", "{B6AD7135-21CC-4B78-B896-D4EAE1FE2EF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.ViewModel", "Cappuccino.ViewModel\Cappuccino.ViewModel.csproj", "{A42FC2EF-0277-4ED7-B6A2-223323D52EFC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.Model", "Cappuccino.ViewModel\Cappuccino.Model.csproj", "{A42FC2EF-0277-4ED7-B6A2-223323D52EFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

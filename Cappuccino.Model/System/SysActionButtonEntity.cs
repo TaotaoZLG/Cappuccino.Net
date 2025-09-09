@@ -1,13 +1,10 @@
-﻿using Cappuccino.Common.Enum;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Cappuccino.Common.Enum;
 
-namespace Cappuccino.Model
+namespace Cappuccino.Entity
 {
-    public class SysActionButton
+    [Table("SysActionButton")]
+    public class SysActionButtonEntity
     {
         public int Id { get; set; }
 
@@ -31,7 +28,7 @@ namespace Cappuccino.Model
         /// </summary>
         public string ButtonIcon { get; set; }
 
-        public SysAction SysAction { get; set; }
+        public SysActionEntity SysAction { get; set; }
 
     }
 }

@@ -1,15 +1,14 @@
-﻿using Cappuccino.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using Cappuccino.Common;
 using Cappuccino.Common.Util;
-using Cappuccino.ViewModel;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
 using Cappuccino.Web.Core;
 using Cappuccino.Web.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Cappuccino.Web.Areas.System.Controllers
 {
@@ -45,7 +44,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 queries.Add(new Query { Name = "NickName", Operator = Query.Operators.Contains, Value = viewModel.NickName });
 
             }
-            var list = SysUserService.GetListByPage(queries.AsExpression<SysUser>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
+            var list = SysUserService.GetListByPage(queries.AsExpression<SysUserEntity>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
             {
                 x.Id,
                 x.UserName,
@@ -83,7 +82,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 }
                 string salt = VerifyCodeUtils.CreateVerifyCode(5);
                 string passwordHash = Md5Utils.EncryptTo32(salt + ConfigUtils.GetValue("InitUserPwd"));
-                SysUser entity = viewModel.EntityMap();
+                SysUserEntity entity = viewModel.EntityMap();
                 entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.CreateTime = DateTime.Now;
@@ -133,7 +132,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 return WriteError("该账号已存在");
             }
             //获取角色
-            var roleList = new List<SysRole>();
+            var roleList = new List<SysRoleEntity>();
             if (!string.IsNullOrEmpty(viewModel.RoleIds))
             {
                 var RoleIdsArray = Array.ConvertAll(viewModel.RoleIds.Split(','), s => int.Parse(s));
@@ -200,7 +199,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [HttpPost, CheckPermission("system.user.edit")]
         public ActionResult UpdateEnabledMark(int id, int enabledMark)
         {
-            SysUser entity = new SysUser
+            SysUserEntity entity = new SysUserEntity
             {
                 Id = id,
                 EnabledMark = enabledMark,
@@ -217,7 +216,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             string salt = VerifyCodeUtils.CreateVerifyCode(5);
             string pwd = ConfigUtils.GetValue("InitUserPwd");
             string passwordHash = Md5Utils.EncryptTo32(salt + pwd);
-            SysUser entity = new SysUser
+            SysUserEntity entity = new SysUserEntity
             {
                 Id = id,
                 PasswordSalt = salt,

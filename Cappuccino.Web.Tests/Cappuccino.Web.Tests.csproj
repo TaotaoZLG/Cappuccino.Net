@@ -119,9 +119,9 @@
       <Project>{94c73821-31d6-4f89-887a-ffc96ffab5d7}</Project>
       <Name>Cappuccino.IDAL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Model.csproj">
+    <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Entity.csproj">
       <Project>{93fe2ce0-1a84-4138-b18f-d984ae0f4d81}</Project>
-      <Name>Cappuccino.Model</Name>
+      <Name>Cappuccino.Entity</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cappuccino.Web.Core\Cappuccino.Web.Core.csproj">
       <Project>{bfb1c0bf-bfae-4e45-b92b-d89009434132}</Project>

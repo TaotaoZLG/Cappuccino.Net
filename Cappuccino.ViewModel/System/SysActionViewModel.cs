@@ -1,13 +1,9 @@
-﻿using Cappuccino.Common.Enum;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Cappuccino.Common.Enum;
 
-namespace Cappuccino.ViewModel
+namespace Cappuccino.Model
 {
-    public class SysActionViewModel : EntityViewModel
+    public class SysActionViewModel : BaseEntity
     {
 
         /// <summary>

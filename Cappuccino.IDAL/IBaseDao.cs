@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Cappuccino.IDAL
 {
@@ -112,5 +112,22 @@ namespace Cappuccino.IDAL
         /// <param name="parameters"> 要应用于 SQL 查询字符串的参数。</param>
         /// <returns>查询所返回对象的类型</returns>
         IEnumerable<TElement> SqlQuery<TElement>(string sql, params object[] parameters);
+
+        Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda);
+        Task<(IQueryable<T>, int)> GetListByPageAsync<S>(
+            Expression<Func<T, bool>> whereLambada,
+            Expression<Func<T, S>> orderBy,
+            int pageSize,
+            int pageIndex,
+            bool isASC);
+        Task<int> GetRecordCountAsync(Expression<Func<T, bool>> predicate);
+        Task<int> AddAsync(T entity);
+        Task<int> AddListAsync(params T[] entities);
+        Task<int> DeleteAsync(T entity);
+        Task<int> DeleteByAsync(Expression<Func<T, bool>> whereLambda);
+        Task<bool> UpdateAsync(T entity);
+        Task<bool> UpdateAsync(T entity, string[] propertys);
+        Task<int> UpdateListAsync(params T[] entities);
+        Task<int> SaveChangesAsync();
     }
 }

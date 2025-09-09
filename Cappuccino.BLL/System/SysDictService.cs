@@ -1,15 +1,10 @@
-﻿using Cappuccino.IBLL;
+﻿using Cappuccino.Entity;
+using Cappuccino.IBLL;
 using Cappuccino.IDAL;
-using Cappuccino.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cappuccino.BLL
 {
-    public class SysDictService : BaseService<SysDict>, ISysDictService
+    public class SysDictService : BaseService<SysDictEntity>, ISysDictService
     {
         #region 依赖注入
         ISysDictDao dao;

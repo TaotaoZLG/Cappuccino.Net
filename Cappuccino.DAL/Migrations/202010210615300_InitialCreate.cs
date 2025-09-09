@@ -1,4 +1,3 @@
-using System;
 using System.Data.Entity.Migrations;
 
 namespace Cappuccino.DAL.Migrations

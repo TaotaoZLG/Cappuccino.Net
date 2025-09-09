@@ -1,17 +1,14 @@
-﻿using Cappuccino.Common.Enum;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Cappuccino.Common.Enum;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
 using Cappuccino.Model;
-using Cappuccino.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cappuccino.BLL
 {
-    public class SysActionService : BaseService<SysAction>, ISysActionService
+    public class SysActionService : BaseService<SysActionEntity>, ISysActionService
     {
         #region 依赖注入
         ISysActionDao dao;
@@ -33,9 +30,9 @@ namespace Cappuccino.BLL
         #endregion
 
 
-        public List<SysAction> GetPermission(int userId)
+        public List<SysActionEntity> GetPermission(int userId)
         {
-            List<SysAction> sysActions = new List<SysAction>();
+            List<SysActionEntity> sysActions = new List<SysActionEntity>();
             //获取用户
             var user = SysUserDao.GetList(x => x.Id == userId && x.EnabledMark == (int)EnabledMarkEnum.Valid).FirstOrDefault();
             if (user == null)
@@ -73,7 +70,7 @@ namespace Cappuccino.BLL
             return sysActions;
         }
 
-        public List<SysAction> GetPermissionByType(int userId, ActionTypeEnum type)
+        public List<SysActionEntity> GetPermissionByType(int userId, ActionTypeEnum type)
         {
             return GetPermission(userId).Where(x => x.Type == type).ToList();
         }
@@ -137,7 +134,7 @@ namespace Cappuccino.BLL
             //遍历info中的list，目的是找到list中的父对象。list储存所有的对象（包括父对象，子对象，子对象的子对象等等）
             for (var i = 0; i < sysActions.Count(); i++)
             {
-                SysAction o = sysActions[i];
+                SysActionEntity o = sysActions[i];
                 //当对象的父类id为0的时候，说明这个是一个父对象
                 if (o.ParentId == 0)
                 {
@@ -160,12 +157,12 @@ namespace Cappuccino.BLL
             return list;
         }
 
-        private void GetMenuChild(DtreeData parent, SysAction uparent, List<SysAction> allMenu)
+        private void GetMenuChild(DtreeData parent, SysActionEntity uparent, List<SysActionEntity> allMenu)
         {
             //遍历所有的对象
             for (var i = 0; i < allMenu.Count; i++)
             {
-                SysAction a = allMenu[i];
+                SysActionEntity a = allMenu[i];
                 //如果这个对象的父id和这个父对象的id是相同的，那么说明这个对象是父对象的子对象
                 if (a.ParentId == uparent.Id)
                 {

@@ -1,14 +1,12 @@
-﻿using Cappuccino.Common;
+﻿using System;
+using System.Linq;
+using System.Web.Mvc;
+using Cappuccino.Common;
 using Cappuccino.Common.Enum;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
-using Cappuccino.ViewModel;
 using Cappuccino.Web.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Cappuccino.Web.Areas.System.Controllers
 {
@@ -72,7 +70,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                     return WriteError("实体验证失败");
                 }
 
-                SysAction sysAction = new SysAction
+                SysActionEntity sysAction = new SysActionEntity
                 {
                     Name = viewModel.Name,
                     ParentId = viewModel.ParentId,
@@ -87,11 +85,11 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
                 if (viewModel.Type == ActionTypeEnum.Menu)
                 {
-                    sysAction.SysActionMenu = new SysActionMenu { Icon = viewModel.Icon, Url = viewModel.Url };
+                    sysAction.SysActionMenu = new SysActionMenuEntity { Icon = viewModel.Icon, Url = viewModel.Url };
                 }
                 else if (viewModel.Type == ActionTypeEnum.Button)
                 {
-                    sysAction.SysActionButton = new SysActionButton
+                    sysAction.SysActionButton = new SysActionButtonEntity
                     {
                         ButtonCode = viewModel.ButtonCode,
                         Location = viewModel.Location,

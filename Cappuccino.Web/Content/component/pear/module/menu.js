@@ -166,25 +166,37 @@ layui.define(['table', 'jquery', 'element'], function (exports) {
             }
             var href = "javascript:;";
             var target = "";
-            var className = "site-demo-active"
-            if (item.openType == "_blank" && item.type == 1) {
+            var className = "site-demo-active"  // 默认可点击类
+            if (item.openType == "_blank" && (item.type == 1 || (item.type == 0 && !item.children.length))) {
                 href = item.href;
                 target = "target='_blank'";
-                className = "";
+                className = "";  // 新窗口打开时移除点击类
             }
+
+            // 关键修改：处理 type=0 菜单
             if (item.type == 0) {
-                // 创 建 目 录 结 构
-                content += '<a  href="javascript:;" menu-type="' + item.type + '" menu-id="' + item.id + '" href="' + href +
-                    '" ' + target + '><i class="' + item.icon + '"></i><span>' + item.title +
-                    '</span></a>';
+                // 若 type=0 且无子级：按可点击项渲染
+                if (!item.children || item.children.length === 0) {
+                    content += '<a class="' + className + '" menu-type="' + item.type + '" menu-url="' + item.href + '" menu-id="' +
+                        item.id + '" menu-title="' + item.title + '" href="' + href + '" ' + target + '><i class="' + item.icon +
+                        '"></i><span>' + item.title + '</span></a>';
+                } else {
+                    // 若 type=0 且有子级：保持原有目录结构（不可直接点击）
+                    content += '<a href="javascript:;" menu-type="' + item.type + '" menu-id="' + item.id + '" href="' + href +
+                        '" ' + target + '><i class="' + item.icon + '"></i><span>' + item.title +
+                        '</span></a>';
+                }
             } else if (item.type == 1) {
+                // 原有 type=1 处理逻辑不变
                 content += '<a class="' + className + '" menu-type="' + item.type + '" menu-url="' + item.href + '" menu-id="' +
-                    item.id +
-                    '" menu-title="' + item.title + '"  href="' + href + '"  ' + target + '><i class="' + item.icon +
+                    item.id + '" menu-title="' + item.title + '"  href="' + href + '"  ' + target + '><i class="' + item.icon +
                     '"></i><span>' + item.title + '</span></a>';
             }
-            // 调 用 递 归 方 法 加 载 无 限 层 级 的 子 菜 单 
-            content += loadchild(item);
+
+            // 加载子菜单（仅当有子级时）
+            if (item.children && item.children.length > 0) {
+                content += loadchild(item);
+            }
             // 结 束 一 个 根 菜 单 项
             content += '</li>';
             menuHtml += content;
@@ -280,7 +292,6 @@ layui.define(['table', 'jquery', 'element'], function (exports) {
         if (obj.type == 1) {
             return "";
         }
-        console.log(obj);        
 
         // 创 建 子 菜 单 结 构
         var content = '<dl class="layui-nav-child">';

@@ -1,10 +1,9 @@
-﻿using Cappuccino.IDAL;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
+using Cappuccino.IDAL;
 
 namespace Cappuccino.BLL
 {
@@ -84,6 +83,63 @@ namespace Cappuccino.BLL
         {
             return this.CurrentDao.UpdateList(entities);
         }
+
+        // 异步方法实现
+        public async Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda)
+        {
+            return await CurrentDao.GetListAsync(whereLambda);
+        }
+
+        public async Task<(IQueryable<T>, int)> GetListByPageAsync<S>(
+            Expression<Func<T, bool>> whereLambada,
+            Expression<Func<T, S>> orderBy,
+            int pageSize,
+            int pageIndex,
+            bool isASC)
+        {
+            return await CurrentDao.GetListByPageAsync(whereLambada, orderBy, pageSize, pageIndex, isASC);
+        }
+
+        public async Task<int> GetRecordCountAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await CurrentDao.GetRecordCountAsync(predicate);
+        }
+
+        public async Task<int> AddAsync(T entity)
+        {
+            return await CurrentDao.AddAsync(entity);
+        }
+
+        public async Task<int> AddListAsync(params T[] entities)
+        {
+            return await CurrentDao.AddListAsync(entities);
+        }
+
+        public async Task<int> DeleteAsync(T entity)
+        {
+            return await CurrentDao.DeleteAsync(entity);
+        }
+
+        public async Task<int> DeleteByAsync(Expression<Func<T, bool>> whereLambda)
+        {
+            return await CurrentDao.DeleteByAsync(whereLambda);
+        }
+
+        public async Task<bool> UpdateAsync(T entity)
+        {
+            return await CurrentDao.UpdateAsync(entity);
+        }
+
+        public async virtual Task<bool> UpdateAsync(T entity, string[] propertys)
+        {
+            return await CurrentDao.UpdateAsync(entity, propertys);
+        }
+
+        public async Task<int> UpdateListAsync(params T[] entities)
+        {
+            return await CurrentDao.UpdateListAsync(entities);
+        }
+
 
         public IList<IDisposable> DisposableObjects { get; private set; }
 

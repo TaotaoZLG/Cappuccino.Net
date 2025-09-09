@@ -1,9 +1,9 @@
-﻿using Cappuccino.IDAL;
-using Cappuccino.Model;
+﻿using Cappuccino.Entity;
+using Cappuccino.IDAL;
 
 namespace Cappuccino.DAL.System
 {
-    public class SysDictTypeDao : BaseDao<SysDictType>, ISysDictTypeDao
+    public class SysDictTypeDao : BaseDao<SysDictTypeEntity>, ISysDictTypeDao
     {
     }
 }

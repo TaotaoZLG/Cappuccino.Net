@@ -1,13 +1,7 @@
-﻿using Cappuccino.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using Cappuccino.Entity;
 namespace Cappuccino.IDAL
 {
-    public interface ISysLogLogonDao : IBaseDao<SysLogLogon>
+    public interface ISysLogLogonDao : IBaseDao<SysLogLogonEntity>
     {
     }
 }

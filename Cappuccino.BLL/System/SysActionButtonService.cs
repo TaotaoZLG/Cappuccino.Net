@@ -1,17 +1,14 @@
-﻿using Cappuccino.Common.Enum;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Cappuccino.Common.Enum;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
 using Cappuccino.Model;
-using Cappuccino.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cappuccino.BLL
 {
-    public class SysActionButtonService : BaseService<SysActionButton>, ISysActionButtonService
+    public class SysActionButtonService : BaseService<SysActionButtonEntity>, ISysActionButtonService
     {
         #region 依赖注入
         ISysActionButtonDao dao;

@@ -1,10 +1,8 @@
-﻿using Cappuccino.IDAL;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 
@@ -189,6 +187,97 @@ namespace Cappuccino.DAL
         public IEnumerable<TElement> SqlQuery<TElement>(string sql, params object[] parameters)
         {
             return Db.Database.SqlQuery<TElement>(sql, parameters);
+        }
+
+        public async Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda)
+        {
+            return await Task.FromResult(DbSet.Where(whereLambda));
+        }
+
+        public async Task<(IQueryable<T>, int)> GetListByPageAsync<S>(
+            Expression<Func<T, bool>> whereLambada,
+            Expression<Func<T, S>> orderBy,
+            int pageSize,
+            int pageIndex,
+            bool isASC)
+        {
+            var query = DbSet.Where(whereLambada);
+            var totalCount = await query.CountAsync();
+
+            var queryResult = isASC
+                ? query.OrderBy(orderBy).Skip(pageSize * (pageIndex - 1)).Take(pageSize)
+                : query.OrderByDescending(orderBy).Skip(pageSize * (pageIndex - 1)).Take(pageSize);
+
+            return (queryResult, totalCount);
+        }
+
+        public async Task<int> GetRecordCountAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await DbSet.CountAsync(predicate);
+        }
+
+        public async Task<int> AddAsync(T entity)
+        {
+            DbSet.Add(entity);
+            return await SaveChangesAsync();
+        }
+
+        public async Task<int> AddListAsync(params T[] entities)
+        {
+            foreach (var entity in entities)
+            {
+                DbSet.Add(entity);
+            }
+            return await SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteAsync(T entity)
+        {
+            DbSet.Remove(entity);
+            return await SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteByAsync(Expression<Func<T, bool>> whereLambda)
+        {
+            var entities = await DbSet.Where(whereLambda).ToListAsync();
+            foreach (var entity in entities)
+            {
+                DbSet.Remove(entity);
+            }
+            return await SaveChangesAsync();
+        }
+
+        public async Task<bool> UpdateAsync(T entity)
+        {
+            Db.Entry(entity).State = EntityState.Modified;
+            return await SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateAsync(T entity, string[] propertys)
+        {
+            var entry = Db.Entry(entity);
+            entry.State = EntityState.Unchanged;
+
+            foreach (var property in propertys)
+            {
+                entry.Property(property).IsModified = true;
+            }
+
+            return await SaveChangesAsync() > 0;
+        }
+
+        public async Task<int> UpdateListAsync(params T[] entities)
+        {
+            foreach (var entity in entities)
+            {
+                Db.Entry(entity).State = EntityState.Modified;
+            }
+            return await SaveChangesAsync();
+        }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await Db.SaveChangesAsync();
         }
     }
 }

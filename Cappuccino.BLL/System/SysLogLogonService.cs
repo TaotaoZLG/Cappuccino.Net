@@ -1,16 +1,12 @@
-﻿using Cappuccino.Common.Net;
+﻿using System;
+using Cappuccino.Common.Net;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
-using Cappuccino.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cappuccino.BLL
 {
-    public class SysLogLogonService : BaseService<SysLogLogon>, ISysLogLogonService
+    public class SysLogLogonService : BaseService<SysLogLogonEntity>, ISysLogLogonService
     {
         #region 依赖注入
         ISysLogLogonDao dao;
@@ -28,10 +24,10 @@ namespace Cappuccino.BLL
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public int WriteDbLog(SysLogLogon logLogon)
+        public int WriteDbLog(SysLogLogonEntity logLogon)
         {
-            logLogon.IPAddress = NetHelper.Ip;
-            logLogon.IPAddressName = NetHelper.GetLocation(logLogon.IPAddress);
+            logLogon.IPAddress = NetHelper.GetIp;
+            logLogon.IPAddressName = NetHelper.GetIpLocation(logLogon.IPAddress);
             logLogon.CreateTime = DateTime.Now;
             return Add(logLogon);
         }

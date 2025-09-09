@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Cappuccino.Model
+namespace Cappuccino.Entity
 {
-    public class SysActionMenu
+    [Table("SysActionMenu")]
+    public class SysActionMenuEntity
     {
         public int Id { get; set; }
 
@@ -20,6 +17,6 @@ namespace Cappuccino.Model
         /// </summary>
         public string Url { get; set; }
 
-        public SysAction SysAction { get; set; }
+        public SysActionEntity SysAction { get; set; }
     }
 }

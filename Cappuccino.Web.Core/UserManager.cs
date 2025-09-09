@@ -1,13 +1,10 @@
-﻿using Cappuccino.Common;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.Common.Helper;
 using Cappuccino.Common.Util;
-using Cappuccino.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Cappuccino.Entity;
 
 namespace Cappuccino.Web.Core
 {
@@ -20,14 +17,14 @@ namespace Cappuccino.Web.Core
         /// 负责获取当前登录用户的实体对象
         /// </summary>
         /// <returns></returns>
-        public static SysUser GetCurrentUserInfo()
+        public static SysUserEntity GetCurrentUserInfo()
         {
             var cacheId = GetCurrentUserCacheId();
             if (!string.IsNullOrEmpty(GetCurrentUserCacheId()))
             {
-                return CacheManager.Cache.Get<SysUser>(cacheId);
+                return CacheManager.Cache.Get<SysUserEntity>(cacheId);
             }
-            return new SysUser() { };
+            return new SysUserEntity() { };
         }
 
         /// <summary>

@@ -1,17 +1,14 @@
-﻿using Cappuccino.Common.Enum;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Cappuccino.Common.Enum;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
 using Cappuccino.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Cappuccino.ViewModel;
 
 namespace Cappuccino.BLL
 {
-    public class SysActionMenuService : BaseService<SysActionMenu>, ISysActionMenuService
+    public class SysActionMenuService : BaseService<SysActionMenuEntity>, ISysActionMenuService
     {
         #region 依赖注入
         ISysActionMenuDao dao;

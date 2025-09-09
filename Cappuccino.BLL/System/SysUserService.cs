@@ -1,18 +1,15 @@
-﻿using Cappuccino.Common.Enum;
+﻿using System;
+using System.Linq;
+using Cappuccino.Common.Enum;
 using Cappuccino.Common.Util;
-using Cappuccino.ViewModel;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
 using Cappuccino.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cappuccino.BLL
 {
-    public class SysUserService : BaseService<SysUser>, ISysUserService
+    public class SysUserService : BaseService<SysUserEntity>, ISysUserService
     {
         #region 依赖注入
         ISysUserDao dao;

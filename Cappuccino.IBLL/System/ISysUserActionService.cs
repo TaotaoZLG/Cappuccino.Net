@@ -1,14 +1,10 @@
-﻿using Cappuccino.Model;
-using Cappuccino.ViewModel.System;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Cappuccino.Entity;
+using Cappuccino.Model.System;
 
 namespace Cappuccino.IBLL
 {
-    public interface ISysUserActionService : IBaseService<SysUserAction>
+    public interface ISysUserActionService : IBaseService<SysUserActionEntity>
     {
         /// <summary>
         /// 获取用户特权

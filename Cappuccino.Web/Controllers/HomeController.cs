@@ -1,23 +1,22 @@
-﻿using Cappuccino.Common.Enum;
+﻿using System;
+using System.IO;
+using System.Web.Mvc;
 using Cappuccino.Common.Extensions;
 using Cappuccino.IBLL;
 using Cappuccino.Web.Core;
 using Cappuccino.Web.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Cappuccino.Web.Controllers
 {
     public class HomeController : BaseController
     {
+        private readonly ISysActionMenuService _sysActionMenuService;
+        private readonly ISysActionButtonService _sysActionButtonService;
+
         public HomeController(ISysActionMenuService sysActionMenuService, ISysActionButtonService sysActionButtonService)
         {
-            base.SysActionMenuService = sysActionMenuService;
-            base.SysActionButtonService = sysActionButtonService;
+            _sysActionMenuService = sysActionMenuService;
+            _sysActionButtonService = sysActionButtonService;
             this.AddDisposableObject(SysActionMenuService);
         }
 

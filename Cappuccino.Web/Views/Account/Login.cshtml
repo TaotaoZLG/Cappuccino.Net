@@ -3,7 +3,7 @@
 }
 
 <!DOCTYPE html>
-﻿@model Cappuccino.ViewModel.LoginViewModel
+﻿@model Cappuccino.Model.LoginViewModel
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
@@ -72,9 +72,10 @@
             // 登 录 提 交
             form.on('submit(login)', function (data) {
                 common.ajax("@Url.Action("Login","Account")", "post", data.field, true, true).done(function (response) {
-                            popup.success("登录成功", function() {
-							        window.location = "/Home";
-					        });
+                    window.location = "/Home";
+                    //popup.success("登录成功", function() {
+							//  window.location = "/Home";
+					//});
                 }).fail(function (error) {
                     console.log(error)
                     //刷新二维码

@@ -53,6 +53,10 @@
     <Reference Include="CLRStats, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CLRStats.1.0.0\lib\net46\CLRStats.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Bin\EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=2.0.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.11\lib\net45\log4net.dll</HintPath>
     </Reference>
@@ -148,12 +152,14 @@
     <Compile Include="App_Start\AutofacConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\LogOperateAttribute.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\System\Controllers\SysActionController.cs" />
     <Compile Include="Areas\System\Controllers\SysActionButtonController.cs" />
     <Compile Include="Areas\System\Controllers\SysActionMenuController.cs" />
     <Compile Include="Areas\System\Controllers\SysDictController.cs" />
     <Compile Include="Areas\System\Controllers\SysDictTypeController.cs" />
+    <Compile Include="Areas\System\Controllers\SysLogOperateController.cs" />
     <Compile Include="Areas\System\Controllers\SysRoleController.cs" />
     <Compile Include="Areas\System\Controllers\SysUserController.cs" />
     <Compile Include="Areas\System\Controllers\SysUserActionController.cs" />
@@ -578,6 +584,7 @@
     <Content Include="Configs\log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Areas\System\Views\SysLogOperate\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\Tip.cshtml" />
@@ -590,9 +597,17 @@
     <Content Include="Views\Account\Person.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cappuccino.BLL\Cappuccino.BLL.csproj">
+      <Project>{B870B085-52FE-4C4F-A775-E38D05A56B5D}</Project>
+      <Name>Cappuccino.BLL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cappuccino.Common\Cappuccino.Common.csproj">
       <Project>{471e7f22-fdc4-4f8c-b985-3336d4b14e0b}</Project>
       <Name>Cappuccino.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cappuccino.DAL\Cappuccino.DAL.csproj">
+      <Project>{F122A9BC-F278-408F-B1DB-E0BF92923C56}</Project>
+      <Name>Cappuccino.DAL</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cappuccino.IBLL\Cappuccino.IBLL.csproj">
       <Project>{2d44cce2-a040-4a43-9ad3-6b4cab0fe740}</Project>
@@ -602,13 +617,13 @@
       <Project>{94c73821-31d6-4f89-887a-ffc96ffab5d7}</Project>
       <Name>Cappuccino.IDAL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Model.csproj">
+    <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Entity.csproj">
       <Project>{93fe2ce0-1a84-4138-b18f-d984ae0f4d81}</Project>
-      <Name>Cappuccino.Model</Name>
+      <Name>Cappuccino.Entity</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cappuccino.ViewModel\Cappuccino.ViewModel.csproj">
+    <ProjectReference Include="..\Cappuccino.ViewModel\Cappuccino.Model.csproj">
       <Project>{a42fc2ef-0277-4ed7-b6a2-223323d52efc}</Project>
-      <Name>Cappuccino.ViewModel</Name>
+      <Name>Cappuccino.Model</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cappuccino.Web.Core\Cappuccino.Web.Core.csproj">
       <Project>{bfb1c0bf-bfae-4e45-b92b-d89009434132}</Project>

@@ -1,16 +1,12 @@
-﻿using Cappuccino.Common;
-using Cappuccino.Common.Enum;
-using Cappuccino.Common.Helper;
+﻿using System;
+using System.Linq;
+using System.Web.Mvc;
+using Cappuccino.Common;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
-using Cappuccino.ViewModel;
 using Cappuccino.Web.Core;
 using Cappuccino.Web.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Cappuccino.Web.Areas.System.Controllers
 {
@@ -48,7 +44,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 queries.Add(new Query { Name = "TypeId", Operator = Query.Operators.Equal, Value = viewModel.TypeId });
             }
-            var list = SysDictService.GetListByPage(queries.AsExpression<SysDict>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
+            var list = SysDictService.GetListByPage(queries.AsExpression<SysDictEntity>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
             {
                 x.Id,
                 x.Name,
@@ -74,7 +70,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 {
                     return WriteError("实体验证失败");
                 }
-                SysDict entity = viewModel.EntityMap();
+                SysDictEntity entity = viewModel.EntityMap();
                 entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.CreateTime = DateTime.Now;
@@ -105,7 +101,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             viewModel.Id = viewModel.Id;
             viewModel.UpdateTime = DateTime.Now;
             viewModel.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
-            SysDict entity = viewModel.EntityMap();
+            SysDictEntity entity = viewModel.EntityMap();
             SysDictService.Update(entity, new string[] { "Name", "Code", "SortCode", "UpdateTime", "UpdateUserId" });
             return WriteSuccess();
         }

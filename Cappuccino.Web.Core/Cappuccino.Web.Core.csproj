@@ -101,13 +101,13 @@
       <Project>{2d44cce2-a040-4a43-9ad3-6b4cab0fe740}</Project>
       <Name>Cappuccino.IBLL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Model.csproj">
-      <Project>{93FE2CE0-1A84-4138-B18F-D984AE0F4D81}</Project>
-      <Name>Cappuccino.Model</Name>
+    <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Entity.csproj">
+      <Project>{93fe2ce0-1a84-4138-b18f-d984ae0f4d81}</Project>
+      <Name>Cappuccino.Entity</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cappuccino.ViewModel\Cappuccino.ViewModel.csproj">
+    <ProjectReference Include="..\Cappuccino.ViewModel\Cappuccino.Model.csproj">
       <Project>{a42fc2ef-0277-4ed7-b6a2-223323d52efc}</Project>
-      <Name>Cappuccino.ViewModel</Name>
+      <Name>Cappuccino.Model</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

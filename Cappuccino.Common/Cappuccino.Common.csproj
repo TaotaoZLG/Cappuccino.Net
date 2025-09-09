@@ -72,6 +72,7 @@
     <Compile Include="Net\NetHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Linq\QueryCollection.cs" />
+    <Compile Include="Reflection\EntityScanner.cs" />
     <Compile Include="Util\ConfigUtils.cs" />
     <Compile Include="Util\DESUtils.cs" />
     <Compile Include="Util\Md5Utils.cs" />
@@ -80,5 +81,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

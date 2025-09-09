@@ -1,14 +1,9 @@
-﻿using Cappuccino.Model;
-using Cappuccino.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Cappuccino.Entity;
+using Cappuccino.Model;
 
 namespace Cappuccino.IBLL
 {
-    public interface ISysUserService : IBaseService<SysUser>
+    public interface ISysUserService : IBaseService<SysUserEntity>
     {
         bool CheckLogin(string loginName, string loginPassword);
 

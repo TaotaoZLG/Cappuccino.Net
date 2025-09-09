@@ -1,22 +1,18 @@
-﻿using Cappuccino.Common.Enum;
+﻿using System.Collections.Generic;
+using Cappuccino.Common.Enum;
+using Cappuccino.Entity;
 using Cappuccino.Model;
-using Cappuccino.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cappuccino.IBLL
 {
-    public interface ISysActionService : IBaseService<SysAction>
+    public interface ISysActionService : IBaseService<SysActionEntity>
     {
         /// <summary>
         /// 根据用户获取所拥有的权限
         /// </summary>
         /// <param name="userId">用户ID</param>
         /// <returns></returns>
-        List<SysAction> GetPermission(int userId);
+        List<SysActionEntity> GetPermission(int userId);
 
         /// <summary>
         /// 根据用户获取所拥有的菜单或按钮
@@ -24,7 +20,7 @@ namespace Cappuccino.IBLL
         /// <param name="userId">用户ID</param>
         /// <param name="type">权限类型</param>
         /// <returns></returns>
-        List<SysAction> GetPermissionByType(int userId, ActionTypeEnum type);
+        List<SysActionEntity> GetPermissionByType(int userId, ActionTypeEnum type);
 
         /// <summary>
         /// 获取dtree数据格式的权限

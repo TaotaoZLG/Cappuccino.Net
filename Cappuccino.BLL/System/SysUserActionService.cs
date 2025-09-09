@@ -1,16 +1,13 @@
-﻿using Cappuccino.IBLL;
-using Cappuccino.IDAL;
-using Cappuccino.Model;
-using Cappuccino.ViewModel.System;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Cappuccino.Entity;
+using Cappuccino.IBLL;
+using Cappuccino.IDAL;
+using Cappuccino.Model.System;
 
 namespace Cappuccino.BLL
 {
-    public class SysUserActionService : BaseService<SysUserAction>, ISysUserActionService
+    public class SysUserActionService : BaseService<SysUserActionEntity>, ISysUserActionService
     {
         #region 依赖注入
         readonly ISysUserActionDao dao;
@@ -64,7 +61,7 @@ namespace Cappuccino.BLL
             dao.DeleteBy(x => x.UserId == userId);
             foreach (var item in userActions)
             {
-                SysUserAction userAction = new SysUserAction();
+                SysUserActionEntity userAction = new SysUserActionEntity();
                 userAction.UserId = userId;
                 userAction.ActionId = item.Id;
                 if (item.Status == 1)

@@ -175,9 +175,10 @@
             }
 
             window.edit = function (id) {
-                layer.open({
+                top.layer.open({
                     type: 2,
                     title: '修改',
+                    offset: 'auto',
                     shade: 0.1,
                     area: ['600px', '500px'],
                     content: MODULE_PATH + 'Edit/' + id,

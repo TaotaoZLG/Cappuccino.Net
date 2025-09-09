@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Cappuccino.Common.Net
 {
-    class HttpMethods
+    public class HttpMethods
     {
         #region POST
         /// <summary>

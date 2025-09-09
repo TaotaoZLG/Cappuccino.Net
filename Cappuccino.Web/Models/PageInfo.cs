@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Cappuccino.Web.Models
+﻿namespace Cappuccino.Web.Models
 {
     public class PageInfo
     {
