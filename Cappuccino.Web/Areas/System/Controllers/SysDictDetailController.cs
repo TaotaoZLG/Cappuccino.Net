@@ -6,6 +6,7 @@ using Cappuccino.Common;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
+using Cappuccino.Web.Attributes;
 using Cappuccino.Web.Core;
 using Cappuccino.Web.Models;
 
@@ -42,6 +43,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         #region 提交数据
         [HttpPost, CheckPermission("system.dict.create")]
+        [LogOperate(Title = "新增字典详情", BusinessType = "ADD")]
         public ActionResult Create(SysDictDetailViewModel viewModel)
         {
             try
@@ -65,6 +67,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.dict.edit")]
+        [LogOperate(Title = "编辑字典详情", BusinessType = "EDIT")]
         public ActionResult Edit(SysDictDetailViewModel viewModel)
         {
             if (ModelState.IsValid == false)
@@ -80,6 +83,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.dict.delete")]
+        [LogOperate(Title = "删除字典详情", BusinessType = "DELETE")]
         public ActionResult Delete(int id)
         {
             try
@@ -94,6 +98,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.dict.batchDel")]
+        [LogOperate(Title = "批量删除字典详情", BusinessType = "DELETE")]
         public ActionResult BatchDel(string idsStr)
         {
             try

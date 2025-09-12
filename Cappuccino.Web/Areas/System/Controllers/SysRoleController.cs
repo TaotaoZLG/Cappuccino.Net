@@ -6,6 +6,7 @@ using Cappuccino.Common;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
+using Cappuccino.Web.Attributes;
 using Cappuccino.Web.Core;
 using Cappuccino.Web.Models;
 
@@ -51,6 +52,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         #region 提交数据
         [HttpPost, CheckPermission("system.role.create")]
+        [LogOperate(Title = "新增角色", BusinessType = "ADD")]
         public ActionResult Create(SysRoleViewModel viewModel)
         {
             try
@@ -74,6 +76,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.role.edit")]
+        [LogOperate(Title = "编辑角色", BusinessType = "EDIT")]
         public ActionResult Edit(int id, SysRoleViewModel viewModel)
         {
             if (ModelState.IsValid == false)
@@ -89,6 +92,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.role.delete")]
+        [LogOperate(Title = "删除角色", BusinessType = "DELETE")]
         public ActionResult Delete(int id)
         {
             try
@@ -103,6 +107,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.role.batchDel")]
+        [LogOperate(Title = "批量删除角色", BusinessType = "DELETE")]
         public ActionResult BatchDel(string idsStr)
         {
             try
@@ -119,6 +124,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.role.assign")]
+        [LogOperate(Title = "角色授权", BusinessType = "AUTHORIZE")]
         public ActionResult Assign(int id, List<DtreeResponse> dtrees)
         {
             _sysRoleService.Add(id, dtrees);
@@ -126,6 +132,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.role.edit")]
+        [LogOperate(Title = "禁用角色", BusinessType = "AUTHORIZE")]
         public ActionResult UpdateEnabledMark(int id, int enabledMark)
         {
             SysRoleEntity entity = new SysRoleEntity

@@ -17,13 +17,16 @@ namespace Cappuccino.Web.Attributes
     [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public class LogOperateAttribute : ActionFilterAttribute
     {
+        // 注入依赖服务
+        public ISysLogOperateService LogOperateService { get; set; }
+
         /// <summary>
         /// 操作标题（如：新增用户）
         /// </summary>
         public string Title { get; set; } = "未命名操作";
 
         /// <summary>
-        /// 业务类型（如：ADD/EDIT/DELETE/QUERY）
+        /// 业务类型（如：ADD/EDIT/DELETE/QUERY/EXPORT/IMPORT/AUTHORIZE/OTHER）
         /// </summary>
         public string BusinessType { get; set; } = "OTHER";
 
@@ -36,14 +39,6 @@ namespace Cappuccino.Web.Attributes
         /// 是否忽略空参数（不记录无参数的请求）
         /// </summary>
         public bool IgnoreEmptyParam { get; set; } = false;
-
-
-        #region 依赖服务（通过DI注入）
-        /// <summary>
-        /// 日志业务服务（由MVC容器注入）
-        /// </summary>
-        public ISysLogOperateService LogOperateService { get; set; }
-        #endregion
 
         /// <summary>
         /// Action执行完成后记录日志
@@ -58,35 +53,43 @@ namespace Cappuccino.Web.Attributes
 
             try
             {
-                var request = context.HttpContext.Request;
+                var request = context.HttpContext.Request;  // 获取请求对象
+                var response = context.HttpContext.Response; // 获取响应对象
+
                 var user = UserManager.GetCurrentUserInfo(); // 当前登录用户
+                if (user == null)
+                {
+                    user = context.Controller.TempData["UserInfo"] as SysUserEntity;
+                }
 
                 // 构建日志实体
-                SysLogOperateEntity logOperateEntity = new SysLogOperateEntity();
-                // 基础配置信息
-                logOperateEntity.Title = Title;
-                logOperateEntity.Description = Description;
-                logOperateEntity.BusinessType = BusinessType;
+                SysLogOperateEntity logOperateEntity = new SysLogOperateEntity
+                {
+                    // 基础配置信息
+                    Title = Title,
+                    Description = Description,
+                    BusinessType = BusinessType,
 
-                // 请求信息
-                logOperateEntity.RequestMethod = request.HttpMethod;
-                logOperateEntity.RequestUrl = request.Url?.AbsolutePath ?? string.Empty;
-                logOperateEntity.Method = $"{context.Controller.GetType().Name}.{context.ActionDescriptor.ActionName}";
-                logOperateEntity.RequestParam = NetHelper.GetRequestParams(request); // 自定义方法：获取请求参数
-                logOperateEntity.RequestBody = request.HttpMethod.ToUpper() == "POST" ? NetHelper.GetRequestBody(request) : null;
+                    // 请求信息
+                    RequestMethod = request.HttpMethod,
+                    RequestUrl = request.Url?.AbsolutePath,
+                    Method = $"{context.Controller.GetType().Name}/{context.ActionDescriptor.ActionName}",
+                    RequestParam = NetHelper.GetRequestParams(request), // 自定义方法：获取请求参数
+                    RequestBody = request.HttpMethod.ToUpper() == "POST" ? NetHelper.GetRequestBody(request) : null,
 
-                // 执行结果
-                logOperateEntity.RequestResult = null;
+                    // 请求结果
+                    RequestResult = context.Exception == null ? response.Status : $"{response.Status} {context.Exception.Message}",
 
-                // 环境信息
-                logOperateEntity.IPAddress = NetHelper.GetIp;
-                logOperateEntity.IPAddressName = NetHelper.GetIpLocation(NetHelper.GetIp);
-                logOperateEntity.OperateName = user?.UserName;
-                logOperateEntity.SystemOs = NetHelper.GetSystemOs(request.UserAgent);
-                logOperateEntity.Browser = NetHelper.GetBrowser(request.UserAgent);
-                logOperateEntity.CreateUserId = user.Id;
+                    // 环境信息
+                    IPAddress = NetHelper.GetIp,
+                    IPAddressName = NetHelper.GetIpLocation(NetHelper.GetIp),
+                    OperateName = user?.UserName,
+                    SystemOs = NetHelper.GetSystemOs(request.UserAgent),
+                    Browser = NetHelper.GetBrowser(request.UserAgent),
+                    CreateUserId = user?.Id ?? 1
+                };
 
-                // 写入日志（异步执行，不阻塞主流程）
+                // 写入日志
                 _ = LogOperateService?.WriteOperateLog(logOperateEntity);
             }
             catch (Exception ex)

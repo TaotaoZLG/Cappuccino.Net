@@ -136,11 +136,14 @@ namespace Cappuccino.Web.Controllers
         [LogOperate(Title = "退出系统")]
         public ActionResult Logout()
         {
+            var user = UserManager.GetCurrentUserInfo();
+            TempData["UserInfo"] = user; // 暂存用户信息到TempData
+
             _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
             {
                 LogType = DbLogType.Exit.ToString(),
-                Account = UserManager.GetCurrentUserInfo().UserName,
-                RealName = UserManager.GetCurrentUserInfo().NickName,
+                Account = user.UserName,
+                RealName = user.NickName,
                 Description = "安全退出系统",
             });
             CacheManager.Remove(UserManager.GetCurrentUserCacheId());
@@ -149,6 +152,7 @@ namespace Cappuccino.Web.Controllers
         }
 
         [HttpPost]
+        [LogOperate(Title = "修改密码", BusinessType = "EDIT")]
         public ActionResult ModifyUserPwd(ChangePasswordViewModel viewModel)
         {
             int userId = UserManager.GetCurrentUserInfo().Id;

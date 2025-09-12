@@ -381,7 +381,7 @@ namespace Cappuccino.Common.Net
         public static string GetRequestParams(HttpRequestBase request)
         {
             if (request == null)
-                return "请求对象为空";
+                return string.Empty;
 
             try
             {
@@ -445,7 +445,7 @@ namespace Cappuccino.Common.Net
 
                 // 4. 处理无参数的情况
                 if (paramList.Count == 0)
-                    return "无请求参数";
+                    return string.Empty;
 
                 // 5. 拼接所有参数（限制总长度，避免日志过长）
                 string allParams = string.Join("&", paramList);

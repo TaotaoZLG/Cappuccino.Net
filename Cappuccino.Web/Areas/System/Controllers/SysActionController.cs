@@ -6,6 +6,7 @@ using Cappuccino.Common.Enum;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
+using Cappuccino.Web.Attributes;
 using Cappuccino.Web.Core;
 
 namespace Cappuccino.Web.Areas.System.Controllers
@@ -61,6 +62,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         #region 提交数据
         [HttpPost, CheckPermission("system.menu.create")]
+        [LogOperate(Title = "新增菜单", BusinessType = "ADD")]
         public ActionResult Create(ActionViewModel viewModel)
         {
             try
@@ -110,8 +112,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             }
         }
 
-
-
+        [LogOperate(Title = "编辑菜单", BusinessType = "EDIT")]
         [HttpPost, CheckPermission("system.menu.edit")]
         public ActionResult Edit(ActionViewModel viewModel)
         {
@@ -154,6 +155,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.menu.delete")]
+        [LogOperate(Title = "删除菜单", BusinessType = "DELETE")]
         public ActionResult Delete(int id)
         {
             try
@@ -178,6 +180,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.menu.batchDel")]
+        [LogOperate(Title = "批量删除菜单", BusinessType = "DELETE")]
         public ActionResult BatchDel(string idsStr)
         {
             try
