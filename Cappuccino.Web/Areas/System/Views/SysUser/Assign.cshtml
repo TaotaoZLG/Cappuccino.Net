@@ -1,7 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "Assign";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
 
 @section Style{
@@ -134,7 +134,7 @@
                     treeDefaultClose: true,
                     toolbar: '#toolbarTpl',
                     elem: '#tableId',
-                    url: MODULE_PATH + "List/"+'@ViewBag.UserId',
+                    url: MODULE_PATH + "GetList/"+'@ViewBag.UserId',
                     page: false,
                     cols: cols,
                     defaultToolbar: [{

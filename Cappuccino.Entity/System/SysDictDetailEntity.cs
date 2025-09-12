@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Cappuccino.Entity
 {
     /// <summary>
-    /// 字典分类
+    /// 字典详情
     /// </summary>
-    [Table("SysDictType")]
-    public class SysDictTypeEntity : BaseEntity
+    [Table("SysDictDetail")]
+    public class SysDictDetailEntity : BaseEntity
     {
         /// <summary>
         /// 编码
@@ -20,10 +20,20 @@ namespace Cappuccino.Entity
         public string Name { get; set; }
 
         /// <summary>
+        /// 样式
+        /// </summary>
+        public string ListClass { get; set; }
+
+        /// <summary>
+        /// 分类主键
+        /// </summary>
+        public int TypeId { get; set; }
+
+        /// <summary>
         /// 排序码
         /// </summary>
         public int SortCode { get; set; }
 
-        public virtual ICollection<SysDictEntity> SysDicts { get; set; } = new List<SysDictEntity>();
+        public virtual SysDictEntity SysDict { get; set; }
     }
 }

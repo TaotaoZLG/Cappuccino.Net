@@ -9,25 +9,34 @@ namespace Cappuccino.Web.Areas.System.Controllers
 {
     public class SysUserActionController : BaseController
     {
+        private readonly ISysUserActionService _sysUserActionService;
+
         public SysUserActionController(ISysUserActionService sysUserActionService)
         {
-            base.SysUserActionService = sysUserActionService;
-            this.AddDisposableObject(SysUserActionService);
+            _sysUserActionService = sysUserActionService;
         }
 
-        [HttpGet, CheckPermission("system.user.assign")]
-        public ActionResult List(int id)
-        {
-            var list = SysUserActionService.GetUserActionList(id);
-            var result = new { code = 0, count = list.Count(), data = list };
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
+        #region 视图
 
+        #endregion
+
+        #region 提交数据
         [HttpPost, CheckPermission("system.user.assign")]
         public ActionResult Save(int userId, List<UserActionViewModel> list)
         {
-            var result = SysUserActionService.SaveUserAction(userId, list) ? WriteSuccess("保存成功") : WriteError("保存失败");
+            var result = _sysUserActionService.SaveUserAction(userId, list) ? WriteSuccess("保存成功") : WriteError("保存失败");
             return result;
         }
+        #endregion
+
+        #region 获取数据
+        [HttpGet, CheckPermission("system.user.assign")]
+        public ActionResult GetList(int id)
+        {
+            var list = _sysUserActionService.GetUserActionList(id);
+            var result = new { code = 0, count = list.Count(), data = list };
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
     }
 }

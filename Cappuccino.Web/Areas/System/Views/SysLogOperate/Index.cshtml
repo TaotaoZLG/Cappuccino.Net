@@ -1,8 +1,9 @@
 ﻿
 @{
     ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
+
 <div class="layui-card">
     <div class="layui-card-body">
         <form class="layui-form" action="">
@@ -51,31 +52,36 @@
             let form = layui.form;
             let laydate = layui.laydate;
 
-            let MODULE_PATH = "/System/SysLogLogon/";
+            let MODULE_PATH = "/System/SysLogOperate/";
 
             laydate.render({
                 elem: '#startEndDate'
                 , range: '~'
             });
 
-            let cols = [
-                [
-                    { type: 'checkbox' },
-                    { title: 'ID', field: 'id', align: 'center', width: 100, sort: true },
-                    { title: '登录类型', field: 'logType', align: 'center' },
-                    { title: '账户', field: 'account', align: 'center' },
-                    { title: '姓名', field: 'realName', align: 'center' },
-                    { title: '描述', field: 'description', align: 'center' },
-                    { title: 'IP地址', field: 'ipAddress', align: 'center' },
-                    { title: 'IP所在城市', field: 'ipAddressName', align: 'center' },
-                    { title: '创建时间', field: 'createTime', align: 'center' }                ]
-            ]
-
             table.render({
                 elem: '#tableId',
-                url: MODULE_PATH + "List",
+                url: MODULE_PATH + "GetList",
                 page: true,
-                cols: cols,
+                limit: 10,
+                cols: [
+                    [
+                        { type: 'checkbox' },
+                        { title: 'ID', field: 'id', hide: true },
+                        { title: '操作模块', field: 'title', align: 'center' },
+                        {
+                            title: '操作类型', field: 'businessType', align: 'center', templet: function (d) {
+                                return top.getDataDictValue("sys_operate_type", d.businessType);
+                            }
+                        },
+                        { title: '请求方式', field: 'requestMethod', align: 'center' },
+                        { title: '请求地址', field: 'requestUrl', align: 'center' },
+                        { title: '请求参数', field: 'requestParam', align: 'center' },
+                        { title: 'IP地址', field: 'ipAddress', align: 'center' },
+                        { title: 'IP所在城市', field: 'ipAddressName', align: 'center' },
+                        { title: '创建时间', field: 'createTime', align: 'center', sort: true }
+                    ]
+                ],
                 skin: 'line',
                 toolbar: '#toolbarTpl',
                 defaultToolbar: [{
@@ -88,6 +94,20 @@
                 if (obj.event === 'refresh') {
                     window.refresh();
                 }
+            });
+
+            table.on('sort(tableFilter)', function (obj) {
+                console.log(obj.field); //当前排序的字段名
+                console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+                console.log(this); //当前排序的 th 对象
+
+                table.reload('tableId', {
+                    initSort: obj //记录初始排序
+                    , where: {
+                        field: obj.field,
+                        order: obj.type
+                    }
+                });
             });
 
             form.on('submit(search)', function (data) {

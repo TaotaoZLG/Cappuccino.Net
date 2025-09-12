@@ -28,15 +28,11 @@ namespace Cappuccino.IDAL
         /// <param name="pageSize"></param>
         /// <param name="pageIndex"></param>
         /// <param name="totalCount"></param>
-        /// <param name="isASC"></param>
+        /// <param name="isAsc"></param>
         /// <returns></returns>
-        IQueryable<T> GetListByPage<S>(
-            Expression<Func<T, bool>> whereLambad,
-            Expression<Func<T, S>> orderBy,
-            int pageSize,
-            int pageIndex,
-            out int totalCount,
-            bool isASC);
+        IQueryable<T> GetListByPage<S>(Expression<Func<T, bool>> whereLambad, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, out int totalCount, bool isAsc);
+
+        IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambad, string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount);
 
         /// <summary>
         /// 查询总数量
@@ -119,7 +115,7 @@ namespace Cappuccino.IDAL
             Expression<Func<T, S>> orderBy,
             int pageSize,
             int pageIndex,
-            bool isASC);
+            bool isAsc);
         Task<int> GetRecordCountAsync(Expression<Func<T, bool>> predicate);
         Task<int> AddAsync(T entity);
         Task<int> AddListAsync(params T[] entities);

@@ -3,6 +3,7 @@ using Cappuccino.Common.Net;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
+using Cappuccino.Web.Core;
 
 namespace Cappuccino.BLL
 {
@@ -24,11 +25,12 @@ namespace Cappuccino.BLL
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public int WriteDbLog(SysLogLogonEntity logLogon)
+        public int WriteLogonLog(SysLogLogonEntity logLogon)
         {
             logLogon.IPAddress = NetHelper.GetIp;
             logLogon.IPAddressName = NetHelper.GetIpLocation(logLogon.IPAddress);
             logLogon.CreateTime = DateTime.Now;
+            logLogon.CreateUserId = UserManager.GetCurrentUserInfo()?.Id ?? 0;
             return Add(logLogon);
         }
     }

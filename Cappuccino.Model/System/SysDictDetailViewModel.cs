@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
 
-namespace Cappuccino.Entity
+namespace Cappuccino.Model
 {
     /// <summary>
     /// 数据字典
     /// </summary>
-    [Table("SysDict")]
-    public class SysDictEntity : BaseEntity
+    public class SysDictDetailViewModel : BaseEntity
     {
         /// <summary>
         /// 编码
@@ -28,6 +27,6 @@ namespace Cappuccino.Entity
         /// </summary>
         public int SortCode { get; set; }
 
-        public virtual SysDictTypeEntity SysDictType { get; set; }
+        public virtual SysDictViewModel SysDict { get; set; }
     }
 }

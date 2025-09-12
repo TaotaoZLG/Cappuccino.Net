@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Cappuccino.Common;
 using Cappuccino.IDAL;
 
 namespace Cappuccino.BLL
@@ -22,21 +23,14 @@ namespace Cappuccino.BLL
             return this.CurrentDao.GetList(whereLambda);
         }
 
-        public IQueryable<T> GetListByPage<S>(
-            Expression<Func<T, bool>> whereLambada,
-            Expression<Func<T, S>> orderBy,
-            int pageSize,
-            int pageIndex,
-            out int totalCount,
-            bool isASC)
+        public IQueryable<T> GetListByPage<S>(Expression<Func<T, bool>> whereLambada, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, out int totalCount, bool isAsc)
         {
-            return this.CurrentDao.GetListByPage<S>(
-                whereLambada,
-                orderBy,
-                pageSize,
-                pageIndex,
-                out totalCount,
-                isASC);
+            return this.CurrentDao.GetListByPage<S>(whereLambada, orderBy, pageSize, pageIndex, out totalCount, isAsc);
+        }
+
+        public virtual IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambada, string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount)
+        {
+            return CurrentDao.GetListByPage(whereLambada, sortField, sortOrder, pageSize, pageIndex, out totalCount);
         }
 
         public int GetRecordCount(Expression<Func<T, bool>> predicate)
@@ -90,14 +84,9 @@ namespace Cappuccino.BLL
             return await CurrentDao.GetListAsync(whereLambda);
         }
 
-        public async Task<(IQueryable<T>, int)> GetListByPageAsync<S>(
-            Expression<Func<T, bool>> whereLambada,
-            Expression<Func<T, S>> orderBy,
-            int pageSize,
-            int pageIndex,
-            bool isASC)
+        public async Task<(IQueryable<T>, int)> GetListByPageAsync<S>(Expression<Func<T, bool>> whereLambada,Expression<Func<T, S>> orderBy,int pageSize,int pageIndex,bool isAsc)
         {
-            return await CurrentDao.GetListByPageAsync(whereLambada, orderBy, pageSize, pageIndex, isASC);
+            return await CurrentDao.GetListByPageAsync(whereLambada, orderBy, pageSize, pageIndex, isAsc);
         }
 
         public async Task<int> GetRecordCountAsync(Expression<Func<T, bool>> predicate)

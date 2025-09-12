@@ -7,15 +7,10 @@ namespace Cappuccino.Entity
     /// 操作日志
     /// </summary>
     [Table("SysLogOperate")]
-    public class SysLogOperateEntity
+    public class SysLogOperateEntity: BaseCreateEntity
     {
         /// <summary>
-        /// 主键
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
-        /// 操作标题
+        /// 模块标题
         /// </summary>
         public string Title { get; set; }
 
@@ -30,19 +25,19 @@ namespace Cappuccino.Entity
         public string BusinessType { get; set; }
 
         /// <summary>
-        /// 请求方法（GET/POST等）
+        /// 请求方式（GET/POST等）
         /// </summary>
         public string RequestMethod { get; set; }
+
+        /// <summary>
+        /// 请求URL
+        /// </summary>
+        public string RequestUrl { get; set; }
 
         /// <summary>
         /// 调用的方法名
         /// </summary>
         public string Method { get; set; }
-
-        /// <summary>
-        /// 操作URL
-        /// </summary>
-        public string OperateUrl { get; set; }
 
         /// <summary>
         /// 请求参数
@@ -60,14 +55,9 @@ namespace Cappuccino.Entity
         public string ResponseBody { get; set; }
 
         /// <summary>
-        /// 是否成功
+        /// 请求结果
         /// </summary>
-        public bool Success { get; set; }
-
-        /// <summary>
-        /// 错误信息
-        /// </summary>
-        public string ErrorMsg { get; set; }
+        public string RequestResult { get; set; }
 
         /// <summary>
         /// IP地址
@@ -93,10 +83,5 @@ namespace Cappuccino.Entity
         /// 浏览器
         /// </summary>
         public string Browser { get; set; }
-
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        public DateTime CreateTime { get; set; }
     }
 }

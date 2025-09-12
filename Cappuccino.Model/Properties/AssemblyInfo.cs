@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("Cappuccino.Entity")]
+[assembly: AssemblyTitle("Cappuccino.Model")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Cappuccino.Entity")]
+[assembly: AssemblyProduct("Cappuccino.Model")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("93fe2ce0-1a84-4138-b18f-d984ae0f4d81")]
+[assembly: Guid("a42fc2ef-0277-4ed7-b6a2-223323d52efc")]
 
 // 程序集的版本信息由下列四个值组成: 
 //

@@ -54,8 +54,8 @@
     <Compile Include="System\ISysActionDao.cs" />
     <Compile Include="System\ISysActionButtonDao.cs" />
     <Compile Include="System\ISysActionMenuDao.cs" />
+    <Compile Include="System\ISysDictDetailDao.cs" />
     <Compile Include="System\ISysDictDao.cs" />
-    <Compile Include="System\ISysDictTypeDao.cs" />
     <Compile Include="System\ISysLogOperateDao.cs" />
     <Compile Include="System\ISysRoleDao.cs" />
     <Compile Include="System\ISysUserActionDao.cs" />
@@ -70,8 +70,8 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Entity.csproj">
-      <Project>{93FE2CE0-1A84-4138-B18F-D984AE0F4D81}</Project>
+    <ProjectReference Include="..\Cappuccino.Entity\Cappuccino.Entity.csproj">
+      <Project>{93fe2ce0-1a84-4138-b18f-d984ae0f4d81}</Project>
       <Name>Cappuccino.Entity</Name>
     </ProjectReference>
   </ItemGroup>

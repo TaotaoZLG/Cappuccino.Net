@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Cappuccino.Entity
+namespace Cappuccino.Model
 {
     /// <summary>
-    /// 实体基类
+    /// Model基类
     /// </summary>
     public class BaseEntity
     {

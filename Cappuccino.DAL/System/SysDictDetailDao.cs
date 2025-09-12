@@ -3,7 +3,7 @@ using Cappuccino.IDAL;
 
 namespace Cappuccino.DAL.System
 {
-    public class SysDictTypeDao : BaseDao<SysDictTypeEntity>, ISysDictTypeDao
+    public class SysDictDetailDao : BaseDao<SysDictDetailEntity>, ISysDictDetailDao
     {
     }
 }

@@ -9,6 +9,6 @@ namespace Cappuccino.IBLL
         /// </summary>
         /// <param name="logLogon"></param>
         /// <returns></returns>
-        int WriteDbLog(SysLogLogonEntity logLogon);
+        int WriteLogonLog(SysLogLogonEntity logLogon);
     }
 }

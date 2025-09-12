@@ -1,14 +1,11 @@
-﻿using System.Data.Entity;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Web.Mvc;
 using Autofac;
 using Autofac.Integration.Mvc;
 using Cappuccino.BLL.System;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
-using Cappuccino.DAL;
 using Cappuccino.IBLL;
-using Cappuccino.IDAL;
 
 namespace Cappuccino.Web
 {
@@ -42,14 +39,6 @@ namespace Cappuccino.Web
 
             // 注册操作日志服务
             builder.RegisterType<SysLogOperateService>().As<ISysLogOperateService>().InstancePerRequest();
-
-            // 为 DbContext、BaseDao、BaseService 注册请求生命周期
-            builder.RegisterType<EfDbContext>().As<DbContext>().InstancePerRequest();
-            builder.RegisterGeneric(typeof(BaseDao<>)).As(typeof(IBaseDao<>)).InstancePerRequest();
-            builder.RegisterAssemblyTypes(Assembly.Load("Cappuccino.BLL"))
-                   .Where(t => t.Name.EndsWith("Service"))
-                   .AsImplementedInterfaces()
-                   .InstancePerRequest();
 
             // 注册MVC控制器并启用属性注入
             builder.RegisterControllers(Assembly.GetExecutingAssembly())

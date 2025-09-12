@@ -1,7 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
 <div class="layui-card">
     <div class="layui-card-body">
@@ -58,24 +58,22 @@
                 , range: '~'
             });
 
-            let cols = [
-                [
-                    { type: 'checkbox' },
-                    { title: 'ID', field: 'id', align: 'center', width: 100, sort: true },
-                    { title: '登录类型', field: 'logType', align: 'center' },
-                    { title: '账户', field: 'account', align: 'center' },
-                    { title: '姓名', field: 'realName', align: 'center' },
-                    { title: '描述', field: 'description', align: 'center' },
-                    { title: 'IP地址', field: 'ipAddress', align: 'center' },
-                    { title: 'IP所在城市', field: 'ipAddressName', align: 'center' },
-                    { title: '创建时间', field: 'createTime', align: 'center' }                ]
-            ]
-
             table.render({
                 elem: '#tableId',
-                url: MODULE_PATH + "List",
+                url: MODULE_PATH + "GetList",
                 page: true,
-                cols: cols,
+                cols: [
+                    [
+                        { type: 'checkbox' },
+                        { title: 'ID', field: 'id', hide: true },
+                        { title: '登录类型', field: 'logType', align: 'center' },
+                        { title: '账户', field: 'account', align: 'center' },
+                        { title: '姓名', field: 'realName', align: 'center' },
+                        { title: '描述', field: 'description', align: 'center' },
+                        { title: 'IP地址', field: 'ipAddress', align: 'center' },
+                        { title: 'IP所在城市', field: 'ipAddressName', align: 'center' },
+                        { title: '创建时间', field: 'createTime', align: 'center' }]
+                ],
                 skin: 'line',
                 toolbar: '#toolbarTpl',
                 defaultToolbar: [{

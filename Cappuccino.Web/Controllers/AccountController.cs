@@ -26,6 +26,7 @@ namespace Cappuccino.Web.Controllers
             _sysLogLogonService = sysLogLogonService;
         }
 
+        #region 视图
         [SkipCheckLogin]
         public ActionResult Login()
         {
@@ -42,6 +43,24 @@ namespace Cappuccino.Web.Controllers
             return View(loginViewModel);
         }
 
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <returns></returns>
+        [LogOperate(Title = "修改密码", BusinessType = "EDIT")]
+        public ActionResult ChangePassword()
+        {
+            ViewBag.UserName = UserManager.GetCurrentUserInfo().UserName;
+            return View();
+        }
+
+        public ActionResult Person()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 提交数据
         [HttpPost, SkipCheckLogin]
         [LogOperate(Title = "登录")]
         public ActionResult Login(LoginViewModel loginViewModel)
@@ -56,10 +75,10 @@ namespace Cappuccino.Web.Controllers
                 {
                     return WriteError("验证码失败");
                 }
-                bool result = SysUserService.CheckLogin(loginViewModel.LoginName, loginViewModel.LoginPassword);
+                bool result = _sysUserService.CheckLogin(loginViewModel.LoginName, loginViewModel.LoginPassword);
                 if (result)
                 {
-                    var user = SysUserService.GetList(x => x.UserName == loginViewModel.LoginName).FirstOrDefault();
+                    var user = _sysUserService.GetList(x => x.UserName == loginViewModel.LoginName).FirstOrDefault();
                     string userLoginId = Guid.NewGuid().ToString();
                     if (loginViewModel.IsMember)
                     {
@@ -82,7 +101,7 @@ namespace Cappuccino.Web.Controllers
                         CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30);
                         CacheManager.Set(userLoginId, user, new TimeSpan(0, 30, 0));
                     }
-                    SysLogLogonService.WriteDbLog(new SysLogLogonEntity
+                    _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
                     {
                         LogType = DbLogType.Login.ToString(),
                         Account = user.UserName,
@@ -98,7 +117,7 @@ namespace Cappuccino.Web.Controllers
             }
             catch (Exception ex)
             {
-                SysLogLogonService.WriteDbLog(new SysLogLogonEntity
+                _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
                 {
                     LogType = DbLogType.Exception.ToString(),
                     Account = loginViewModel.LoginName,
@@ -110,18 +129,6 @@ namespace Cappuccino.Web.Controllers
         }
 
         /// <summary>
-        /// 创建验证码
-        /// </summary>
-        /// <returns></returns>
-        [SkipCheckLogin]
-        public ActionResult CreateVerifyCode()
-        {
-            string verifyCode = VerifyCodeUtils.CreateVerifyCode(4);
-            TempData["verifyCode"] = verifyCode.ToLower();
-            return File(VerifyCodeUtils.GenerateImage(verifyCode), @"image/Gif");
-        }
-
-        /// <summary>
         /// 注销登录
         /// </summary>
         /// <returns></returns>
@@ -129,7 +136,7 @@ namespace Cappuccino.Web.Controllers
         [LogOperate(Title = "退出系统")]
         public ActionResult Logout()
         {
-            SysLogLogonService.WriteDbLog(new SysLogLogonEntity
+            _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
             {
                 LogType = DbLogType.Exit.ToString(),
                 Account = UserManager.GetCurrentUserInfo().UserName,
@@ -141,29 +148,18 @@ namespace Cappuccino.Web.Controllers
             return RedirectToAction("Login", "Account");
         }
 
-        /// <summary>
-        /// 修改密码
-        /// </summary>
-        /// <returns></returns>
-        [LogOperate(Title = "修改密码", BusinessType = "EDIT")]
-        public ActionResult ChangePassword()
-        {
-            ViewBag.UserName = UserManager.GetCurrentUserInfo().UserName;
-            return View();
-        }
-
         [HttpPost]
         public ActionResult ModifyUserPwd(ChangePasswordViewModel viewModel)
         {
             int userId = UserManager.GetCurrentUserInfo().Id;
             var result = WriteError("出现异常，密码修改失败");
-            if (!SysUserService.CheckLogin(viewModel.UserName, viewModel.OldPassword))
+            if (!_sysUserService.CheckLogin(viewModel.UserName, viewModel.OldPassword))
             {
                 return WriteError("旧密码不正常");
             }
             else
             {
-                if (SysUserService.ModifyUserPwd(userId, viewModel))
+                if (_sysUserService.ModifyUserPwd(userId, viewModel))
                 {
                     result = WriteSuccess("密码修改成功");
                     List<string> list = DESUtils.Decrypt(CookieHelper.Get(KeyManager.IsMember)).ToList<string>();
@@ -194,10 +190,20 @@ namespace Cappuccino.Web.Controllers
             }
             return result;
         }
+        #endregion
 
-        public ActionResult Person()
+        #region 获取数据
+        /// <summary>
+        /// 创建验证码
+        /// </summary>
+        /// <returns></returns>
+        [SkipCheckLogin]
+        public ActionResult CreateVerifyCode()
         {
-            return View();
+            string verifyCode = VerifyCodeUtils.CreateVerifyCode(4);
+            TempData["verifyCode"] = verifyCode.ToLower();
+            return File(VerifyCodeUtils.GenerateImage(verifyCode), @"image/Gif");
         }
+        #endregion
     }
 }

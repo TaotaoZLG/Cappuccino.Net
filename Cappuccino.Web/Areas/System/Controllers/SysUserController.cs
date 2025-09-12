@@ -14,47 +14,25 @@ namespace Cappuccino.Web.Areas.System.Controllers
 {
     public class SysUserController : BaseController
     {
+        private readonly ISysUserService _sysUserService;
+        private readonly ISysRoleService _sysRoleService;   
+
         public SysUserController(ISysUserService sysUserService, ISysRoleService sysRoleService)
         {
-            base.SysUserService = sysUserService;
-            base.SysRoleService = sysRoleService;
-            this.AddDisposableObject(SysUserService);
+            _sysUserService = sysUserService;
+            _sysRoleService = sysRoleService;
+            this.AddDisposableObject(_sysUserService);
+            this.AddDisposableObject(_sysRoleService);
         }
 
-        public SelectList RoleSelectList { get { return new SelectList(SysRoleService.GetList(x => true).Select(x => new { x.Id, x.Name }), "Id", "Name"); } }
+        public SelectList RoleSelectList { get { return new SelectList(_sysRoleService.GetList(x => true).Select(x => new { x.Id, x.Name }), "Id", "Name"); } }
 
+        #region 视图
         [CheckPermission("system.user.list")]
         public override ActionResult Index()
         {
             base.Index();
             return View();
-        }
-
-        [CheckPermission("system.user.list")]
-        public JsonResult List(SysUserViewModel viewModel, PageInfo pageInfo)
-        {
-            QueryCollection queries = new QueryCollection();
-            if (!string.IsNullOrEmpty(viewModel.UserName))
-            {
-                queries.Add(new Query { Name = "UserName", Operator = Query.Operators.Contains, Value = viewModel.UserName });
-
-            }
-            if (!string.IsNullOrEmpty(viewModel.NickName))
-            {
-                queries.Add(new Query { Name = "NickName", Operator = Query.Operators.Contains, Value = viewModel.NickName });
-
-            }
-            var list = SysUserService.GetListByPage(queries.AsExpression<SysUserEntity>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
-            {
-                x.Id,
-                x.UserName,
-                x.NickName,
-                x.HeadIcon,
-                x.MobilePhone,
-                x.Email,
-                x.EnabledMark
-            }).ToList();
-            return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet, CheckPermission("system.user.create")]
@@ -66,6 +44,30 @@ namespace Cappuccino.Web.Areas.System.Controllers
             return View();
         }
 
+        [HttpGet, CheckPermission("system.user.edit")]
+        public ActionResult Edit(int id)
+        {
+            ViewBag.UploadFileSize = ConfigUtils.GetValue("UploadFileByImgSize");
+            ViewBag.UploadFileType = ConfigUtils.GetValue("UploadFileByImgType");
+            var entity = _sysUserService.GetList(x => x.Id == id).FirstOrDefault();
+            ViewBag.RoleSelectList = RoleSelectList;
+            var viewModel = entity.EntityMap();
+            if (viewModel.SysRoles.Count != 0)
+            {
+                viewModel.RoleIds = string.Join(",", viewModel.SysRoles.Select(x => x.Id.ToString()).ToArray());
+            }
+            return View(viewModel);
+        }
+
+        [HttpGet, CheckPermission("system.user.assign")]
+        public ActionResult Assign(int id)
+        {
+            ViewBag.UserId = id;
+            return View();
+        }
+        #endregion
+
+        #region 提交数据
         [HttpPost, CheckPermission("system.user.create")]
         public ActionResult Create(SysUserViewModel viewModel)
         {
@@ -75,7 +77,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 {
                     return WriteError("实体验证失败");
                 }
-                var user = SysUserService.GetList(x => x.UserName == viewModel.UserName).FirstOrDefault();
+                var user = _sysUserService.GetList(x => x.UserName == viewModel.UserName).FirstOrDefault();
                 if (user != null)
                 {
                     return WriteError("该账号已存在");
@@ -92,31 +94,16 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 if (!string.IsNullOrEmpty(viewModel.RoleIds))
                 {
                     var RoleIdsArray = Array.ConvertAll(viewModel.RoleIds.Split(','), s => int.Parse(s));
-                    var roleList = SysRoleService.GetList(x => RoleIdsArray.Contains(x.Id)).ToList();
+                    var roleList = _sysRoleService.GetList(x => RoleIdsArray.Contains(x.Id)).ToList();
                     entity.SysRoles = roleList;
                 }
-                SysUserService.Add(entity);
+                _sysUserService.Add(entity);
                 return WriteSuccess();
             }
             catch (Exception ex)
             {
                 return WriteError(ex);
             }
-        }
-
-        [HttpGet, CheckPermission("system.user.edit")]
-        public ActionResult Edit(int id)
-        {
-            ViewBag.UploadFileSize = ConfigUtils.GetValue("UploadFileByImgSize");
-            ViewBag.UploadFileType = ConfigUtils.GetValue("UploadFileByImgType");
-            var entity = SysUserService.GetList(x => x.Id == id).FirstOrDefault();
-            ViewBag.RoleSelectList = RoleSelectList;
-            var viewModel = entity.EntityMap();
-            if (viewModel.SysRoles.Count != 0)
-            {
-                viewModel.RoleIds = string.Join(",", viewModel.SysRoles.Select(x => x.Id.ToString()).ToArray());
-            }
-            return View(viewModel);
         }
 
         [HttpPost, CheckPermission("system.user.edit")]
@@ -126,7 +113,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 return WriteError("实体验证失败");
             }
-            var user = SysUserService.GetList(x => x.UserName == viewModel.UserName && x.Id != id).FirstOrDefault();
+            var user = _sysUserService.GetList(x => x.UserName == viewModel.UserName && x.Id != id).FirstOrDefault();
             if (user != null)
             {
                 return WriteError("该账号已存在");
@@ -136,10 +123,10 @@ namespace Cappuccino.Web.Areas.System.Controllers
             if (!string.IsNullOrEmpty(viewModel.RoleIds))
             {
                 var RoleIdsArray = Array.ConvertAll(viewModel.RoleIds.Split(','), s => int.Parse(s));
-                roleList = SysRoleService.GetList(x => RoleIdsArray.Contains(x.Id)).ToList();
+                roleList = _sysRoleService.GetList(x => RoleIdsArray.Contains(x.Id)).ToList();
             }
             //赋值
-            var entity = SysUserService.GetList(x => x.Id == id).FirstOrDefault();
+            var entity = _sysUserService.GetList(x => x.Id == id).FirstOrDefault();
             entity.SysRoles.Clear();
             foreach (var item in roleList)
             {
@@ -155,7 +142,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             entity.Email = viewModel.Email;
             entity.UpdateTime = DateTime.Now;
             entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
-            SysUserService.Update(entity);
+            _sysUserService.Update(entity);
             return WriteSuccess();
         }
 
@@ -164,7 +151,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         {
             try
             {
-                SysUserService.DeleteBy(x => x.Id == id);
+                _sysUserService.DeleteBy(x => x.Id == id);
                 return WriteSuccess("数据删除成功");
             }
             catch (Exception ex)
@@ -180,20 +167,13 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 var idsArray = idsStr.Substring(0, idsStr.Length).Split(',');
                 int[] ids = Array.ConvertAll<string, int>(idsArray, int.Parse);
-                var result = SysUserService.DeleteBy(x => ids.Contains(x.Id)) > 0 ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
+                var result = _sysUserService.DeleteBy(x => ids.Contains(x.Id)) > 0 ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
                 return result;
             }
             catch (Exception ex)
             {
                 return WriteError(ex);
             }
-        }
-
-        [HttpGet, CheckPermission("system.user.assign")]
-        public ActionResult Assign(int id)
-        {
-            ViewBag.UserId = id;
-            return View();
         }
 
         [HttpPost, CheckPermission("system.user.edit")]
@@ -206,7 +186,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 UpdateTime = DateTime.Now,
                 UpdateUserId = UserManager.GetCurrentUserInfo().Id
             };
-            SysUserService.Update(entity, new string[] { "EnabledMark", "UpdateTime", "UpdateUserId" });
+            _sysUserService.Update(entity, new string[] { "EnabledMark", "UpdateTime", "UpdateUserId" });
             return WriteSuccess("更新成功");
         }
 
@@ -224,8 +204,38 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 UpdateTime = DateTime.Now,
                 UpdateUserId = UserManager.GetCurrentUserInfo().Id
             };
-            SysUserService.Update(entity, new string[] { "PasswordSalt", "PasswordHash", "UpdateTime", "UpdateUserId" });
+            _sysUserService.Update(entity, new string[] { "PasswordSalt", "PasswordHash", "UpdateTime", "UpdateUserId" });
             return WriteSuccess("重置密码成功，新密码:" + pwd);
         }
+        #endregion
+
+        #region 获取数据
+        [CheckPermission("system.user.list")]
+        public JsonResult GetList(SysUserViewModel viewModel, PageInfo pageInfo)
+        {
+            QueryCollection queries = new QueryCollection();
+            if (!string.IsNullOrEmpty(viewModel.UserName))
+            {
+                queries.Add(new Query { Name = "UserName", Operator = Query.Operators.Contains, Value = viewModel.UserName });
+
+            }
+            if (!string.IsNullOrEmpty(viewModel.NickName))
+            {
+                queries.Add(new Query { Name = "NickName", Operator = Query.Operators.Contains, Value = viewModel.NickName });
+
+            }
+            var list = _sysUserService.GetListByPage(queries.AsExpression<SysUserEntity>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
+            {
+                x.Id,
+                x.UserName,
+                x.NickName,
+                x.HeadIcon,
+                x.MobilePhone,
+                x.Email,
+                x.EnabledMark
+            }).ToList();
+            return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
     }
 }

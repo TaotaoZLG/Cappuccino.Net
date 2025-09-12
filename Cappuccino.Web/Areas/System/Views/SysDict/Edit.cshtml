@@ -5,20 +5,19 @@
 }
 <form class="layui-form" lay-filter="formEdit">
     @Html.HiddenFor(x => x.Id)
-    @Html.HiddenFor(x => x.TypeId)
     <div class="mainBox">
         <div class="main-container">
             <div class="main-container">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">标签</label>
+                    <label class="layui-form-label">字典名称</label>
                     <div class="layui-input-block">
-                        <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入标签" class="layui-input" value="@Model.Name">
+                        <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入字典名称" class="layui-input" value="@Model.Name">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">对应值</label>
+                    <label class="layui-form-label">字典编码</label>
                     <div class="layui-input-block">
-                        <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入对应值" class="layui-input" value="@Model.Code">
+                        <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入字典编码" class="layui-input" value="@Model.Code">
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -57,8 +56,11 @@
             form.on("submit(edit)", function (data) {
                 common.ajax("/System/SysDict/Edit", "post", data.field, true, true).done(function (response) {
                     layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
+                        if (top.initDataDict) {
+                            top.initDataDict();
+                        }
                         parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
-                        parent.layui.table.reload("tableId");
+                        parent.layui.table.reload("tableTypeId");
                     });
                     }).fail(function (error) {
                         console.log(error)

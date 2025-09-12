@@ -62,35 +62,32 @@ namespace Cappuccino.Web.Attributes
                 var user = UserManager.GetCurrentUserInfo(); // 当前登录用户
 
                 // 构建日志实体
-                var log = new SysLogOperateEntity
-                {
-                    // 基础配置信息
-                    Title = Title,
-                    Description = Description,
-                    BusinessType = BusinessType,
+                SysLogOperateEntity logOperateEntity = new SysLogOperateEntity();
+                // 基础配置信息
+                logOperateEntity.Title = Title;
+                logOperateEntity.Description = Description;
+                logOperateEntity.BusinessType = BusinessType;
 
-                    // 请求信息
-                    RequestMethod = request.HttpMethod,
-                    OperateUrl = request.Url?.AbsolutePath ?? string.Empty,
-                    Method = $"{context.Controller.GetType().Name}.{context.ActionDescriptor.ActionName}",
-                    RequestParam = NetHelper.GetRequestParams(request), // 自定义方法：获取请求参数
-                    RequestBody = request.HttpMethod.ToUpper() == "POST" ? NetHelper.GetRequestBody(request) : null,
+                // 请求信息
+                logOperateEntity.RequestMethod = request.HttpMethod;
+                logOperateEntity.RequestUrl = request.Url?.AbsolutePath ?? string.Empty;
+                logOperateEntity.Method = $"{context.Controller.GetType().Name}.{context.ActionDescriptor.ActionName}";
+                logOperateEntity.RequestParam = NetHelper.GetRequestParams(request); // 自定义方法：获取请求参数
+                logOperateEntity.RequestBody = request.HttpMethod.ToUpper() == "POST" ? NetHelper.GetRequestBody(request) : null;
 
-                    // 执行结果
-                    Success = context.Exception == null,
-                    ErrorMsg = context.Exception?.Message.TruncateString(500) ?? string.Empty,
+                // 执行结果
+                logOperateEntity.RequestResult = null;
 
-                    // 环境信息
-                    IPAddress = NetHelper.GetIp,
-                    IPAddressName = NetHelper.GetIpLocation(NetHelper.GetIp),
-                    OperateName = user?.UserName,
-                    SystemOs = NetHelper.GetSystemOs(request.UserAgent),
-                    Browser = NetHelper.GetBrowser(request.UserAgent),
-                    CreateTime = DateTime.Now
-                };
+                // 环境信息
+                logOperateEntity.IPAddress = NetHelper.GetIp;
+                logOperateEntity.IPAddressName = NetHelper.GetIpLocation(NetHelper.GetIp);
+                logOperateEntity.OperateName = user?.UserName;
+                logOperateEntity.SystemOs = NetHelper.GetSystemOs(request.UserAgent);
+                logOperateEntity.Browser = NetHelper.GetBrowser(request.UserAgent);
+                logOperateEntity.CreateUserId = user.Id;
 
                 // 写入日志（异步执行，不阻塞主流程）
-                _ = LogOperateService?.WriteOperateLog(log);
+                _ = LogOperateService?.WriteOperateLog(logOperateEntity);
             }
             catch (Exception ex)
             {

@@ -6,8 +6,9 @@ namespace Cappuccino.BLL
 {
     public class SysDictService : BaseService<SysDictEntity>, ISysDictService
     {
+        private readonly ISysDictDao dao;
+
         #region 依赖注入
-        ISysDictDao dao;
         public SysDictService(ISysDictDao dao)
         {
             this.dao = dao;

@@ -12,46 +12,23 @@ namespace Cappuccino.Web.Areas.System.Controllers
 {
     public class SysActionController : BaseController
     {
+        private readonly ISysActionService _sysActionService;
+        private readonly ISysActionButtonService _sysActionButtonService;
+        private readonly ISysActionMenuService _sysActionMenuService;
+
         public SysActionController(ISysActionService sysActionService, ISysActionButtonService sysActionButtonService, ISysActionMenuService sysActionMenuService)
         {
-            base.SysActionService = sysActionService;
-            base.SysActionButtonService = sysActionButtonService;
-            base.SysActionMenuService = sysActionMenuService;
-            this.AddDisposableObject(SysActionService);
-            this.AddDisposableObject(SysActionButtonService);
-            this.AddDisposableObject(SysActionMenuService);
+            _sysActionService = sysActionService;
+            _sysActionButtonService = sysActionButtonService;
+            _sysActionMenuService = sysActionMenuService;
         }
 
+        #region 视图
         [CheckPermission("system.menu.list")]
         public override ActionResult Index()
         {
             base.Index();
             return View();
-        }
-
-        [HttpGet, CheckPermission("system.menu.list")]
-        public ActionResult List()
-        {
-            var list = SysActionService.GetList(x => true).OrderBy(x => x.SortCode).ToList();
-            var result = new { code = 0, count = list.Count(), data = list };
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet, CheckPermission("system.role.assign")]
-        public ActionResult Assign(int id)
-        {
-            var data = SysActionService.GetDtree(id);
-            var result = new DtreeViewModel { Data = data, Status = new DtreeStatus() };
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
-        [CheckPermission("system.menu.create")]
-        public ActionResult GetMenuTree()
-        {
-            var data = SysActionService.GetMenuTree();
-            var result = new DtreeViewModel { Data = data, Status = new DtreeStatus() };
-            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet, CheckPermission("system.menu.create")]
@@ -60,6 +37,29 @@ namespace Cappuccino.Web.Areas.System.Controllers
             return View();
         }
 
+        [HttpGet, CheckPermission("system.menu.edit")]
+        public ActionResult Edit(int id)
+        {
+            var entity = _sysActionService.GetList(x => x.Id == id).FirstOrDefault();
+            _sysActionMenuService.GetList(x => x.Id == id).FirstOrDefault();
+            _sysActionButtonService.GetList(x => x.Id == id).FirstOrDefault();
+            var viewModel = entity.EntityMap();
+            if (viewModel.Type == ActionTypeEnum.Menu)
+            {
+                return View("EditMenu", viewModel);
+            }
+            else if (viewModel.Type == ActionTypeEnum.Button)
+            {
+                return View("EditButton", viewModel);
+            }
+            else
+            {
+                return View();
+            }
+        }
+        #endregion
+
+        #region 提交数据
         [HttpPost, CheckPermission("system.menu.create")]
         public ActionResult Create(ActionViewModel viewModel)
         {
@@ -101,7 +101,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 {
                     return WriteError("类型不正确");
                 }
-                SysActionService.Add(sysAction);
+                _sysActionService.Add(sysAction);
                 return WriteSuccess();
             }
             catch (Exception ex)
@@ -110,26 +110,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             }
         }
 
-        [HttpGet, CheckPermission("system.menu.edit")]
-        public ActionResult Edit(int id)
-        {
-            var entity = SysActionService.GetList(x => x.Id == id).FirstOrDefault();
-            SysActionMenuService.GetList(x => x.Id == id).FirstOrDefault();
-            SysActionButtonService.GetList(x => x.Id == id).FirstOrDefault();
-            var viewModel = entity.EntityMap();
-            if (viewModel.Type == ActionTypeEnum.Menu)
-            {
-                return View("EditMenu", viewModel);
-            }
-            else if (viewModel.Type == ActionTypeEnum.Button)
-            {
-                return View("EditButton", viewModel);
-            }
-            else
-            {
-                return View();
-            }
-        }
+
 
         [HttpPost, CheckPermission("system.menu.edit")]
         public ActionResult Edit(ActionViewModel viewModel)
@@ -138,9 +119,9 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 return WriteError("实体验证失败");
             }
-            var action = SysActionService.GetList(x => x.Id == viewModel.Id).FirstOrDefault();
-            SysActionMenuService.GetList(x => x.Id == viewModel.Id).FirstOrDefault();
-            SysActionButtonService.GetList(x => x.Id == viewModel.Id).FirstOrDefault();
+            var action = _sysActionService.GetList(x => x.Id == viewModel.Id).FirstOrDefault();
+            _sysActionMenuService.GetList(x => x.Id == viewModel.Id).FirstOrDefault();
+            _sysActionButtonService.GetList(x => x.Id == viewModel.Id).FirstOrDefault();
             if (action != null)
             {
                 action.Name = viewModel.Name;
@@ -166,7 +147,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 {
                     return WriteError("类型不正确");
                 }
-                SysActionService.Update(action);
+                _sysActionService.Update(action);
                 return WriteSuccess();
             }
             return WriteError();
@@ -177,16 +158,16 @@ namespace Cappuccino.Web.Areas.System.Controllers
         {
             try
             {
-                var action = SysActionService.GetList(x => x.Id == id).FirstOrDefault();
+                var action = _sysActionService.GetList(x => x.Id == id).FirstOrDefault();
                 if (action.Type == ActionTypeEnum.Menu)
                 {
-                    SysActionMenuService.DeleteBy(x => x.Id == id);
-                    SysActionService.DeleteBy(x => x.Id == id);
+                    _sysActionMenuService.DeleteBy(x => x.Id == id);
+                    _sysActionService.DeleteBy(x => x.Id == id);
                 }
                 else if (action.Type == ActionTypeEnum.Button)
                 {
-                    SysActionButtonService.DeleteBy(x => x.Id == id);
-                    SysActionService.DeleteBy(x => x.Id == id);
+                    _sysActionButtonService.DeleteBy(x => x.Id == id);
+                    _sysActionService.DeleteBy(x => x.Id == id);
                 }
                 return WriteSuccess("数据删除成功");
             }
@@ -203,7 +184,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 var idsArray = idsStr.Substring(0, idsStr.Length).Split(',');
                 int[] ids = Array.ConvertAll<string, int>(idsArray, int.Parse);
-                var result = SysActionService.DeleteByIds(ids) ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
+                var result = _sysActionService.DeleteByIds(ids) ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
                 return result;
             }
             catch (Exception ex)
@@ -211,5 +192,33 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 return WriteError(ex);
             }
         }
+        #endregion
+
+        #region 获取数据
+        [HttpGet, CheckPermission("system.menu.list")]
+        public JsonResult GetList()
+        {
+            var list = _sysActionService.GetList(x => true).OrderBy(x => x.SortCode).ToList();
+            var result = new { code = 0, count = list.Count(), data = list };
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet, CheckPermission("system.role.assign")]
+        public JsonResult Assign(int id)
+        {
+            var data = _sysActionService.GetDtree(id);
+            var result = new DtreeViewModel { Data = data, Status = new DtreeStatus() };
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        [CheckPermission("system.menu.create")]
+        public JsonResult GetMenuTree()
+        {
+            var data = _sysActionService.GetMenuTree();
+            var result = new DtreeViewModel { Data = data, Status = new DtreeStatus() };
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
     }
 }

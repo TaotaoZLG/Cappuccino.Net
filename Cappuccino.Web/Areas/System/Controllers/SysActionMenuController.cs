@@ -6,16 +6,19 @@ namespace Cappuccino.Web.Areas.System.Controllers
 {
     public class SysActionMenuController : BaseController
     {
+        private readonly ISysActionMenuService _sysActionMenuService;
+
         public SysActionMenuController(ISysActionMenuService sysActionMenuService)
         {
-            base.SysActionMenuService = sysActionMenuService;
-            this.AddDisposableObject(SysActionMenuService);
+            _sysActionMenuService = sysActionMenuService;
         }
 
+        #region 视图
         [CheckPermission("system.menu.create")]
         public ActionResult CreateMenuPartial()
         {
             return PartialView("_ActionMenuPartial");
         }
+        #endregion
     }
 }

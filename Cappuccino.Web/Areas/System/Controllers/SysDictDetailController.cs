@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using Cappuccino.BLL;
 using Cappuccino.Common;
@@ -13,45 +11,38 @@ using Cappuccino.Web.Models;
 
 namespace Cappuccino.Web.Areas.System.Controllers
 {
-    public class SysDictController : BaseController
+    public class SysDictDetailController : BaseController
     {
-        private readonly ISysDictService _sysDictService;
         private readonly ISysDictDetailService _sysDictDetailService;
+        private readonly ISysActionButtonService _sysActionButtonService;
 
-        public SysDictController(ISysDictService sysDictService, ISysDictDetailService sysDictDetailService)
+        public SysDictDetailController(ISysDictDetailService sysDictDetailService, ISysActionButtonService sysActionButtonService)
         {
-            _sysDictService = sysDictService;
             _sysDictDetailService = sysDictDetailService;
-            this.AddDisposableObject(_sysDictService);
+            _sysActionButtonService = sysActionButtonService;
             this.AddDisposableObject(_sysDictDetailService);
+            this.AddDisposableObject(_sysActionButtonService);
         }
 
-        #region 视图
-        [CheckPermission("system.dict.list")]
-        public override ActionResult Index()
-        {
-            base.Index();
-            return View();
-        }
-
-
+        #region 视图        
         [HttpGet, CheckPermission("system.dict.create")]
-        public ActionResult Create()
+        public ActionResult Create(int TypeId)
         {
+            ViewBag.TypeId = TypeId;
             return View();
         }
 
         [HttpGet, CheckPermission("system.dict.edit")]
         public ActionResult Edit(int id)
         {
-            var viewModel = _sysDictService.GetList(x => x.Id == id).FirstOrDefault();
+            var viewModel = _sysDictDetailService.GetList(x => x.Id == id).FirstOrDefault();
             return View(viewModel.EntityMap());
         }
         #endregion
 
         #region 提交数据
         [HttpPost, CheckPermission("system.dict.create")]
-        public ActionResult Create(SysDictViewModel viewModel)
+        public ActionResult Create(SysDictDetailViewModel viewModel)
         {
             try
             {
@@ -59,12 +50,12 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 {
                     return WriteError("实体验证失败");
                 }
-                SysDictEntity entity = viewModel.EntityMap();
+                SysDictDetailEntity entity = viewModel.EntityMap();
                 entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.CreateTime = DateTime.Now;
                 entity.UpdateTime = DateTime.Now;
-                _sysDictService.Add(entity);
+                _sysDictDetailService.Add(entity);
                 return WriteSuccess();
             }
             catch (Exception ex)
@@ -74,7 +65,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.dict.edit")]
-        public ActionResult Edit(SysDictViewModel viewModel)
+        public ActionResult Edit(SysDictDetailViewModel viewModel)
         {
             if (ModelState.IsValid == false)
             {
@@ -83,8 +74,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
             viewModel.Id = viewModel.Id;
             viewModel.UpdateTime = DateTime.Now;
             viewModel.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
-            SysDictEntity entity = viewModel.EntityMap();
-            _sysDictService.Update(entity, new string[] { "Name", "Code", "SortCode", "UpdateTime", "UpdateUserId" });
+            SysDictDetailEntity entity = viewModel.EntityMap();
+            _sysDictDetailService.Update(entity, new string[] { "Name", "Code", "SortCode", "UpdateTime", "UpdateUserId" });
             return WriteSuccess();
         }
 
@@ -93,7 +84,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         {
             try
             {
-                _sysDictService.DeleteBy(x => x.Id == id);
+                _sysDictDetailService.DeleteBy(x => x.Id == id);
                 return WriteSuccess("数据删除成功");
             }
             catch (Exception ex)
@@ -109,7 +100,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 var idsArray = idsStr.Substring(0, idsStr.Length).Split(',');
                 int[] ids = Array.ConvertAll<string, int>(idsArray, int.Parse);
-                var result = _sysDictService.DeleteBy(x => ids.Contains(x.Id)) > 0 ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
+                var result = _sysDictDetailService.DeleteBy(x => ids.Contains(x.Id)) > 0 ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
                 return result;
             }
             catch (Exception ex)
@@ -121,7 +112,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         #region 获取数据
         [CheckPermission("system.dict.list")]
-        public JsonResult GetList(SysDictViewModel viewModel, PageInfo pageInfo)
+        public JsonResult GetList(SysDictDetailViewModel viewModel, PageInfo pageInfo)
         {
             QueryCollection queries = new QueryCollection();
             if (!string.IsNullOrEmpty(viewModel.Name))
@@ -133,7 +124,11 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 queries.Add(new Query { Name = "Code", Operator = Query.Operators.Contains, Value = viewModel.Code });
             }
-            var list = _sysDictService.GetListByPage(queries.AsExpression<SysDictEntity>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
+            else if (viewModel.TypeId != 0)
+            {
+                queries.Add(new Query { Name = "TypeId", Operator = Query.Operators.Equal, Value = viewModel.TypeId });
+            }
+            var list = _sysDictDetailService.GetListByPage(queries.AsExpression<SysDictDetailEntity>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
             {
                 x.Id,
                 x.Name,
@@ -141,31 +136,6 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 x.SortCode
             }).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet, CheckPermission("system.dict.list")]
-        public JsonResult GetDataDictList()
-        {
-            // 获取所有字典类型
-            List<SysDictEntity> dictTypes = _sysDictService.GetList(x => true).ToList();
-            // 按类型Code分组，关联字典项
-            var result = dictTypes.Select(type => new
-            {
-                TypeCode = type.Code,  // 字典类型编码（如"user_sex"）
-                TypeName = type.Name,  // 字典类型名称（如"用户性别"）
-                Dicts = _sysDictDetailService.GetList(d => d.TypeId == type.Id)
-                    .Select(d => new
-                    {
-                        Label = d.Name,  // 字典项名称（如"男"）
-                        Value = d.Code,  // 字典项值（如"boy"）
-                        Sort = d.SortCode,  // 排序号
-                        Class = d.ListClass  // 样式
-                    })
-                    .OrderBy(d => d.Sort)  // 按排序号排序
-                    .ToList()
-            }).ToDictionary(x => x.TypeCode);
-
-            return Json(new { code = 0, data = result }, JsonRequestBehavior.AllowGet);
         }
         #endregion
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -26,15 +27,11 @@ namespace Cappuccino.IBLL
         /// <param name="pageSize"></param>
         /// <param name="pageIndex"></param>
         /// <param name="totalCount"></param>
-        /// <param name="isASC">是否升序</param>
+        /// <param name="isAsc">是否升序</param>
         /// <returns></returns>
-        IQueryable<T> GetListByPage<S>(
-            Expression<Func<T, bool>> whereLambada,
-            Expression<Func<T, S>> orderBy,
-            int pageSize,
-            int pageIndex,
-            out int totalCount,
-            bool isASC);
+        IQueryable<T> GetListByPage<S>(Expression<Func<T, bool>> whereLambada, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, out int totalCount, bool isAsc);
+
+        IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambad, string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount);
 
         /// <summary>
         /// 查询总数量
@@ -93,12 +90,13 @@ namespace Cappuccino.IBLL
         int UpdateList(params T[] entities);
 
         Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda);
+
         Task<(IQueryable<T>, int)> GetListByPageAsync<S>(
             Expression<Func<T, bool>> whereLambada,
             Expression<Func<T, S>> orderBy,
             int pageSize,
             int pageIndex,
-            bool isASC);
+            bool isAsc);
         Task<int> GetRecordCountAsync(Expression<Func<T, bool>> predicate);
         Task<int> AddAsync(T entity);
         Task<int> AddListAsync(params T[] entities);

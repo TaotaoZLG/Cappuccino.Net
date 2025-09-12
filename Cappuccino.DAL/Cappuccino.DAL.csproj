@@ -54,8 +54,8 @@
     <Compile Include="Mapping\SysActionButtonMap.cs" />
     <Compile Include="Mapping\SysActionMap.cs" />
     <Compile Include="Mapping\SysActionMenuMap.cs" />
+    <Compile Include="Mapping\SysDictDetailMap.cs" />
     <Compile Include="Mapping\SysDictMap.cs" />
-    <Compile Include="Mapping\SysDictTypeMap.cs" />
     <Compile Include="Mapping\SysLogLogonMap.cs" />
     <Compile Include="Mapping\SysRoleMap.cs" />
     <Compile Include="Mapping\SysUserActionMap.cs" />
@@ -69,8 +69,8 @@
     <Compile Include="System\SysActionDao.cs" />
     <Compile Include="System\SysActionButtonDao.cs" />
     <Compile Include="System\SysActionMenuDao.cs" />
+    <Compile Include="System\SysDictDetailDao.cs" />
     <Compile Include="System\SysDictDao.cs" />
-    <Compile Include="System\SysDictTypeDao.cs" />
     <Compile Include="System\SysLogOperateDao.cs" />
     <Compile Include="System\SysRoleDao.cs" />
     <Compile Include="System\SysUserActionDao.cs" />
@@ -86,13 +86,13 @@
       <Project>{471E7F22-FDC4-4F8C-B985-3336D4B14E0B}</Project>
       <Name>Cappuccino.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Cappuccino.Entity\Cappuccino.Entity.csproj">
+      <Project>{93fe2ce0-1a84-4138-b18f-d984ae0f4d81}</Project>
+      <Name>Cappuccino.Entity</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cappuccino.IDAL\Cappuccino.IDAL.csproj">
       <Project>{94C73821-31D6-4F89-887A-FFC96FFAB5D7}</Project>
       <Name>Cappuccino.IDAL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Entity.csproj">
-      <Project>{93fe2ce0-1a84-4138-b18f-d984ae0f4d81}</Project>
-      <Name>Cappuccino.Entity</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

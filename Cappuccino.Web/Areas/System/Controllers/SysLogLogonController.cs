@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Common.Helper;
@@ -20,15 +21,18 @@ namespace Cappuccino.Web.Areas.System.Controllers
             this.AddDisposableObject(_sysLogLogonService);
         }
 
+        #region 视图
         [CheckPermission("system.log.logon")]
         public override ActionResult Index()
         {
             base.Index();
             return View();
         }
+        #endregion
 
+        #region 获取数据
         [CheckPermission("system.log.logon")]
-        public JsonResult List(SysLogLogonViewModel viewModel, PageInfo pageInfo)
+        public JsonResult GetList(SysLogLogonViewModel viewModel, PageInfo pageInfo)
         {
             QueryCollection queries = new QueryCollection();
             if (!string.IsNullOrEmpty(viewModel.RealName))
@@ -46,7 +50,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 queries.Add(new Query { Name = "CreateTime", Operator = Query.Operators.GreaterThanOrEqual, Value = StartEndDateHelper.GteStartDate(viewModel.StartEndDate) });
                 queries.Add(new Query { Name = "CreateTime", Operator = Query.Operators.LessThanOrEqual, Value = StartEndDateHelper.GteEndDate(viewModel.StartEndDate) });
             }
-            var list = _sysLogLogonService.GetListByPage(queries.AsExpression<SysLogLogonEntity>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
+            var list = _sysLogLogonService.GetListByPage(queries.AsExpression<SysLogLogonEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new
             {
                 x.Id,
                 x.LogType,
@@ -59,5 +63,6 @@ namespace Cappuccino.Web.Areas.System.Controllers
             }).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
         }
+        #endregion
     }
 }

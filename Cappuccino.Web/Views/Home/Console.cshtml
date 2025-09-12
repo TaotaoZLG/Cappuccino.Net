@@ -1,8 +1,9 @@
 ﻿
 @{
     ViewBag.Title = "Console";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
+
 @section style {
     <link href="~/Content/admin/css/other/console1.css" rel="stylesheet" />
 }
@@ -261,6 +262,8 @@
     </div>
 </div>
 @section Scripts {
+    <script src="~/Content/admin/js/ape-data.js"></script>
+
     <script>
         layui.use(['layer', 'echarts', 'element', 'count', 'topBar'], function () {
             var $ = layui.jquery,

@@ -1,7 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
 
 @section style{
@@ -78,25 +78,23 @@
 
             let MODULE_PATH = "/System/SysUser/";
 
-            let cols = [
-                [
-                    { type: 'checkbox' },
-                    { title: 'ID', field: 'id', align: 'center', width: 100, sort: true },
-                    { title: '账号', field: 'userName', align: 'center' },
-                    { title: '昵称', field: 'nickName', align: 'center' },
-                    { title: '头像', field: 'headIcon', align: 'center', templet: '#headIconTpl' },
-                    { title: '手机号码', field: 'mobilePhone', align: 'center' },
-                    { title: '邮箱', field: 'email', align: 'center' },
-                    { title: '是否可用', field: 'enabledMark', align: 'center', templet: '#enabledMarkTpl' },
-                    { title: '操作', toolbar: '#operationTpl', align: 'center', width: 195 }
-                ]
-            ]
-
             table.render({
                 elem: '#tableId',
-                url: MODULE_PATH + "List",
+                url: MODULE_PATH + "GetList",
                 page: true,
-                cols: cols,
+                cols: [
+                    [
+                        { type: 'checkbox' },
+                        { title: 'ID', field: 'id', hide: true },
+                        { title: '账号', field: 'userName', align: 'center' },
+                        { title: '昵称', field: 'nickName', align: 'center' },
+                        { title: '头像', field: 'headIcon', align: 'center', templet: '#headIconTpl' },
+                        { title: '手机号码', field: 'mobilePhone', align: 'center' },
+                        { title: '邮箱', field: 'email', align: 'center' },
+                        { title: '是否可用', field: 'enabledMark', align: 'center', templet: '#enabledMarkTpl' },
+                        { title: '操作', toolbar: '#operationTpl', align: 'center', width: 195 }
+                    ]
+                ],
                 skin: 'line',
                 toolbar: '#toolbarTpl',
                 defaultToolbar: [{

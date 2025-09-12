@@ -3,15 +3,16 @@ using Cappuccino.Entity;
 
 namespace Cappuccino.DAL.Mapping
 {
-    public class SysDictTypeMap : EntityTypeConfiguration<SysDictTypeEntity>
+    public class SysDictDetailMap : EntityTypeConfiguration<SysDictDetailEntity>
     {
-        public SysDictTypeMap()
+        public SysDictDetailMap()
         {
-            this.ToTable("SysDictType");
+            this.ToTable("SysDictDetail");
             this.HasKey(x => x.Id);
+            this.HasRequired(x => x.SysDict).WithMany(x => x.SysDictDetails).HasForeignKey(x => x.TypeId);
+
             this.Property(x => x.Code).HasMaxLength(50).IsRequired();
             this.Property(x => x.Name).HasMaxLength(50).IsRequired();
-            this.Property(x => x.SortCode);
         }
     }
 }

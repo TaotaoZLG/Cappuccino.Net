@@ -5,7 +5,7 @@ namespace Cappuccino.Model
     /// <summary>
     /// 字典分类
     /// </summary>
-    public class SysDictTypeViewModel : BaseEntity
+    public class SysDictViewModel : BaseEntity
     {
         /// <summary>
         /// 父级
@@ -27,6 +27,6 @@ namespace Cappuccino.Model
         /// </summary>
         public int SortCode { get; set; }
 
-        public virtual ICollection<SysDictViewModel> SysDicts { get; set; }
+        public virtual ICollection<SysDictDetailViewModel> SysDictDetails { get; set; }        
     }
 }

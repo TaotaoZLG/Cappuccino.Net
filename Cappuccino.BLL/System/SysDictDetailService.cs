@@ -4,11 +4,12 @@ using Cappuccino.IDAL;
 
 namespace Cappuccino.BLL
 {
-    public class SysDictTypeService : BaseService<SysDictTypeEntity>, ISysDictTypeService
+    public class SysDictDetailService : BaseService<SysDictDetailEntity>, ISysDictDetailService
     {
+        private readonly ISysDictDetailDao dao;
+
         #region 依赖注入
-        ISysDictTypeDao dao;
-        public SysDictTypeService(ISysDictTypeDao dao)
+        public SysDictDetailService(ISysDictDetailDao dao)
         {
             this.dao = dao;
             base.CurrentDao = dao;

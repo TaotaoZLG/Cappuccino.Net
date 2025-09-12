@@ -1,11 +1,15 @@
-﻿namespace Cappuccino.Model
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Cappuccino.Entity
 {
     /// <summary>
-    /// 数据字典
+    /// 字典
     /// </summary>
-    public class SysDictViewModel : BaseEntity
+    [Table("SysDict")]
+    public class SysDictEntity : BaseEntity
     {
-        /// <summary>
+         /// <summary>
         /// 编码
         /// </summary>
         public string Code { get; set; }
@@ -16,15 +20,10 @@
         public string Name { get; set; }
 
         /// <summary>
-        /// 分类主键
-        /// </summary>
-        public int TypeId { get; set; }
-
-        /// <summary>
         /// 排序码
         /// </summary>
         public int SortCode { get; set; }
 
-        public virtual SysDictTypeViewModel SysDictType { get; set; }
+        public virtual ICollection<SysDictDetailEntity> SysDictDetails { get; set; } = new List<SysDictDetailEntity>();
     }
 }

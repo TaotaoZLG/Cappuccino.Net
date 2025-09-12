@@ -17,8 +17,8 @@ namespace Cappuccino.Model
             Mapper.CreateMap<SysActionMenuEntity, SysActionMenuViewModel>();
             Mapper.CreateMap<SysActionButtonEntity, SysActionButtonViewModel>();
             Mapper.CreateMap<SysUserActionEntity, SysUserActionViewModel>();
+            Mapper.CreateMap<SysDictDetailEntity, SysDictDetailViewModel>();
             Mapper.CreateMap<SysDictEntity, SysDictViewModel>();
-            Mapper.CreateMap<SysDictTypeEntity, SysDictTypeViewModel>();
             Mapper.CreateMap<SysLogLogonEntity, SysLogLogonViewModel>();
 
             //2.将Model和Model中的所有实体类在AutoMapper内部建立一个关联
@@ -28,8 +28,8 @@ namespace Cappuccino.Model
             Mapper.CreateMap<SysActionMenuViewModel, SysActionMenuEntity>();
             Mapper.CreateMap<SysActionButtonViewModel, SysActionButtonEntity>();
             Mapper.CreateMap<SysUserActionViewModel, SysUserActionEntity>();
+            Mapper.CreateMap<SysDictDetailViewModel, SysDictDetailEntity>();
             Mapper.CreateMap<SysDictViewModel, SysDictEntity>();
-            Mapper.CreateMap<SysDictTypeViewModel, SysDictTypeEntity>();
             Mapper.CreateMap<SysLogLogonViewModel, SysLogLogonEntity>();
         }
 
@@ -106,6 +106,18 @@ namespace Cappuccino.Model
         }
         #endregion
 
+        #region SysDictDetail
+        public static SysDictDetailViewModel EntityMap(this SysDictDetailEntity model)
+        {
+            return Mapper.Map<SysDictDetailEntity, SysDictDetailViewModel>(model);
+        }
+
+        public static SysDictDetailEntity EntityMap(this SysDictDetailViewModel model)
+        {
+            return Mapper.Map<SysDictDetailViewModel, SysDictDetailEntity>(model);
+        }
+        #endregion
+
         #region SysDict
         public static SysDictViewModel EntityMap(this SysDictEntity model)
         {
@@ -115,18 +127,6 @@ namespace Cappuccino.Model
         public static SysDictEntity EntityMap(this SysDictViewModel model)
         {
             return Mapper.Map<SysDictViewModel, SysDictEntity>(model);
-        }
-        #endregion
-
-        #region SysDictType
-        public static SysDictTypeViewModel EntityMap(this SysDictTypeEntity model)
-        {
-            return Mapper.Map<SysDictTypeEntity, SysDictTypeViewModel>(model);
-        }
-
-        public static SysDictTypeEntity EntityMap(this SysDictTypeViewModel model)
-        {
-            return Mapper.Map<SysDictTypeViewModel, SysDictTypeEntity>(model);
         }
         #endregion
 

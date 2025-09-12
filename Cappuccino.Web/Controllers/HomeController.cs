@@ -17,9 +17,9 @@ namespace Cappuccino.Web.Controllers
         {
             _sysActionMenuService = sysActionMenuService;
             _sysActionButtonService = sysActionButtonService;
-            this.AddDisposableObject(SysActionMenuService);
         }
 
+        #region 视图
         public override ActionResult Index()
         {
             return View();
@@ -29,10 +29,12 @@ namespace Cappuccino.Web.Controllers
         {
             return View();
         }
+        #endregion
 
+        #region 提交数据
         public ActionResult Menu()
         {
-            var menu = SysActionMenuService.GetMenu(UserManager.GetCurrentUserInfo().Id);
+            var menu = _sysActionMenuService.GetMenu(UserManager.GetCurrentUserInfo().Id);
             return WriteSuccess(SuccessText, menu);
         }
 
@@ -73,5 +75,10 @@ namespace Cappuccino.Web.Controllers
                 return Json(uploadFile, JsonRequestBehavior.AllowGet);
             }
         }
+        #endregion
+
+        #region 获取数据
+
+        #endregion
     }
 }

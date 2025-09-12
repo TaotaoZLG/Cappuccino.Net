@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
+using Cappuccino.IDAL;
 
 
 namespace Cappuccino.DAL
 {
-    public class BaseDao<T> : IDisposable where T : class, new()
+    public class BaseDao<T> : IBaseDao<T>, IDisposable where T : class, new()
     {
         private DbContext Db
         {
@@ -35,17 +38,11 @@ namespace Cappuccino.DAL
             return result;
         }
 
-        public virtual IQueryable<T> GetListByPage<S>(
-            Expression<Func<T, bool>> whereLambada,
-            Expression<Func<T, S>> orderBy,
-            int pageSize,
-            int pageIndex,
-            out int totalCount,
-            bool isASC)
+        public virtual IQueryable<T> GetListByPage<S>(Expression<Func<T, bool>> whereLambada, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, out int totalCount, bool isAsc)
         {
             totalCount = DbSet.Where(whereLambada).Count();
             IQueryable<T> entities = null;
-            if (isASC)
+            if (isAsc)
             {
                 entities = DbSet.Where(whereLambada)
                     .OrderBy(orderBy)
@@ -60,6 +57,40 @@ namespace Cappuccino.DAL
                     .Take(pageSize);
             }
             return entities;
+        }
+
+        public virtual IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambada, string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount)
+        {
+            // 基础查询与总条数计算
+            var query = DbSet.Where(whereLambada);
+            totalCount = query.Count();
+
+            // 处理排序方向（默认降序，无效值也按降序处理）
+            bool isAsc = !string.IsNullOrEmpty(sortOrder) && sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase);
+
+            // 反射获取实体的排序字段属性，不区分大小写查找实体属性（忽略字段名大小写）
+            var property = typeof(T).GetProperty(sortField, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+            // 构建排序表达式：x => x.排序字段
+            var parameter = Expression.Parameter(typeof(T), "x");
+            var propertyAccess = Expression.Property(parameter, property);
+            var orderByExpr = Expression.Lambda(propertyAccess, parameter);
+
+            // 反射调用 Queryable 的 OrderBy 或 OrderByDescending 静态方法
+            var queryableType = typeof(Queryable);
+            var methodName = isAsc ? "OrderBy" : "OrderByDescending";
+
+            // 获取泛型方法定义并绑定类型
+            var method = queryableType.GetMethods()
+                .Where(m => m.Name == methodName && m.GetParameters().Length == 2)
+                .Single()
+                .MakeGenericMethod(typeof(T), property.PropertyType);
+
+            // 执行排序
+            var orderedQuery = (IQueryable<T>)method.Invoke(null, new object[] { query, orderByExpr });
+
+            // 分页处理
+            return orderedQuery.Skip(pageSize * (pageIndex - 1)).Take(pageSize);
         }
 
         public virtual int GetRecordCount(Expression<Func<T, bool>> predicate)
@@ -199,12 +230,12 @@ namespace Cappuccino.DAL
             Expression<Func<T, S>> orderBy,
             int pageSize,
             int pageIndex,
-            bool isASC)
+            bool isAsc)
         {
             var query = DbSet.Where(whereLambada);
             var totalCount = await query.CountAsync();
 
-            var queryResult = isASC
+            var queryResult = isAsc
                 ? query.OrderBy(orderBy).Skip(pageSize * (pageIndex - 1)).Take(pageSize)
                 : query.OrderByDescending(orderBy).Skip(pageSize * (pageIndex - 1)).Take(pageSize);
 

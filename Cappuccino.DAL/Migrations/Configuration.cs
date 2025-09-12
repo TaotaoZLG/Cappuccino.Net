@@ -201,19 +201,20 @@ namespace Cappuccino.DAL.Migrations
             #endregion
 
             #region 数据字典
-            var sysDictTypes = new List<SysDictTypeEntity>
+            var sysDicts = new List<SysDictEntity>
             {
-                new SysDictTypeEntity{Name="机构类型",Code="OrganizeCategory",SortCode=1,SysDicts=new List<SysDictEntity> {
-                    new SysDictEntity{Name="公司",Code="Company",SortCode=1,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                    new SysDictEntity{Name="部门",Code="Department",SortCode=2,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                    new SysDictEntity{Name="小组",Code="WorkGroup",SortCode=3,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1}},
+                new SysDictEntity{Name="机构类型",Code="OrganizeCategory",SortCode=1,SysDictDetails=new List<SysDictDetailEntity> {
+                    new SysDictDetailEntity{Name="公司",Code="Company",SortCode=1,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+                    new SysDictDetailEntity{Name="部门",Code="Department",SortCode=2,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+                    new SysDictDetailEntity{Name="小组",Code="WorkGroup",SortCode=3,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1}},
                     CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysDictTypeEntity{Name="性别",Code="Sex",SortCode=2,SysDicts=new List<SysDictEntity> {
-                    new SysDictEntity{Name="男",Code="Male",SortCode=1,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                    new SysDictEntity{Name="女",Code="Female",SortCode=2,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1}},
+                new SysDictEntity{Name="性别",Code="Sex",SortCode=2,SysDictDetails=new List<SysDictDetailEntity> {
+                    new SysDictDetailEntity{Name="男",Code="Male",SortCode=1,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+                    new SysDictDetailEntity{Name="女",Code="Female",SortCode=2,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1}},
                     CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
             };
-            sysDictTypes.ForEach(s => context.Set<SysDictTypeEntity>().Add(s));
+            sysDicts.ForEach(s => context.Set<SysDictEntity>().Add(s));
+
             context.SaveChanges();
             #endregion
         }

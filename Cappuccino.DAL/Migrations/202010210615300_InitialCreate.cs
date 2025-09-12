@@ -102,7 +102,7 @@ namespace Cappuccino.DAL.Migrations
                 .Index(t => t.ActionId);
 
             CreateTable(
-                "dbo.SysDict",
+                "dbo.SysDictDetail",
                 c => new
                 {
                     Id = c.Int(nullable: false, identity: true),
@@ -116,11 +116,11 @@ namespace Cappuccino.DAL.Migrations
                     UpdateTime = c.DateTime(nullable: false),
                 })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.SysDictType", t => t.TypeId, cascadeDelete: true)
+                .ForeignKey("dbo.SysDict", t => t.TypeId, cascadeDelete: true)
                 .Index(t => t.TypeId);
 
             CreateTable(
-                "dbo.SysDictType",
+                "dbo.SysDict",
                 c => new
                 {
                     Id = c.Int(nullable: false, identity: true),
@@ -179,7 +179,7 @@ namespace Cappuccino.DAL.Migrations
 
         public override void Down()
         {
-            DropForeignKey("dbo.SysDict", "TypeId", "dbo.SysDictType");
+            DropForeignKey("dbo.SysDictDetail", "TypeId", "dbo.SysDict");
             DropForeignKey("dbo.SysUserAction", "UserId", "dbo.SysUser");
             DropForeignKey("dbo.SysUserAction", "ActionId", "dbo.SysAction");
             DropForeignKey("dbo.SysUserRole", "RoleId", "dbo.SysRole");
@@ -201,8 +201,8 @@ namespace Cappuccino.DAL.Migrations
             DropTable("dbo.SysUserRole");
             DropTable("dbo.SysRoleAction");
             DropTable("dbo.SysLogLogon");
-            DropTable("dbo.SysDictType");
             DropTable("dbo.SysDict");
+            DropTable("dbo.SysDictDetail");
             DropTable("dbo.SysUserAction");
             DropTable("dbo.SysUser");
             DropTable("dbo.SysRole");

@@ -1,7 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
 
 <div class="layui-card">
@@ -67,17 +67,6 @@
 
             let MODULE_PATH = "/System/SysAction/";
 
-            let cols = [
-                [
-                    { type: 'checkbox' },
-                    { field: 'name', minWidth: 200, title: '权限名称' },
-                    { field: 'code', title: '权限标识' },
-                    { field: 'type', title: '权限类型', templet: '#typeTpl' },
-                    { field: 'sortCode', title: '排序' },
-                    { title: '操作', templet: '#operationTpl', width: 150, align: 'center' }
-                ]
-            ]
-
             window.render = function () {
                 layer.load(2);
                 treetable.render({
@@ -90,9 +79,18 @@
                     treeDefaultClose: true,
                     toolbar: '#toolbarTpl',
                     elem: '#tableId',
-                    url: MODULE_PATH + "List",
+                    url: MODULE_PATH + "GetList",
                     page: false,
-                    cols: cols,
+                    cols: [
+                        [
+                            { type: 'checkbox' },
+                            { field: 'name', minWidth: 200, title: '权限名称' },
+                            { field: 'code', title: '权限标识' },
+                            { field: 'type', title: '权限类型', templet: '#typeTpl' },
+                            { field: 'sortCode', title: '排序' },
+                            { title: '操作', templet: '#operationTpl', width: 150, align: 'center' }
+                        ]
+                    ],
                     defaultToolbar: [{
                         title: '刷新',
                         layEvent: 'refresh',

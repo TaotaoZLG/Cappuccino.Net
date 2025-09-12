@@ -7,8 +7,8 @@
     <ProjectGuid>{A42FC2EF-0277-4ED7-B6A2-223323D52EFC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cappuccino.ViewModel</RootNamespace>
-    <AssemblyName>Cappuccino.ViewModel</AssemblyName>
+    <RootNamespace>Cappuccino.Model</RootNamespace>
+    <AssemblyName>Cappuccino.Model</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -57,8 +57,9 @@
     <Compile Include="System\SysActionButtonViewModel.cs" />
     <Compile Include="System\SysActionViewModel.cs" />
     <Compile Include="System\SysActionMenuViewModel.cs" />
+    <Compile Include="System\SysDictDetailViewModel.cs" />
     <Compile Include="System\SysDictViewModel.cs" />
-    <Compile Include="System\SysDictTypeViewModel.cs" />
+    <Compile Include="System\SysLogOperateViewModel.cs" />
     <Compile Include="System\SysLogLogonViewModel.cs" />
     <Compile Include="System\SysRoleViewModel.cs" />
     <Compile Include="System\SysUserActionViewModel.cs" />
@@ -70,8 +71,8 @@
       <Project>{471e7f22-fdc4-4f8c-b985-3336d4b14e0b}</Project>
       <Name>Cappuccino.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Entity.csproj">
-      <Project>{93FE2CE0-1A84-4138-B18F-D984AE0F4D81}</Project>
+    <ProjectReference Include="..\Cappuccino.Entity\Cappuccino.Entity.csproj">
+      <Project>{93fe2ce0-1a84-4138-b18f-d984ae0f4d81}</Project>
       <Name>Cappuccino.Entity</Name>
     </ProjectReference>
   </ItemGroup>

@@ -1,7 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
 
 
@@ -91,70 +91,19 @@
 
             let typeId;
 
-            let typeCols = [
-                [{
-                    type: 'checkbox'
-                },
-                {
-                    title: '字典名称',
-                    field: 'name',
-                    align: 'center',
-                    width: 120
-                },
-                {
-                    title: '字典编码',
-                    field: 'code',
-                    align: 'center'
-                },
-                {
-                    title: '排序码',
-                    field: 'sortCode',
-                    align: 'center',
-                    templet: '#dict-type-enable'
-                },
-                {
-                    title: '操作',
-                    toolbar: '#operationTypeTpl',
-                    align: 'center',
-                    width: 180
-                }
-                ]
-            ];
-
-            let cols = [
-                [{
-                    type: 'checkbox'
-                },
-                {
-                    title: '标签',
-                    field: 'name',
-                    align: 'center',
-                    width: 120
-                },
-                {
-                    title: '对应值',
-                    field: 'code',
-                    align: 'center'
-                },
-                {
-                    title: '排序码',
-                    field: 'sortCode',
-                    align: 'center',
-                },
-                {
-                    title: '操作',
-                    toolbar: '#operationTpl',
-                    align: 'center',
-                    width: 180
-                }
-                ]
-            ];
-
             table.render({
                 elem: '#tableTypeId',
-                url: MODULE_PATH + "SysDictType/List",
+                url: MODULE_PATH + "SysDict/GetList",
                 page: true,
-                cols: typeCols,
+                cols: [
+                    [
+                        { type: 'checkbox' },
+                        { title: '字典名称', field: 'name', align: 'center', width: 120 },
+                        { title: '字典编码', field: 'code', align: 'center' },
+                        { title: '排序码', field: 'sortCode', align: 'center', templet: '#dict-type-enable' },
+                        { title: '操作', toolbar: '#operationTypeTpl', align: 'center', width: 180 }
+                    ]
+                ],
                 skin: 'line',
                 height: 'full-148',
                 toolbar: '#toolbarTypeTpl',
@@ -171,10 +120,18 @@
 
                 table.render({
                     elem: '#tableId',
-                    url: MODULE_PATH + "SysDict/List?typeId=" + typeId,
+                    url: MODULE_PATH + "SysDictDetail/GetList?typeId=" + typeId,
                     page: true,
                     height: 'full-148',
-                    cols: cols,
+                    cols: [
+                        [
+                            { type: 'checkbox' },
+                            { title: '标签', field: 'name', align: 'center', width: 120 },
+                            { title: '对应值', field: 'code', align: 'center' },
+                            { title: '排序码', field: 'sortCode', align: 'center', },
+                            { title: '操作', toolbar: '#operationTpl', align: 'center', width: 180 }
+                        ]
+                    ],
                     skin: 'line',
                     toolbar: '#toolbarTpl'
                 });
@@ -207,7 +164,7 @@
                     title: '新增',
                     shade: 0.1,
                     area: ['600px', '500px'],
-                    content: MODULE_PATH + 'SysDictType/Create'
+                    content: MODULE_PATH + 'SysDict/Create'
                 });
             }
 
@@ -217,13 +174,13 @@
                     title: '修改',
                     shade: 0.1,
                     area: ['600px', '500px'],
-                    content: MODULE_PATH + 'SysDictType/Edit/' + id
+                    content: MODULE_PATH + 'SysDict/Edit/' + id
                 });
             }
 
             window.deleteType = function (id) {
                 layer.confirm('确定要删除该字典分类', { icon: 3, title: '提示' }, function (index) {
-                    common.ajax(MODULE_PATH + "SysDictType/Delete", "post", { id: id }, true, true).done(function (response) {
+                    common.ajax(MODULE_PATH + "SysDict/Delete", "post", { id: id }, true, true).done(function (response) {
                         layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
                             table.reload('tableTypeId');
                         });
@@ -245,7 +202,7 @@
                 }
                 ids = ids.substr(0, ids.length - 1);
                 layer.confirm('确定要删除这些数据', { icon: 3, title: '提示' }, function (index) {
-                    common.ajax(MODULE_PATH + "SysDictType/batchDel", "post", { idsStr: ids }, true, true).done(function (response) {
+                    common.ajax(MODULE_PATH + "SysDict/batchDel", "post", { idsStr: ids }, true, true).done(function (response) {
                         layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
                             table.reload('tableTypeId');
                         });
@@ -266,7 +223,7 @@
                     title: '新增',
                     shade: 0.1,
                     area: ['600px', '500px'],
-                    content: MODULE_PATH + 'SysDict/Create?TypeId=' + typeId
+                    content: MODULE_PATH + 'SysDictDetail/Create?TypeId=' + typeId
                 });
             }
 
@@ -276,13 +233,13 @@
                     title: '修改',
                     shade: 0.1,
                     area: ['600px', '500px'],
-                    content: MODULE_PATH + 'SysDict/Edit/' + id
+                    content: MODULE_PATH + 'SysDictDetail/Edit/' + id
                 });
             }
 
             window.delete = function (id) {
                 layer.confirm('确定要删除该字典分类', { icon: 3, title: '提示' }, function (index) {
-                    common.ajax(MODULE_PATH + "SysDict/Delete", "post", { id: id }, true, true).done(function (response) {
+                    common.ajax(MODULE_PATH + "SysDictDetail/Delete", "post", { id: id }, true, true).done(function (response) {
                         layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
                             table.reload('tableId');
                         });
@@ -304,7 +261,7 @@
                 }
                 ids = ids.substr(0, ids.length - 1);
                 layer.confirm('确定要删除这些数据', { icon: 3, title: '提示' }, function (index) {
-                    common.ajax(MODULE_PATH + "SysDict/batchDel", "post", { idsStr: ids }, true, true).done(function (response) {
+                    common.ajax(MODULE_PATH + "SysDictDetail/batchDel", "post", { idsStr: ids }, true, true).done(function (response) {
                         layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
                             table.reload('tableId');
                         });

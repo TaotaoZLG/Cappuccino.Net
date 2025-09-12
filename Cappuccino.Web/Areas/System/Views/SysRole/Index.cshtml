@@ -1,7 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
 <div class="layui-card">
     <div class="layui-card-body">
@@ -62,23 +62,21 @@
 
             let MODULE_PATH = "/System/SysRole/";
 
-            let cols = [
-                [
-                    { type: 'checkbox' },
-                    { title: 'ID', field: 'id', align: 'center', width: 100, sort: true },
-                    { title: '角色名', field: 'name', align: 'center' },
-                    { title: '角色编码', field: 'code', align: 'center' },
-                    { title: '是否可用', field: 'enabledMark', align: 'center', templet: '#enabledMarkTpl' },
-                    { title: '备注', field: 'remark', align: 'center' },
-                    { title: '操作', toolbar: '#operationTpl', align: 'center', width: 195 }
-                ]
-            ]
-
             table.render({
                 elem: '#tableId',
-                url: MODULE_PATH + "List",
+                url: MODULE_PATH + "GetList",
                 page: true,
-                cols: cols,
+                cols: [
+                    [
+                        { type: 'checkbox' },
+                        { title: 'ID', field: 'id', hide: true },
+                        { title: '角色名', field: 'name', align: 'center' },
+                        { title: '角色编码', field: 'code', align: 'center' },
+                        { title: '是否可用', field: 'enabledMark', align: 'center', templet: '#enabledMarkTpl' },
+                        { title: '备注', field: 'remark', align: 'center' },
+                        { title: '操作', toolbar: '#operationTpl', align: 'center', width: 195 }
+                    ]
+                ],
                 skin: 'line',
                 toolbar: '#toolbarTpl',
                 defaultToolbar: [{
