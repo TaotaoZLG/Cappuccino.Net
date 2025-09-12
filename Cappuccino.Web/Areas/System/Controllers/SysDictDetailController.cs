@@ -133,7 +133,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 queries.Add(new Query { Name = "TypeId", Operator = Query.Operators.Equal, Value = viewModel.TypeId });
             }
-            var list = _sysDictDetailService.GetListByPage(queries.AsExpression<SysDictDetailEntity>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
+            var list = _sysDictDetailService.GetListByPage(queries.AsExpression<SysDictDetailEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new
             {
                 x.Id,
                 x.Name,

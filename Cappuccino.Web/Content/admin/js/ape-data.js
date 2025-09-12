@@ -70,7 +70,7 @@
             if (item.value == dictKey) {
                 // 样式类逻辑（后端若未来添加ListClass字段可直接兼容）
                 if (item.class) {
-                    return `<span class="layui-btn layui-btn-xs layui-btn-normal ${item.class}">${item.label}</span>`;
+                    return `<span class="layui-btn layui-btn-xs layui-btn-${item.class}">${item.label}</span>`;
                 } else {
                     return item.label;
                 }

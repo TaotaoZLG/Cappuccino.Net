@@ -104,6 +104,10 @@
                         { title: '操作', toolbar: '#operationTypeTpl', align: 'center', width: 180 }
                     ]
                 ],
+                initSort: {
+                    field: 'sortCode', // 设置默认排序的字段名
+                    type: 'asc' // 设置排序方式，'asc' 为升序，'desc' 为降序
+                },
                 skin: 'line',
                 height: 'full-148',
                 toolbar: '#toolbarTypeTpl',
@@ -128,10 +132,14 @@
                             { type: 'checkbox' },
                             { title: '标签', field: 'name', align: 'center', width: 120 },
                             { title: '对应值', field: 'code', align: 'center' },
-                            { title: '排序码', field: 'sortCode', align: 'center', },
+                            { title: '排序码', field: 'sortCode', align: 'center' },
                             { title: '操作', toolbar: '#operationTpl', align: 'center', width: 180 }
                         ]
                     ],
+                    initSort: {
+                        field: 'sortCode', // 设置默认排序的字段名
+                        type: 'asc' // 设置排序方式，'asc' 为升序，'desc' 为降序
+                    },
                     skin: 'line',
                     toolbar: '#toolbarTpl'
                 });

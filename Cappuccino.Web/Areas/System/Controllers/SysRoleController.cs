@@ -161,7 +161,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 queries.Add(new Query { Name = "Code", Operator = Query.Operators.Contains, Value = viewModel.Code });
             }
-            var list = _sysRoleService.GetListByPage(queries.AsExpression<SysRoleEntity>(), x => true, pageInfo.Limit, pageInfo.Page, out int totalCount, true).Select(x => new
+            var list = _sysRoleService.GetListByPage(queries.AsExpression<SysRoleEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new
             {
                 x.Id,
                 x.Name,

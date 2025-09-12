@@ -98,9 +98,9 @@
             });
 
             table.on('sort(tableFilter)', function (obj) {
-                console.log(obj.field); //当前排序的字段名
-                console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
-                console.log(this); //当前排序的 th 对象
+                //console.log(obj.field); //当前排序的字段名
+                //console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+                //console.log(this); //当前排序的 th 对象
 
                 table.reload('tableId', {
                     initSort: obj //记录初始排序
