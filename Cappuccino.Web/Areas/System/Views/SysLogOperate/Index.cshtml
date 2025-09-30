@@ -77,6 +77,11 @@
                         { title: '请求方式', field: 'requestMethod', align: 'center' },
                         { title: '请求地址', field: 'requestUrl', align: 'center' },
                         { title: '请求参数', field: 'requestParam', align: 'center' },
+                        {
+                            title: '执行状态', field: 'logStatus', align: 'center', templet: function (d) {
+                                return top.getDataDictValue("sys_success_status", d.logStatus);
+                            }
+                        },
                         { title: '请求结果', field: 'requestResult', align: 'center' },
                         { title: 'IP地址', field: 'ipAddress', align: 'center' },
                         { title: 'IP所在城市', field: 'ipAddressName', align: 'center' },

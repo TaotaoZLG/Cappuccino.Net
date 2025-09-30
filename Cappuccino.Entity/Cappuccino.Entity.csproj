@@ -47,6 +47,7 @@
     <Compile Include="System\SysActionEntity.cs" />
     <Compile Include="System\SysActionButtonEntity.cs" />
     <Compile Include="System\SysActionMenuEntity.cs" />
+    <Compile Include="System\SysDepartmentEntity.cs" />
     <Compile Include="System\SysLogOperateEntity.cs" />
     <Compile Include="System\SysRoleEntity.cs" />
     <Compile Include="System\SysDictDetailEntity.cs" />

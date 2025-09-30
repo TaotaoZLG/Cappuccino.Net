@@ -14,6 +14,6 @@ namespace Cappuccino.IBLL
         /// <param name="menuId"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        List<ButtonViewModel> GetButtonListByUserIdAndMenuId(int userId, string url, PositionEnum position);
+        List<ButtonModel> GetButtonListByUserIdAndMenuId(int userId, string url, PositionEnum position);
     }
 }

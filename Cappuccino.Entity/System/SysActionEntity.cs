@@ -4,7 +4,6 @@ using Cappuccino.Common.Enum;
 
 namespace Cappuccino.Entity
 {
-    [Table("SysAction")]
     public class SysActionEntity : BaseEntity
     {
 

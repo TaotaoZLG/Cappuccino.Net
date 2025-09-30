@@ -22,7 +22,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         #region 视图
-        [CheckPermission("system.log.logon")]
+        [CheckPermission("system.loglogon.list")]
         public override ActionResult Index()
         {
             base.Index();
@@ -31,8 +31,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
         #endregion
 
         #region 获取数据
-        [CheckPermission("system.log.logon")]
-        public JsonResult GetList(SysLogLogonViewModel viewModel, PageInfo pageInfo)
+        [CheckPermission("system.loglogon.list")]
+        public JsonResult GetList(SysLogLogonModel viewModel, PageInfo pageInfo)
         {
             QueryCollection queries = new QueryCollection();
             if (!string.IsNullOrEmpty(viewModel.RealName))

@@ -15,7 +15,7 @@
     <AssemblyName>Cappuccino.Web</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort>44342</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
@@ -149,6 +149,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Areas\System\Controllers\SysDepartmentController.cs" />
     <Compile Include="Areas\System\Controllers\SysActionController.cs" />
     <Compile Include="Areas\System\Controllers\SysActionButtonController.cs" />
     <Compile Include="Areas\System\Controllers\SysActionMenuController.cs" />
@@ -208,8 +209,8 @@
     <Content Include="Content\admin\images\captcha.gif" />
     <Content Include="Content\admin\images\logo.png" />
     <Content Include="Content\admin\images\show.png" />
-    <Content Include="Content\admin\js\ape-data.js" />
-    <Content Include="Content\admin\js\ape.js" />
+    <Content Include="Content\admin\js\cap-data.js" />
+    <Content Include="Content\admin\js\cap.js" />
     <Content Include="Content\component\code\css\style.css" />
     <Content Include="Content\component\code\index.html" />
     <Content Include="Content\component\jquery\2.2.4\jquery.js" />
@@ -583,6 +584,9 @@
     <Content Include="Areas\System\Views\SysDictDetail\Create.cshtml" />
     <Content Include="Areas\System\Views\SysDictDetail\Edit.cshtml" />
     <Content Include="Areas\System\Views\SysDict\Index.cshtml" />
+    <Content Include="Areas\System\Views\SysDepartment\Create.cshtml" />
+    <Content Include="Areas\System\Views\SysDepartment\Edit.cshtml" />
+    <Content Include="Areas\System\Views\SysDepartment\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\Tip.cshtml" />
@@ -643,7 +647,9 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>2146</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44342/</IISUrl>
+          <IISUrl>http://localhost:6100/</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://localhost:6100/</IISAppRootUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

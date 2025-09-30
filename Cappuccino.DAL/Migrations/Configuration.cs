@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
@@ -12,44 +12,44 @@ namespace Cappuccino.DAL.Migrations
     {
         public Configuration()
         {
-            // ˝æ›
+            //Êï∞ÊçÆ
             AutomaticMigrationsEnabled = true;
         }
 
-        protected override void Seed(Cappuccino.DAL.EfDbContext context)
+        protected override void Seed(EfDbContext context)
         {
-            #region ”√ªß ˝æ›
+            #region Áî®Êà∑Êï∞ÊçÆ
             string salt = VerifyCodeUtils.CreateVerifyCode(5);
             string passwordHash = Md5Utils.EncryptTo32(salt + "123456");
             var sysUsers = new List<SysUserEntity>
             {
-              new SysUserEntity{UserName="admin",NickName="≥¨º∂π‹¿Ì‘±",HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
+              new SysUserEntity{UserName="admin",NickName="Ë∂ÖÁ∫ßÁÆ°ÁêÜÂëò",HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
                           Email="admin@Cappuccino.com",EnabledMark=(int)EnabledMarkEnum.Valid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-              new SysUserEntity{UserName="system",NickName="œµÕ≥π‹¿Ì‘±",HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
+              new SysUserEntity{UserName="system",NickName="Á≥ªÁªüÁÆ°ÁêÜÂëò",HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
                           Email="system@Cappuccino.com",EnabledMark=(int)EnabledMarkEnum.Invalid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-              new SysUserEntity{UserName="user",NickName="∆’Õ®”√ªß",HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
+              new SysUserEntity{UserName="user",NickName="ÊôÆÈÄöÁî®Êà∑",HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
                           Email="user@Cappuccino.com",EnabledMark=(int)EnabledMarkEnum.Invalid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-              new SysUserEntity{UserName="test",NickName="≤‚ ‘”√ªß",HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
+              new SysUserEntity{UserName="test",NickName="ÊµãËØïÁî®Êà∑",HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
                           Email="test@Cappuccino.com",EnabledMark=(int)EnabledMarkEnum.Invalid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
             };
             sysUsers.ForEach(s => context.Set<SysUserEntity>().Add(s));
             context.SaveChanges();
             #endregion
 
-            #region Ω«…´ ˝æ›
+            #region ËßíËâ≤Êï∞ÊçÆ
             var sysRoles = new List<SysRoleEntity>
             {
-              new SysRoleEntity{  Name="≥¨º∂π‹¿Ì‘±",Code="Administrator",EnabledMark=(int)EnabledMarkEnum.Valid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-              new SysRoleEntity{  Name="œµÕ≥π‹¿Ì‘±",Code="system",EnabledMark=(int)EnabledMarkEnum.Invalid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-              new SysRoleEntity{  Name="∆’Õ®”√ªß",Code="user",EnabledMark=(int)EnabledMarkEnum.Invalid,Remark="÷ª”–≤Èø¥“≥√Êµƒ»®œﬁ",CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-              new SysRoleEntity{  Name="≤‚ ‘”√ªß",Code="test",EnabledMark=(int)EnabledMarkEnum.Invalid,Remark="”√¿¥≤‚ ‘µƒ",CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+              new SysRoleEntity{  Name="Ë∂ÖÁ∫ßÁÆ°ÁêÜÂëò",Code="Administrator",EnabledMark=(int)EnabledMarkEnum.Valid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+              new SysRoleEntity{  Name="Á≥ªÁªüÁÆ°ÁêÜÂëò",Code="system",EnabledMark=(int)EnabledMarkEnum.Invalid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+              new SysRoleEntity{  Name="ÊôÆÈÄöÁî®Êà∑",Code="user",EnabledMark=(int)EnabledMarkEnum.Invalid,Remark="Âè™ÊúâÊü•ÁúãÈ°µÈù¢ÁöÑÊùÉÈôê",CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+              new SysRoleEntity{  Name="ÊµãËØïÁî®Êà∑",Code="test",EnabledMark=(int)EnabledMarkEnum.Invalid,Remark="Áî®Êù•ÊµãËØïÁöÑ",CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
 
             };
             sysRoles.ForEach(s => context.Set<SysRoleEntity>().Add(s));
             context.SaveChanges();
             #endregion
 
-            #region ”√ªßΩ«…´ ˝æ›
+            #region Áî®Êà∑ËßíËâ≤Êï∞ÊçÆ
             var adminUser = context.Set<SysUserEntity>().Single(s => s.UserName == "admin");
             var adminRole = context.Set<SysRoleEntity>().Single(s => s.Code == "Administrator");
             adminUser.SysRoles.Add(adminRole);
@@ -65,121 +65,121 @@ namespace Cappuccino.DAL.Migrations
             context.SaveChanges();
             #endregion
 
-            #region »®œﬁπ‹¿Ì
-            //ƒø¬º
+            #region ÊùÉÈôêÁÆ°ÁêÜ
+            //ÁõÆÂΩï
             var sysActionsByCatalog = new List<SysActionEntity>
             {
-                 new SysActionEntity{Name="œµÕ≥π‹¿Ì",Code="system",ParentId=0,Type=0,SortCode=1,
+                 new SysActionEntity{Name="Á≥ªÁªüÁÆ°ÁêÜ",Code="system",ParentId=0,Type=0,SortCode=1,
                  SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-set-fill" },
                  CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1}
             };
             sysActionsByCatalog.ForEach(s => context.Set<SysActionEntity>().Add(s));
             context.SaveChanges();
 
-            //≤Àµ•
+            //ËèúÂçï
             var systemMenu = context.Set<SysActionEntity>().Single(s => s.Code == "system");
             var sysActionByMenus = new List<SysActionEntity>
             {
-                new SysActionEntity{Id=2,Name="”√ªßπ‹¿Ì",Code="system.user.list",ParentId=systemMenu.Id,Type=0,SortCode=1
+                new SysActionEntity{Id=2,Name="Áî®Êà∑ÁÆ°ÁêÜ",Code="system.user.view",ParentId=systemMenu.Id,Type=0,SortCode=1
                 ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/System/SysUser" }
                 ,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Id=3,Name="Ω«…´π‹¿Ì",Code="system.role.list",ParentId=systemMenu.Id,Type=0,SortCode=2
+                new SysActionEntity{Id=3,Name="ËßíËâ≤ÁÆ°ÁêÜ",Code="system.role.view",ParentId=systemMenu.Id,Type=0,SortCode=2
                 ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/System/SysRole" }
                 ,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Id=4,Name="≤Àµ•π‹¿Ì",Code="system.menu.list",ParentId=systemMenu.Id,Type=0,SortCode=3
+                new SysActionEntity{Id=4,Name="ËèúÂçïÁÆ°ÁêÜ",Code="system.menu.view",ParentId=systemMenu.Id,Type=0,SortCode=3
                 ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/System/SysAction" }
                 ,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Id=5,Name=" ˝æ›◊÷µ‰",Code="system.dict.list",ParentId=systemMenu.Id,Type=0,SortCode=4
+                new SysActionEntity{Id=5,Name="Êï∞ÊçÆÂ≠óÂÖ∏",Code="system.dict.view",ParentId=systemMenu.Id,Type=0,SortCode=4
                 ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/System/SysDict" }
                 ,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Id=6,Name="»’÷æπ‹¿Ì",Code="system.log",ParentId=systemMenu.Id,Type=0,SortCode=5
+                new SysActionEntity{Id=6,Name="Êó•ÂøóÁÆ°ÁêÜ",Code="system.log",ParentId=systemMenu.Id,Type=0,SortCode=5
                 ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry"}
                 ,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=systemMenu.Id,UpdateUserId=1},
             };
             sysActionByMenus.ForEach(s => context.Set<SysActionEntity>().Add(s));
             context.SaveChanges();
 
-            //◊”º∂≤Àµ•
+            //Â≠êÁ∫ßËèúÂçï
             var systemMenuSystemLog = context.Set<SysActionEntity>().Single(s => s.Code == "system.log");
             var sysActionByMenuSystemLogs = new List<SysActionEntity>
             {
-                new SysActionEntity{Id=7,Name="µ«¬º»’÷æ",Code="system.log.logon",ParentId=systemMenuSystemLog.Id,Type=0,SortCode=6
+                new SysActionEntity{Id=7,Name="ÁôªÂΩïÊó•Âøó",Code="system.loglogon.view",ParentId=systemMenuSystemLog.Id,Type=0,SortCode=6
                 ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/System/SysLogLogon" }
                 ,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
             };
             sysActionByMenuSystemLogs.ForEach(s => context.Set<SysActionEntity>().Add(s));
             context.SaveChanges();
 
-            //∞¥≈•
-            var systemMenuSystemUser = context.Set<SysActionEntity>().Single(s => s.Code == "system.user.list");
-            var systemMenuSystemRole = context.Set<SysActionEntity>().Single(s => s.Code == "system.role.list");
-            var systemMenuSystemAction = context.Set<SysActionEntity>().Single(s => s.Code == "system.menu.list");
-            var systemMenuSystemDict = context.Set<SysActionEntity>().Single(s => s.Code == "system.dict.list");
-            var systemMenuSystemLogLogon = context.Set<SysActionEntity>().Single(s => s.Code == "system.log.logon");
+            //ÊåâÈíÆ
+            var systemMenuSystemUser = context.Set<SysActionEntity>().Single(s => s.Code == "system.user.view");
+            var systemMenuSystemRole = context.Set<SysActionEntity>().Single(s => s.Code == "system.role.view");
+            var systemMenuSystemAction = context.Set<SysActionEntity>().Single(s => s.Code == "system.menu.view");
+            var systemMenuSystemDict = context.Set<SysActionEntity>().Single(s => s.Code == "system.dict.view");
+            var systemMenuSystemLogLogon = context.Set<SysActionEntity>().Single(s => s.Code == "system.loglogon.view");
             var sysActionByButton = new List<SysActionEntity>
             {
-                new SysActionEntity{Name="–¬‘ˆ",Code="system.user.create",ParentId=systemMenuSystemUser.Id,Type=ActionTypeEnum.Button,SortCode=1,
+                new SysActionEntity{Name="Êñ∞Â¢û",Code="system.user.create",ParentId=systemMenuSystemUser.Id,Type=ActionTypeEnum.Button,SortCode=1,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="create",Location=PositionEnum.FormRightTop,ButtonClass="pear-btn pear-btn-primary pear-btn-md",ButtonIcon="layui-icon-add-1" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="±‡º≠",Code="system.user.edit",ParentId=systemMenuSystemUser.Id,Type=ActionTypeEnum.Button,SortCode=2,
+                new SysActionEntity{Name="ÁºñËæë",Code="system.user.edit",ParentId=systemMenuSystemUser.Id,Type=ActionTypeEnum.Button,SortCode=2,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="edit",Location=PositionEnum.FormInside,ButtonClass="pear-btn pear-btn-primary pear-btn-sm",ButtonIcon="layui-icon-edit" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="…æ≥˝",Code="system.user.delete",ParentId=systemMenuSystemUser.Id,Type=ActionTypeEnum.Button,SortCode=3,
+                new SysActionEntity{Name="Âà†Èô§",Code="system.user.delete",ParentId=systemMenuSystemUser.Id,Type=ActionTypeEnum.Button,SortCode=3,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="delete",Location=PositionEnum.FormInside,ButtonClass="pear-btn pear-btn-danger pear-btn-sm",ButtonIcon="layui-icon-delete" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="≈˙¡ø…æ≥˝",Code="system.user.batchDel",ParentId=systemMenuSystemUser.Id,Type=ActionTypeEnum.Button,SortCode=4,
+                new SysActionEntity{Name="ÊâπÈáèÂà†Èô§",Code="system.user.batchDel",ParentId=systemMenuSystemUser.Id,Type=ActionTypeEnum.Button,SortCode=4,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="batchDel",Location=PositionEnum.FormRightTop,ButtonClass="pear-btn pear-btn-danger pear-btn-md",ButtonIcon="layui-icon-delete" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="∑÷≈‰»®œﬁ",Code="system.user.assign",ParentId=systemMenuSystemUser.Id,Type=ActionTypeEnum.Button,SortCode=5,
+                new SysActionEntity{Name="ÂàÜÈÖçÊùÉÈôê",Code="system.user.assign",ParentId=systemMenuSystemUser.Id,Type=ActionTypeEnum.Button,SortCode=5,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="assign",Location=PositionEnum.FormInside,ButtonClass="pear-btn pear-btn-warming pear-btn-sm",ButtonIcon="layui-icon-vercode" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="÷ÿ÷√√‹¬Î",Code="system.user.initPwd",ParentId=systemMenuSystemUser.Id,Type=ActionTypeEnum.Button,SortCode=6,
+                new SysActionEntity{Name="ÈáçÁΩÆÂØÜÁ†Å",Code="system.user.initPwd",ParentId=systemMenuSystemUser.Id,Type=ActionTypeEnum.Button,SortCode=6,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="initPwd",Location=PositionEnum.FormInside,ButtonClass="pear-btn pear-btn-warming pear-btn-sm",ButtonIcon="layui-icon-refresh" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
 
-                new SysActionEntity{Name="–¬‘ˆ",Code="system.role.create",ParentId=systemMenuSystemRole.Id,Type=ActionTypeEnum.Button,SortCode=1,
+                new SysActionEntity{Name="Êñ∞Â¢û",Code="system.role.create",ParentId=systemMenuSystemRole.Id,Type=ActionTypeEnum.Button,SortCode=1,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="create",Location=PositionEnum.FormRightTop,ButtonClass="pear-btn pear-btn-primary pear-btn-md",ButtonIcon="layui-icon-add-1" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="±‡º≠",Code="system.role.edit",ParentId=systemMenuSystemRole.Id,Type=ActionTypeEnum.Button,SortCode=2,
+                new SysActionEntity{Name="ÁºñËæë",Code="system.role.edit",ParentId=systemMenuSystemRole.Id,Type=ActionTypeEnum.Button,SortCode=2,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="edit",Location=PositionEnum.FormInside,ButtonClass="pear-btn pear-btn-primary pear-btn-sm",ButtonIcon="layui-icon-edit" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="…æ≥˝",Code="system.role.delete",ParentId=systemMenuSystemRole.Id,Type=ActionTypeEnum.Button,SortCode=3,
+                new SysActionEntity{Name="Âà†Èô§",Code="system.role.delete",ParentId=systemMenuSystemRole.Id,Type=ActionTypeEnum.Button,SortCode=3,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="delete",Location=PositionEnum.FormInside,ButtonClass="pear-btn pear-btn-danger pear-btn-sm",ButtonIcon="layui-icon-delete" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="≈˙¡ø…æ≥˝",Code="system.role.batchDel",ParentId=systemMenuSystemRole.Id,Type=ActionTypeEnum.Button,SortCode=4,
+                new SysActionEntity{Name="ÊâπÈáèÂà†Èô§",Code="system.role.batchDel",ParentId=systemMenuSystemRole.Id,Type=ActionTypeEnum.Button,SortCode=4,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="batchDel",Location=PositionEnum.FormRightTop,ButtonClass="pear-btn pear-btn-danger pear-btn-md",ButtonIcon="layui-icon-delete" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="∑÷≈‰»®œﬁ",Code="system.role.assign",ParentId=systemMenuSystemRole.Id,Type=ActionTypeEnum.Button,SortCode=5,
+                new SysActionEntity{Name="ÂàÜÈÖçÊùÉÈôê",Code="system.role.assign",ParentId=systemMenuSystemRole.Id,Type=ActionTypeEnum.Button,SortCode=5,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="assign",Location=PositionEnum.FormInside,ButtonClass="pear-btn pear-btn-warming pear-btn-sm",ButtonIcon="layui-icon-vercode" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
 
-                new SysActionEntity{Name="–¬‘ˆ",Code="system.menu.create",ParentId=systemMenuSystemAction.Id,Type=ActionTypeEnum.Button,SortCode=1,
+                new SysActionEntity{Name="Êñ∞Â¢û",Code="system.menu.create",ParentId=systemMenuSystemAction.Id,Type=ActionTypeEnum.Button,SortCode=1,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="create",Location=PositionEnum.FormRightTop,ButtonClass="pear-btn pear-btn-primary pear-btn-md",ButtonIcon="layui-icon-add-1" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="±‡º≠",Code="system.menu.edit",ParentId=systemMenuSystemAction.Id,Type=ActionTypeEnum.Button,SortCode=2,
+                new SysActionEntity{Name="ÁºñËæë",Code="system.menu.edit",ParentId=systemMenuSystemAction.Id,Type=ActionTypeEnum.Button,SortCode=2,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="edit",Location=PositionEnum.FormInside,ButtonClass="pear-btn pear-btn-primary pear-btn-sm",ButtonIcon="layui-icon-edit" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="…æ≥˝",Code="system.menu.delete",ParentId=systemMenuSystemAction.Id,Type=ActionTypeEnum.Button,SortCode=3,
+                new SysActionEntity{Name="Âà†Èô§",Code="system.menu.delete",ParentId=systemMenuSystemAction.Id,Type=ActionTypeEnum.Button,SortCode=3,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="delete",Location=PositionEnum.FormInside,ButtonClass="pear-btn pear-btn-danger pear-btn-sm",ButtonIcon="layui-icon-delete" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="≈˙¡ø…æ≥˝",Code="system.menu.batchDel",ParentId=systemMenuSystemAction.Id,Type=ActionTypeEnum.Button,SortCode=4,
+                new SysActionEntity{Name="ÊâπÈáèÂà†Èô§",Code="system.menu.batchDel",ParentId=systemMenuSystemAction.Id,Type=ActionTypeEnum.Button,SortCode=4,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="batchDel",Location=PositionEnum.FormRightTop,ButtonClass="pear-btn pear-btn-danger pear-btn-md",ButtonIcon="layui-icon-delete" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
 
-                new SysActionEntity{Name="–¬‘ˆ",Code="system.dict.create",ParentId=systemMenuSystemDict.Id,Type=ActionTypeEnum.Button,SortCode=1,
+                new SysActionEntity{Name="Êñ∞Â¢û",Code="system.dict.create",ParentId=systemMenuSystemDict.Id,Type=ActionTypeEnum.Button,SortCode=1,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="create",Location=PositionEnum.FormRightTop,ButtonClass="pear-btn pear-btn-primary pear-btn-md",ButtonIcon="layui-icon-add-1" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="±‡º≠",Code="system.dict.edit",ParentId=systemMenuSystemDict.Id,Type=ActionTypeEnum.Button,SortCode=2,
+                new SysActionEntity{Name="ÁºñËæë",Code="system.dict.edit",ParentId=systemMenuSystemDict.Id,Type=ActionTypeEnum.Button,SortCode=2,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="edit",Location=PositionEnum.FormInside,ButtonClass="pear-btn pear-btn-primary pear-btn-sm",ButtonIcon="layui-icon-edit" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="…æ≥˝",Code="system.dict.delete",ParentId=systemMenuSystemDict.Id,Type=ActionTypeEnum.Button,SortCode=3,
+                new SysActionEntity{Name="Âà†Èô§",Code="system.dict.delete",ParentId=systemMenuSystemDict.Id,Type=ActionTypeEnum.Button,SortCode=3,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="delete",Location=PositionEnum.FormInside,ButtonClass="pear-btn pear-btn-danger pear-btn-sm",ButtonIcon="layui-icon-delete" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysActionEntity{Name="≈˙¡ø…æ≥˝",Code="system.dict.batchDel",ParentId=systemMenuSystemDict.Id,Type=ActionTypeEnum.Button,SortCode=4,
+                new SysActionEntity{Name="ÊâπÈáèÂà†Èô§",Code="system.dict.batchDel",ParentId=systemMenuSystemDict.Id,Type=ActionTypeEnum.Button,SortCode=4,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="batchDel",Location=PositionEnum.FormRightTop,ButtonClass="pear-btn pear-btn-danger pear-btn-md",ButtonIcon="layui-icon-delete" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
 
-                new SysActionEntity{Id=26,Name="µº≥ˆ",Code="system.log.logon.export",ParentId=systemMenuSystemLogLogon.Id,Type=ActionTypeEnum.Button,SortCode=1,
+                new SysActionEntity{Id=26,Name="ÂØºÂá∫",Code="system.loglogon.export",ParentId=systemMenuSystemLogLogon.Id,Type=ActionTypeEnum.Button,SortCode=1,
                 SysActionButton=new SysActionButtonEntity{ButtonCode="export",Location=PositionEnum.FormRightTop,ButtonClass="pear-btn pear-btn-primary pear-btn-md",ButtonIcon="layui-icon-export" },
                 CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
             };
@@ -188,29 +188,29 @@ namespace Cappuccino.DAL.Migrations
             context.SaveChanges();
             #endregion
 
-            #region ∑÷≈‰»®œﬁ
-            //≥¨º∂π‹¿Ì‘±
+            #region ÂàÜÈÖçÊùÉÈôê
+            //Ë∂ÖÁ∫ßÁÆ°ÁêÜÂëò
             adminRole = context.Set<SysRoleEntity>().Single(s => s.Code == "Administrator");
             var adminAction = context.Set<SysActionEntity>().ToList();
             adminAction.ForEach(x => adminRole.SysActions.Add(x));
-            //∆’Õ®”√ªß
+            //ÊôÆÈÄöÁî®Êà∑
             userRole = context.Set<SysRoleEntity>().Single(s => s.Code == "user");
             adminAction = context.Set<SysActionEntity>().Where(x => x.Type == ActionTypeEnum.Menu).ToList();
             adminAction.ForEach(x => adminRole.SysActions.Add(x));
             context.SaveChanges();
             #endregion
 
-            #region  ˝æ›◊÷µ‰
+            #region Êï∞ÊçÆÂ≠óÂÖ∏
             var sysDicts = new List<SysDictEntity>
             {
-                new SysDictEntity{Name="ª˙ππ¿‡–Õ",Code="OrganizeCategory",SortCode=1,SysDictDetails=new List<SysDictDetailEntity> {
-                    new SysDictDetailEntity{Name="π´Àæ",Code="Company",SortCode=1,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                    new SysDictDetailEntity{Name="≤ø√≈",Code="Department",SortCode=2,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                    new SysDictDetailEntity{Name="–°◊È",Code="WorkGroup",SortCode=3,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1}},
+                new SysDictEntity{Name="Êú∫ÊûÑÁ±ªÂûã",Code="OrganizeCategory",SortCode=1,SysDictDetails=new List<SysDictDetailEntity> {
+                    new SysDictDetailEntity{Name="ÂÖ¨Âè∏",Code="Company",SortCode=1,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+                    new SysDictDetailEntity{Name="ÈÉ®Èó®",Code="Department",SortCode=2,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+                    new SysDictDetailEntity{Name="Â∞èÁªÑ",Code="WorkGroup",SortCode=3,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1}},
                     CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                new SysDictEntity{Name="–‘±",Code="Sex",SortCode=2,SysDictDetails=new List<SysDictDetailEntity> {
-                    new SysDictDetailEntity{Name="ƒ–",Code="Male",SortCode=1,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-                    new SysDictDetailEntity{Name="≈Æ",Code="Female",SortCode=2,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1}},
+                new SysDictEntity{Name="ÊÄßÂà´",Code="Sex",SortCode=2,SysDictDetails=new List<SysDictDetailEntity> {
+                    new SysDictDetailEntity{Name="Áî∑",Code="Male",SortCode=1,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+                    new SysDictDetailEntity{Name="Â•≥",Code="Female",SortCode=2,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1}},
                     CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
             };
             sysDicts.ForEach(s => context.Set<SysDictEntity>().Add(s));

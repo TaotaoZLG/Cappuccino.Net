@@ -47,7 +47,7 @@ namespace Cappuccino.Web.Controllers
         /// 修改密码
         /// </summary>
         /// <returns></returns>
-        [LogOperate(Title = "修改密码", BusinessType = "EDIT")]
+        [LogOperate(Title = "修改密码", BusinessType = (int)OperateType.Update)]
         public ActionResult ChangePassword()
         {
             ViewBag.UserName = UserManager.GetCurrentUserInfo().UserName;
@@ -103,7 +103,7 @@ namespace Cappuccino.Web.Controllers
                     }
                     _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
                     {
-                        LogType = DbLogType.Login.ToString(),
+                        LogType = OperateType.Login.ToString(),
                         Account = user.UserName,
                         RealName = user.NickName,
                         Description = "登陆成功",
@@ -119,7 +119,7 @@ namespace Cappuccino.Web.Controllers
             {
                 _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
                 {
-                    LogType = DbLogType.Exception.ToString(),
+                    LogType = OperateType.Exception.ToString(),
                     Account = loginViewModel.LoginName,
                     RealName = loginViewModel.LoginName,
                     Description = "登录失败，" + ex.Message
@@ -141,7 +141,7 @@ namespace Cappuccino.Web.Controllers
 
             _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
             {
-                LogType = DbLogType.Exit.ToString(),
+                LogType = OperateType.Exit.ToString(),
                 Account = user.UserName,
                 RealName = user.NickName,
                 Description = "安全退出系统",
@@ -152,7 +152,7 @@ namespace Cappuccino.Web.Controllers
         }
 
         [HttpPost]
-        [LogOperate(Title = "修改密码", BusinessType = "EDIT")]
+        [LogOperate(Title = "修改密码", BusinessType = (int)OperateType.Update)]
         public ActionResult ModifyUserPwd(ChangePasswordViewModel viewModel)
         {
             int userId = UserManager.GetCurrentUserInfo().Id;

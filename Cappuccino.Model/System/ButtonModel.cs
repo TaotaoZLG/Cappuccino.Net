@@ -3,7 +3,7 @@
     /// <summary>
     /// 按钮
     /// </summary>
-    public class ButtonViewModel
+    public class ButtonModel
     {
         /// <summary>
         /// 编码

@@ -51,6 +51,7 @@
     <Compile Include="IBaseDao.cs" />
     <Compile Include="IDbContextFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\ISysDepartmentDao.cs" />
     <Compile Include="System\ISysActionDao.cs" />
     <Compile Include="System\ISysActionButtonDao.cs" />
     <Compile Include="System\ISysActionMenuDao.cs" />

@@ -1,4 +1,4 @@
-.pear-admin .layui-header,
+﻿.pear-admin .layui-header,
 .pear-admin .layui-body,
 .pear-admin .layui-logo,
 .pear-admin .layui-side,
@@ -297,3 +297,10 @@
 .more-menu-item:hover {background-color: whitesmoke;}
 .more-menu-item:after {color: #8c8c8c;right: 16px;content: "\e602";position: absolute;font-family: layui-icon !important;}
 
+.dtree-controls {
+	margin:10px 10px 10px 10px;
+}
+
+.check-box {
+    margin-right: 15px;
+}

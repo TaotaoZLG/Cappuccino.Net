@@ -1,4 +1,4 @@
-layui.define(['table', 'jquery', 'element'], function (exports) {
+﻿layui.define(['table', 'jquery', 'element'], function (exports) {
     "use strict";
 
     var MOD_NAME = 'menu',
@@ -144,6 +144,19 @@ layui.define(['table', 'jquery', 'element'], function (exports) {
         if (option.parseData != false) {
             option.parseData(option.data);
         }
+
+        // 添加固定的首页菜单项
+        const homeMenu = {
+            id: 33,
+            title: "首页",
+            icon: "layui-icon layui-icon-home", // 首页图标
+            type: 1, // 类型为菜单（可点击）
+            openType: "_iframe", // 打开方式
+            href: "/Home/Console", // 首页链接
+            children: [] // 无子菜单
+        };
+        option.data.unshift(homeMenu); // 插入到菜单列表最前面
+
         if (option.data.length > 0) {
             if (option.control != false) {
                 createMenuAndControl(option);

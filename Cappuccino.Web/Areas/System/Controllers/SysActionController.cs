@@ -62,8 +62,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         #region 提交数据
         [HttpPost, CheckPermission("system.menu.create")]
-        [LogOperate(Title = "新增菜单", BusinessType = "ADD")]
-        public ActionResult Create(ActionViewModel viewModel)
+        [LogOperate(Title = "新增菜单", BusinessType = (int)OperateType.Add)]
+        public ActionResult Create(ActionModel viewModel)
         {
             try
             {
@@ -112,9 +112,9 @@ namespace Cappuccino.Web.Areas.System.Controllers
             }
         }
 
-        [LogOperate(Title = "编辑菜单", BusinessType = "EDIT")]
+        [LogOperate(Title = "编辑菜单", BusinessType = (int)OperateType.Update)]
         [HttpPost, CheckPermission("system.menu.edit")]
-        public ActionResult Edit(ActionViewModel viewModel)
+        public ActionResult Edit(ActionModel viewModel)
         {
             if (ModelState.IsValid == false)
             {
@@ -155,7 +155,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.menu.delete")]
-        [LogOperate(Title = "删除菜单", BusinessType = "DELETE")]
+        [LogOperate(Title = "删除菜单", BusinessType = (int)OperateType.Delete)]
         public ActionResult Delete(int id)
         {
             try
@@ -180,7 +180,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.menu.batchDel")]
-        [LogOperate(Title = "批量删除菜单", BusinessType = "DELETE")]
+        [LogOperate(Title = "批量删除菜单", BusinessType = (int)OperateType.Delete)]
         public ActionResult BatchDel(string idsStr)
         {
             try

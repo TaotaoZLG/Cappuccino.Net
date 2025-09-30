@@ -1,6 +1,6 @@
 ﻿namespace Cappuccino.Model
 {
-    public class SysActionButtonViewModel
+    public class SysActionButtonModel
     {
         public int Id { get; set; }
 

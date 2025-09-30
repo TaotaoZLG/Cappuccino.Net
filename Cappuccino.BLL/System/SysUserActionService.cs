@@ -22,14 +22,14 @@ namespace Cappuccino.BLL
         }
         #endregion
 
-        public List<UserActionViewModel> GetUserActionList(int userId)
+        public List<UserActionModel> GetUserActionList(int userId)
         {
-            List<UserActionViewModel> userActions = new List<UserActionViewModel>();
+            List<UserActionModel> userActions = new List<UserActionModel>();
             var actions = SysActionDao.GetList(x => true).OrderBy(x => x.SortCode).ToList();
             var myUserActions = GetList(x => x.UserId == userId).ToList();
             foreach (var item in actions)
             {
-                UserActionViewModel viewModel = new UserActionViewModel();
+                UserActionModel viewModel = new UserActionModel();
                 viewModel.Id = item.Id;
                 viewModel.ParentId = item.ParentId;
                 viewModel.Code = item.Code;
@@ -51,7 +51,7 @@ namespace Cappuccino.BLL
             return userActions;
         }
 
-        public bool SaveUserAction(int userId, List<UserActionViewModel> userActions)
+        public bool SaveUserAction(int userId, List<UserActionModel> userActions)
         {
             userActions = userActions.Where(x => x.Status != 0).ToList();
             if (userActions.Count == 0)

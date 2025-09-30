@@ -1,4 +1,4 @@
-layui.define(['table', 'jquery', 'element', 'form', 'tab', 'menu', 'frame'],
+﻿layui.define(['table', 'jquery', 'element', 'form', 'tab', 'menu', 'frame'],
 	function(exports) {
 		"use strict";
 

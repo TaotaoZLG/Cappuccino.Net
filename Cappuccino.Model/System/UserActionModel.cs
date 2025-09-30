@@ -1,6 +1,6 @@
 ﻿namespace Cappuccino.Model.System
 {
-    public class UserActionViewModel
+    public class UserActionModel
     {
         public int Id { get; set; }
         public int ParentId { get; set; }
@@ -14,7 +14,7 @@
 
     }
 
-    public class UserActionSaveViewModel : UserActionViewModel
+    public class UserActionSaveViewModel : UserActionModel
     {
         public string LAY_TABLE_INDEX { get; set; }
         public string pid { get; set; }

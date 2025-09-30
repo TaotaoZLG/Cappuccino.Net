@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\SysDepartmentDao.cs" />
     <Compile Include="System\SysActionDao.cs" />
     <Compile Include="System\SysActionButtonDao.cs" />
     <Compile Include="System\SysActionMenuDao.cs" />

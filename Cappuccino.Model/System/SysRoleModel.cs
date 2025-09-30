@@ -2,7 +2,7 @@
 
 namespace Cappuccino.Model
 {
-    public class SysRoleViewModel : BaseEntity
+    public class SysRoleModel : BaseEntity
     {
         public string Name { get; set; }
         public string Code { get; set; }
@@ -12,7 +12,7 @@ namespace Cappuccino.Model
         public int? EnabledMark { get; set; }
         public string Remark { get; set; }
 
-        public virtual ICollection<SysUserViewModel> SysUsers { get; set; }
+        public virtual ICollection<SysUserModel> SysUsers { get; set; }
         public virtual ICollection<SysActionViewModel> SysActions { get; set; }
     }
 }

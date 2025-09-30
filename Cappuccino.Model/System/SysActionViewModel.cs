@@ -31,12 +31,12 @@ namespace Cappuccino.Model
         /// </summary>
         public int SortCode { get; set; }
 
-        public SysActionMenuViewModel SysActionMenu { get; set; }
+        public SysActionMenuModel SysActionMenu { get; set; }
 
-        public SysActionButtonViewModel SysActionButton { get; set; }
+        public SysActionButtonModel SysActionButton { get; set; }
 
-        public virtual ICollection<SysRoleViewModel> SysRoles { get; set; }
+        public virtual ICollection<SysRoleModel> SysRoles { get; set; }
 
-        public virtual ICollection<SysUserActionViewModel> SysUserActions { get; set; }
+        public virtual ICollection<SysUserActionModel> SysUserActions { get; set; }
     }
 }

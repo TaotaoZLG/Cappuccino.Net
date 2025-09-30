@@ -6,7 +6,6 @@ namespace Cappuccino.Entity
     /// <summary>
     /// 登录日志
     /// </summary>
-    [Table("SysLogLogon")]
     public class SysLogLogonEntity : BaseCreateEntity
     {
         /// <summary>
@@ -38,5 +37,15 @@ namespace Cappuccino.Entity
         /// IP所在城市
         /// </summary>
         public string IPAddressName { get; set; }
+
+        /// <summary>
+        /// 操作系统
+        /// </summary>
+        public string SystemOs { get; set; }
+
+        /// <summary>
+        /// 浏览器
+        /// </summary>
+        public string Browser { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-layui.define(['jquery', 'element'], function(exports) {
+﻿layui.define(['jquery', 'element'], function(exports) {
 	"use strict";
 
 	var MOD_NAME = 'tab',
@@ -439,9 +439,9 @@ layui.define(['jquery', 'element'], function(exports) {
 
 		title += '</ul>';
 		content += '</div>';
-		control += '<dd id="closeThis"><a href="#">关 闭 当 前</a></dd>'
-		control += '<dd id="closeOther"><a href="#">关 闭 其 他</a></dd>'
-		control += '<dd id="closeAll"><a href="#">关 闭 全 部</a></dd>'
+		control += '<dd id="closeThis"><a href="javascript:;">关 闭 当 前</a></dd>'
+		control += '<dd id="closeOther"><a href="javascript:;">关 闭 其 他</a></dd>'
+		control += '<dd id="closeAll"><a href="javascript:;">关 闭 全 部</a></dd>'
 		control += '</dl></li></ul></li></div>';
 
 		tab += title;
@@ -480,14 +480,12 @@ layui.define(['jquery', 'element'], function(exports) {
 	}
 
 	function toolEvent(option) {
-
 		$("body .layui-tab[lay-filter='" + option.elem + "']").on("click", "#closeThis", function() {
 			var currentTab = $(".layui-tab[lay-filter='" + option.elem + "'] .layui-tab-title .layui-this");
 			if (currentTab.find("span").is(".able-close")) {
 				var currentId = currentTab.attr("lay-id");
 				tabDelete(option.elem, currentId, option.closeEvent);
 			}
-
 		})
 
 		$("body .layui-tab[lay-filter='" + option.elem + "']").on("click", "#closeOther", function() {

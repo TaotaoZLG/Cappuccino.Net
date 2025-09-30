@@ -3,7 +3,6 @@ using Cappuccino.Common.Enum;
 
 namespace Cappuccino.Entity
 {
-    [Table("SysActionButton")]
     public class SysActionButtonEntity
     {
         public int Id { get; set; }

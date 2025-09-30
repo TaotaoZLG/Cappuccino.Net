@@ -2,7 +2,7 @@
 
 namespace Cappuccino.Model
 {
-    public class ActionViewModel
+    public class ActionModel
     {
         /// 权限名
         /// </summary>

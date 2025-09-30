@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Cappuccino.Common;
+using Cappuccino.Common.Enum;
 using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
@@ -70,8 +71,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         #region 提交数据
         [HttpPost, CheckPermission("system.user.create")]
-        [LogOperate(Title = "新增用户", BusinessType = "ADD")]
-        public ActionResult Create(SysUserViewModel viewModel)
+        [LogOperate(Title = "新增用户", BusinessType = (int)OperateType.Add)]
+        public ActionResult Create(SysUserModel viewModel)
         {
             try
             {
@@ -109,8 +110,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.user.edit")]
-        [LogOperate(Title = "编辑用户", BusinessType = "EDIT")]
-        public ActionResult Edit(int id, SysUserViewModel viewModel)
+        [LogOperate(Title = "编辑用户", BusinessType = (int)OperateType.Update)]
+        public ActionResult Edit(int id, SysUserModel viewModel)
         {
             if (ModelState.IsValid == false)
             {
@@ -150,7 +151,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.user.delete")]
-        [LogOperate(Title = "删除用户", BusinessType = "DELETE")]
+        [LogOperate(Title = "删除用户", BusinessType = (int)OperateType.Delete)]
         public ActionResult Delete(int id)
         {
             try
@@ -165,7 +166,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.user.batchDel")]
-        [LogOperate(Title = "批量删除用户", BusinessType = "DELETE")]
+        [LogOperate(Title = "批量删除用户", BusinessType = (int)OperateType.Delete)]
         public ActionResult BatchDel(string idsStr)
         {
             try
@@ -182,7 +183,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.user.edit")]
-        [LogOperate(Title = "禁用用户", BusinessType = "AUTHORIZE")]
+        [LogOperate(Title = "禁用用户", BusinessType = (int)OperateType.Authorize)]
         public ActionResult UpdateEnabledMark(int id, int enabledMark)
         {
             SysUserEntity entity = new SysUserEntity
@@ -197,7 +198,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.user.initPwd")]
-        [LogOperate(Title = "重置密码", BusinessType = "EDIT")]
+        [LogOperate(Title = "重置密码", BusinessType = (int)OperateType.Update)]
         public ActionResult InitPwd(int id)
         {
             string salt = VerifyCodeUtils.CreateVerifyCode(5);
@@ -218,7 +219,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         #region 获取数据
         [CheckPermission("system.user.list")]
-        public JsonResult GetList(SysUserViewModel viewModel, PageInfo pageInfo)
+        public JsonResult GetList(SysUserModel viewModel, PageInfo pageInfo)
         {
             QueryCollection queries = new QueryCollection();
             if (!string.IsNullOrEmpty(viewModel.UserName))

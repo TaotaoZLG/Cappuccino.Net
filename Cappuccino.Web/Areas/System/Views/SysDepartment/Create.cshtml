@@ -1,36 +1,28 @@
-﻿
+﻿@model  Cappuccino.Model.SysDepartmentModel
+
 @{
     ViewBag.Title = "Create";
     Layout = "~/Views/Shared/_LayoutForm.cshtml";
 }
+
 <form class="layui-form" lay-filter="formCreate">
-    <input  id="TypeId" name="TypeId" type="hidden" value="@ViewBag.TypeId" />
     <div class="mainBox">
         <div class="main-container">
             <div class="main-container">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">字典键</label>
+                    <label class="layui-form-label">权限类型</label>
                     <div class="layui-input-block">
-                        <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入标签" class="layui-input">
+                        @Html.EnumDropDownListFor(model => true, new Dictionary<string, object> { { "lay-filter", "type" } })
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">字典值</label>
+                    <label class="layui-form-label">上级菜单</label>
                     <div class="layui-input-block">
-                        <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入对应值" class="layui-input">
+                        <ul id="parentIdSelect" class="dtree" data-id="0"></ul>
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">显示样式</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入显示样式" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">排序码</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
-                    </div>
+                <div id="actionPartial">
+                    @Html.Partial("_ActionMenuPartial")
                 </div>
             </div>
         </div>
@@ -50,18 +42,43 @@
 </form>
 @section Scripts {
     <script>
-        layui.use(['form', 'jquery', 'common'], function () {
+        layui.use(['form', 'jquery', 'common', 'dtree', 'iconPicker'], function () {
             let form = layui.form;
             let $ = layui.jquery;
             let common = layui.common;
+            let dtree = layui.dtree;
+            let iconPicker = layui.iconPicker;
+
+            iconPicker.render({
+                elem: '#icon',
+                type: 'fontClass',
+                search: true,
+                page: true,
+                limit: 16,
+                click: function (data) {
+                    console.log(data);
+                },
+                success: function (d) {
+                    console.log(d);
+                }
+            });
+
+            dtree.render({
+                elem: "#parentIdSelect",
+                method: 'get',
+                url: "/System/SysDepartment/GetMenuTree",
+                select: true,
+                selectInputName: {
+                    nodeId: "parentId",
+                    context: "parentName"
+                }
+            });
+
             form.on("submit(create)", function (data) {
-                common.ajax("/System/SysDictDetail/Create", "post", data.field, true, true).done(function (response) {
+                common.ajax("/System/SysDepartment/Create", "post", data.field, true, true).done(function (response) {
                     layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
-                        if (top.initDataDict) {
-                            top.initDataDict();
-                        }
                         parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
-                        parent.layui.table.reload("tableId");
+                        parent.refresh();
                     });
                 }).fail(function (error) {
                     console.log(error)
@@ -71,3 +88,4 @@
         });
     </script>
 }
+

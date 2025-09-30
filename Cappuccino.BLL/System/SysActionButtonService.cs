@@ -26,27 +26,27 @@ namespace Cappuccino.BLL
         }
         #endregion
 
-        public List<ButtonViewModel> GetButtonListByUserIdAndMenuId(int userId, string url, PositionEnum position)
+        public List<ButtonModel> GetButtonListByUserIdAndMenuId(int userId, string url, PositionEnum position)
         {
-            List<ButtonViewModel> buttonViewModels = new List<ButtonViewModel>();
+            List<ButtonModel> buttonModelList = new List<ButtonModel>();
             var sysActionButtons = dao.GetList(x => true).ToList();
             var menu = SysActionMenuDao.GetList(x => x.Url == url).FirstOrDefault();
             if (menu == null)
             {
-                return buttonViewModels;
+                return buttonModelList;
             }
             var sysActionList = SysActionService.GetPermissionByType(userId, ActionTypeEnum.Button)
                 .Where(x => x.ParentId == menu.Id && x.SysActionButton.Location == position).OrderBy(x => x.SortCode).ToList();
             foreach (var item in sysActionList)
             {
-                ButtonViewModel buttonViewModel = new ButtonViewModel();
-                buttonViewModel.FullName = item.Name;
-                buttonViewModel.ButtonCode = item.SysActionButton.ButtonCode;
-                buttonViewModel.ClassName = item.SysActionButton.ButtonClass;
-                buttonViewModel.Icon = item.SysActionButton.ButtonIcon;
-                buttonViewModels.Add(buttonViewModel);
+                ButtonModel buttonModel = new ButtonModel();
+                buttonModel.FullName = item.Name;
+                buttonModel.ButtonCode = item.SysActionButton.ButtonCode;
+                buttonModel.ClassName = item.SysActionButton.ButtonClass;
+                buttonModel.Icon = item.SysActionButton.ButtonIcon;
+                buttonModelList.Add(buttonModel);
             }
-            return buttonViewModels;
+            return buttonModelList;
         }
 
     }

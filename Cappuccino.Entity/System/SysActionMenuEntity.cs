@@ -2,7 +2,6 @@
 
 namespace Cappuccino.Entity
 {
-    [Table("SysActionMenu")]
     public class SysActionMenuEntity
     {
         public int Id { get; set; }

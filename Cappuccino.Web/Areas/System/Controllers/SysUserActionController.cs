@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Cappuccino.Common.Enum;
 using Cappuccino.IBLL;
 using Cappuccino.Model.System;
 using Cappuccino.Web.Attributes;
@@ -23,8 +24,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         #region 提交数据
         [HttpPost, CheckPermission("system.user.assign")]
-        [LogOperate(Title = "用户授权", BusinessType = "AUTHORIZE")]
-        public ActionResult Save(int userId, List<UserActionViewModel> list)
+        [LogOperate(Title = "用户授权", BusinessType = (int)OperateType.Authorize)]
+        public ActionResult Save(int userId, List<UserActionModel> list)
         {
             var result = _sysUserActionService.SaveUserAction(userId, list) ? WriteSuccess("保存成功") : WriteError("保存失败");
             return result;

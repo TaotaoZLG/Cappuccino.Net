@@ -1,4 +1,4 @@
-{
+﻿{
 	"logo": {
 		"title": "Cappuccino.Net",
 		"image": "Content/admin/images/logo.png"
@@ -65,6 +65,6 @@
 		}
 	],
 	"other": {
-		"keepLoad": 1200
+		"keepLoad": 0
 	}
 }

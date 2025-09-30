@@ -3,10 +3,15 @@
 namespace Cappuccino.Model
 {
     /// <summary>
-    /// 数据字典
+    /// 字典分类
     /// </summary>
-    public class SysDictDetailViewModel : BaseEntity
+    public class SysDictModel : BaseEntity
     {
+        /// <summary>
+        /// 父级
+        /// </summary>
+        public int ParentId { get; set; }
+
         /// <summary>
         /// 编码
         /// </summary>
@@ -18,15 +23,10 @@ namespace Cappuccino.Model
         public string Name { get; set; }
 
         /// <summary>
-        /// 分类主键
-        /// </summary>
-        public int TypeId { get; set; }
-
-        /// <summary>
         /// 排序码
         /// </summary>
         public int SortCode { get; set; }
 
-        public virtual SysDictViewModel SysDict { get; set; }
+        public virtual ICollection<SysDictDetailModel> SysDictDetails { get; set; }        
     }
 }

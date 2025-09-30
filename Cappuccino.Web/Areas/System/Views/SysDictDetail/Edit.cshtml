@@ -1,4 +1,4 @@
-﻿@model Cappuccino.Model.SysDictDetailViewModel
+﻿@model Cappuccino.Model.SysDictDetailModel
 @{
     ViewBag.Title = "Edit";
     Layout = "~/Views/Shared/_LayoutForm.cshtml";
@@ -10,13 +10,13 @@
         <div class="main-container">
             <div class="main-container">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">标签</label>
+                    <label class="layui-form-label">字典键</label>
                     <div class="layui-input-block">
                         <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入标签" class="layui-input" value="@Model.Name">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">对应值</label>
+                    <label class="layui-form-label">字典值</label>
                     <div class="layui-input-block">
                         <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入对应值" class="layui-input" value="@Model.Code">
                     </div>

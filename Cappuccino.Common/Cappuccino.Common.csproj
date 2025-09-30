@@ -56,11 +56,12 @@
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Enum\ActionTypeEnum.cs" />
     <Compile Include="Enum\AjaxStateEnum.cs" />
-    <Compile Include="Enum\DbLogType.cs" />
+    <Compile Include="Enum\OperateType.cs" />
     <Compile Include="Enum\EnabledMarkEnum.cs" />
     <Compile Include="Enum\PositionEnum.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Helper\AsyncTaskHelper.cs" />
     <Compile Include="Helper\CookieHelper.cs" />
     <Compile Include="Helper\DeepCopyHelper.cs" />
     <Compile Include="Extensions\JsonExtensions.cs" />

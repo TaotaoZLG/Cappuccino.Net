@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Cappuccino.BLL;
 using Cappuccino.Common;
+using Cappuccino.Common.Enum;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
@@ -52,8 +53,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         #region 提交数据
         [HttpPost, CheckPermission("system.dict.create")]
-        [LogOperate(Title = "新增字典", BusinessType = "ADD")]
-        public ActionResult Create(SysDictViewModel viewModel)
+        [LogOperate(Title = "新增字典", BusinessType = (int)OperateType.Add)]
+        public ActionResult Create(SysDictModel viewModel)
         {
             try
             {
@@ -76,8 +77,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.dict.edit")]
-        [LogOperate(Title = "编辑字典", BusinessType = "ADD")]
-        public ActionResult Edit(SysDictViewModel viewModel)
+        [LogOperate(Title = "编辑字典", BusinessType = (int)OperateType.Update)]
+        public ActionResult Edit(SysDictModel viewModel)
         {
             if (ModelState.IsValid == false)
             {
@@ -92,7 +93,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.dict.delete")]
-        [LogOperate(Title = "删除字典", BusinessType = "DELETE")]
+        [LogOperate(Title = "删除字典", BusinessType = (int)OperateType.Delete)]
         public ActionResult Delete(int id)
         {
             try
@@ -107,7 +108,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [HttpPost, CheckPermission("system.dict.batchDel")]
-        [LogOperate(Title = "批量删除字典", BusinessType = "DELETE")]
+        [LogOperate(Title = "批量删除字典", BusinessType = (int)OperateType.Delete)]
         public ActionResult BatchDel(string idsStr)
         {
             try
@@ -126,7 +127,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         #region 获取数据
         [CheckPermission("system.dict.list")]
-        public JsonResult GetList(SysDictViewModel viewModel, PageInfo pageInfo)
+        public JsonResult GetList(SysDictModel viewModel, PageInfo pageInfo)
         {
             QueryCollection queries = new QueryCollection();
             if (!string.IsNullOrEmpty(viewModel.Name))

@@ -52,19 +52,20 @@
     <Compile Include="Layui\DtreeViewModel.cs" />
     <Compile Include="Layui\PearMenuViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="System\ActionViewModel.cs" />
-    <Compile Include="System\ButtonViewModel.cs" />
-    <Compile Include="System\SysActionButtonViewModel.cs" />
+    <Compile Include="System\ActionModel.cs" />
+    <Compile Include="System\ButtonModel.cs" />
+    <Compile Include="System\SysActionButtonModel.cs" />
     <Compile Include="System\SysActionViewModel.cs" />
-    <Compile Include="System\SysActionMenuViewModel.cs" />
-    <Compile Include="System\SysDictDetailViewModel.cs" />
-    <Compile Include="System\SysDictViewModel.cs" />
-    <Compile Include="System\SysLogOperateViewModel.cs" />
-    <Compile Include="System\SysLogLogonViewModel.cs" />
-    <Compile Include="System\SysRoleViewModel.cs" />
-    <Compile Include="System\SysUserActionViewModel.cs" />
-    <Compile Include="System\SysUserViewModel.cs" />
-    <Compile Include="System\UserActionViewModel.cs" />
+    <Compile Include="System\SysActionMenuModel.cs" />
+    <Compile Include="System\SysDictDetailModel.cs" />
+    <Compile Include="System\SysDepartmentModel.cs" />
+    <Compile Include="System\SysDictModel.cs" />
+    <Compile Include="System\SysLogOperateModel.cs" />
+    <Compile Include="System\SysLogLogonModel.cs" />
+    <Compile Include="System\SysRoleModel.cs" />
+    <Compile Include="System\SysUserActionModel.cs" />
+    <Compile Include="System\SysUserModel.cs" />
+    <Compile Include="System\UserActionModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cappuccino.Common\Cappuccino.Common.csproj">

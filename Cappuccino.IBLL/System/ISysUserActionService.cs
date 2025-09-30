@@ -11,13 +11,13 @@ namespace Cappuccino.IBLL
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        List<UserActionViewModel> GetUserActionList(int userId);
+        List<UserActionModel> GetUserActionList(int userId);
 
         /// <summary>
         /// 更新用户特殊权限
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="userActions"></param>
-        bool SaveUserAction(int userId, List<UserActionViewModel> userActions);
+        bool SaveUserAction(int userId, List<UserActionModel> userActions);
     }
 }

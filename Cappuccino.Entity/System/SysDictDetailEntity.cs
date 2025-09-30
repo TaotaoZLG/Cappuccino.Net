@@ -6,7 +6,6 @@ namespace Cappuccino.Entity
     /// <summary>
     /// 字典详情
     /// </summary>
-    [Table("SysDictDetail")]
     public class SysDictDetailEntity : BaseEntity
     {
         /// <summary>

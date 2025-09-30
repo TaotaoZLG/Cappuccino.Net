@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Web.Mvc;
 using Cappuccino.Common.Extensions;
+using Cappuccino.Common.Helper;
 using Cappuccino.Common.Log;
 using Cappuccino.Common.Net;
 using Cappuccino.Entity;
@@ -26,9 +29,9 @@ namespace Cappuccino.Web.Attributes
         public string Title { get; set; } = "未命名操作";
 
         /// <summary>
-        /// 业务类型（如：ADD/EDIT/DELETE/QUERY/EXPORT/IMPORT/AUTHORIZE/OTHER）
+        /// 业务类型（OperateType枚举值）
         /// </summary>
-        public string BusinessType { get; set; } = "OTHER";
+        public int BusinessType { get; set; } = 0;
 
         /// <summary>
         /// 操作描述（详细说明）
@@ -63,34 +66,60 @@ namespace Cappuccino.Web.Attributes
                 }
 
                 // 构建日志实体
-                SysLogOperateEntity logOperateEntity = new SysLogOperateEntity
+                SysLogOperateEntity logOperateEntity = new SysLogOperateEntity();
+
+                // 处理异常场景（优先返回异常信息）
+                StringBuilder stringBuilder = new StringBuilder();
+                if (context.Exception != null)
                 {
-                    // 基础配置信息
-                    Title = Title,
-                    Description = Description,
-                    BusinessType = BusinessType,
+                    stringBuilder.Clear();
+                    Exception innerEx = context.Exception.InnerException ?? context.Exception;
+                    while (innerEx.InnerException != null)
+                    {
+                        innerEx = innerEx.InnerException;
+                    }
+                    stringBuilder.Append(innerEx.Message);
 
-                    // 请求信息
-                    RequestMethod = request.HttpMethod,
-                    RequestUrl = request.Url?.AbsolutePath,
-                    Method = $"{context.Controller.GetType().Name}/{context.ActionDescriptor.ActionName}",
-                    RequestParam = NetHelper.GetRequestParams(request), // 自定义方法：获取请求参数
-                    RequestBody = request.HttpMethod.ToUpper() == "POST" ? NetHelper.GetRequestBody(request) : null,
+                    logOperateEntity.LogStatus = 1;
+                }
+                else
+                {
+                    stringBuilder.Clear();
+                    var result = context.Result as JsonResult;
+                    stringBuilder.Append(result.Data.ToString());
 
-                    // 请求结果
-                    RequestResult = context.Exception == null ? response.Status : $"{response.Status} {context.Exception.Message}",
+                    logOperateEntity.LogStatus = 0;
+                }
 
-                    // 环境信息
-                    IPAddress = NetHelper.GetIp,
-                    IPAddressName = NetHelper.GetIpLocation(NetHelper.GetIp),
-                    OperateName = user?.UserName,
-                    SystemOs = NetHelper.GetSystemOs(request.UserAgent),
-                    Browser = NetHelper.GetBrowser(request.UserAgent),
-                    CreateUserId = user?.Id ?? 1
+                // 基础配置信息
+                logOperateEntity.Title = attribute.Title;
+                logOperateEntity.Description = attribute.Description;
+                logOperateEntity.BusinessType = attribute.BusinessType;
+
+                // 请求信息
+                logOperateEntity.RequestMethod = request.HttpMethod;
+                logOperateEntity.RequestUrl = request.Url?.AbsolutePath;
+                logOperateEntity.Method = $"{context.Controller.GetType().Name}/{context.ActionDescriptor.ActionName}";
+                logOperateEntity.RequestParam = NetHelper.GetRequestParams(request);
+                logOperateEntity.RequestBody = request.HttpMethod.ToUpper() == "POST" ? NetHelper.GetRequestBody(request) : null;
+
+                // 请求结果
+                logOperateEntity.RequestResult = stringBuilder.ToString();
+
+                // 环境信息
+                logOperateEntity.IPAddress = NetHelper.GetIp;
+                logOperateEntity.IPAddressName = NetHelper.GetIpLocation(NetHelper.GetIp);
+                logOperateEntity.OperateName = user?.UserName;
+                logOperateEntity.SystemOs = NetHelper.GetSystemOs(request.UserAgent);
+                logOperateEntity.Browser = NetHelper.GetBrowser(request.UserAgent);
+                logOperateEntity.CreateUserId = user?.Id ?? 1;
+
+                Action action = async () =>
+                {
+                    // 写入日志
+                    await LogOperateService?.WriteOperateLogAsync(logOperateEntity);
                 };
-
-                // 写入日志
-                _ = LogOperateService?.WriteOperateLog(logOperateEntity);
+                AsyncTaskHelper.StartTask(action);
             }
             catch (Exception ex)
             {

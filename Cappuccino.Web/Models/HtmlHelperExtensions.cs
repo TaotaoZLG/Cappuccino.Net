@@ -31,7 +31,7 @@ namespace Cappuccino.Web
         public static HtmlString RightToolBarHtml(this HtmlHelper helper, dynamic _list = null)
         {
             StringBuilder sb = new StringBuilder();
-            List<ButtonViewModel> list = _list as List<ButtonViewModel>;
+            List<ButtonModel> list = _list as List<ButtonModel>;
             if (list != null && list.Count > 0)
             {
                 foreach (var item in list)
@@ -48,7 +48,7 @@ namespace Cappuccino.Web
         public static HtmlString TopToolBarHtml(this HtmlHelper helper, dynamic _list = null)
         {
             StringBuilder sb = new StringBuilder();
-            List<ButtonViewModel> list = _list as List<ButtonViewModel>;
+            List<ButtonModel> list = _list as List<ButtonModel>;
             if (list != null && list.Count > 0)
             {
                 foreach (var item in list)

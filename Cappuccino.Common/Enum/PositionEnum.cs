@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
 
 namespace Cappuccino.Common.Enum
 {
@@ -11,6 +12,6 @@ namespace Cappuccino.Common.Enum
         FormInside = 0,
 
         [Display(Name = "表外")]
-        FormRightTop = 1
+        FormRightTop = 1,
     }
 }

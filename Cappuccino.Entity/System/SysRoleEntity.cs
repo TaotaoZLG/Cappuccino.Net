@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cappuccino.Entity
 {
-    [Table("SysRole")]
     public class SysRoleEntity : BaseEntity
     {
         public string Name { get; set; }

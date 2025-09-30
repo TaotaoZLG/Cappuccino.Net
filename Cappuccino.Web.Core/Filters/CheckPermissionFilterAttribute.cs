@@ -106,17 +106,17 @@ namespace Cappuccino.Web.Core
             }
             else
             {
-                //ViewResult view = new ViewResult();
-                //view.ViewName = "/Views/Shared/Tip.cshtml";
-                //filterContext.Result = view;
-                var routeValues = new RouteValueDictionary
-                {
-                    { "controller", "Account" },
-                    { "action", "Login" }
-                };
+                ViewResult view = new ViewResult();
+                view.ViewName = "/Views/Shared/Tip.cshtml";
+                filterContext.Result = view;
+                //var routeValues = new RouteValueDictionary
+                //{
+                //    { "controller", "Account" },
+                //    { "action", "Login" }
+                //};
 
-                // 设置重定向结果
-                filterContext.Result = new RedirectToRouteResult(routeValues);
+                //// 设置重定向结果
+                //filterContext.Result = new RedirectToRouteResult(routeValues);
             }
         }
 

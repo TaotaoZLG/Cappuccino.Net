@@ -2,7 +2,7 @@
 
 namespace Cappuccino.Model
 {
-    public class SysUserViewModel : BaseEntity
+    public class SysUserModel : BaseEntity
     {
         public string UserName { get; set; }
         public string NickName { get; set; }
@@ -16,8 +16,8 @@ namespace Cappuccino.Model
         /// </summary>
         public int? EnabledMark { get; set; }
         public string RoleIds { get; set; }
-        public virtual ICollection<SysRoleViewModel> SysRoles { get; set; }
-        public virtual ICollection<SysUserActionViewModel> SysUserActions { get; set; }
+        public virtual ICollection<SysRoleModel> SysRoles { get; set; }
+        public virtual ICollection<SysUserActionModel> SysUserActions { get; set; }
 
     }
 }

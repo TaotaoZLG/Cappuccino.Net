@@ -5,7 +5,7 @@ namespace Cappuccino.Model
     /// <summary>
     /// 登录日志
     /// </summary>
-    public class SysLogLogonViewModel
+    public class SysLogLogonModel
     {
         /// <summary>
         /// 主键

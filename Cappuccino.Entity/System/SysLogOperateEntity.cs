@@ -20,9 +20,9 @@ namespace Cappuccino.Entity
         public string Description { get; set; }
 
         /// <summary>
-        /// 业务类型（如ADD/EDIT/DELETE）
+        /// 业务类型
         /// </summary>
-        public string BusinessType { get; set; }
+        public int BusinessType { get; set; }
 
         /// <summary>
         /// 请求方式（GET/POST等）
@@ -83,5 +83,10 @@ namespace Cappuccino.Entity
         /// 浏览器
         /// </summary>
         public string Browser { get; set; }
+
+        /// <summary>
+        /// 执行状态(0成功 1失败)
+        /// </summary>
+        public int LogStatus { get; set; }
     }
 }
