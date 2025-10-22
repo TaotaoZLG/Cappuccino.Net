@@ -13,7 +13,7 @@ namespace Cappuccino.Model
         public string Name { get; set; }
 
         /// <summary>
-        /// 父级
+        /// 父部门Id(0表示是根部门)
         /// </summary>
         public int ParentId { get; set; }
 
@@ -21,5 +21,10 @@ namespace Cappuccino.Model
         /// 排序码
         /// </summary>
         public int SortCode { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string Remark { get; set; }
     }
 }

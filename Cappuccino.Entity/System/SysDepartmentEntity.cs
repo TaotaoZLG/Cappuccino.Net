@@ -17,7 +17,7 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 父部门Id(0表示是根部门)
         /// </summary>
-        public string ParentId { get; set; }
+        public int ParentId { get; set; }
 
         /// <summary>
         /// 排序码
@@ -27,6 +27,9 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 备注
         /// </summary>
-        public int Remark { get; set; }
+        public string Remark { get; set; }
+
+        // 反向导航属性（部门包含的用户）
+        public virtual ICollection<SysUserEntity> SysUsers { get; set; } = new List<SysUserEntity>();
     }
 }

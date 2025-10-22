@@ -1,6 +1,6 @@
-using System.Data.Entity.Migrations;
+﻿using System.Data.Entity.Migrations;
 
-namespace Cappuccino.DAL.Migrations
+namespace Cappuccino.DataAccess.Migrations
 {
     public partial class InitialCreate : DbMigration
     {

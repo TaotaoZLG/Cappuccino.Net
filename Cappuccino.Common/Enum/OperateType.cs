@@ -23,9 +23,9 @@ namespace Cappuccino.Common.Enum
         Delete = 2,
 
         /// <summary>
-        /// 修改
+        /// 编辑
         /// </summary>
-        [Display(Name = "修改")]
+        [Display(Name = "编辑")]
         Update = 3,
 
         /// <summary>

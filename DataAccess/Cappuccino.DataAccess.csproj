@@ -1,14 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{94C73821-31D6-4F89-887A-FFC96FFAB5D7}</ProjectGuid>
+    <ProjectGuid>{DDB75760-F160-4187-B736-E69BD5673CAA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cappuccino.IDAL</RootNamespace>
-    <AssemblyName>Cappuccino.IDAL</AssemblyName>
+    <RootNamespace>Cappuccino.DataAccess</RootNamespace>
+    <AssemblyName>Cappuccino.DataAccess</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -31,14 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -48,32 +41,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IBaseDao.cs" />
+    <Compile Include="BaseDao.cs" />
+    <Compile Include="DbContextFactory.cs" />
+    <Compile Include="EfDbContext.cs" />
+    <Compile Include="Mapping\SysActionButtonMap.cs" />
+    <Compile Include="Mapping\SysActionMap.cs" />
+    <Compile Include="Mapping\SysActionMenuMap.cs" />
+    <Compile Include="Mapping\SysDictDetailMap.cs" />
+    <Compile Include="Mapping\SysDictMap.cs" />
+    <Compile Include="Mapping\SysLogLogonMap.cs" />
+    <Compile Include="Mapping\SysRoleMap.cs" />
+    <Compile Include="Mapping\SysUserActionMap.cs" />
+    <Compile Include="Mapping\SysUserMap.cs" />
+    <Compile Include="Migrations\202010210615300_InitialCreate.cs" />
+    <Compile Include="Migrations\202010210615300_InitialCreate.Designer.cs">
+      <DependentUpon>202010210615300_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="System\ISysDepartmentDao.cs" />
-    <Compile Include="System\ISysActionDao.cs" />
-    <Compile Include="System\ISysActionButtonDao.cs" />
-    <Compile Include="System\ISysActionMenuDao.cs" />
-    <Compile Include="System\ISysDictDetailDao.cs" />
-    <Compile Include="System\ISysDictDao.cs" />
-    <Compile Include="System\ISysLogOperateDao.cs" />
-    <Compile Include="System\ISysRoleDao.cs" />
-    <Compile Include="System\ISysUserActionDao.cs" />
-    <Compile Include="System\ISysUserDao.cs" />
-    <Compile Include="System\ISysLogLogonDao.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Cappuccino.Entity\Cappuccino.Entity.csproj">
-      <Project>{93fe2ce0-1a84-4138-b18f-d984ae0f4d81}</Project>
-      <Name>Cappuccino.Entity</Name>
-    </ProjectReference>
+    <EmbeddedResource Include="Migrations\202010210615300_InitialCreate.resx">
+      <DependentUpon>202010210615300_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

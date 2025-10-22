@@ -23,7 +23,7 @@ namespace Cappuccino.BLL
         }
         #endregion
 
-        public List<PearMenuViewModel> GetMenu(int userId)
+        public List<PearMenuModel> GetMenu(int userId)
         {
             var sysActionList = SysActionService.GetPermissionByType(userId, ActionTypeEnum.Menu).OrderBy(x => x.SortCode).ToList();
             var sysActionMenus = dao.GetList(x => true).ToList();
@@ -32,13 +32,13 @@ namespace Cappuccino.BLL
                 return null;
             }
             //actionMenu转PearMenuData
-            List<PearMenuViewModel> list = new List<PearMenuViewModel>();
+            List<PearMenuModel> list = new List<PearMenuModel>();
             //返回list
-            List<PearMenuViewModel> pearMenuDatas = new List<PearMenuViewModel>();
-            Dictionary<int, PearMenuViewModel> dict = new Dictionary<int, PearMenuViewModel>();
+            List<PearMenuModel> pearMenuDatas = new List<PearMenuModel>();
+            Dictionary<int, PearMenuModel> dict = new Dictionary<int, PearMenuModel>();
             foreach (var item in sysActionList)
             {
-                PearMenuViewModel pearMenuData = new PearMenuViewModel();
+                PearMenuModel pearMenuData = new PearMenuModel();
                 pearMenuData.Id = item.Id;
                 pearMenuData.Title = item.Name;
                 pearMenuData.Icon = "layui-icon " + item.SysActionMenu.Icon;

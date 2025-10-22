@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTest", "UnitTest", "{B6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.Model", "Cappuccino.Model\Cappuccino.Model.csproj", "{A42FC2EF-0277-4ED7-B6A2-223323D52EFC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.DataAccess", "Cappuccino.DataAccess\Cappuccino.DataAccess.csproj", "{0C3210E2-68B6-4E93-B160-C87E1963BACD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{A42FC2EF-0277-4ED7-B6A2-223323D52EFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A42FC2EF-0277-4ED7-B6A2-223323D52EFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A42FC2EF-0277-4ED7-B6A2-223323D52EFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C3210E2-68B6-4E93-B160-C87E1963BACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C3210E2-68B6-4E93-B160-C87E1963BACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C3210E2-68B6-4E93-B160-C87E1963BACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C3210E2-68B6-4E93-B160-C87E1963BACD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +100,7 @@ Global
 		{224ACBD7-CEE0-446E-A27D-6BF038D3AA92} = {12B56218-4818-4405-98AA-06617049FAC7}
 		{671F56B8-38B6-4081-B539-11737DB0E580} = {B6AD7135-21CC-4B78-B896-D4EAE1FE2EF4}
 		{A42FC2EF-0277-4ED7-B6A2-223323D52EFC} = {CFE6CC83-F883-4942-8A9A-B3FE73FF6907}
+		{0C3210E2-68B6-4E93-B160-C87E1963BACD} = {F4F3371E-ECDC-4C02-94E1-B01E73E140EB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEE7F93B-93C4-4C52-B912-3C6862B7FA94}

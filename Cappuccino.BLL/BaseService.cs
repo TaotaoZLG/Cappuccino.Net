@@ -33,6 +33,11 @@ namespace Cappuccino.BLL
             return CurrentDao.GetListByPage(whereLambada, sortField, sortOrder, pageSize, pageIndex, out totalCount);
         }
 
+        public virtual IEnumerable<T> GetListByPage(string sql, string sortField, string sortOrder, int pageSize, int pageIndex)
+        {
+            return CurrentDao.GetListByPage(sql, sortField, sortOrder, pageSize, pageIndex);
+        }
+
         public int GetRecordCount(Expression<Func<T, bool>> predicate)
         {
             return this.CurrentDao.GetRecordCount(predicate);
@@ -76,22 +81,34 @@ namespace Cappuccino.BLL
         public int UpdateList(params T[] entities)
         {
             return this.CurrentDao.UpdateList(entities);
+        }        
+
+        public IList<IDisposable> DisposableObjects { get; private set; }
+
+        protected void AddDisposableObject(object obj)
+        {
+            IDisposable disposable = obj as IDisposable;
+            if (disposable != null)
+            {
+                this.DisposableObjects.Add(disposable);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (IDisposable obj in this.DisposableObjects)
+            {
+                if (obj != null)
+                {
+                    obj.Dispose();
+                }
+            }
         }
 
         // 异步方法实现
         public async Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda)
         {
             return await CurrentDao.GetListAsync(whereLambda);
-        }
-
-        public async Task<(IQueryable<T>, int)> GetListByPageAsync<S>(Expression<Func<T, bool>> whereLambada,Expression<Func<T, S>> orderBy,int pageSize,int pageIndex,bool isAsc)
-        {
-            return await CurrentDao.GetListByPageAsync(whereLambada, orderBy, pageSize, pageIndex, isAsc);
-        }
-
-        public async Task<int> GetRecordCountAsync(Expression<Func<T, bool>> predicate)
-        {
-            return await CurrentDao.GetRecordCountAsync(predicate);
         }
 
         public async Task<int> AddAsync(T entity)
@@ -127,29 +144,6 @@ namespace Cappuccino.BLL
         public async Task<int> UpdateListAsync(params T[] entities)
         {
             return await CurrentDao.UpdateListAsync(entities);
-        }
-
-
-        public IList<IDisposable> DisposableObjects { get; private set; }
-
-        protected void AddDisposableObject(object obj)
-        {
-            IDisposable disposable = obj as IDisposable;
-            if (disposable != null)
-            {
-                this.DisposableObjects.Add(disposable);
-            }
-        }
-
-        public void Dispose()
-        {
-            foreach (IDisposable obj in this.DisposableObjects)
-            {
-                if (obj != null)
-                {
-                    obj.Dispose();
-                }
-            }
         }
     }
 }

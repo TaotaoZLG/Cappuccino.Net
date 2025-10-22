@@ -18,7 +18,7 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 创建用户主键
         /// </summary>
-        public virtual int CreateUserId { get; set; }
+        public virtual int? CreateUserId { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -28,7 +28,7 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 修改用户主键
         /// </summary>
-        public virtual int UpdateUserId { get; set; }
+        public virtual int? UpdateUserId { get; set; }
 
         /// <summary>
         /// 修改时间

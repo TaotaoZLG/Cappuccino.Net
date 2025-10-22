@@ -88,6 +88,7 @@
                         { title: 'ID', field: 'id', hide: true },
                         { title: '账号', field: 'userName', align: 'center' },
                         { title: '昵称', field: 'nickName', align: 'center' },
+                        { title: '所在部门', field: 'nickName', align: 'center' },
                         { title: '头像', field: 'headIcon', align: 'center', templet: '#headIconTpl' },
                         { title: '手机号码', field: 'mobilePhone', align: 'center' },
                         { title: '邮箱', field: 'email', align: 'center' },
@@ -151,7 +152,7 @@
                     type: 2,
                     title: '新增',
                     shade: 0.1,
-                    area: ['600px', '500px'],
+                    area: ['800px', '650px'],
                     content: MODULE_PATH + 'Create',
                     cancel: function (index, layero) {
                         table.reload('tableId');
@@ -178,7 +179,7 @@
                     title: '修改',
                     offset: 'auto',
                     shade: 0.1,
-                    area: ['600px', '500px'],
+                    area: ['800px', '650px'],
                     content: MODULE_PATH + 'Edit/' + id,
                     cancel: function (index, layero) {
                         table.reload('tableId');

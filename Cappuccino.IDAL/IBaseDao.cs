@@ -20,6 +20,14 @@ namespace Cappuccino.IDAL
         IQueryable<T> GetList(Expression<Func<T, bool>> whereLambda);
 
         /// <summary>
+        /// 执行原生SQL查询
+        /// </summary>
+        /// <param name="sql">SQL查询语句</param>
+        /// <param name="parameters">SQL参数（避免注入）</param>
+        /// <returns>查询结果集</returns>
+        IEnumerable<T> GetList(string sql, params object[] parameters);
+
+        /// <summary>
         /// 分页查询
         /// </summary>
         /// <typeparam name="S"></typeparam>
@@ -33,6 +41,8 @@ namespace Cappuccino.IDAL
         IQueryable<T> GetListByPage<S>(Expression<Func<T, bool>> whereLambad, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, out int totalCount, bool isAsc);
 
         IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambad, string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount);
+
+        IEnumerable<T> GetListByPage(string sql, string sortField, string sortOrder, int pageSize, int pageIndex);
 
         /// <summary>
         /// 查询总数量
@@ -98,7 +108,7 @@ namespace Cappuccino.IDAL
         /// <param name="sql">命令字符串。</param>
         /// <param name="parameters">要应用于命令字符串的参数。</param>
         /// <returns> 执行命令后由数据库返回的结果。</returns>
-        int ExecuteSqlCommand(string sql, params object[] parameters);
+        int ExecuteSql(string sql, params object[] parameters);
 
         /// <summary>
         /// 创建一个原始 SQL 查询，该查询将返回给定泛型类型的元素。
@@ -107,15 +117,10 @@ namespace Cappuccino.IDAL
         /// <param name="sql">  SQL 查询字符串。</param>
         /// <param name="parameters"> 要应用于 SQL 查询字符串的参数。</param>
         /// <returns>查询所返回对象的类型</returns>
-        IEnumerable<TElement> SqlQuery<TElement>(string sql, params object[] parameters);
+        IEnumerable<TElement> ExecuteSqlQuery<TElement>(string sql, params object[] parameters);
 
         Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda);
-        Task<(IQueryable<T>, int)> GetListByPageAsync<S>(
-            Expression<Func<T, bool>> whereLambada,
-            Expression<Func<T, S>> orderBy,
-            int pageSize,
-            int pageIndex,
-            bool isAsc);
+        Task<(IQueryable<T>, int)> GetListByPageAsync<S>(Expression<Func<T, bool>> whereLambada, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, bool isAsc);
         Task<int> GetRecordCountAsync(Expression<Func<T, bool>> predicate);
         Task<int> AddAsync(T entity);
         Task<int> AddListAsync(params T[] entities);
@@ -125,5 +130,7 @@ namespace Cappuccino.IDAL
         Task<bool> UpdateAsync(T entity, string[] propertys);
         Task<int> UpdateListAsync(params T[] entities);
         Task<int> SaveChangesAsync();
+
+        Task<IEnumerable<TElement>> ExecuteSqlQueryAsync<TElement>(string sql, params object[] parameters);
     }
 }

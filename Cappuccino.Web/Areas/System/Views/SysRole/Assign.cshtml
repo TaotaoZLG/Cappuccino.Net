@@ -41,10 +41,22 @@
             let common = layui.common;
             let dtree = layui.dtree;
 
-
+            // 菜单权限
             dtree.render({
                 elem: "#assignMenuTree",
                 url: "/System/SysAction/Assign/@ViewBag.RoleId",
+                method: "get",
+                checkbar: true,
+                line: true,
+                ficon: ["1", "-1"],  // 显示非最后一级节点图标，隐藏最后一级节点图标
+                checkbarType: "self", // 默认就是all，其他的值为： no-all  p-casc   self  only
+                initLevel: 2,
+            });
+
+            // 数据权限
+            dtree.render({
+                elem: "#assignDataTree",
+                url: "/System/SysDepartment/GetDepartmentDtree/@ViewBag.RoleId",
                 method: "get",
                 checkbar: true,
                 line: true,

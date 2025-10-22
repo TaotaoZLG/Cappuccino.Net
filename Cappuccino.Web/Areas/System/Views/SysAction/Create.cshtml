@@ -68,6 +68,8 @@
                 method: 'get',
                 url: "/System/SysAction/GetMenuTree",
                 select: true,
+                line: true, // 有线树
+                ficon: ["1", "-1"],   // 显示非最后一级节点图标，隐藏最后一级节点图标
                 selectInputName: {
                     nodeId: "parentId",
                     context: "parentName"

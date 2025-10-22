@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Cappuccino.IDAL;
 
-
-namespace Cappuccino.DAL
+namespace Cappuccino.DataAccess
 {
+    /// <summary>
+    /// 实现数据访问基类
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class BaseDao<T> : IBaseDao<T>, IDisposable where T : class, new()
     {
         private DbContext Db
@@ -32,10 +37,29 @@ namespace Cappuccino.DAL
             }
         }
 
+        /// <summary>
+        /// 释放EF上下文
+        /// DbContext有默认的垃圾回收机制，但通过BaseRepository实现IDisposable接口，可以在不用EF上下文的时候手动回收，时效性更强。
+        /// </summary>
+        public void Dispose()
+        {
+            Db.Dispose();
+        }
+
+        public int SaveChanges()
+        {
+            return Db.SaveChanges();
+        }
+
         public virtual IQueryable<T> GetList(Expression<Func<T, bool>> whereLambda)
         {
             IQueryable<T> result = DbSet.Where(whereLambda);
             return result;
+        }
+
+        public virtual IEnumerable<T> GetList(string sql, params object[] parameters)
+        {
+            return Db.Database.SqlQuery<T>(sql, parameters);
         }
 
         public virtual IQueryable<T> GetListByPage<S>(Expression<Func<T, bool>> whereLambada, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, out int totalCount, bool isAsc)
@@ -91,6 +115,19 @@ namespace Cappuccino.DAL
 
             // 分页处理
             return orderedQuery.Skip(pageSize * (pageIndex - 1)).Take(pageSize);
+        }
+
+        public virtual IEnumerable<T> GetListByPage(string sql, string sortField, string sortOrder, int pageSize, int pageIndex)
+        {
+            sortOrder = string.IsNullOrEmpty(sortOrder) ? "asc" : sortOrder;
+            sortField = string.IsNullOrEmpty(sortField) ? "Id" : sortField;
+
+            var paginationSql = $@"
+                {sql}
+                ORDER BY {sortField} {sortOrder}
+                OFFSET ({pageIndex} - 1) * {pageSize} ROWS FETCH NEXT {pageSize} ROWS ONLY
+            ";
+            return Db.Database.SqlQuery<T>(paginationSql);
         }
 
         public virtual int GetRecordCount(Expression<Func<T, bool>> predicate)
@@ -196,28 +233,60 @@ namespace Cappuccino.DAL
             return result;
         }
 
-        /// <summary>
-        /// 释放EF上下文
-        /// DbContext有默认的垃圾回收机制，但通过BaseRepository实现IDisposable接口，可以在不用EF上下文的时候手动回收，时效性更强。
-        /// </summary>
-        public void Dispose()
-        {
-            Db.Dispose();
-        }
-
-        public int SaveChanges()
-        {
-            return Db.SaveChanges();
-        }
-
-        public int ExecuteSqlCommand(string sql, params object[] parameters)
+        public int ExecuteSql(string sql, params object[] parameters)
         {
             return Db.Database.ExecuteSqlCommand(sql, parameters);
         }
 
-        public IEnumerable<TElement> SqlQuery<TElement>(string sql, params object[] parameters)
+        public IEnumerable<TElement> ExecuteSqlQuery<TElement>(string sql, params object[] parameters)
         {
             return Db.Database.SqlQuery<TElement>(sql, parameters);
+        }
+
+        /// <summary>
+        /// 执行SQL查询返回DataTable
+        /// </summary>
+        /// <param name="sql">SQL语句</param>
+        /// <param name="parameters">SQL参数</param>
+        /// <returns>DataTable结果集</returns>
+        public virtual DataTable GetDataTable(string sql, params SqlParameter[] parameters)
+        {
+            using (var connection = new SqlConnection(Db.Database.Connection.ConnectionString))
+            {
+                var dataTable = new DataTable();
+                using (var adapter = new SqlDataAdapter(sql, connection))
+                {
+                    if (parameters != null && parameters.Length > 0)
+                    {
+                        adapter.SelectCommand.Parameters.AddRange(parameters);
+                    }
+                    adapter.Fill(dataTable);
+                }
+                return dataTable;
+            }
+        }
+
+        /// <summary>
+        /// 执行SQL查询返回DataSet（多表结果）
+        /// </summary>
+        /// <param name="sql">SQL语句（可包含多个查询）</param>
+        /// <param name="parameters">SQL参数</param>
+        /// <returns>DataSet结果集</returns>
+        public virtual DataSet GetDataSet(string sql, params SqlParameter[] parameters)
+        {
+            using (var connection = new SqlConnection(Db.Database.Connection.ConnectionString))
+            {
+                var dataSet = new DataSet();
+                using (var adapter = new SqlDataAdapter(sql, connection))
+                {
+                    if (parameters != null && parameters.Length > 0)
+                    {
+                        adapter.SelectCommand.Parameters.AddRange(parameters);
+                    }
+                    adapter.Fill(dataSet);
+                }
+                return dataSet;
+            }
         }
 
         public async Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda)
@@ -225,12 +294,7 @@ namespace Cappuccino.DAL
             return await Task.FromResult(DbSet.Where(whereLambda));
         }
 
-        public async Task<(IQueryable<T>, int)> GetListByPageAsync<S>(
-            Expression<Func<T, bool>> whereLambada,
-            Expression<Func<T, S>> orderBy,
-            int pageSize,
-            int pageIndex,
-            bool isAsc)
+        public async Task<(IQueryable<T>, int)> GetListByPageAsync<S>(Expression<Func<T, bool>> whereLambada, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, bool isAsc)
         {
             var query = DbSet.Where(whereLambada);
             var totalCount = await query.CountAsync();
@@ -309,6 +373,11 @@ namespace Cappuccino.DAL
         public async Task<int> SaveChangesAsync()
         {
             return await Db.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<TElement>> ExecuteSqlQueryAsync<TElement>(string sql, params object[] parameters)
+        {
+            return await Db.Database.SqlQuery<TElement>(sql, parameters).ToListAsync().ConfigureAwait(false);
         }
     }
 }

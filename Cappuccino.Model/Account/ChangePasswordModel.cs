@@ -1,6 +1,6 @@
 ﻿namespace Cappuccino.Model
 {
-    public class ChangePasswordViewModel
+    public class ChangePasswordModel
     {
         /// <summary>
         /// 登录用户名

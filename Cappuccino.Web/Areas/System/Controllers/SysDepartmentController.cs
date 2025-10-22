@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
 using Cappuccino.Entity;
@@ -41,7 +42,16 @@ namespace Cappuccino.Web.Areas.System.Controllers
         public ActionResult Edit(int id)
         {
             SysDepartmentEntity departmentEntity = _sysDepartmentService.GetList(x => x.Id == id).FirstOrDefault();
-            return View(departmentEntity);
+          
+            SysDepartmentModel model = new SysDepartmentModel
+            {
+                Id = departmentEntity.Id,
+                Name = departmentEntity.Name,
+                ParentId = departmentEntity.ParentId,
+                SortCode = departmentEntity.SortCode,
+                Remark = departmentEntity.Remark
+            };
+            return View(model);
         }
         #endregion
 
@@ -57,11 +67,17 @@ namespace Cappuccino.Web.Areas.System.Controllers
                     return WriteError("实体验证失败");
                 }
 
-                SysDepartmentEntity entity = new SysDepartmentEntity();
-                entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
-                entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
-                entity.CreateTime = DateTime.Now;
-                entity.UpdateTime = DateTime.Now;
+                SysDepartmentEntity entity = new SysDepartmentEntity
+                {
+                    Name = model.Name,
+                    ParentId = model.ParentId,
+                    SortCode = model.SortCode,
+                    Remark = model.Remark,
+                    CreateUserId = UserManager.GetCurrentUserInfo().Id,
+                    UpdateUserId = UserManager.GetCurrentUserInfo().Id,
+                    CreateTime = DateTime.Now,
+                    UpdateTime = DateTime.Now
+                };
                 _sysDepartmentService.Add(entity);
 
                 return WriteSuccess();
@@ -83,9 +99,13 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
             SysDepartmentEntity departmentEntity = new SysDepartmentEntity();
             departmentEntity.Id = model.Id;
+            departmentEntity.Name = model.Name;
+            departmentEntity.ParentId = model.ParentId;
+            departmentEntity.SortCode = model.SortCode;
+            departmentEntity.Remark = model.Remark;
             departmentEntity.UpdateTime = DateTime.Now;
             departmentEntity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
-            _sysDepartmentService.Update(departmentEntity, new string[] { "Name", "Code", "SortCode", "UpdateTime", "UpdateUserId" });
+            _sysDepartmentService.Update(departmentEntity, new string[] { "Name", "ParentId", "SortCode", "Remark", "UpdateTime", "UpdateUserId" });
             return WriteSuccess();
         }
 
@@ -117,6 +137,29 @@ namespace Cappuccino.Web.Areas.System.Controllers
             List<SysDepartmentEntity> list = _sysDepartmentService.GetList(queries.AsExpression<SysDepartmentEntity>()).OrderBy(x => x.SortCode).ToList();
 
             var result = new { code = 0, count = list.Count(), data = list };
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetDepartmentTree()
+        {
+            var data = _sysDepartmentService.GetDepartmentTree();
+            var result = new DtreeModel { Data = data, Status = new DtreeStatus() };
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetMaxSortCode()
+        {
+            int maxSortCode = _sysDepartmentService.GetMaxSortCode();
+            var result = new { status = 0, msg = "查询成功", data = maxSortCode };
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetDepartmentDtree(int id)
+        {
+            var data = _sysDepartmentService.GetDepartmentDtree(id);
+            var result = new DtreeModel { Data = data, Status = new DtreeStatus() };
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         #endregion

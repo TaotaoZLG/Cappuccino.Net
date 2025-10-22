@@ -6,14 +6,14 @@ using Cappuccino.Common.Enum;
 using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 
-namespace Cappuccino.DAL.Migrations
+namespace Cappuccino.DataAccess.Migrations
 {
-    internal sealed class Configuration : DbMigrationsConfiguration<Cappuccino.DAL.EfDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<EfDbContext>
     {
         public Configuration()
         {
-            //数据
-            AutomaticMigrationsEnabled = true;
+            // 是否自动迁移
+            AutomaticMigrationsEnabled = false;
         }
 
         protected override void Seed(EfDbContext context)

@@ -2,7 +2,7 @@
 
 namespace Cappuccino.Model
 {
-    public class PearMenuViewModel
+    public class PearMenuModel
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -10,7 +10,7 @@ namespace Cappuccino.Model
         public string Icon { get; set; }
         public string OpenType { get; set; }
         public string Href { get; set; }
-        public List<PearMenuViewModel> Children { get; set; } = new List<PearMenuViewModel>();
+        public List<PearMenuModel> Children { get; set; } = new List<PearMenuModel>();
         public int ParentId { get; set; }
     }
 

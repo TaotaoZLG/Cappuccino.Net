@@ -38,6 +38,12 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
+                    <label class="layui-form-label">部门</label>
+                    <div class="layui-input-block">
+                        <ul name="organizationTree" id="organizationTree"  class="dtree" data-id="0"></ul>
+                    </div>
+                </div>
+                <div class="layui-form-item">
                     <label class="layui-form-label">头像</label>
                     <div class="layui-input-inline">
                         <input name="HeadIcon" readonly id="HeadShot" placeholder="图片地址" value="~/Content/images/timg.jpg" class="layui-input">
@@ -88,11 +94,27 @@
 </form>
 @section Scripts {
     <script>
-        layui.use(['form', 'jquery', 'common','upload','select'], function () {
+        layui.use(['form', 'jquery', 'common', 'upload', 'select', 'dtree'], function () {
             let form = layui.form;
             let $ = layui.jquery;
             let common = layui.common;
             let upload = layui.upload;
+            let dtree = layui.dtree;
+
+            dtree.render({
+                elem: "#organizationTree",
+                method: 'get',
+                initLevel: "2", //默认展开层级为1
+                line: true, // 有线树
+                ficon: ["1", "-1"], // 设定一级图标样式。0表示方形加减图标，8表示小圆点图标
+                icon: ["0", "2"], // 设定二级图标样式。0表示文件夹图标，5表示叶子图标
+                url: "/System/SysDepartment/GetDepartmentTree",
+                select: true,
+                selectInputName: {
+                    nodeId: "parentId",
+                    context: "parentName"
+                },
+            });
 
             upload.render({
                 elem: '#btnUpload',

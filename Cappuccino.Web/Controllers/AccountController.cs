@@ -30,7 +30,7 @@ namespace Cappuccino.Web.Controllers
         [SkipCheckLogin]
         public ActionResult Login()
         {
-            LoginViewModel loginViewModel = new LoginViewModel()
+            LoginModel loginModel = new LoginModel()
             {
                 LoginName = "admin",
                 IsMember = true
@@ -38,9 +38,9 @@ namespace Cappuccino.Web.Controllers
 
             if (Request.Cookies[KeyManager.IsMember] != null)
             {
-                loginViewModel.IsMember = true;
+                loginModel.IsMember = true;
             }
-            return View(loginViewModel);
+            return View(loginModel);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Cappuccino.Web.Controllers
         #region 提交数据
         [HttpPost, SkipCheckLogin]
         [LogOperate(Title = "登录")]
-        public ActionResult Login(LoginViewModel loginViewModel)
+        public ActionResult Login(LoginModel loginModel)
         {
             try
             {
@@ -71,16 +71,16 @@ namespace Cappuccino.Web.Controllers
                 {
                     return WriteError("实体验证失败");
                 }
-                if (loginViewModel.VerifyCode.ToLower() != (string)TempData["verifyCode"])
+                if (loginModel.VerifyCode.ToLower() != (string)TempData["verifyCode"])
                 {
                     return WriteError("验证码失败");
                 }
-                bool result = _sysUserService.CheckLogin(loginViewModel.LoginName, loginViewModel.LoginPassword);
+                bool result = _sysUserService.CheckLogin(loginModel.LoginName, loginModel.LoginPassword);
                 if (result)
                 {
-                    var user = _sysUserService.GetList(x => x.UserName == loginViewModel.LoginName).FirstOrDefault();
+                    SysUserEntity user = _sysUserService.GetList(x => x.UserName == loginModel.LoginName).FirstOrDefault();
                     string userLoginId = Guid.NewGuid().ToString();
-                    if (loginViewModel.IsMember)
+                    if (loginModel.IsMember)
                     {
                         List<string> list = new List<string>
                         {
@@ -120,8 +120,8 @@ namespace Cappuccino.Web.Controllers
                 _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
                 {
                     LogType = OperateType.Exception.ToString(),
-                    Account = loginViewModel.LoginName,
-                    RealName = loginViewModel.LoginName,
+                    Account = loginModel.LoginName,
+                    RealName = loginModel.LoginName,
                     Description = "登录失败，" + ex.Message
                 });
                 return WriteError(ex);
@@ -153,7 +153,7 @@ namespace Cappuccino.Web.Controllers
 
         [HttpPost]
         [LogOperate(Title = "修改密码", BusinessType = (int)OperateType.Update)]
-        public ActionResult ModifyUserPwd(ChangePasswordViewModel viewModel)
+        public ActionResult ModifyUserPwd(ChangePasswordModel viewModel)
         {
             int userId = UserManager.GetCurrentUserInfo().Id;
             var result = WriteError("出现异常，密码修改失败");

@@ -139,7 +139,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 }
                 else if (viewModel.Type == ActionTypeEnum.Button)
                 {
-                    action.SysActionButton.ButtonCode = viewModel.Code;
+                    action.SysActionButton.ButtonCode = viewModel.ButtonCode;
                     action.SysActionButton.Location = viewModel.Location;
                     action.SysActionButton.ButtonClass = viewModel.ButtonClass;
                     action.SysActionButton.ButtonIcon = viewModel.ButtonIcon;
@@ -210,7 +210,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         public JsonResult Assign(int id)
         {
             var data = _sysActionService.GetDtree(id);
-            var result = new DtreeViewModel { Data = data, Status = new DtreeStatus() };
+            var result = new DtreeModel { Data = data, Status = new DtreeStatus() };
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
@@ -219,7 +219,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         public JsonResult GetMenuTree()
         {
             var data = _sysActionService.GetMenuTree();
-            var result = new DtreeViewModel { Data = data, Status = new DtreeStatus() };
+            var result = new DtreeModel { Data = data, Status = new DtreeStatus() };
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         #endregion

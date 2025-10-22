@@ -12,45 +12,27 @@
         <div class="main-container">
             <div class="main-container">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">权限类型</label>
-                    <div class="layui-input-block">
-                        @Html.DropDownList("type", EnumHelper.GetSelectList(typeof(ActionTypeEnum)), new Dictionary<string, object> { { "disabled", "disabled" } })
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">上级菜单</label>
+                    <label class="layui-form-label">上级部门</label>
                     <div class="layui-input-block">
                         <ul id="parentIdSelect" class="dtree" data-id="0" data-value="@Model.ParentId"></ul>
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">菜单名称</label>
+                    <label class="layui-form-label">部门名称</label>
                     <div class="layui-input-block">
-                        <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入菜单名称" class="layui-input">
+                        <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入部门名称" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">权限标识</label>
+                    <label class="layui-form-label">显示顺序</label>
                     <div class="layui-input-block">
-                        <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入权限标识" class="layui-input">
+                        <input type="text" name="sortCode" lay-verify="required" autocomplete="off" placeholder="请输入显示顺序" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">排序码</label>
+                    <label class="layui-form-label">备注</label>
                     <div class="layui-input-block">
-                        <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">菜单图标</label>
-                    <div class="layui-input-block">
-                        <input type="text" id="icon" name="icon" value="layui-icon-face-smile" lay-filter="icon" style="display: none;">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">路径</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="url" autocomplete="off" placeholder="请输入路径" class="layui-input">
+                        <input type="text" name="remark" autocomplete="off" placeholder="请输入备注" class="layui-input">
                     </div>
                 </div>
             </div>
@@ -79,35 +61,17 @@
             let iconPicker = layui.iconPicker;
 
             form.val("formEdit", {
-                "Type": "@Model.Type",
                 "name": "@Model.Name",
-                "code": "@Model.Code",
                 "sortCode": "@Model.SortCode",
-                "icon": "@Model.SysActionMenu.Icon",
-                "url": "@Model.SysActionMenu.Url"
+                "remark": "@Model.Remark"
             });
-
-            iconPicker.render({
-                elem: '#icon',
-                type: 'fontClass',
-                search: true,
-                page: true,
-                limit: 16,
-                click: function (data) {
-                    console.log(data);
-                },
-                success: function (d) {
-                    console.log(d);
-                }
-            });
-
-            iconPicker.checkIcon('iconPicker', '@Model.SysActionMenu.Icon');
 
             dtree.render({
                 elem: "#parentIdSelect",
                 method: 'get',
-                url: "/System/SysAction/GetMenuTree",
+                url: "/System/SysDepartment/GetDepartmentTree",
                 select: true,
+                line: true, // 有线树
                 selectInputName: {
                     nodeId: "parentId",
                     context: "parentName"
@@ -115,7 +79,7 @@
             });
 
             form.on("submit(edit)", function (data) {
-                common.ajax("/System/SysAction/Edit", "post", data.field, true, true).done(function (response) {
+                common.ajax("/System/SysDepartment/Edit", "post", data.field, true, true).done(function (response) {
                     layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
                         parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
                         parent.refresh();

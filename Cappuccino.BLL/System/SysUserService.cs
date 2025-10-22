@@ -37,7 +37,7 @@ namespace Cappuccino.BLL
             }
         }
 
-        public bool ModifyUserPwd(int userId, ChangePasswordViewModel viewModel)
+        public bool ModifyUserPwd(int userId, ChangePasswordModel viewModel)
         {
             string salt = VerifyCodeUtils.CreateVerifyCode(5);
             string passwordHash = Md5Utils.EncryptTo32(salt + viewModel.Password);

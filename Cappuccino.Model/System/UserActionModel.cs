@@ -14,7 +14,7 @@
 
     }
 
-    public class UserActionSaveViewModel : UserActionModel
+    public class UserActionSaveModel : UserActionModel
     {
         public string LAY_TABLE_INDEX { get; set; }
         public string pid { get; set; }

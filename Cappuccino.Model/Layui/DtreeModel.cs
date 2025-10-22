@@ -2,7 +2,7 @@
 
 namespace Cappuccino.Model
 {
-    public class DtreeViewModel
+    public class DtreeModel
     {
         public DtreeStatus Status { get; set; }
         public List<DtreeData> Data { get; set; }
@@ -12,6 +12,7 @@ namespace Cappuccino.Model
     {
         public string Id { get; set; }
         public string Title { get; set; }
+        public string Type { get; set; }
         public string ParentId { get; set; }
         public List<DtreeData> Children { get; set; } = new List<DtreeData>();
         public string CheckArr = "0";

@@ -13,6 +13,6 @@ namespace Cappuccino.Model
         public string Remark { get; set; }
 
         public virtual ICollection<SysUserModel> SysUsers { get; set; }
-        public virtual ICollection<SysActionViewModel> SysActions { get; set; }
+        public virtual ICollection<SysActionModel> SysActions { get; set; }
     }
 }

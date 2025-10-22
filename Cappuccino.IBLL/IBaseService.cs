@@ -34,6 +34,20 @@ namespace Cappuccino.IBLL
         IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambad, string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount);
 
         /// <summary>
+        /// 原生SQL分页查询
+        /// </summary>
+        /// <typeparam name="TElement">返回结果类型</typeparam>
+        /// <param name="sql">基础查询SQL（不含排序和分页）</param>
+        /// <param name="parameters">SQL参数（防注入）</param>
+        /// <param name="sortField">排序字段（对应SQL查询结果中的列名）</param>
+        /// <param name="sortOrder">排序方向（asc/desc）</param>
+        /// <param name="pageSize">每页条数</param>
+        /// <param name="pageIndex">页码（从1开始）</param>
+        /// <param name="totalCount">输出总条数</param>
+        /// <returns>分页数据列表</returns>
+        IEnumerable<T> GetListByPage(string sql, string sortField, string sortOrder, int pageSize, int pageIndex);
+
+        /// <summary>
         /// 查询总数量
         /// </summary>
         /// <param name="predicate"></param>
@@ -91,13 +105,6 @@ namespace Cappuccino.IBLL
 
         Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda);
 
-        Task<(IQueryable<T>, int)> GetListByPageAsync<S>(
-            Expression<Func<T, bool>> whereLambada,
-            Expression<Func<T, S>> orderBy,
-            int pageSize,
-            int pageIndex,
-            bool isAsc);
-        Task<int> GetRecordCountAsync(Expression<Func<T, bool>> predicate);
         Task<int> AddAsync(T entity);
         Task<int> AddListAsync(params T[] entities);
         Task<int> DeleteAsync(T entity);

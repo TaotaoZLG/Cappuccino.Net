@@ -3,7 +3,6 @@
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
-
 <div class="layui-card">
     <div class="layui-card-body">
         <form class="layui-form">
@@ -84,10 +83,10 @@
                     cols: [
                         [
                             { type: 'checkbox' },
-                            { field: 'name', minWidth: 200, title: '权限名称' },
-                            { field: 'type', title: '权限类型', templet: '#typeTpl' },
+                            { field: 'name', minWidth: 200, title: '部门名称' },
                             { field: 'sortCode', title: '排序' },
                             { field: 'remark', title: '备注' },
+                            { field: 'createTime', title: '创建时间' },
                             { title: '操作', templet: '#operationTpl', width: 150, align: 'center' }
                         ]
                     ],
@@ -110,7 +109,7 @@
                 var $tds = $('#tableId').next('.treeTable').find('.layui-table-body tbody tr td');
                 if (!keyword) {
                     $tds.css('background-color', 'transparent');
-                    layer.msg("请输入部门名称", { icon: 5 });
+                    layer.msg("请输入关键字", { icon: 5 });
                     return;
                 }
                 var searchCount = 0;
@@ -139,10 +138,9 @@
                 } else if (obj.event === 'edit') {
                     window.edit(obj.data.id);
                 }
-            })
+            });
 
             table.on('toolbar(tableId)', function (obj) {
-                console.log(obj);
                 if (obj.event === 'create') {
                     window.create();
                 } else if (obj.event === 'refresh') {
@@ -174,11 +172,11 @@
                 });
             }
 
-            window.delete = function (obj) {
+            window.delete = function (id) {
                 layer.confirm('确定要删除该用户', { icon: 3, title: '提示' }, function (index) {
-                    common.ajax(MODULE_PATH + "Delete", "post", { id: obj.data.id }, true, true).done(function (response) {
+                    common.ajax(MODULE_PATH + "Delete", "post", { id: id }, true, true).done(function (response) {
                         layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
-                            obj.del();
+                            refresh();
                         });
                     }).fail(function (error) {
                         console.log(error)

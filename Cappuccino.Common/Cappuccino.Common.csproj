@@ -60,9 +60,11 @@
     <Compile Include="Enum\EnabledMarkEnum.cs" />
     <Compile Include="Enum\PositionEnum.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Extensions\Extensions.Convert.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helper\AsyncTaskHelper.cs" />
     <Compile Include="Helper\CookieHelper.cs" />
+    <Compile Include="Helper\DataTableHelper.cs" />
     <Compile Include="Helper\DeepCopyHelper.cs" />
     <Compile Include="Extensions\JsonExtensions.cs" />
     <Compile Include="Helper\SessionHelper.cs" />

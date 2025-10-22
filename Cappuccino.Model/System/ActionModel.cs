@@ -4,7 +4,7 @@ namespace Cappuccino.Model
 {
     public class ActionModel
     {
-        /// 权限名
+        /// Id
         /// </summary>
         public int Id { get; set; }
 

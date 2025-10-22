@@ -1,7 +1,7 @@
 ﻿using System.Data.Entity.ModelConfiguration;
 using Cappuccino.Entity;
 
-namespace Cappuccino.DAL.Mapping
+namespace Cappuccino.DataAccess.Mapping
 {
     public class SysUserMap : EntityTypeConfiguration<SysUserEntity>
     {
@@ -11,10 +11,12 @@ namespace Cappuccino.DAL.Mapping
             this.HasKey(x => x.Id);
             this.HasMany(x => x.SysRoles).WithMany(x => x.SysUsers).Map(x => x.ToTable("SysUserRole").MapLeftKey("UserId").MapRightKey("RoleId"));
             this.HasMany(x => x.SysUserActions).WithRequired(x => x.SysUser).HasForeignKey(x => x.UserId);
+
             //指定索引，不能重复
             this.HasIndex(c => c.UserName).IsUnique();
             this.Property(x => x.UserName).HasMaxLength(50).IsRequired();
             this.Property(x => x.NickName).HasMaxLength(50).IsRequired();
+            this.Property(x => x.DepartmentId).IsOptional();
             this.Property(x => x.PasswordHash).HasMaxLength(50).IsRequired();
             this.Property(x => x.PasswordSalt).HasMaxLength(50).IsRequired();
             this.Property(x => x.HeadIcon).HasMaxLength(50).IsRequired();

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Cappuccino.Model
 {
-    public class LoginViewModel
+    public class LoginModel
     {
         [DisplayName("帐号"), Required(ErrorMessage = "帐号非空")]
         public string LoginName { get; set; }

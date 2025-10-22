@@ -2,7 +2,7 @@
 using System.Data.Entity.ModelConfiguration;
 using Cappuccino.Entity;
 
-namespace Cappuccino.DAL.Mapping
+namespace Cappuccino.DataAccess.Mapping
 {
     public class SysActionMap : EntityTypeConfiguration<SysActionEntity>
     {

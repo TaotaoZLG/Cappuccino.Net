@@ -1,4 +1,4 @@
-﻿@model Cappuccino.Model.SysActionViewModel
+﻿@model Cappuccino.Model.SysActionModel
 @using Cappuccino.Common.Enum
 
 @{
@@ -121,6 +121,7 @@
                 method: 'get',
                 url: "/System/SysAction/GetMenuTree",
                 select: true,
+                line: true, // 有线树
                 selectInputName: {
                     nodeId: "parentId",
                     context: "parentName"

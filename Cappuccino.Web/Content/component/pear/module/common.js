@@ -26,7 +26,7 @@
                 type: type || "get",
                 data: params || {},
                 dataType: "json",
-                async: async,
+                async: async || true,
                 beforeSend: function () {
                     if (load) {
                         loadIndex = layer.load(0, { shade: false });

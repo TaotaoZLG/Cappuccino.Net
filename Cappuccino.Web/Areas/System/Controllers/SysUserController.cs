@@ -17,7 +17,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
     public class SysUserController : BaseController
     {
         private readonly ISysUserService _sysUserService;
-        private readonly ISysRoleService _sysRoleService;   
+        private readonly ISysRoleService _sysRoleService;
 
         public SysUserController(ISysUserService sysUserService, ISysRoleService sysRoleService)
         {
@@ -138,6 +138,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             }
             entity.UserName = viewModel.UserName;
             entity.NickName = viewModel.NickName;
+            entity.DepartmentId = viewModel.DepartmentId;
             entity.HeadIcon = viewModel.HeadIcon;
             entity.MobilePhone = viewModel.MobilePhone;
             entity.Email = viewModel.Email;
@@ -232,6 +233,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 queries.Add(new Query { Name = "NickName", Operator = Query.Operators.Contains, Value = viewModel.NickName });
 
             }
+            var list = _sysUserService.GetListByPage(queries.AsExpression<SysUserEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new
             {
                 x.Id,
                 x.UserName,

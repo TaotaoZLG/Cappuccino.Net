@@ -11,6 +11,6 @@ namespace Cappuccino.IBLL
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        List<PearMenuViewModel> GetMenu(int userId);
+        List<PearMenuModel> GetMenu(int userId);
     }
 }

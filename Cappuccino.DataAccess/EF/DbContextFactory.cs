@@ -1,7 +1,7 @@
 ﻿using System.Data.Entity;
 using System.Runtime.Remoting.Messaging;
 
-namespace Cappuccino.DAL
+namespace Cappuccino.DataAccess
 {
     /// <summary>
     /// 当前EF上下文的抽象工厂

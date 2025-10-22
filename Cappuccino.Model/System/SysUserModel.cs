@@ -6,6 +6,7 @@ namespace Cappuccino.Model
     {
         public string UserName { get; set; }
         public string NickName { get; set; }
+        public int? DepartmentId { get; set; } // 用户所属部门ID
         public string PasswordHash { get; set; }
         public string PasswordSalt { get; set; }
         public string HeadIcon { get; set; }

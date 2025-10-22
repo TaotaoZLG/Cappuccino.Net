@@ -10,10 +10,10 @@ namespace Cappuccino.Model
         /// </summary>
         static EntityMapper()
         {
-            //1.将Model和Model中的所有实体类在AutoMapper内部建立一个关联
+            //1.将Entity和Model中的所有实体类在AutoMapper内部建立一个关联
             Mapper.CreateMap<SysUserEntity, SysUserModel>();
             Mapper.CreateMap<SysRoleEntity, SysRoleModel>();
-            Mapper.CreateMap<SysActionEntity, SysActionViewModel>();
+            Mapper.CreateMap<SysActionEntity, SysActionModel>();
             Mapper.CreateMap<SysActionMenuEntity, SysActionMenuModel>();
             Mapper.CreateMap<SysActionButtonEntity, SysActionButtonModel>();
             Mapper.CreateMap<SysUserActionEntity, SysUserActionModel>();
@@ -21,10 +21,10 @@ namespace Cappuccino.Model
             Mapper.CreateMap<SysDictEntity, SysDictModel>();
             Mapper.CreateMap<SysLogLogonEntity, SysLogLogonModel>();
 
-            //2.将Model和Model中的所有实体类在AutoMapper内部建立一个关联
+            //2.将Model和Entity中的所有实体类在AutoMapper内部建立一个关联
             Mapper.CreateMap<SysUserModel, SysUserEntity>();
             Mapper.CreateMap<SysRoleModel, SysRoleEntity>();
-            Mapper.CreateMap<SysActionViewModel, SysActionEntity>();
+            Mapper.CreateMap<SysActionModel, SysActionEntity>();
             Mapper.CreateMap<SysActionMenuModel, SysActionMenuEntity>();
             Mapper.CreateMap<SysActionButtonModel, SysActionButtonEntity>();
             Mapper.CreateMap<SysUserActionModel, SysUserActionEntity>();
@@ -59,14 +59,14 @@ namespace Cappuccino.Model
         #endregion
 
         #region SysAction
-        public static SysActionViewModel EntityMap(this SysActionEntity model)
+        public static SysActionModel EntityMap(this SysActionEntity model)
         {
-            return Mapper.Map<SysActionEntity, SysActionViewModel>(model);
+            return Mapper.Map<SysActionEntity, SysActionModel>(model);
         }
 
-        public static SysActionEntity EntityMap(this SysActionViewModel model)
+        public static SysActionEntity EntityMap(this SysActionModel model)
         {
-            return Mapper.Map<SysActionViewModel, SysActionEntity>(model);
+            return Mapper.Map<SysActionModel, SysActionEntity>(model);
         }
         #endregion
 

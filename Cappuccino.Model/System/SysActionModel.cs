@@ -3,7 +3,7 @@ using Cappuccino.Common.Enum;
 
 namespace Cappuccino.Model
 {
-    public class SysActionViewModel : BaseEntity
+    public class SysActionModel : BaseEntity
     {
 
         /// <summary>

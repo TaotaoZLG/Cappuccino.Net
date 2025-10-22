@@ -14,6 +14,6 @@
         /// </summary>
         public string Url { get; set; }
 
-        public SysActionViewModel SysAction { get; set; }
+        public SysActionModel SysAction { get; set; }
     }
 }
