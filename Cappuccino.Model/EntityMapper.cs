@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Cappuccino.Entity;
+using Cappuccino.Entity.System;
+using Cappuccino.Model.System;
 
 namespace Cappuccino.Model
 {
@@ -139,6 +141,18 @@ namespace Cappuccino.Model
         public static SysLogLogonEntity EntityMap(this SysLogLogonModel model)
         {
             return Mapper.Map<SysLogLogonModel, SysLogLogonEntity>(model);
+        }
+        #endregion
+
+        #region SysAutoJob
+        public static SysAutoJobModel EntityMap(this SysAutoJobEntity model)
+        {
+            return Mapper.Map<SysAutoJobEntity, SysAutoJobModel>(model);
+        }
+
+        public static SysAutoJobEntity EntityMap(this SysAutoJobModel model)
+        {
+            return Mapper.Map<SysAutoJobModel, SysAutoJobEntity>(model);
         }
         #endregion
     }

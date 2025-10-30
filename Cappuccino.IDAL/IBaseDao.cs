@@ -12,6 +12,8 @@ namespace Cappuccino.IDAL
     /// <typeparam name="T"></typeparam>
     public interface IBaseDao<T> where T : class, new()
     {
+        int SaveChanges();
+
         /// <summary>
         /// 查询
         /// </summary>
@@ -51,6 +53,7 @@ namespace Cappuccino.IDAL
         /// <returns></returns>
         int GetRecordCount(Expression<Func<T, bool>> predicate);
 
+        #region 添加
         /// <summary>
         /// 添加
         /// </summary>
@@ -66,6 +69,28 @@ namespace Cappuccino.IDAL
         int AddList(params T[] entities);
 
         /// <summary>
+        /// 插入单个实体
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <returns>是否插入成功</returns>
+        bool Insert(T entity);
+
+        /// <summary>
+        /// 插入单个实体并返回ID
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <returns>插入后的主键ID</returns>
+        object InsertAndGetId(T entity);
+
+        /// <summary>
+        /// 批量插入数据集
+        /// </summary>
+        /// <param name="entities">数据集</param>
+        void Insert(IEnumerable<T> entities);
+        #endregion
+
+        #region 删除
+        /// <summary>
         /// 删除
         /// </summary>
         /// <param name="entity"></param>
@@ -79,6 +104,35 @@ namespace Cappuccino.IDAL
         /// <returns></returns>
         int DeleteBy(Expression<Func<T, bool>> whereLambda);
 
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <param name="entities">删除的数据集</param>
+        void Delete(IEnumerable<T> entities);
+
+        /// <summary>
+        /// 通过ID删除实体
+        /// </summary>
+        /// <param name="id">实体ID</param>
+        /// <returns>是否删除成功</returns>
+        bool DeleteById(object id);
+
+        /// <summary>
+        /// 通过ID（逗号分隔ID）批量删除
+        /// </summary>
+        /// <param name="ids">逗号分隔的ID字符串</param>
+        /// <returns>是否删除成功</returns>
+        bool DeleteByIds(object ids);
+
+        /// <summary>
+        /// 通过Id列表批量删除
+        /// </summary>
+        /// <param name="list">ID列表</param>
+        /// <returns>是否删除成功</returns>
+        bool DeleteByIdList(List<object> list);
+        #endregion
+
+        #region 修改
         /// <summary>
         /// 更新
         /// </summary>
@@ -99,8 +153,7 @@ namespace Cappuccino.IDAL
         /// <param name="entities"></param>
         /// <returns></returns>
         int UpdateList(params T[] entities);
-
-        int SaveChanges();
+        #endregion
 
         /// <summary>
         /// 对数据库执行给定的 DDL/DML 命令。

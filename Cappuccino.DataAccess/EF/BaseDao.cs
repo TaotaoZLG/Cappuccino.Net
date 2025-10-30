@@ -163,6 +163,78 @@ namespace Cappuccino.DataAccess
             return result;
         }
 
+        /// <summary>
+        /// 插入单个实体
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <returns>是否插入成功</returns>
+        public virtual bool Insert(T entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity), "插入的实体不能为null");
+
+            DbSet.Add(entity);
+            return SaveChanges() > 0;
+        }
+
+        /// <summary>
+        /// 插入单个实体并返回ID
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <returns>插入后的主键ID</returns>
+        public virtual object InsertAndGetId(T entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity), "插入的实体不能为null");
+
+            // 调用Add方法添加实体
+            var addedEntity = DbSet.Add(entity);
+            // 保存更改（此时数据库会生成主键并回填到实体）
+            SaveChanges();
+
+            // 获取主键值（基于BaseField的Id属性）
+            var idProperty = typeof(T).GetProperty("Id");
+            if (idProperty == null)
+                throw new InvalidOperationException("实体类型未定义Id属性，无法获取主键");
+
+            return idProperty.GetValue(addedEntity);
+        }
+
+        /// <summary>
+        /// 批量插入数据集
+        /// </summary>
+        /// <param name="entities">数据集</param>
+        public virtual void Insert(IEnumerable<T> entities)
+        {
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities), "插入的数据集不能为null");
+
+            var entityList = entities.ToList();
+            if (!entityList.Any())
+                return; // 空集合直接返回
+
+            // 批量添加实体（每10条提交一次，避免内存占用过高）
+            int count = 0;
+            foreach (var entity in entityList)
+            {
+                if (entity == null) continue;
+                DbSet.Add(entity);
+                count++;
+
+                // 每累计10条提交一次
+                if (count % 10 == 0)
+                {
+                    SaveChanges();
+                }
+            }
+
+            // 提交剩余不足10条的记录
+            if (count % 10 != 0)
+            {
+                SaveChanges();
+            }
+        }
+
         public virtual int Delete(T entity)
         {
             DbSet.Attach(entity);
@@ -178,6 +250,117 @@ namespace Cappuccino.DataAccess
                 Db.Entry(item).State = EntityState.Deleted;
             }
             return -1;
+        }
+
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <param name="entities">删除的数据集</param>
+        public virtual void Delete(IEnumerable<T> entities)
+        {
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities), "删除的数据集不能为null");
+
+            var entityList = entities.ToList();
+            if (!entityList.Any())
+                return;
+
+            int count = 0;
+            foreach (var entity in entityList)
+            {
+                if (entity == null) continue;
+                DbSet.Attach(entity);
+                Db.Entry(entity).State = EntityState.Deleted;
+                count++;
+
+                // 每10条提交一次
+                if (count % 10 == 0)
+                {
+                    SaveChanges();
+                }
+            }
+
+            // 提交剩余记录
+            if (count % 10 != 0)
+            {
+                SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// 通过ID删除实体
+        /// </summary>
+        /// <param name="id">实体ID</param>
+        /// <returns>是否删除成功</returns>
+        public virtual bool DeleteById(object id)
+        {
+            if (id == null)
+                throw new ArgumentNullException(nameof(id), "ID不能为null");
+
+            // 获取实体类型的主键属性（默认Id）
+            var entity = DbSet.Find(id);
+            if (entity == null)
+                return false; // 实体不存在
+
+            DbSet.Remove(entity);
+            return SaveChanges() > 0;
+        }
+
+        /// <summary>
+        /// 通过ID（逗号分隔ID）批量删除
+        /// </summary>
+        /// <param name="ids">逗号分隔的ID字符串</param>
+        /// <returns>是否删除成功</returns>
+        public virtual bool DeleteByIds(object ids)
+        {
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids), "ID字符串不能为null");
+
+            var idsStr = ids.ToString();
+            if (string.IsNullOrWhiteSpace(idsStr))
+                return false;
+
+            // 分割ID字符串并转换为列表
+            var idList = idsStr.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                              .Select(id => (object)id)
+                              .ToList();
+
+            return DeleteByIdList(idList);
+        }
+
+        /// <summary>
+        /// 通过Id列表批量删除
+        /// </summary>
+        /// <param name="list">ID列表</param>
+        /// <returns>是否删除成功</returns>
+        public virtual bool DeleteByIdList(List<object> list)
+        {
+            if (list == null || !list.Any())
+                return false;
+
+            int count = 0;
+            foreach (var id in list)
+            {
+                var entity = DbSet.Find(id);
+                if (entity == null) continue;
+
+                DbSet.Remove(entity);
+                count++;
+
+                // 每10条提交一次
+                if (count % 10 == 0)
+                {
+                    SaveChanges();
+                }
+            }
+
+            // 提交剩余记录
+            if (count % 10 != 0)
+            {
+                count = SaveChanges();
+            }
+
+            return count > 0;
         }
 
         public virtual T Update(T entity)

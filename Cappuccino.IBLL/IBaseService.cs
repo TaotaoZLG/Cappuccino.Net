@@ -80,7 +80,7 @@ namespace Cappuccino.IBLL
         /// </summary>
         /// <param name="whereLambda"></param>
         /// <returns></returns>
-        int DeleteBy(Expression<Func<T, bool>> whereLambda);
+        int DeleteBy(Expression<Func<T, bool>> whereLambda);        
 
         /// <summary>
         /// 更新

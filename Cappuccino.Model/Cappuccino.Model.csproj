@@ -57,6 +57,8 @@
     <Compile Include="System\SysActionButtonModel.cs" />
     <Compile Include="System\SysActionModel.cs" />
     <Compile Include="System\SysActionMenuModel.cs" />
+    <Compile Include="System\SysAutoJobLogModel.cs" />
+    <Compile Include="System\SysAutoJobModel.cs" />
     <Compile Include="System\SysDictDetailModel.cs" />
     <Compile Include="System\SysDepartmentModel.cs" />
     <Compile Include="System\SysDictModel.cs" />

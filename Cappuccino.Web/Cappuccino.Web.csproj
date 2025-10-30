@@ -149,6 +149,9 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Areas\System\Controllers\SysAutoJobController.cs" />
+    <Compile Include="Areas\System\Controllers\SysAutoJobLogController.cs" />
+    <Compile Include="Areas\System\Controllers\SysConfigController.cs" />
     <Compile Include="Areas\System\Controllers\SysDepartmentController.cs" />
     <Compile Include="Areas\System\Controllers\SysActionController.cs" />
     <Compile Include="Areas\System\Controllers\SysActionButtonController.cs" />
@@ -525,6 +528,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\System\Views\SysConfig\" />
     <Folder Include="Upload\" />
   </ItemGroup>
   <ItemGroup>
@@ -587,6 +591,10 @@
     <Content Include="Areas\System\Views\SysDepartment\Create.cshtml" />
     <Content Include="Areas\System\Views\SysDepartment\Edit.cshtml" />
     <Content Include="Areas\System\Views\SysDepartment\Index.cshtml" />
+    <Content Include="Areas\System\Views\SysAutoJob\Create.cshtml" />
+    <Content Include="Areas\System\Views\SysAutoJob\Edit.cshtml" />
+    <Content Include="Areas\System\Views\SysAutoJob\Index.cshtml" />
+    <Content Include="Areas\System\Views\SysAutoJobLog\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\Tip.cshtml" />

@@ -44,9 +44,12 @@
   <ItemGroup>
     <Compile Include="BaseEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\SysAutoJobEntity.cs" />
     <Compile Include="System\SysActionEntity.cs" />
     <Compile Include="System\SysActionButtonEntity.cs" />
     <Compile Include="System\SysActionMenuEntity.cs" />
+    <Compile Include="System\SysAutoJobLogEntity.cs" />
+    <Compile Include="System\SysDataAuthorizeEntity.cs" />
     <Compile Include="System\SysDepartmentEntity.cs" />
     <Compile Include="System\SysLogOperateEntity.cs" />
     <Compile Include="System\SysRoleEntity.cs" />

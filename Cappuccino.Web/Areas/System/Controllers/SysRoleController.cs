@@ -126,9 +126,10 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         [HttpPost, CheckPermission("system.role.assign")]
         [LogOperate(Title = "角色授权", BusinessType = (int)OperateType.Authorize)]
-        public ActionResult Assign(int id, List<DtreeResponse> dtrees)
+        public ActionResult Assign(int id, List<DtreeResponse> menuPermissions, List<DtreeResponse> dataPermissions)
         {
-            _sysRoleService.Add(id, dtrees);
+            //_sysRoleService.Add(id, dtrees);
+            _sysRoleService.SavePermissions(id, menuPermissions, dataPermissions);
             return WriteSuccess("保存成功");
         }
 

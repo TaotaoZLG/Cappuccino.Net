@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
 using Cappuccino.Common.Util;
@@ -226,12 +227,14 @@ namespace Cappuccino.Web.Areas.System.Controllers
             if (!string.IsNullOrEmpty(viewModel.UserName))
             {
                 queries.Add(new Query { Name = "UserName", Operator = Query.Operators.Contains, Value = viewModel.UserName });
-
             }
             if (!string.IsNullOrEmpty(viewModel.NickName))
             {
                 queries.Add(new Query { Name = "NickName", Operator = Query.Operators.Contains, Value = viewModel.NickName });
-
+            }
+            if (!string.IsNullOrEmpty(viewModel.DepartmentId.ToString()))
+            { 
+                queries.Add(new Query { Name = "DepartmentId", Operator = Query.Operators.Equal, Value = viewModel.DepartmentId });
             }
             var list = _sysUserService.GetListByPage(queries.AsExpression<SysUserEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new
             {
