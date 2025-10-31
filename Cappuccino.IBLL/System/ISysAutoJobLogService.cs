@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cappuccino.Entity;
 using Cappuccino.Entity.System;
 
 namespace Cappuccino.IBLL.System
@@ -12,8 +13,15 @@ namespace Cappuccino.IBLL.System
         /// <summary>
         /// 记录任务执行日志
         /// </summary>
-        /// <param name="log">日志实体</param>
+        /// <param name="entity">日志实体</param>
         /// <returns>影响行数</returns>
-        int WriteJobLog(SysAutoJobLogEntity log);
+        int WriteJobLog(SysAutoJobLogEntity entity);
+
+        /// <summary>
+        /// 异步记录任务执行日志
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        Task<int> WriteJobLogAsync(SysAutoJobLogEntity entity);
     }
 }

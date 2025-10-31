@@ -10,26 +10,40 @@ using Quartz.Impl;
 
 namespace Cappuccino.Web.Core.AutoJob
 {
-    public class JobScheduler
+    /// <summary>
+    /// 实现调度器接口
+    /// </summary>
+    public class JobScheduler : IJobScheduler
     {
         private static object lockHelper = new object();
 
         private static IScheduler _scheduler = null;
-        public static IScheduler GetScheduler()
+
+        public JobScheduler()
         {
-            lock (lockHelper)
+            try
             {
-                if (_scheduler != null)
-                {
-                    return _scheduler;
-                }
-                else
+                lock (lockHelper)
                 {
                     ISchedulerFactory factory = new StdSchedulerFactory();
-                    IScheduler sched = factory.GetScheduler().Result;
-                    return sched;
+                    _scheduler = factory.GetScheduler().Result;
+                    if (!_scheduler.IsStarted)
+                    {
+                        _scheduler.Start().Wait(); // 启动调度器
+                        Log4netHelper.Info("Quartz调度器已启动");
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error("初始化调度器失败", ex);
+                throw;
+            }
+        }
+
+        public Task<string> Execute()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -95,6 +109,80 @@ namespace Cappuccino.Web.Core.AutoJob
                 }
 
                 bool result = _scheduler.DeleteJob(key).Result;
+                if (result) Log4netHelper.Info($"任务[{jobKey}]已停止");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"停止任务[{jobKey}]失败", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 异步启动定时任务（基于Cron表达式）
+        /// </summary>
+        public async Task<bool> StartJobAsync(string jobKey, string cronExpression)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(jobKey) || string.IsNullOrEmpty(cronExpression))
+                {
+                    Log4netHelper.Error("任务标识或Cron表达式不能为空");
+                    return false;
+                }
+
+                // 解析任务标识（格式：GroupName.JobName）
+                var (groupName, jobName) = ParseJobKey(jobKey);
+                var key = new JobKey(jobName, groupName);
+
+                // 若任务已存在，先删除再重建（使用await异步操作）
+                if (await _scheduler.CheckExists(key))
+                {
+                    await _scheduler.DeleteJob(key);
+                }
+
+                // 创建任务实例（关联执行器）
+                IJobDetail job = JobBuilder.Create<JobExecutor>()
+                    .WithIdentity(key)
+                    .Build();
+
+                // 创建Cron触发器
+                ITrigger trigger = TriggerBuilder.Create()
+                    .WithIdentity($"{jobName}Trigger", groupName)
+                    .WithCronSchedule(cronExpression)
+                    .Build();
+
+                // 异步调度任务
+                await _scheduler.ScheduleJob(job, trigger);
+                Log4netHelper.Info($"任务[{jobKey}]启动成功，Cron表达式：{cronExpression}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"启动任务[{jobKey}]失败", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 异步停止任务
+        /// </summary>
+        public async Task<bool> StopJobAsync(string jobKey)
+        {
+            try
+            {
+                var (groupName, jobName) = ParseJobKey(jobKey);
+                var key = new JobKey(jobName, groupName);
+
+                if (!await _scheduler.CheckExists(key))
+                {
+                    Log4netHelper.Warn($"任务[{jobKey}]不存在，无需停止");
+                    return true;
+                }
+
+                // 异步删除任务
+                bool result = await _scheduler.DeleteJob(key);
                 if (result) Log4netHelper.Info($"任务[{jobKey}]已停止");
                 return result;
             }

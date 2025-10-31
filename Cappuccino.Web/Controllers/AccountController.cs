@@ -62,7 +62,7 @@ namespace Cappuccino.Web.Controllers
 
         #region 提交数据
         [HttpPost, SkipCheckLogin]
-        [LogOperate(Title = "登录")]
+        [LogOperate(Title = "登录", BusinessType = (int)OperateType.Login)]
         public ActionResult Login(LoginModel loginModel)
         {
             try
@@ -133,7 +133,7 @@ namespace Cappuccino.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [LogOperate(Title = "退出系统")]
+        [LogOperate(Title = "退出系统", BusinessType = (int)OperateType.Exit)]
         public ActionResult Logout()
         {
             var user = UserManager.GetCurrentUserInfo();

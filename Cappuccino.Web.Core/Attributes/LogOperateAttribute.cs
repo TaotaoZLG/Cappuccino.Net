@@ -59,20 +59,15 @@ namespace Cappuccino.Web.Attributes
                 var request = context.HttpContext.Request;  // 获取请求对象
                 var response = context.HttpContext.Response; // 获取响应对象
 
-                var user = UserManager.GetCurrentUserInfo(); // 当前登录用户
-                if (user == null)
-                {
-                    user = context.Controller.TempData["UserInfo"] as SysUserEntity;
-                }
+                var user = UserManager.GetCurrentUserInfo() ?? context.Controller.TempData["UserInfo"] as SysUserEntity; // 当前登录用户
 
                 // 构建日志实体
                 SysLogOperateEntity logOperateEntity = new SysLogOperateEntity();
 
                 // 处理异常场景（优先返回异常信息）
-                StringBuilder stringBuilder = new StringBuilder();
+                var stringBuilder = new StringBuilder();
                 if (context.Exception != null)
                 {
-                    stringBuilder.Clear();
                     Exception innerEx = context.Exception.InnerException ?? context.Exception;
                     while (innerEx.InnerException != null)
                     {
@@ -84,9 +79,8 @@ namespace Cappuccino.Web.Attributes
                 }
                 else
                 {
-                    stringBuilder.Clear();
                     var result = context.Result as JsonResult;
-                    stringBuilder.Append(result.Data.ToString());
+                    stringBuilder.Append(result?.Data?.ToString());
 
                     logOperateEntity.LogStatus = 0;
                 }

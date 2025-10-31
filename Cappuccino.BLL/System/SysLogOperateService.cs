@@ -40,7 +40,6 @@ namespace Cappuccino.BLL.System
         /// <returns>影响的行数</returns>
         public async Task<int> WriteOperateLogAsync(SysLogOperateEntity logOperate)
         {
-            // 自动填充公共信息
             logOperate.IPAddress = NetHelper.GetIp; // 复用现有工具类获取IP
 
             // 如果NetHelper有异步版本的IP定位方法，建议使用：

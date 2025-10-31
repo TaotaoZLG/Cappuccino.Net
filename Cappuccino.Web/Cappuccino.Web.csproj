@@ -529,6 +529,8 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\System\Views\SysConfig\" />
+    <Folder Include="Areas\ToolManage\Controllers\" />
+    <Folder Include="Areas\ToolManage\Views\" />
     <Folder Include="Upload\" />
   </ItemGroup>
   <ItemGroup>

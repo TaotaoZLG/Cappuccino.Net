@@ -6,6 +6,7 @@ using Cappuccino.BLL.System;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.IBLL;
+using Cappuccino.Web.Core.AutoJob;
 
 namespace Cappuccino.Web
 {
@@ -55,6 +56,11 @@ namespace Cappuccino.Web
 
             //设置依赖解析器 将MVC的控制器对象实例 交由autofac来创建
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+
+            // 注册Quartz调度器（单例，确保全局唯一实例）
+            builder.RegisterType<JobScheduler>()
+                   .As<IJobScheduler>()
+                   .SingleInstance();
         }
     }
 }

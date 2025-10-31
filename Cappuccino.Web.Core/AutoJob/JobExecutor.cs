@@ -12,6 +12,9 @@ using Quartz;
 
 namespace Cappuccino.Common.AutoJob
 {
+    /// <summary>
+    /// 任务执行器
+    /// </summary>
     public class JobExecutor : IJob
     {
         private readonly ISysAutoJobService _jobService;
@@ -50,7 +53,7 @@ namespace Cappuccino.Common.AutoJob
                 }
 
                 // 执行任务（假设任务类实现了IJobTask接口）
-                var task = (IJobTask)Activator.CreateInstance(jobType);
+                var task = (IJobScheduler)Activator.CreateInstance(jobType);
                 var result = await task.Execute();
 
                 // 更新日志成功信息
@@ -75,7 +78,7 @@ namespace Cappuccino.Common.AutoJob
             finally
             {
                 jobLogEntity.EndTime = DateTime.Now;
-                _jobLogService.WriteJobLog(jobLogEntity);
+                await _jobLogService.WriteJobLogAsync(jobLogEntity);
             }
         }
     }
