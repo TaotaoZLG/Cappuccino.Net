@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
+using Cappuccino.Common.Extensions;
 using Cappuccino.Entity.System;
 using Cappuccino.IBLL.System;
 using Cappuccino.Model;
@@ -156,7 +157,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [LogOperate(Title = "启动任务计划", BusinessType = (int)OperateType.Other)]
         public ActionResult Start(int id)
         {
-            var result = _sysAutoJobService.StartJob(id);
+            var result = _sysAutoJobService.StartJob(id).Result;
             return result ? WriteSuccess("启动成功") : WriteError("启动失败");
         }
 
@@ -164,7 +165,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [LogOperate(Title = "停止任务计划", BusinessType = (int)OperateType.Other)]
         public ActionResult Stop(int id)
         {
-            var result = _sysAutoJobService.StopJob(id);
+            var result = _sysAutoJobService.StopJob(id).Result;
             return result ? WriteSuccess("停止成功") : WriteError("停止失败");
         }
 
@@ -172,7 +173,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [LogOperate(Title = "立即执行任务", BusinessType = (int)OperateType.Other)]
         public ActionResult ExecuteImmediately(int id)
         {
-            var result = _sysAutoJobService.ExecuteJobImmediately(id).Result;
+            var result = _sysAutoJobService.ExecuteJob(id).Result;
             return result ? WriteSuccess("执行命令已发送") : WriteError("执行失败");
         }
         #endregion

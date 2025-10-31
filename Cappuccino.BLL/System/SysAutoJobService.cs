@@ -28,20 +28,20 @@ namespace Cappuccino.BLL.System
         /// <summary>
         /// 启动任务：更新数据库状态 + 调用调度器启动定时任务
         /// </summary>
-        public bool StartJob(int id)
+        public async Task<bool> StartJob(int id)
         {
             try
             {
                 // 1. 查询任务
-                var job = _autoJobDao.GetList(x => x.Id == id).FirstOrDefault();
-                if (job == null)
+                var jobEntity = _autoJobDao.GetList(x => x.Id == id).FirstOrDefault();
+                if (jobEntity == null)
                 {
                     Log4netHelper.Error($"任务ID:{id}不存在");
                     return false;
                 }
 
                 // 3. 调用调度器启动任务
-                bool schedulerResult = _jobScheduler.StartJob(job.JobName, job.CronExpression);
+                bool schedulerResult = await _jobScheduler.ScheduleJob(jobEntity.JobName, jobEntity.JobGroup, jobEntity.CronExpression);
                 if (!schedulerResult)
                 {
                     Log4netHelper.Error($"调度器启动任务ID:{id}失败");
@@ -49,11 +49,11 @@ namespace Cappuccino.BLL.System
                 }
 
                 // 4. 更新数据库状态
-                job.LastExecuteTime = DateTime.Now;
-                job.UpdateTime = DateTime.Now;
-                _autoJobDao.Update(job);
+                jobEntity.LastExecuteTime = DateTime.Now;
+                jobEntity.UpdateTime = DateTime.Now;
+                _autoJobDao.Update(jobEntity);
 
-                return true;
+                return schedulerResult;
             }
             catch (Exception ex)
             {
@@ -65,19 +65,19 @@ namespace Cappuccino.BLL.System
         /// <summary>
         /// 停止任务：更新数据库状态 + 调用调度器停止任务
         /// </summary>
-        public bool StopJob(int id)
+        public async Task<bool> StopJob(int id)
         {
             try
             {
-                var job = _autoJobDao.GetList(x => x.Id == id).FirstOrDefault();
-                if (job == null)
+                SysAutoJobEntity jobEntity = _autoJobDao.GetList(x => x.Id == id).FirstOrDefault();
+                if (jobEntity == null)
                 {
                     Log4netHelper.Error($"任务ID:{id}不存在");
                     return false;
                 }
 
                 // 调用调度器停止任务
-                bool schedulerResult = _jobScheduler.StopJob(job.JobName);
+                bool schedulerResult = await _jobScheduler.PauseJob(jobEntity.JobName, jobEntity.JobGroup);
                 if (!schedulerResult)
                 {
                     Log4netHelper.Error($"调度器停止任务ID:{id}失败");
@@ -85,11 +85,11 @@ namespace Cappuccino.BLL.System
                 }
 
                 // 更新数据库状态
-                job.LastExecuteTime = DateTime.Now;
-                job.UpdateTime = DateTime.Now;
-                _autoJobDao.Update(job);
+                jobEntity.LastExecuteTime = DateTime.Now;
+                jobEntity.UpdateTime = DateTime.Now;
+                _autoJobDao.Update(jobEntity);
 
-                return true;
+                return schedulerResult;
             }
             catch (Exception ex)
             {
@@ -101,24 +101,24 @@ namespace Cappuccino.BLL.System
         /// <summary>
         /// 立即执行任务：触发调度器立即执行 + 记录执行时间
         /// </summary>
-        public async Task<bool> ExecuteJobImmediately(int id)
+        public async Task<bool> ExecuteJob(int id)
         {
             try
             {
-                SysAutoJobEntity job = _autoJobDao.GetList(x => x.Id == id).FirstOrDefault();
-                if (job == null)
+                SysAutoJobEntity jobEntity = _autoJobDao.GetList(x => x.Id == id).FirstOrDefault();
+                if (jobEntity == null)
                 {
                     Log4netHelper.Error($"任务ID:{id}不存在");
                     return false;
                 }
 
                 // 调用调度器立即执行
-                bool executeResult = await _jobScheduler.TriggerJobImmediately(job.JobName);
+                bool executeResult = await _jobScheduler.TriggerJob(jobEntity.JobName, jobEntity.JobGroup);
                 if (executeResult)
                 {
                     // 记录最后执行时间（无论任务是否成功，仅记录触发状态）
-                    job.LastExecuteTime = DateTime.Now;
-                    _autoJobDao.Update(job);
+                    jobEntity.LastExecuteTime = DateTime.Now;
+                    _autoJobDao.Update(jobEntity);
                 }
 
                 return executeResult;

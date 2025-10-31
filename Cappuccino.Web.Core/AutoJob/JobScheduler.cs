@@ -7,6 +7,7 @@ using Cappuccino.Common.AutoJob;
 using Cappuccino.Common.Log;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Util;
 
 namespace Cappuccino.Web.Core.AutoJob
 {
@@ -19,214 +20,200 @@ namespace Cappuccino.Web.Core.AutoJob
 
         private static IScheduler _scheduler = null;
 
+        /// <summary>
+        /// 构造函数，初始化调度器
+        /// </summary>
         public JobScheduler()
         {
+            lock (lockHelper)
+            {
+                // 创建默认的调度器工厂
+                ISchedulerFactory factory = new StdSchedulerFactory();
+                // 获取调度器实例
+                _scheduler = factory.GetScheduler().GetAwaiter().GetResult();
+            }
+        }
+
+        /// <summary>
+        /// 启动调度器
+        /// </summary>
+        public async Task Start()
+        {
             try
             {
-                lock (lockHelper)
+                if (!_scheduler.IsStarted)
                 {
-                    ISchedulerFactory factory = new StdSchedulerFactory();
-                    _scheduler = factory.GetScheduler().Result;
-                    if (!_scheduler.IsStarted)
-                    {
-                        _scheduler.Start().Wait(); // 启动调度器
-                        Log4netHelper.Info("Quartz调度器已启动");
-                    }
+                    await _scheduler.Start();
+                    Log4netHelper.Info("调度器已启动");
                 }
             }
             catch (Exception ex)
             {
-                Log4netHelper.Error("初始化调度器失败", ex);
-                throw;
+                Log4netHelper.Info("初始化调度器失败", ex);
             }
         }
 
-        public Task<string> Execute()
+        /// <summary>
+        /// 关闭调度器
+        /// </summary>
+        /// <param name="waitForJobsToComplete">是否等待任务完成后再关闭</param>
+        public void Shutdown(bool waitForJobsToComplete = false)
         {
-            throw new NotImplementedException();
+            if (_scheduler.IsStarted)
+            {
+                _scheduler.Shutdown(waitForJobsToComplete).GetAwaiter().GetResult();
+                Log4netHelper.Info("调度器已关闭");
+            }
         }
 
         /// <summary>
-        /// 启动定时任务（基于Cron表达式）
+        /// 添加定时任务（基于 Cron 表达式）
         /// </summary>
-        public bool StartJob(string jobKey, string cronExpression)
+        public async Task<bool> ScheduleJob(string jobName, string groupName, string cronExpression)
         {
             try
             {
-                if (string.IsNullOrEmpty(jobKey) || string.IsNullOrEmpty(cronExpression))
+                if (string.IsNullOrEmpty(jobName) || string.IsNullOrWhiteSpace(groupName) || string.IsNullOrWhiteSpace(cronExpression))
                 {
-                    Log4netHelper.Error("任务标识或Cron表达式不能为空");
+                    Log4netHelper.Error("任务名称或任务组名或Cron表达式不能为空");
                     return false;
                 }
 
-                // 解析任务标识（格式：GroupName.JobName）
-                var (groupName, jobName) = ParseJobKey(jobKey);
-                var key = new JobKey(jobName, groupName);
-
-                // 若任务已存在，先删除再重建
-                if (_scheduler.CheckExists(key).Result)
-                {
-                    _scheduler.DeleteJob(key).Wait();
-                }
-
-                // 创建任务实例（实际执行逻辑在JobExecutor中）
-                IJobDetail job = JobBuilder.Create<JobExecutor>()
-                    .WithIdentity(key)
-                    .Build();
-
-                // 创建Cron触发器
-                ITrigger trigger = TriggerBuilder.Create()
-                    .WithIdentity($"{jobName}Trigger", groupName)
-                    .WithCronSchedule(cronExpression)
-                    .Build();
-
-                // 调度任务
-                _scheduler.ScheduleJob(job, trigger).Wait();
-                Log4netHelper.Info($"任务[{jobKey}]启动成功，Cron表达式：{cronExpression}");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Log4netHelper.Error($"启动任务[{jobKey}]失败", ex);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 停止任务
-        /// </summary>
-        public bool StopJob(string jobKey)
-        {
-            try
-            {
-                var (groupName, jobName) = ParseJobKey(jobKey);
-                var key = new JobKey(jobName, groupName);
-
-                if (!_scheduler.CheckExists(key).Result)
-                {
-                    Log4netHelper.Warn($"任务[{jobKey}]不存在，无需停止");
-                    return true;
-                }
-
-                bool result = _scheduler.DeleteJob(key).Result;
-                if (result) Log4netHelper.Info($"任务[{jobKey}]已停止");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Log4netHelper.Error($"停止任务[{jobKey}]失败", ex);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 异步启动定时任务（基于Cron表达式）
-        /// </summary>
-        public async Task<bool> StartJobAsync(string jobKey, string cronExpression)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(jobKey) || string.IsNullOrEmpty(cronExpression))
-                {
-                    Log4netHelper.Error("任务标识或Cron表达式不能为空");
-                    return false;
-                }
-
-                // 解析任务标识（格式：GroupName.JobName）
-                var (groupName, jobName) = ParseJobKey(jobKey);
-                var key = new JobKey(jobName, groupName);
+                var jobKey = new JobKey(jobName, groupName);
 
                 // 若任务已存在，先删除再重建（使用await异步操作）
-                if (await _scheduler.CheckExists(key))
+                if (await _scheduler.CheckExists(jobKey))
                 {
-                    await _scheduler.DeleteJob(key);
+                    await _scheduler.DeleteJob(jobKey);
                 }
 
-                // 创建任务实例（关联执行器）
-                IJobDetail job = JobBuilder.Create<JobExecutor>()
-                    .WithIdentity(key)
+                // 定义任务详情
+                IJobDetail jobDetail = JobBuilder.Create<JobExecutor>()
+                    .WithIdentity(jobName, groupName)
                     .Build();
 
-                // 创建Cron触发器
+                // 定义触发器（基于 Cron 表达式）
                 ITrigger trigger = TriggerBuilder.Create()
-                    .WithIdentity($"{jobName}Trigger", groupName)
-                    .WithCronSchedule(cronExpression)
+                    .WithIdentity($"{jobName}_trigger", groupName)
+                    .WithCronSchedule(cronExpression) // 设置 Cron 表达式
                     .Build();
 
-                // 异步调度任务
-                await _scheduler.ScheduleJob(job, trigger);
-                Log4netHelper.Info($"任务[{jobKey}]启动成功，Cron表达式：{cronExpression}");
+                // 将任务和触发器添加到调度器
+                await _scheduler.ScheduleJob(jobDetail, trigger);
+                Log4netHelper.Info($"任务 [{groupName}.{jobName}] 已添加，Cron 表达式：{cronExpression}");
                 return true;
             }
             catch (Exception ex)
             {
-                Log4netHelper.Error($"启动任务[{jobKey}]失败", ex);
+                Log4netHelper.Error($"任务[{groupName}.{jobName}] 添加失败", ex);
                 return false;
             }
         }
 
         /// <summary>
-        /// 异步停止任务
+        /// 暂停指定任务
         /// </summary>
-        public async Task<bool> StopJobAsync(string jobKey)
+        public async Task<bool> PauseJob(string jobName, string groupName)
         {
             try
             {
-                var (groupName, jobName) = ParseJobKey(jobKey);
-                var key = new JobKey(jobName, groupName);
+                JobKey jobKey = new JobKey(jobName, groupName);
 
-                if (!await _scheduler.CheckExists(key))
+                if (!await _scheduler.CheckExists(jobKey))
                 {
-                    Log4netHelper.Warn($"任务[{jobKey}]不存在，无需停止");
-                    return true;
-                }
-
-                // 异步删除任务
-                bool result = await _scheduler.DeleteJob(key);
-                if (result) Log4netHelper.Info($"任务[{jobKey}]已停止");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Log4netHelper.Error($"停止任务[{jobKey}]失败", ex);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 立即触发任务执行（不影响原有定时计划）
-        /// </summary>
-        public async Task<bool> TriggerJobImmediately(string jobKey)
-        {
-            try
-            {
-                var (groupName, jobName) = ParseJobKey(jobKey);
-                var key = new JobKey(jobName, groupName);
-
-                if (!await _scheduler.CheckExists(key))
-                {
-                    Log4netHelper.Error($"任务[{jobKey}]不存在，无法立即执行");
+                    Log4netHelper.Warn($"任务[{groupName}.{jobName}]不存在，无需停止");
                     return false;
                 }
 
-                await _scheduler.TriggerJob(key);
+                await _scheduler.PauseJob(jobKey);
+                Log4netHelper.Info($"任务[{groupName}.{jobName}]已暂停");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"任务[{groupName}.{jobName}]暂停失败", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 恢复指定任务
+        /// </summary>
+        public async Task<bool> ResumeJob(string jobName, string groupName)
+        {
+            try
+            {
+                JobKey jobKey = new JobKey(jobName, groupName);
+
+                if (!await _scheduler.CheckExists(jobKey))
+                {
+                    Log4netHelper.Warn($"任务[{groupName}.{jobName}]不存在，无需恢复");
+                    return false;
+                }
+
+                await _scheduler.ResumeJob(jobKey);
+                Log4netHelper.Info($"任务[{groupName}.{jobName}]已恢复");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"任务[{groupName}.{jobName}]恢复失败", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 删除指定任务
+        /// </summary>
+        public async Task<bool> DeleteJob(string jobName, string groupName)
+        {
+            try
+            {
+                JobKey jobKey = new JobKey(jobName, groupName);
+
+                if (!await _scheduler.CheckExists(jobKey))
+                {
+                    Log4netHelper.Warn($"任务[{groupName}.{jobName}]不存在，无需删除");
+                    return false;
+                }
+
+                var isDeleted = await _scheduler.DeleteJob(jobKey);
+                Log4netHelper.Info($"任务[{groupName}.{jobName}]已删除");
+                return isDeleted;
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"任务[{groupName}.{jobName}]恢复失败", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 立即触发指定任务执行
+        /// </summary>
+        /// <param name="jobKey">任务唯一标识（格式：GroupName.JobName）</param>
+        /// <returns>是否触发成功</returns>
+        public async Task<bool> TriggerJob(string jobName, string groupName)
+        {
+            try
+            {
+                JobKey jobKey = new JobKey(jobName, groupName);
+                if (!await _scheduler.CheckExists(jobKey))
+                {
+                    Log4netHelper.Error($"任务[{jobKey}]不存在，无法立即执行");
+                    return false; // 任务不存在
+                }
+
+                // 立即触发任务（不影响原有调度）
+                await _scheduler.TriggerJob(jobKey);
                 Log4netHelper.Info($"任务[{jobKey}]已触发立即执行");
                 return true;
             }
             catch (Exception ex)
             {
-                Log4netHelper.Error($"立即执行任务[{jobKey}]失败", ex);
+                Log4netHelper.Info($"任务[{groupName}.{jobName}]立即执行失败", ex);
                 return false;
             }
-        }
-
-        /// <summary>
-        /// 解析任务标识为组名和任务名
-        /// </summary>
-        private (string groupName, string jobName) ParseJobKey(string jobKey)
-        {
-            var parts = jobKey.Split('.');
-            return parts.Length == 2 ? (parts[0], parts[1]) : ("DefaultGroup", jobKey);
         }
     }
 }
