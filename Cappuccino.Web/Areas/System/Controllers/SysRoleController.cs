@@ -67,7 +67,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.CreateTime = DateTime.Now;
                 entity.UpdateTime = DateTime.Now;
-                _sysRoleService.Add(entity);
+                _sysRoleService.Insert(entity);
                 return WriteSuccess();
             }
             catch (Exception ex)

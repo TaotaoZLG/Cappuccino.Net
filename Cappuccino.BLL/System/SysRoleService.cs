@@ -56,28 +56,31 @@ namespace Cappuccino.BLL
             role.SysActions.Clear();
             actions.ForEach(action => role.SysActions.Add(action));
             _roleDao.Update(role);
+            _roleDao.SaveChanges();
 
-            // 2. 处理数据权限（先删后加，避免冗余）
+            // 2. 处理数据权限
             _dataAuthorizeDao.DeleteByRoleId(roleId); // 删除旧数据权限
             if (dataPermissions != null && dataPermissions.Any())
             {
-                SysDataAuthorizeEntity authorizeEntity = new SysDataAuthorizeEntity();
+                List<SysDataAuthorizeEntity> authorizeEntityList = new List<SysDataAuthorizeEntity>();
+                int currentUserId = UserManager.GetCurrentUserInfo().Id;
 
                 // 补充创建人、创建时间等公共字段
-                dataPermissions.ForEach(dp =>
+                foreach (var dp in dataPermissions)
                 {
-                    authorizeEntity.DataId = dp.NodeId.ParseToInt();
-                    authorizeEntity.AuthorizeId = roleId;
-                    authorizeEntity.AuthorizeType = 1; // 1表示角色
-                    authorizeEntity.DataType = dp.ParntId == "0" ? 2 : 3;
-                    authorizeEntity.CreateUserId = UserManager.GetCurrentUserInfo().Id; // 实际应从当前登录用户获取
-                    authorizeEntity.CreateTime = DateTime.Now;
-                });
-
-                _dataAuthorizeDao.Insert(authorizeEntity);
+                    SysDataAuthorizeEntity authorizeEntity = new SysDataAuthorizeEntity
+                    {
+                        DataId = dp.NodeId.ParseToInt(),
+                        AuthorizeId = roleId,
+                        AuthorizeType = 1, // 1表示角色
+                        DataType = dp.Type == "dept" ? 2 : 3,
+                        CreateUserId = currentUserId,
+                        CreateTime = DateTime.Now
+                    };
+                    authorizeEntityList.Add(authorizeEntity);
+                }
+                _dataAuthorizeDao.Insert(authorizeEntityList);
             }
-
-            _roleDao.SaveChanges();
         }
     }
 }

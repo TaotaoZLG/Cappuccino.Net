@@ -27,61 +27,66 @@ namespace Cappuccino.Common.AutoJob
             _jobLogService = jobLogService;
         }
 
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
-            return Task.Run(async () =>
+            var jobId = context.JobDetail.JobDataMap.GetInt("JobId");
+            // 获取数据库中的任务
+            SysAutoJobEntity jobEntity = _jobService.GetList(x => x.Id == jobId).FirstOrDefault();
+
+            if (jobEntity == null) return;
+
+            // 初始化日志信息
+            SysAutoJobLogEntity jobLogEntity = new SysAutoJobLogEntity();
+            jobLogEntity.JobId = jobId;
+            jobLogEntity.JobName = jobEntity.JobName;
+            jobLogEntity.JobGroup = jobEntity.JobGroup;
+            jobLogEntity.StartTime = DateTime.Now;
+
+            try
             {
-                var jobId = context.JobDetail.JobDataMap.GetInt("JobId");
-                // 获取数据库中的任务
-                SysAutoJobEntity job = _jobService.GetList(x => x.Id == jobId).FirstOrDefault();
-
-                if (job == null) return;
-
-                // 初始化日志信息
-                SysAutoJobLogEntity jobLogEntity = new SysAutoJobLogEntity();
-                jobLogEntity.JobId = jobId;
-                jobLogEntity.JobName = job.JobName;
-                jobLogEntity.JobGroup = job.JobGroup;
-                jobLogEntity.StartTime = DateTime.Now;
-
-                try
+                // 反射执行任务类
+                var assembly = Assembly.GetExecutingAssembly();
+                var jobType = assembly.GetType(jobEntity.JobType);
+                if (jobType == null)
                 {
-                    // 反射执行任务类
-                    var assembly = Assembly.GetExecutingAssembly();
-                    var jobType = assembly.GetType(job.JobType);
-                    if (jobType == null)
-                    {
-                        throw new Exception($"未找到任务类型：{job.JobType}");
-                    }
+                    Log4netHelper.Info($"未找到任务类型：{jobEntity.JobType}");
+                }
 
-                    // 执行任务（假设任务类实现了IJobTask接口）
-                    var task = (IJobScheduler)Activator.CreateInstance(jobType);
-
-                    // 更新日志成功信息
+                // 执行任务（假设任务类实现了IJobTask接口）
+                var jobInstance = (IJobTask)Activator.CreateInstance(jobType);
+                if (jobInstance is IJob jobTask)
+                {
+                    await jobTask.Execute(context); // 调用正确的执行方法
                     jobLogEntity.ExecuteStatus = 1;
-                    jobLogEntity.ExecuteResult = "执行成功";
-                    jobLogEntity.Exception = null;
-                    jobLogEntity.ExecuteDuration = (int)(DateTime.Now - jobLogEntity.StartTime).TotalMilliseconds;
+                }
+                else
+                {
+                    Log4netHelper.Info($"任务类型 {jobEntity.JobType} 未实现 IJob 接口");
+                }
 
-                    // 更新任务最后执行时间
-                    job.LastExecuteTime = DateTime.Now;
-                    job.NextExecuteTime = context.NextFireTimeUtc?.LocalDateTime;
-                    await _jobService.UpdateAsync(job);
-                }
-                catch (Exception ex)
-                {
-                    // 记录异常信息
-                    jobLogEntity.ExecuteStatus = 0;
-                    jobLogEntity.ExecuteResult = "执行失败";
-                    jobLogEntity.Exception = ex.ToString();
-                    Log4netHelper.Error($"任务执行异常：{ex.Message}", ex);
-                }
-                finally
-                {
-                    jobLogEntity.EndTime = DateTime.Now;
-                    await _jobLogService.WriteJobLogAsync(jobLogEntity);
-                }
-            });
+                // 更新日志成功信息
+                jobLogEntity.ExecuteStatus = 1;
+                jobLogEntity.ExecuteResult = "执行成功";
+
+                // 更新任务最后执行时间
+                jobEntity.LastExecuteTime = DateTime.Now;
+                jobEntity.NextExecuteTime = context.NextFireTimeUtc?.LocalDateTime;
+                await _jobService.UpdateAsync(jobEntity);
+            }
+            catch (Exception ex)
+            {
+                // 记录异常信息
+                jobLogEntity.ExecuteStatus = 0;
+                jobLogEntity.ExecuteResult = "执行失败";
+                jobLogEntity.Exception = ex.ToString();
+                Log4netHelper.Error($"任务执行异常：{ex.Message}", ex);
+            }
+            finally
+            {
+                jobLogEntity.EndTime = DateTime.Now;
+                jobLogEntity.ExecuteDuration = (int)(jobLogEntity.EndTime - jobLogEntity.StartTime).TotalMilliseconds;
+                await _jobLogService.WriteJobLogAsync(jobLogEntity);
+            }
         }
     }
 }

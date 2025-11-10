@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cappuccino.Common.AutoJob;
 using Cappuccino.Common.Log;
+using Cappuccino.Entity.System;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Util;
@@ -12,20 +13,20 @@ using Quartz.Util;
 namespace Cappuccino.Web.Core.AutoJob
 {
     /// <summary>
-    /// 实现调度器接口
+    /// 实现调度器接口（基于Quartz.NET）
     /// </summary>
     public class JobScheduler : IJobScheduler
     {
-        private static object lockHelper = new object();
+        private static object _lockHelper = new object();
 
-        private static IScheduler _scheduler = null;
+        private readonly IScheduler _scheduler = null;
 
         /// <summary>
         /// 构造函数，初始化调度器
         /// </summary>
         public JobScheduler()
         {
-            lock (lockHelper)
+            lock (_lockHelper)
             {
                 // 创建默认的调度器工厂
                 ISchedulerFactory factory = new StdSchedulerFactory();
@@ -57,11 +58,11 @@ namespace Cappuccino.Web.Core.AutoJob
         /// 关闭调度器
         /// </summary>
         /// <param name="waitForJobsToComplete">是否等待任务完成后再关闭</param>
-        public void Shutdown(bool waitForJobsToComplete = false)
+        public async Task ShutdownAsync(bool waitForCompletion = false)
         {
             if (_scheduler.IsStarted)
             {
-                _scheduler.Shutdown(waitForJobsToComplete).GetAwaiter().GetResult();
+                await _scheduler.Shutdown(waitForCompletion);
                 Log4netHelper.Info("调度器已关闭");
             }
         }
@@ -69,43 +70,59 @@ namespace Cappuccino.Web.Core.AutoJob
         /// <summary>
         /// 添加定时任务（基于 Cron 表达式）
         /// </summary>
-        public async Task<bool> ScheduleJob(string jobName, string groupName, string cronExpression)
+        public async Task<bool> AddScheduleJob(SysAutoJobEntity jobEntity)
         {
             try
             {
-                if (string.IsNullOrEmpty(jobName) || string.IsNullOrWhiteSpace(groupName) || string.IsNullOrWhiteSpace(cronExpression))
+                // Cron表达式校验
+                if (!CronExpression.IsValidExpression(jobEntity.CronExpression))
                 {
-                    Log4netHelper.Error("任务名称或任务组名或Cron表达式不能为空");
+                    Log4netHelper.Error($"Cron表达式无效：{jobEntity.CronExpression}");
                     return false;
                 }
 
-                var jobKey = new JobKey(jobName, groupName);
+                if (jobEntity.StartTime == null)
+                {
+                    jobEntity.StartTime = DateTime.Now;
+                }
+                DateTimeOffset starRunTime = DateBuilder.NextGivenSecondDate(jobEntity.StartTime, 1);
+                if (jobEntity.EndTime == null)
+                {
+                    jobEntity.EndTime = DateTime.MaxValue.AddDays(-1);
+                }
+                DateTimeOffset endRunTime = DateBuilder.NextGivenSecondDate(jobEntity.EndTime, 1);
 
-                // 若任务已存在，先删除再重建（使用await异步操作）
+                var jobKey = new JobKey(jobEntity.JobName, jobEntity.JobGroup);
+
+                // 若任务已存在，先删除再重建
                 if (await _scheduler.CheckExists(jobKey))
                 {
                     await _scheduler.DeleteJob(jobKey);
                 }
 
-                // 定义任务详情
+                // 构建JobDetail（关联JobExecutor）
                 IJobDetail jobDetail = JobBuilder.Create<JobExecutor>()
-                    .WithIdentity(jobName, groupName)
+                    .WithIdentity(jobKey)
+                    .UsingJobData("JobId", jobEntity.Id)  // 传递任务ID
                     .Build();
 
-                // 定义触发器（基于 Cron 表达式）
-                ITrigger trigger = TriggerBuilder.Create()
-                    .WithIdentity($"{jobName}_trigger", groupName)
-                    .WithCronSchedule(cronExpression) // 设置 Cron 表达式
+                // 构建Cron触发器
+                var trigger = TriggerBuilder.Create()
+                    .StartAt(starRunTime)  // 支持开始时间
+                    .EndAt(endRunTime)  // 支持结束时间
+                    .WithIdentity($"{jobEntity.JobName}_trigger", jobEntity.JobGroup)
+                    .WithCronSchedule(jobEntity.CronExpression) // 设置 Cron 表达式
                     .Build();
 
-                // 将任务和触发器添加到调度器
-                await _scheduler.ScheduleJob(jobDetail, trigger);
-                Log4netHelper.Info($"任务 [{groupName}.{jobName}] 已添加，Cron 表达式：{cronExpression}");
+                // 调度任务
+                await _scheduler.ScheduleJob(jobDetail, trigger);  //将创建的任务和触发器条件添加到创建的任务调度器当中
+                await _scheduler.Start();  //启动任务调度器
+                Log4netHelper.Info($"任务 [{jobEntity.JobGroup}.{jobEntity.JobName}] 已添加，Cron 表达式：{jobEntity.CronExpression}");
                 return true;
             }
             catch (Exception ex)
             {
-                Log4netHelper.Error($"任务[{groupName}.{jobName}] 添加失败", ex);
+                Log4netHelper.Error($"任务[{jobEntity.JobGroup}.{jobEntity.JobName}] 添加失败", ex);
                 return false;
             }
         }

@@ -54,20 +54,22 @@ namespace Cappuccino.IBLL
         /// <returns></returns>
         int GetRecordCount(Expression<Func<T, bool>> predicate);
 
+        #region 添加
         /// <summary>
         /// 添加
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        int Add(T entity);
-
+        int Insert(T entity);
         /// <summary>
         /// 批量添加
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        int AddList(params T[] entities);
+        int Insert(IEnumerable<T> entities);
+        #endregion
 
+        #region 删除
         /// <summary>
         /// 删除
         /// </summary>
@@ -80,8 +82,10 @@ namespace Cappuccino.IBLL
         /// </summary>
         /// <param name="whereLambda"></param>
         /// <returns></returns>
-        int DeleteBy(Expression<Func<T, bool>> whereLambda);        
+        int DeleteBy(Expression<Func<T, bool>> whereLambda);
+        #endregion
 
+        #region 修改
         /// <summary>
         /// 更新
         /// </summary>
@@ -102,11 +106,11 @@ namespace Cappuccino.IBLL
         /// <param name="entities"></param>
         /// <returns></returns>
         int UpdateList(params T[] entities);
+        #endregion
 
         Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda);
-
-        Task<int> AddAsync(T entity);
-        Task<int> AddListAsync(params T[] entities);
+        Task<int> InsertAsync(T entity);
+        Task<int> InsertAsync(params T[] entities);
         Task<int> DeleteAsync(T entity);
         Task<int> DeleteByAsync(Expression<Func<T, bool>> whereLambda);
         Task<bool> UpdateAsync(T entity);

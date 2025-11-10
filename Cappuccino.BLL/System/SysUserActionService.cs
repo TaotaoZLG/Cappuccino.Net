@@ -72,7 +72,7 @@ namespace Cappuccino.BLL
                 {
                     userAction.HasPermisssin = false;
                 }
-                dao.Add(userAction);
+                dao.Insert(userAction);
             }
             return dao.SaveChanges() > 0;
         }

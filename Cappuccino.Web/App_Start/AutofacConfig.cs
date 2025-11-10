@@ -48,6 +48,15 @@ namespace Cappuccino.Web
             // 注册过滤器提供者
             builder.RegisterFilterProvider();
 
+            // 注册调度器（单例）
+            builder.RegisterType<JobScheduler>().As<IJobScheduler>().SingleInstance();
+
+            // 3. 注册所有实现IJobTask的业务任务
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+                .Where(t => typeof(IJobTask).IsAssignableFrom(t) && !t.IsAbstract)
+                .AsSelf()
+                .InstancePerDependency();
+
             //创建一个Autofac的容器
             var container = builder.Build();
 
@@ -56,11 +65,6 @@ namespace Cappuccino.Web
 
             //设置依赖解析器 将MVC的控制器对象实例 交由autofac来创建
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
-
-            // 注册Quartz调度器（单例，确保全局唯一实例）
-            builder.RegisterType<JobScheduler>()
-                   .As<IJobScheduler>()
-                   .SingleInstance();
         }
     }
 }

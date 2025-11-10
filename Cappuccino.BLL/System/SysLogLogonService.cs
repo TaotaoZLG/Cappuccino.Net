@@ -31,7 +31,7 @@ namespace Cappuccino.BLL
             logLogon.IPAddressName = NetHelper.GetIpLocation(logLogon.IPAddress);
             logLogon.CreateTime = DateTime.Now;
             logLogon.CreateUserId = UserManager.GetCurrentUserInfo()?.Id ?? 0;
-            return Add(logLogon);
+            return Insert(logLogon);
         }
     }
 }

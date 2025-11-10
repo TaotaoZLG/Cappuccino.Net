@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Linq;
 using System.Threading;
 using System.Web;
@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Cappuccino.Common.Log;
+using Cappuccino.Web.Core.AutoJob;
 using Cappuccino.Web.Core.Filters;
 
 namespace Cappuccino.Web
@@ -14,22 +15,22 @@ namespace Cappuccino.Web
     {
         protected void Application_Start()
         {
-            //×¢²áÇøÓòÂ·ÓÉ¹æÔò
+            //æ³¨å†ŒåŒºåŸŸè·¯ç”±è§„åˆ™
             AreaRegistration.RegisterAllAreas();
-            //×¢²áÈ«¾Ö¹ıÂËÆ÷
+            //æ³¨å†Œå…¨å±€è¿‡æ»¤å™¨
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            //×¢²áÍøÕ¾Â·ÓÉ
+            //æ³¨å†Œç½‘ç«™è·¯ç”±
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            //ÓÅ»¯css js
+            //ä¼˜åŒ–css js
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            //×¢²áautofac 
+            //æ³¨å†Œautofac 
             AutofacConfig.Register();
-            //¿ªÆôÒ»¸öÏß³Ì£¬É¨ÃèÒì³£ĞÅÏ¢¶ÓÁĞ¡£
+            //å¼€å¯ä¸€ä¸ªçº¿ç¨‹ï¼Œæ‰«æå¼‚å¸¸ä¿¡æ¯é˜Ÿåˆ—ã€‚
             ThreadPool.QueueUserWorkItem((a) =>
             {
                 while (true)
                 {
-                    //ÅĞ¶ÏÒ»ÏÂ¶ÓÁĞÖĞÊÇ·ñÓĞÊı¾İ
+                    //åˆ¤æ–­ä¸€ä¸‹é˜Ÿåˆ—ä¸­æ˜¯å¦æœ‰æ•°æ®
                     if (MyExceptionAttribute.ExecptionQueue.Count() > 0)
                     {
                         Exception ex = MyExceptionAttribute.ExecptionQueue.Dequeue();
@@ -39,17 +40,20 @@ namespace Cappuccino.Web
                         }
                         else
                         {
-                            //Èç¹û¶ÓÁĞÖĞÃ»ÓĞÊı¾İ£¬ĞİÏ¢
+                            //å¦‚æœé˜Ÿåˆ—ä¸­æ²¡æœ‰æ•°æ®ï¼Œä¼‘æ¯
                             Thread.Sleep(3000);
                         }
                     }
                     else
                     {
-                        //Èç¹û¶ÓÁĞÖĞÃ»ÓĞÊı¾İ£¬ĞİÏ¢
+                        //å¦‚æœé˜Ÿåˆ—ä¸­æ²¡æœ‰æ•°æ®ï¼Œä¼‘æ¯
                         Thread.Sleep(3000);
                     }
                 }
             });
+
+            // å¯åŠ¨Quartzè°ƒåº¦å™¨
+            new JobScheduler().Start().GetAwaiter().GetResult();
         }
     }
 }

@@ -528,7 +528,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\System\Views\SysConfig\" />
     <Folder Include="Areas\ToolManage\Controllers\" />
     <Folder Include="Areas\ToolManage\Views\" />
     <Folder Include="Upload\" />
@@ -597,6 +596,9 @@
     <Content Include="Areas\System\Views\SysAutoJob\Edit.cshtml" />
     <Content Include="Areas\System\Views\SysAutoJob\Index.cshtml" />
     <Content Include="Areas\System\Views\SysAutoJobLog\Index.cshtml" />
+    <Content Include="Areas\System\Views\SysConfig\Index.cshtml" />
+    <Content Include="Areas\System\Views\SysConfig\Create.cshtml" />
+    <Content Include="Areas\System\Views\SysConfig\Edit.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\Tip.cshtml" />

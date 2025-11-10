@@ -27,7 +27,7 @@ namespace Cappuccino.BLL.System
         {
             entity.CreateTime = DateTime.Now;
             entity.CreateUserId = UserManager.GetCurrentUserInfo()?.Id ?? 0;
-            return Add(entity);
+            return Insert(entity);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Cappuccino.BLL.System
         {
             entity.CreateTime = DateTime.Now;
             entity.CreateUserId = UserManager.GetCurrentUserInfo()?.Id ?? 0;
-            return await AddAsync(entity);
+            return await InsertAsync(entity);
         }
     }
 }

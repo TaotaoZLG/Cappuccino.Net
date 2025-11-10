@@ -18,6 +18,28 @@ namespace Cappuccino.BLL
             this.DisposableObjects = new List<IDisposable>();
         }
 
+        public IList<IDisposable> DisposableObjects { get; private set; }
+
+        protected void AddDisposableObject(object obj)
+        {
+            IDisposable disposable = obj as IDisposable;
+            if (disposable != null)
+            {
+                this.DisposableObjects.Add(disposable);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (IDisposable obj in this.DisposableObjects)
+            {
+                if (obj != null)
+                {
+                    obj.Dispose();
+                }
+            }
+        }
+
         public IQueryable<T> GetList(Expression<Func<T, bool>> whereLambda)
         {
             return this.CurrentDao.GetList(whereLambda);
@@ -43,17 +65,20 @@ namespace Cappuccino.BLL
             return this.CurrentDao.GetRecordCount(predicate);
         }
 
-        public int Add(T entity)
+        #region 添加
+        public int Insert(T entity)
         {
-            this.CurrentDao.Add(entity);
+            this.CurrentDao.Insert(entity);
             return CurrentDao.SaveChanges();
         }
 
-        public int AddList(params T[] entities)
+        public int Insert(IEnumerable<T> entities)
         {
-            return this.CurrentDao.AddList(entities);
+            return this.CurrentDao.Insert(entities);
         }
+        #endregion
 
+        #region 删除
         public int Delete(T entity)
         {
             this.CurrentDao.Delete(entity);
@@ -65,7 +90,9 @@ namespace Cappuccino.BLL
             this.CurrentDao.DeleteBy(whereLambda);
             return CurrentDao.SaveChanges();
         }
+        #endregion
 
+        #region 修改
         public bool Update(T entity)
         {
             this.CurrentDao.Update(entity);
@@ -81,29 +108,8 @@ namespace Cappuccino.BLL
         public int UpdateList(params T[] entities)
         {
             return this.CurrentDao.UpdateList(entities);
-        }        
-
-        public IList<IDisposable> DisposableObjects { get; private set; }
-
-        protected void AddDisposableObject(object obj)
-        {
-            IDisposable disposable = obj as IDisposable;
-            if (disposable != null)
-            {
-                this.DisposableObjects.Add(disposable);
-            }
         }
-
-        public void Dispose()
-        {
-            foreach (IDisposable obj in this.DisposableObjects)
-            {
-                if (obj != null)
-                {
-                    obj.Dispose();
-                }
-            }
-        }
+        #endregion        
 
         // 异步方法实现
         public async Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda)
@@ -111,12 +117,12 @@ namespace Cappuccino.BLL
             return await CurrentDao.GetListAsync(whereLambda);
         }
 
-        public async Task<int> AddAsync(T entity)
+        public async Task<int> InsertAsync(T entity)
         {
             return await CurrentDao.AddAsync(entity);
         }
 
-        public async Task<int> AddListAsync(params T[] entities)
+        public async Task<int> InsertAsync(params T[] entities)
         {
             return await CurrentDao.AddListAsync(entities);
         }

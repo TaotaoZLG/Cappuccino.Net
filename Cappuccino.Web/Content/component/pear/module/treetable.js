@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 树形表格 1.x
  * date:2018-07-22   License By https://easyweb.vip
  */
@@ -19,7 +19,7 @@ layui.define(['layer', 'table'], function (exports) {
                 treetable.init(param, param.data);
             } else {
                 $.getJSON(param.url, param.where, function (res) {
-                    if(param.parseData){
+                    if (param.parseData) {
                         res.data = param.parseData(res);
                         param.data = res.data;
                     }
@@ -37,14 +37,14 @@ layui.define(['layer', 'table'], function (exports) {
                 var tt = tNodes[i];
                 if (!tt.id) {
                     if (!param.treeIdName) {
-                        layer.msg('参数treeIdName不能为空', {icon: 5});
+                        layer.msg('参数treeIdName不能为空', { icon: 5 });
                         return;
                     }
                     tt.id = tt[param.treeIdName];
                 }
                 if (!tt.pid) {
                     if (!param.treePidName) {
-                        layer.msg('参数treePidName不能为空', {icon: 5});
+                        layer.msg('参数treePidName不能为空', { icon: 5 });
                         return;
                     }
                     tt.pid = tt[param.treePidName];
@@ -97,13 +97,16 @@ layui.define(['layer', 'table'], function (exports) {
                 $(param.elem).next().addClass('treeTable');
                 $('.treeTable .layui-table-page').css('display', 'none');
                 $(param.elem).next().attr('treeLinkage', param.treeLinkage);
-                // 绑定事件换成对body绑定
-                /*$('.treeTable .treeTable-icon').click(function () {
-                    treetable.toggleRows($(this), param.treeLinkage);
-                });*/
-                if (param.treeDefaultClose) {
+
+                // 处理默认展开层级
+                if (param.treeDefaultExpandLevel !== undefined && !isNaN(param.treeDefaultExpandLevel) && param.treeDefaultExpandLevel > 0) {
+                    //setTimeout(function () {
+                        treetable.expandToLevel(param.elem, param.treeDefaultExpandLevel, mData);
+                    //}, 100);
+                } else if (param.treeDefaultClose) {
                     treetable.foldAll(param.elem);
                 }
+
                 if (doneCallback) {
                     doneCallback(res, curr, count);
                 }
@@ -164,12 +167,12 @@ layui.define(['layer', 'table'], function (exports) {
         // 检查参数
         checkParam: function (param) {
             if (!param.treeSpid && param.treeSpid != 0) {
-                layer.msg('参数treeSpid不能为空', {icon: 5});
+                layer.msg('参数treeSpid不能为空', { icon: 5 });
                 return false;
             }
 
             if (!param.treeColIndex && param.treeColIndex != 0) {
-                layer.msg('参数treeColIndex不能为空', {icon: 5});
+                layer.msg('参数treeColIndex不能为空', { icon: 5 });
                 return false;
             }
             return true;
@@ -195,9 +198,31 @@ layui.define(['layer', 'table'], function (exports) {
                     $ti.trigger('click');
                 }
             });
+        },
+        // 新增：展开到指定层级
+        expandToLevel: function (dom, level, data) {
+            // 先折叠所有节点
+            treetable.foldAll(dom);
+            level = parseInt(level, 10);
+            if (isNaN(level) || level < 1) return;
+
+            // 遍历所有节点，展开指定层级
+            $(dom).next('.treeTable').find('.layui-table-body tbody tr').each(function () {
+                var $ti = $(this).find('.treeTable-icon');
+                var ttype = $ti.attr('lay-ttype');
+                var tpid = $ti.attr('lay-tpid');
+
+                // 计算当前节点层级（缩进数+1）
+                var nodeLevel = treetable.getEmptyNum(tpid, data) + 1;
+
+                // 如果是目录且层级小于等于目标层级，则展开
+                if ('dir' === ttype && nodeLevel <= level && !$ti.hasClass('open')) {
+                    $ti.trigger('click');
+                }
+            });
         }
     };
-	
+
     // 给图标列绑定事件
     $('body').on('click', '.treeTable .treeTable-icon', function () {
         var treeLinkage = $(this).parents('.treeTable').attr('treeLinkage');

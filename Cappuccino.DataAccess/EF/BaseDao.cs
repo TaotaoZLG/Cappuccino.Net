@@ -51,6 +51,8 @@ namespace Cappuccino.DataAccess
             return Db.SaveChanges();
         }
 
+        #region 查询
+
         public virtual IQueryable<T> GetList(Expression<Func<T, bool>> whereLambda)
         {
             IQueryable<T> result = DbSet.Where(whereLambda);
@@ -134,14 +136,16 @@ namespace Cappuccino.DataAccess
         {
             return DbSet.Where(predicate).Count();
         }
+        #endregion
 
-        public virtual T Add(T entity)
+        #region 添加
+        public virtual T Insert(T entity)
         {
             DbSet.Add(entity);
             return entity;
         }
 
-        public virtual int AddList(params T[] entities)
+        public virtual int Insert(params T[] entities)
         {
             int result = 0;
             for (int i = 0; i < entities.Count(); i++)
@@ -164,57 +168,18 @@ namespace Cappuccino.DataAccess
         }
 
         /// <summary>
-        /// 插入单个实体
-        /// </summary>
-        /// <param name="entity">实体</param>
-        /// <returns>是否插入成功</returns>
-        public virtual bool Insert(T entity)
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity), "插入的实体不能为null");
-
-            DbSet.Add(entity);
-            return SaveChanges() > 0;
-        }
-
-        /// <summary>
-        /// 插入单个实体并返回ID
-        /// </summary>
-        /// <param name="entity">实体</param>
-        /// <returns>插入后的主键ID</returns>
-        public virtual object InsertAndGetId(T entity)
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity), "插入的实体不能为null");
-
-            // 调用Add方法添加实体
-            var addedEntity = DbSet.Add(entity);
-            // 保存更改（此时数据库会生成主键并回填到实体）
-            SaveChanges();
-
-            // 获取主键值（基于BaseField的Id属性）
-            var idProperty = typeof(T).GetProperty("Id");
-            if (idProperty == null)
-                throw new InvalidOperationException("实体类型未定义Id属性，无法获取主键");
-
-            return idProperty.GetValue(addedEntity);
-        }
-
-        /// <summary>
         /// 批量插入数据集
         /// </summary>
         /// <param name="entities">数据集</param>
-        public virtual void Insert(IEnumerable<T> entities)
+        public virtual int Insert(IEnumerable<T> entities)
         {
-            if (entities == null)
-                throw new ArgumentNullException(nameof(entities), "插入的数据集不能为null");
+            int count = 0;
+
+            if (entities == null) throw new ArgumentNullException(nameof(entities), "插入的数据集不能为null");
 
             var entityList = entities.ToList();
-            if (!entityList.Any())
-                return; // 空集合直接返回
+            if (!entityList.Any()) return count; // 空集合直接返回
 
-            // 批量添加实体（每10条提交一次，避免内存占用过高）
-            int count = 0;
             foreach (var entity in entityList)
             {
                 if (entity == null) continue;
@@ -233,8 +198,34 @@ namespace Cappuccino.DataAccess
             {
                 SaveChanges();
             }
+            return count;
         }
 
+        /// <summary>
+        /// 插入单个实体并返回ID
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <returns>插入后的主键ID</returns>
+        public virtual object InsertById(T entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity), "插入的实体不能为null");
+
+            // 调用Add方法添加实体
+            var addedEntity = DbSet.Add(entity);
+            // 保存更改（此时数据库会生成主键并回填到实体）
+            SaveChanges();
+
+            // 获取主键值（基于BaseField的Id属性）
+            var idProperty = typeof(T).GetProperty("Id");
+            if (idProperty == null)
+                throw new InvalidOperationException("实体类型未定义Id属性，无法获取主键");
+
+            return idProperty.GetValue(addedEntity);
+        }
+        #endregion
+
+        #region 删除
         public virtual int Delete(T entity)
         {
             DbSet.Attach(entity);
@@ -362,7 +353,9 @@ namespace Cappuccino.DataAccess
 
             return count > 0;
         }
+        #endregion
 
+        #region 修改
         public virtual T Update(T entity)
         {
             if (entity != null)
@@ -420,7 +413,9 @@ namespace Cappuccino.DataAccess
         {
             return Db.Database.ExecuteSqlCommand(sql, parameters);
         }
+        #endregion
 
+        #region 数据源
         public IEnumerable<TElement> ExecuteSqlQuery<TElement>(string sql, params object[] parameters)
         {
             return Db.Database.SqlQuery<TElement>(sql, parameters);
@@ -471,6 +466,7 @@ namespace Cappuccino.DataAccess
                 return dataSet;
             }
         }
+        #endregion
 
         public async Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda)
         {

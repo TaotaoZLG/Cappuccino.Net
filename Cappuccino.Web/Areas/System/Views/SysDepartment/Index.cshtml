@@ -68,11 +68,11 @@
 
             window.render = function () {
                 layer.load(2);
-                treetable.render({
-                    treeColIndex: 1,
-                    treeSpid: 0,
-                    treeIdName: 'id',
-                    treePidName: 'parentId',
+                treetable.render({                    
+                    treeColIndex: 1,  //层级关系展示在第几列
+                    treeSpid: 0,  //是否有最高父id没有-1表示
+                    treeIdName: 'id',  //每条数据id 字段
+                    treePidName: 'parentId',  //每条数据父id字段
                     skin: 'line',
                     method: 'post',
                     treeDefaultClose: true,

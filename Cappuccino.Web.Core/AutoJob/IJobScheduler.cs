@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cappuccino.Entity.System;
 using Quartz;
 
 namespace Cappuccino.Web.Core.AutoJob
@@ -20,7 +21,8 @@ namespace Cappuccino.Web.Core.AutoJob
         /// <summary>
         /// 关闭调度器
         /// </summary>
-        void Shutdown(bool waitForJobsToComplete = false);
+        /// <param name="waitForCompletion">是否等待任务完成</param>
+        Task ShutdownAsync(bool waitForCompletion = false);
 
         /// <summary>
         /// 添加一个定时任务
@@ -30,7 +32,7 @@ namespace Cappuccino.Web.Core.AutoJob
         /// <param name="groupName">任务组名</param>
         /// <param name="cronExpression">Cron 表达式</param>
         /// <param name="jobData">任务参数</param>
-        Task<bool> ScheduleJob(string jobName, string groupName, string cronExpression);
+        Task<bool> AddScheduleJob(SysAutoJobEntity jobEntity);
 
         /// <summary>
         /// 暂停指定任务
@@ -53,6 +55,11 @@ namespace Cappuccino.Web.Core.AutoJob
         /// <param name="groupName">任务组名</param>
         Task<bool> DeleteJob(string jobName, string groupName);
 
+        /// <summary>
+        /// 立即执行任务
+        /// </summary>
+        /// <param name="jobName">任务名称</param>
+        /// <param name="groupName">任务组名</param>
         Task<bool> TriggerJob(string jobName, string groupName);
     }
 }

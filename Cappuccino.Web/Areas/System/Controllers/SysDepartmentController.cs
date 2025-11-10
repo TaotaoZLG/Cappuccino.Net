@@ -78,7 +78,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                     CreateTime = DateTime.Now,
                     UpdateTime = DateTime.Now
                 };
-                _sysDepartmentService.Add(entity);
+                _sysDepartmentService.Insert(entity);
 
                 return WriteSuccess();
             }

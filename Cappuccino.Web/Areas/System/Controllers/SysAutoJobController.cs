@@ -29,7 +29,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         #region 视图
-        [CheckPermission("system.job.list")]
+        [CheckPermission("system.autojob.list")]
         public override ActionResult Index()
         {
             base.Index();
@@ -42,7 +42,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             return View();
         }
 
-        [HttpGet, CheckPermission("system.job.edit")]
+        [HttpGet, CheckPermission("system.autojob.edit")]
         public ActionResult Edit(int id)
         {
             var viewModel = _sysAutoJobService.GetList(x => x.Id == id).FirstOrDefault();
@@ -58,7 +58,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         #endregion
 
         #region 提交数据
-        [HttpPost, CheckPermission("system.job.create")]
+        [HttpPost, CheckPermission("system.autojob.create")]
         [LogOperate(Title = "新增任务计划", BusinessType = (int)OperateType.Add)]
         public ActionResult Create(SysAutoJobModel viewModel)
         {
@@ -77,7 +77,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                     UpdateUserId = UserManager.GetCurrentUserInfo().Id,
                     JobStatus = 0 // 默认为停止状态
                 };
-                _sysAutoJobService.Add(entity);
+                _sysAutoJobService.Insert(entity);
 
                 return WriteSuccess();
             }
@@ -87,7 +87,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             }
         }
 
-        [HttpPost, CheckPermission("system.job.edit")]
+        [HttpPost, CheckPermission("system.autojob.edit")]
         [LogOperate(Title = "编辑任务计划", BusinessType = (int)OperateType.Update)]
         public ActionResult Edit(SysAutoJobModel viewModel)
         {
@@ -120,7 +120,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             }
         }
 
-        [HttpPost, CheckPermission("system.job.delete")]
+        [HttpPost, CheckPermission("system.autojob.delete")]
         [LogOperate(Title = "删除任务计划", BusinessType = (int)OperateType.Delete)]
         public ActionResult Delete(int id)
         {
@@ -128,22 +128,6 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 _sysAutoJobService.DeleteBy(x => x.Id == id);
                 return WriteSuccess("删除成功");
-            }
-            catch (Exception ex)
-            {
-                return WriteError(ex);
-            }
-        }
-
-        [HttpPost, CheckPermission("system.job.batchDel")]
-        [LogOperate(Title = "批量删除任务计划", BusinessType = (int)OperateType.Delete)]
-        public ActionResult BatchDel(string idsStr)
-        {
-            try
-            {
-                var ids = idsStr.Split(',').Select(int.Parse).ToArray();
-                var result = _sysAutoJobService.DeleteBy(x => ids.Contains(x.Id)) > 0 ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
-                return result;
             }
             catch (Exception ex)
             {

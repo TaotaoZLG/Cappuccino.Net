@@ -51,6 +51,10 @@ namespace Cappuccino.Model
         /// </summary>
         public string Spread { get; set; }
         /// <summary>
+        /// 类型(自定义字段，同时已修改dtree.js来获取type属性的值)
+        /// </summary>
+        public string Type { get; set; }
+        /// <summary>
         /// 节点标记
         /// </summary>
         public string DataType { get; set; }

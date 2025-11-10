@@ -101,7 +101,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                     var roleList = _sysRoleService.GetList(x => RoleIdsArray.Contains(x.Id)).ToList();
                     entity.SysRoles = roleList;
                 }
-                _sysUserService.Add(entity);
+                _sysUserService.Insert(entity);
                 return WriteSuccess();
             }
             catch (Exception ex)

@@ -77,6 +77,7 @@
                     skin: 'line',
                     method: 'post',
                     treeDefaultClose: true,
+                    //treeDefaultExpandLevel: 1,
                     toolbar: '#toolbarTpl',
                     elem: '#tableId',
                     url: MODULE_PATH + "GetList",
@@ -84,9 +85,9 @@
                     cols: [
                         [
                             { type: 'checkbox' },
-                            { field: 'name', minWidth: 200, title: '权限名称' },
+                            { field: 'name', minWidth: 200, title: '菜单名称' },
                             { field: 'code', title: '权限标识' },
-                            { field: 'type', title: '权限类型', templet: '#typeTpl' },
+                            { field: 'type', title: '菜单类型', templet: '#typeTpl' },
                             { field: 'sortCode', title: '排序' },
                             { title: '操作', templet: '#operationTpl', width: 150, align: 'center' }
                         ]

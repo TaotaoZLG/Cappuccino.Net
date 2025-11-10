@@ -87,6 +87,7 @@
     <Compile Include="Attributes\CheckPermission.cs" />
     <Compile Include="Attributes\LogOperateAttribute.cs" />
     <Compile Include="AutoJob\IJobScheduler.cs" />
+    <Compile Include="AutoJob\IJobTask.cs" />
     <Compile Include="AutoJob\JobExecutor.cs" />
     <Compile Include="AutoJob\JobScheduler.cs" />
     <Compile Include="BaseController.cs" />

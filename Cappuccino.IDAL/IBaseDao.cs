@@ -14,6 +14,7 @@ namespace Cappuccino.IDAL
     {
         int SaveChanges();
 
+        #region 查询
         /// <summary>
         /// 查询
         /// </summary>
@@ -52,6 +53,7 @@ namespace Cappuccino.IDAL
         /// <param name="predicate"></param>
         /// <returns></returns>
         int GetRecordCount(Expression<Func<T, bool>> predicate);
+        #endregion
 
         #region 添加
         /// <summary>
@@ -59,34 +61,27 @@ namespace Cappuccino.IDAL
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        T Add(T entity);
+        T Insert(T entity);
 
         /// <summary>
         /// 批量添加
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        int AddList(params T[] entities);
+        int Insert(params T[] entities);
 
         /// <summary>
-        /// 插入单个实体
+        /// 批量插入数据集
         /// </summary>
-        /// <param name="entity">实体</param>
-        /// <returns>是否插入成功</returns>
-        bool Insert(T entity);
+        /// <param name="entities">数据集</param>
+        int Insert(IEnumerable<T> entities);
 
         /// <summary>
         /// 插入单个实体并返回ID
         /// </summary>
         /// <param name="entity">实体</param>
         /// <returns>插入后的主键ID</returns>
-        object InsertAndGetId(T entity);
-
-        /// <summary>
-        /// 批量插入数据集
-        /// </summary>
-        /// <param name="entities">数据集</param>
-        void Insert(IEnumerable<T> entities);
+        object InsertById(T entity);
         #endregion
 
         #region 删除
@@ -155,6 +150,7 @@ namespace Cappuccino.IDAL
         int UpdateList(params T[] entities);
         #endregion
 
+        #region 数据源
         /// <summary>
         /// 对数据库执行给定的 DDL/DML 命令。
         /// </summary>
@@ -171,6 +167,7 @@ namespace Cappuccino.IDAL
         /// <param name="parameters"> 要应用于 SQL 查询字符串的参数。</param>
         /// <returns>查询所返回对象的类型</returns>
         IEnumerable<TElement> ExecuteSqlQuery<TElement>(string sql, params object[] parameters);
+        #endregion
 
         Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda);
         Task<(IQueryable<T>, int)> GetListByPageAsync<S>(Expression<Func<T, bool>> whereLambada, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, bool isAsc);

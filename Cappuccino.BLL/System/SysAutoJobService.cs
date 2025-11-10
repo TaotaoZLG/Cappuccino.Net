@@ -33,7 +33,7 @@ namespace Cappuccino.BLL.System
             try
             {
                 // 1. 查询任务
-                var jobEntity = _autoJobDao.GetList(x => x.Id == id).FirstOrDefault();
+                var jobEntity = await Task.Run(() => _autoJobDao.GetList(x => x.Id == id).FirstOrDefault());
                 if (jobEntity == null)
                 {
                     Log4netHelper.Error($"任务ID:{id}不存在");
@@ -41,19 +41,20 @@ namespace Cappuccino.BLL.System
                 }
 
                 // 3. 调用调度器启动任务
-                bool schedulerResult = await _jobScheduler.ScheduleJob(jobEntity.JobName, jobEntity.JobGroup, jobEntity.CronExpression);
-                if (!schedulerResult)
+                bool result = await _jobScheduler.AddScheduleJob(jobEntity);
+                if (!result)
                 {
                     Log4netHelper.Error($"调度器启动任务ID:{id}失败");
                     return false;
                 }
 
                 // 4. 更新数据库状态
+                jobEntity.JobStatus = 1; // 标记为运行中
                 jobEntity.LastExecuteTime = DateTime.Now;
                 jobEntity.UpdateTime = DateTime.Now;
                 _autoJobDao.Update(jobEntity);
 
-                return schedulerResult;
+                return result;
             }
             catch (Exception ex)
             {

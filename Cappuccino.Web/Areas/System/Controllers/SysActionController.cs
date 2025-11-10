@@ -103,7 +103,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 {
                     return WriteError("类型不正确");
                 }
-                _sysActionService.Add(sysAction);
+                _sysActionService.Insert(sysAction);
                 return WriteSuccess();
             }
             catch (Exception ex)

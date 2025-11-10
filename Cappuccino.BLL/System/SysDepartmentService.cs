@@ -13,13 +13,16 @@ namespace Cappuccino.BLL
     public class SysDepartmentService : BaseService<SysDepartmentEntity>, ISysDepartmentService
     {
         #region 依赖注入
-        ISysDepartmentDao _departmentDao;
-        ISysUserDao _userDao;
-        
-        public SysDepartmentService(ISysDepartmentDao departmentDao, ISysUserDao userDao)
+        private ISysDepartmentDao _departmentDao;
+        private ISysUserDao _userDao;
+        private ISysRoleDao _roleDao;
+        private ISysDataAuthorizeDao _dataAuthorizeDao;
+
+        public SysDepartmentService(ISysDepartmentDao departmentDao, ISysUserDao userDao, ISysDataAuthorizeDao authorizeDao)
         {
             this._departmentDao = departmentDao;
             this._userDao = userDao;
+            _dataAuthorizeDao = authorizeDao;
             base.CurrentDao = departmentDao;
             this.AddDisposableObject(this.CurrentDao);
         }
@@ -91,26 +94,34 @@ namespace Cappuccino.BLL
             foreach (SysDepartmentEntity dept in departmentList)
             {
                 // 创建部门节点
-                DtreeData dtreeData = new DtreeData
+                DtreeData deptNode = new DtreeData();
+                deptNode.Id = dept.Id.ToString();
+                deptNode.Title = dept.Name;
+                deptNode.Type = "dept";
+                deptNode.ParentId = dept.ParentId.ToString();
+
+                SysDataAuthorizeEntity deptDataAuthorize = _dataAuthorizeDao.GetList(x => x.DataId == dept.Id && x.AuthorizeType == 1 && x.AuthorizeId == roleId).FirstOrDefault();
+                if (deptDataAuthorize != null)
                 {
-                    Id = dept.Id.ToString(),
-                    Title = dept.Name,
-                    Type = "dept",
-                    ParentId = dept.ParentId.ToString()
-                };
-                allNodes.Add(dtreeData);
+                    deptNode.CheckArr = "1";
+                }
+                allNodes.Add(deptNode);
 
                 // 添加部门下的用户作为子节点
                 List<SysUserEntity> deptUsersList = userList.Where(u => u.DepartmentId == dept.Id).ToList();
                 foreach (SysUserEntity user in deptUsersList)
                 {
-                    DtreeData userNode = new DtreeData
+                    DtreeData userNode = new DtreeData();
+                    userNode.Id = user.Id.ToString();
+                    userNode.Title = user.UserName;
+                    userNode.Type = "user";
+                    userNode.ParentId = dept.Id.ToString();
+
+                    SysDataAuthorizeEntity userDataAuthorize = _dataAuthorizeDao.GetList(x => x.DataId == user.Id && x.AuthorizeType == 1 && x.AuthorizeId == roleId).FirstOrDefault();
+                    if (userDataAuthorize != null)
                     {
-                        Id = user.Id.ToString(),
-                        Title = user.UserName,
-                        Type = "user",
-                        ParentId = dept.Id.ToString()
-                    };
+                        userNode.CheckArr = "1";
+                    }
                     allNodes.Add(userNode);
                 }
             }
@@ -136,6 +147,67 @@ namespace Cappuccino.BLL
             }
 
             return dtreeDatas;
+        }
+
+        public List<DtreeData> GetDepartmentDtree1(int roleId)
+        {
+            // 1. 批量查询基础数据（仅3次数据库查询，避免循环查库）
+            List<SysDepartmentEntity> departmentList = _departmentDao.GetList(x => true).ToList();
+            List<SysUserEntity> userList = _userDao.GetList(x => true).ToList();
+
+            // 批量查询所有权限记录，缓存为字典（Key=数据ID，Value=是否有权限）
+            var authorizeDict = _dataAuthorizeDao
+                .GetList(x => x.AuthorizeType == 1 && x.AuthorizeId == roleId)
+                .ToDictionary(key => key.DataId.ToString(), value => true);
+
+            // 2. 构建所有部门节点（先不处理父子关系，确保所有部门都在字典中）
+            Dictionary<string, DtreeData> deptNodeDict = new Dictionary<string, DtreeData>();
+            foreach (var dept in departmentList)
+            {
+                var deptNode = new DtreeData
+                {
+                    Id = dept.Id.ToString(),
+                    Title = dept.Name,
+                    Type = "dept",
+                    ParentId = dept.ParentId.ToString(),
+                    Children = new List<DtreeData>(), // 初始化子节点集合（用于存放子部门和用户）
+                    CheckArr = authorizeDict.ContainsKey(dept.Id.ToString()) ? "1" : "0" // 部门权限
+                };
+                deptNodeDict[deptNode.Id] = deptNode;
+            }
+
+            // 3. 绑定部门间的父子关系（构建部门层级）
+            foreach (var deptNode in deptNodeDict.Values)
+            {
+                // 非根部门：找到父部门，加入其父节点的Children
+                if (deptNode.ParentId != "0" && deptNodeDict.TryGetValue(deptNode.ParentId, out var parentDept))
+                {
+                    parentDept.Children.Add(deptNode);
+                }
+            }
+
+            // 4. 处理用户节点（作为部门的子节点，加入对应部门的Children）
+            foreach (var user in userList)
+            {
+                var deptId = user.DepartmentId.ToString();
+                // 只处理存在的部门下的用户
+                if (!deptNodeDict.TryGetValue(deptId, out var parentDept))
+                    continue;
+
+                var userNode = new DtreeData
+                {
+                    Id = user.Id.ToString(),
+                    Title = user.UserName,
+                    Type = "user",
+                    ParentId = deptId,
+                    Children = new List<DtreeData>(), // 用户无子集
+                    CheckArr = authorizeDict.ContainsKey(user.Id.ToString()) ? "1" : "0" // 用户权限
+                };
+                parentDept.Children.Add(userNode); // 加入父部门的子节点
+            }
+
+            // 5. 筛选根节点（ParentId=0的部门）作为返回结果
+            return deptNodeDict.Values.Where(dept => dept.ParentId == "0").ToList();
         }
 
         private void GetMenuChild(DtreeData parent, SysDepartmentEntity uparent, List<SysDepartmentEntity> allDepartment)

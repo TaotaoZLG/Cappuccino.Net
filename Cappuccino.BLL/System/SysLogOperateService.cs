@@ -30,7 +30,7 @@ namespace Cappuccino.BLL.System
             logOperate.IPAddressName = NetHelper.GetIpLocation(logOperate.IPAddress); // 获取IP所在地
             logOperate.CreateTime = DateTime.Now;
 
-            return Add(logOperate);
+            return Insert(logOperate);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Cappuccino.BLL.System
 
             logOperate.CreateTime = DateTime.Now;
 
-            return await AddAsync(logOperate);
+            return await InsertAsync(logOperate);
         }
     }
 }
