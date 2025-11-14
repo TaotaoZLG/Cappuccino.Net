@@ -20,7 +20,7 @@ namespace Cappuccino.Model
         /// <summary>
         /// 分类主键
         /// </summary>
-        public int TypeId { get; set; }
+        public int DictId { get; set; }
 
         /// <summary>
         /// 排序码

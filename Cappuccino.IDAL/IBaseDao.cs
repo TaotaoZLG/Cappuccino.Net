@@ -45,6 +45,8 @@ namespace Cappuccino.IDAL
 
         IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambad, string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount);
 
+        IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambda, string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount, params Expression<Func<T, object>>[] includes);
+
         IEnumerable<T> GetListByPage(string sql, string sortField, string sortOrder, int pageSize, int pageIndex);
 
         /// <summary>
@@ -168,6 +170,11 @@ namespace Cappuccino.IDAL
         /// <returns>查询所返回对象的类型</returns>
         IEnumerable<TElement> ExecuteSqlQuery<TElement>(string sql, params object[] parameters);
         #endregion
+
+        /// <summary>
+        /// Linq连表查询专用，获取单表所有数据请使用GetList
+        /// </summary>
+        IQueryable<T> Table { get; }
 
         Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda);
         Task<(IQueryable<T>, int)> GetListByPageAsync<S>(Expression<Func<T, bool>> whereLambada, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, bool isAsc);

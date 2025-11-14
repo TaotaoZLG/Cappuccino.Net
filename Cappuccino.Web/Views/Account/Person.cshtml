@@ -13,7 +13,7 @@
             <div class="layui-card-body" style="padding: 25px;">
                 <div class="text-center layui-text">
                     <div class="user-info-head" id="userInfoHead">
-                        <img src="@UserManager.GetCurrentUserInfo().HeadIcon" width="115px" height="115px" alt="">
+                        <img src="@UserManager.GetCurrentUserInfo().HeadIcon" id="userAvatar" width="115px" height="115px" alt="用户头像">
                     </div>
                     <h2 style="padding-top: 20px;font-size: 20px;">@UserManager.GetCurrentUserInfo().NickName</h2>
                     <p style="padding-top: 8px;margin-top: 10px;font-size: 13.5px;">China ， 中国</p>
@@ -145,9 +145,20 @@
 
 @section Scripts {
     <script>
-        layui.use(['element'], function () {
+        layui.use(['jquery', 'layer', 'element'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
             var element = layui.element;
 
+            // 点击头像弹出裁剪弹窗
+            $('#userInfoHead').on('click', function () {
+                layer.open({
+                    type: 2,
+                    title: '修改头像',
+                    content: '/System/SysUser/Portrait',
+                    area: ['870px', '580px'],
+                });
+            });
         })
     </script>
 }

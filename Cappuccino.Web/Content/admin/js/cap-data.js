@@ -51,6 +51,7 @@
      * @returns {string} 显示文本或带样式HTML
      */
     function getDataDictValue(typeCode, dictKey) {
+        console.log(dataDict);
         // 提示未加载完成
         if (!isDictLoaded) {
             console.warn('字典尚未加载完成，可能返回空值');
@@ -63,7 +64,7 @@
             return '';
         }
 
-        // 循环后端返回的Dicts数组（修正原循环路径错误）
+        // 循环后端返回的Dicts数组
         var dicts = dataDict[typeCode].dicts;
         for (let i = 0; i < dicts.length; i++) {
             var item = dicts[i];

@@ -36,13 +36,13 @@
                 <li class="layui-nav-item">
                     <!-- 头 像 -->
                     <a href="javascript:;">
-                        <img src="@UserManager.GetCurrentUserInfo().HeadIcon" class="layui-nav-img">
+                        <img src="@UserManager.GetCurrentUserInfo().HeadIcon" class="layui-nav-img" id="userPortrait">
                         @UserManager.GetCurrentUserInfo().NickName
                     </a>
                     <!-- 功 能 菜 单 -->
                     <dl class="layui-nav-child">
-                        <dd><a href="#" user-menu-url="@Url.Action("Person","Account")" user-menu-id="5555" user-menu-title="基本资料">基本资料</a></dd>
-                        <dd><a href="#" user-menu-url="@Url.Action("ChangePassword","Account")" user-menu-id="6666" user-menu-title="修改密码">修改密码</a></dd>
+                        <dd><a href="javascript:;" user-menu-url="@Url.Action("Person","Account")" user-menu-id="5555" user-menu-title="基本资料">基本资料</a></dd>
+                        <dd><a href="javascript:;" user-menu-url="@Url.Action("ChangePassword","Account")" user-menu-id="6666" user-menu-title="修改密码">修改密码</a></dd>
                         <dd><a href="@Url.Action("Logout","Account")">注销登录</a></dd>
                     </dl>
                 </li>

@@ -5,7 +5,7 @@
 }
 <form class="layui-form" lay-filter="formEdit">
     @Html.HiddenFor(x => x.Id)
-    @Html.HiddenFor(x => x.TypeId)
+    @Html.HiddenFor(x => x.DictId)
     <div class="mainBox">
         <div class="main-container">
             <div class="main-container">
@@ -61,7 +61,7 @@
                             top.initDataDict();
                         }
                         parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
-                        parent.layui.table.reload("tableId");
+                        parent.layui.table.reload("tableDictDetailId");
                     });
                     }).fail(function (error) {
                         console.log(error)

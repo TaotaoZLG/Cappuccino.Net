@@ -4,7 +4,6 @@
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
 
-
 <div class="layui-row layui-col-space10">
     <div class="layui-col-md12">
         <div class="layui-card">
@@ -25,7 +24,7 @@
     <div class="layui-col-md6">
         <div class="layui-card">
             <div class="layui-card-body">
-                <table id="tableTypeId" lay-filter="tableTypeFilter"></table>
+                <table id="tableDictId" lay-filter="tableDictFilter"></table>
             </div>
         </div>
     </div>
@@ -53,7 +52,7 @@
                         </g>
                     </g>
                 </svg>
-                <table id="tableId" lay-filter="tableFilter"></table>
+                <table id="tableDictDetailId" lay-filter="tableDictDetailFilter"></table>
             </div>
         </div>
     </div>
@@ -89,10 +88,10 @@
 
             let MODULE_PATH = "/System/";
 
-            let typeId;
+            let dictId;
 
             table.render({
-                elem: '#tableTypeId',
+                elem: '#tableDictId',
                 url: MODULE_PATH + "SysDict/GetList",
                 page: true,
                 cols: [
@@ -117,14 +116,13 @@
                 }, 'filter', 'print', 'exports']
             });
 
-            window.renderData = function (id) {
-
-                typeId = id;
+            window.renderDictDetail = function (id) {
+                dictId = id;
                 $(".empty").hide();
 
                 table.render({
-                    elem: '#tableId',
-                    url: MODULE_PATH + "SysDictDetail/GetList?typeId=" + typeId,
+                    elem: '#tableDictDetailId',
+                    url: MODULE_PATH + "SysDictDetail/GetList?typeId=" + dictId,
                     page: true,
                     height: 'full-148',
                     cols: [
@@ -145,28 +143,28 @@
                 });
             }
 
-            table.on('tool(tableTypeFilter)', function (obj) {
+            table.on('tool(tableDictFilter)', function (obj) {
                 let data = obj.data;
                 if (obj.event === 'delete') {
-                    window.deleteType(data.id);
+                    window.deleteDict(data.id);
                 } else if (obj.event === 'edit') {
-                    window.editType(data.id);
+                    window.editDict(data.id);
                 } else if (obj.event === 'details') {
-                    window.renderData(obj.data.id)
+                    window.renderDictDetail(data.id)
                 }
             });
 
-            table.on('toolbar(tableTypeFilter)', function (obj) {
+            table.on('toolbar(tableDictFilter)', function (obj) {
                 if (obj.event === 'create') {
-                    window.createType();
+                    window.createDict();
                 } else if (obj.event === 'refresh') {
-                    window.refreshType();
+                    window.refreshDict();
                 } else if (obj.event === 'batchDel') {
-                    window.batchDelType(obj);
+                    window.batchDelDict(obj);
                 }
             });
 
-            window.createType = function () {
+            window.createDict = function () {
                 layer.open({
                     type: 2,
                     title: '新增',
@@ -176,7 +174,7 @@
                 });
             }
 
-            window.editType = function (id) {
+            window.editDict = function (id) {
                 layer.open({
                     type: 2,
                     title: '修改',
@@ -186,11 +184,11 @@
                 });
             }
 
-            window.deleteType = function (id) {
+            window.deleteDict = function (id) {
                 layer.confirm('确定要删除该字典分类', { icon: 3, title: '提示' }, function (index) {
                     common.ajax(MODULE_PATH + "SysDict/Delete", "post", { id: id }, true, true).done(function (response) {
                         layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
-                            table.reload('tableTypeId');
+                            table.reload('tableDictId');
                         });
                     }).fail(function (error) {
                         console.log(error)
@@ -198,7 +196,7 @@
                 });
             }
 
-            window.batchDelType = function (obj) {
+            window.batchDelDict = function (obj) {
                 let data = table.checkStatus(obj.config.id).data;
                 if (data.length === 0) {
                     layer.msg("未选中数据", { icon: 3, time: 1000 });
@@ -212,7 +210,7 @@
                 layer.confirm('确定要删除这些数据', { icon: 3, title: '提示' }, function (index) {
                     common.ajax(MODULE_PATH + "SysDict/batchDel", "post", { idsStr: ids }, true, true).done(function (response) {
                         layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
-                            table.reload('tableTypeId');
+                            table.reload('tableDictId');
                         });
                     }).fail(function (error) {
                         console.log(error)
@@ -220,22 +218,22 @@
                 });
             }
 
-            window.refreshType = function () {
-                table.reload('tableTypeId');
+            window.refreshDict = function () {
+                table.reload('tableDictId');
             }
 
-
-            window.create = function () {
+            // 字典详情
+            window.createDictDetail = function () {
                 layer.open({
                     type: 2,
                     title: '新增',
                     shade: 0.1,
                     area: ['600px', '500px'],
-                    content: MODULE_PATH + 'SysDictDetail/Create?dictId=' + id
+                    content: MODULE_PATH + 'SysDictDetail/Create?dictId=' + dictId
                 });
             }
 
-            window.edit = function (id) {
+            window.editDictDetail = function (id) {
                 layer.open({
                     type: 2,
                     title: '修改',
@@ -245,11 +243,11 @@
                 });
             }
 
-            window.delete = function (id) {
+            window.deleteDictDetail = function (id) {
                 layer.confirm('确定要删除该字典分类', { icon: 3, title: '提示' }, function (index) {
                     common.ajax(MODULE_PATH + "SysDictDetail/Delete", "post", { id: id }, true, true).done(function (response) {
                         layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
-                            table.reload('tableId');
+                            table.reload('tableDictDetailId');
                         });
                     }).fail(function (error) {
                         console.log(error)
@@ -257,7 +255,7 @@
                 });
             }
 
-            window.batchDel = function (obj) {
+            window.batchDelDictDetail = function (obj) {
                 let data = table.checkStatus(obj.config.id).data;
                 if (data.length === 0) {
                     layer.msg("未选中数据", { icon: 3, time: 1000 });
@@ -271,43 +269,43 @@
                 layer.confirm('确定要删除这些数据', { icon: 3, title: '提示' }, function (index) {
                     common.ajax(MODULE_PATH + "SysDictDetail/batchDel", "post", { idsStr: ids }, true, true).done(function (response) {
                         layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
-                            table.reload('tableId');
+                            table.reload('tableDictDetailId');
                         });
                     }).fail(function (error) {
                         console.log(error)
                     });
                 });
-            }
+            }            
 
-            table.on('tool(tableFilter)', function (obj) {
+            table.on('tool(tableDictDetailFilter)', function (obj) {
                 let data = obj.data;
                 if (obj.event === 'delete') {
-                    window.delete(data.id);
+                    window.deleteDictDetail(data.id);
                 } else if (obj.event === 'edit') {
-                    window.edit(data.id);
+                    window.editDictDetail(data.id);
                 }
             });
 
-            table.on('toolbar(tableFilter)', function (obj) {
+            table.on('toolbar(tableDictDetailFilter)', function (obj) {
                 if (obj.event === 'create') {
-                    window.create();
+                    window.createDictDetail();
                 } else if (obj.event === 'refresh') {
-                    window.refresh();
+                    window.refreshDictDetail();
                 } else if (obj.event === 'batchDel') {
-                    window.batchDel(obj);
+                    window.batchDelDictDetail(obj);
                 }
             });
 
             form.on('submit(search)', function (data) {
-                data.field.typeId = typeId;
-                table.reload('tableTypeId', {
+                data.field.dictId = typeId;
+                table.reload('tableDictId', {
                     where: data.field
                 })
                 return false;
             });
 
-            window.refresh = function () {
-                table.reload('tableId');
+            window.refreshDictDetail = function () {
+                table.reload('tableDictDetailId');
             }
         })
     </script>

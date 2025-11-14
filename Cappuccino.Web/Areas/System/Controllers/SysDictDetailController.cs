@@ -28,16 +28,16 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         #region 视图        
         [HttpGet, CheckPermission("system.dict.create")]
-        public ActionResult Create(int TypeId)
+        public ActionResult Create(int dictId)
         {
-            ViewBag.TypeId = TypeId;
+            ViewBag.DictId = dictId;
             return View();
         }
 
         [HttpGet, CheckPermission("system.dict.edit")]
         public ActionResult Edit(int id)
         {
-            var viewModel = _sysDictDetailService.GetList(x => x.Id == id).FirstOrDefault();
+            SysDictDetailEntity viewModel = _sysDictDetailService.GetList(x => x.Id == id).FirstOrDefault();
             return View(viewModel.EntityMap());
         }
         #endregion
@@ -130,9 +130,9 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 queries.Add(new Query { Name = "Code", Operator = Query.Operators.Contains, Value = viewModel.Code });
             }
-            else if (viewModel.TypeId != 0)
+            else if (viewModel.DictId != 0)
             {
-                queries.Add(new Query { Name = "TypeId", Operator = Query.Operators.Equal, Value = viewModel.TypeId });
+                queries.Add(new Query { Name = "DictId", Operator = Query.Operators.Equal, Value = viewModel.DictId });
             }
             var list = _sysDictDetailService.GetListByPage(queries.AsExpression<SysDictDetailEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new
             {
@@ -142,6 +142,13 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 x.SortCode
             }).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetMaxSortCode(int dictId)
+        {
+            int maxSortCode = _sysDictDetailService.GetMaxSortCode(dictId);
+            var result = new { status = 0, msg = "查询成功", data = maxSortCode };
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
         #endregion
     }

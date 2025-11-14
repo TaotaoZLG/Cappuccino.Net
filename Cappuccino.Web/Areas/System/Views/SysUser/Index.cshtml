@@ -121,7 +121,12 @@
                         { title: 'ID', field: 'id', hide: true },
                         { title: '账号', field: 'userName', align: 'center' },
                         { title: '昵称', field: 'nickName', align: 'center' },
-                        { title: '所在部门', field: 'nickName', align: 'center' },
+                        {
+                            title: '角色', field: 'roleNames', align: 'center', templet: function (d) {
+                                return d.roleNames.join(',')
+                            }
+                        },
+                        { title: '所在部门', field: 'departmentName', align: 'center' },
                         { title: '头像', field: 'headIcon', align: 'center', templet: '#headIconTpl' },
                         { title: '手机号码', field: 'mobilePhone', align: 'center' },
                         { title: '邮箱', field: 'email', align: 'center' },

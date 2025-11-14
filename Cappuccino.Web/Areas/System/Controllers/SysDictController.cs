@@ -153,13 +153,13 @@ namespace Cappuccino.Web.Areas.System.Controllers
         public JsonResult GetDataDictList()
         {
             // 获取所有字典类型
-            List<SysDictEntity> dictTypes = _sysDictService.GetList(x => true).ToList();
+            List<SysDictEntity> dictList = _sysDictService.GetList(x => true).ToList();
             // 按类型Code分组，关联字典项
-            var result = dictTypes.Select(type => new
+            var result = dictList.Select(type => new
             {
                 TypeCode = type.Code,  // 字典类型编码（如"user_sex"）
                 TypeName = type.Name,  // 字典类型名称（如"用户性别"）
-                Dicts = _sysDictDetailService.GetList(d => d.TypeId == type.Id)
+                Dicts = _sysDictDetailService.GetList(d => d.DictId == type.Id)
                     .Select(d => new
                     {
                         Label = d.Name,  // 字典项名称（如"男"）

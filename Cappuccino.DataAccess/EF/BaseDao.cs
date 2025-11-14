@@ -119,6 +119,72 @@ namespace Cappuccino.DataAccess
             return orderedQuery.Skip(pageSize * (pageIndex - 1)).Take(pageSize);
         }
 
+        /// <summary>
+        /// 带关联查询和动态字段排序的分页查询
+        /// </summary>
+        /// <param name="whereLambda">查询条件</param>
+        /// <param name="sortField">排序字段名</param>
+        /// <param name="sortOrder">排序方向（asc/desc）</param>
+        /// <param name="pageSize">每页条数</param>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="totalCount">总记录数</param>
+        /// <param name="includes">需要关联查询的导航属性</param>
+        /// <returns>分页查询结果</returns>
+        public virtual IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambda,string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount, params Expression<Func<T, object>>[] includes)
+        {
+            // 1. 基础查询 + 关联表加载
+            IQueryable<T> query = DbSet;
+            if (includes != null && includes.Length > 0)
+            {
+                query = includes.Aggregate(query, (current, include) => current.Include(include));
+            }
+
+            // 2. 应用查询条件
+            query = query.Where(whereLambda);
+
+            // 3. 计算总条数
+            totalCount = query.Count();
+
+            // 4. 处理排序
+            if (string.IsNullOrEmpty(sortField))
+            {
+                // 默认按主键排序（假设实体基类有Id属性）
+                sortField = "Id";
+            }
+
+            // 反射获取排序字段（忽略大小写）
+            var property = typeof(T).GetProperty(
+                sortField,
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+            );
+            if (property == null)
+            {
+                throw new ArgumentException($"实体 {typeof(T).Name} 中不存在字段 {sortField}");
+            }
+
+            // 构建排序表达式
+            var parameter = Expression.Parameter(typeof(T), "x");
+            var propertyAccess = Expression.Property(parameter, property);
+            var orderByExpr = Expression.Lambda(propertyAccess, parameter);
+
+            // 确定排序方向
+            bool isAsc = !string.IsNullOrEmpty(sortOrder) &&
+                         sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase);
+
+            // 反射调用OrderBy/OrderByDescending方法
+            var queryableType = typeof(Queryable);
+            var methodName = isAsc ? "OrderBy" : "OrderByDescending";
+            var method = queryableType.GetMethods()
+                .Where(m => m.Name == methodName && m.GetParameters().Length == 2)
+                .Single()
+                .MakeGenericMethod(typeof(T), property.PropertyType);
+
+            var orderedQuery = (IQueryable<T>)method.Invoke(null, new object[] { query, orderByExpr });
+
+            // 5. 分页处理
+            return orderedQuery.Skip(pageSize * (pageIndex - 1)).Take(pageSize);
+        }
+
         public virtual IEnumerable<T> GetListByPage(string sql, string sortField, string sortOrder, int pageSize, int pageIndex)
         {
             sortOrder = string.IsNullOrEmpty(sortOrder) ? "asc" : sortOrder;
@@ -467,6 +533,17 @@ namespace Cappuccino.DataAccess
             }
         }
         #endregion
+
+        /// <summary>
+        /// Linq连表查询专用，获取单表所有数据请使用GetList
+        /// </summary>
+        public virtual IQueryable<T> Table
+        {
+            get
+            {
+                return this.dbSet;
+            }
+        }
 
         public async Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda)
         {

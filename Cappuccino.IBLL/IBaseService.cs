@@ -33,6 +33,8 @@ namespace Cappuccino.IBLL
 
         IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambad, string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount);
 
+        IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambda, string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount, params Expression<Func<T, object>>[] includes);
+
         /// <summary>
         /// 原生SQL分页查询
         /// </summary>

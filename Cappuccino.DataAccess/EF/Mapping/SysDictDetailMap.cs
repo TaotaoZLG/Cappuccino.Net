@@ -9,10 +9,11 @@ namespace Cappuccino.DataAccess.Mapping
         {
             this.ToTable("SysDictDetail");
             this.HasKey(x => x.Id);
-            this.HasRequired(x => x.SysDict).WithMany(x => x.SysDictDetails).HasForeignKey(x => x.TypeId);
+            this.HasRequired(x => x.SysDict).WithMany(x => x.SysDictDetails).HasForeignKey(x => x.DictId);
 
             this.Property(x => x.Code).HasMaxLength(50).IsRequired();
             this.Property(x => x.Name).HasMaxLength(50).IsRequired();
+            this.Property(x => x.ListClass).HasMaxLength(30).IsOptional();
         }
     }
 }

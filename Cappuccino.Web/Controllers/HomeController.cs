@@ -57,9 +57,9 @@ namespace Cappuccino.Web.Controllers
                 string filePathName = string.Empty; //最终文件名
                 filePathName = DateTimeExtensions.CreateNo() + "." + filecombin[1];
                 //Upload不存在则创建文件夹
-                if (!System.IO.Directory.Exists(localPath))
+                if (!Directory.Exists(localPath))
                 {
-                    System.IO.Directory.CreateDirectory(localPath);
+                    Directory.CreateDirectory(localPath);
                 }
                 file.SaveAs(Path.Combine(localPath, filePathName));  //保存图片
                 uploadFile.Code = 0;

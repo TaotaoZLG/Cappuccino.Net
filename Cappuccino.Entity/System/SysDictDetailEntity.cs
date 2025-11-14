@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cappuccino.Entity
@@ -24,9 +26,9 @@ namespace Cappuccino.Entity
         public string ListClass { get; set; }
 
         /// <summary>
-        /// 分类主键
+        /// 字典Id（关联SysDict表Id）
         /// </summary>
-        public int TypeId { get; set; }
+        public int DictId { get; set; }
 
         /// <summary>
         /// 排序码

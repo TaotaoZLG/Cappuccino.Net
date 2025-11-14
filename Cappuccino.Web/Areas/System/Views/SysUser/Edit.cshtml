@@ -119,6 +119,9 @@
                     nodeId: "departmentId",
                     context: "departmentName"
                 },
+                done: function (res, $ul, first) {
+                    dtree.selectVal("organizationTree", "@Model.DepartmentId"); // 回显选中节点
+                }
             });
 
             form.val("formEdit", {

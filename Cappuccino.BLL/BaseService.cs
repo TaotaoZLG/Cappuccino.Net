@@ -55,6 +55,11 @@ namespace Cappuccino.BLL
             return CurrentDao.GetListByPage(whereLambada, sortField, sortOrder, pageSize, pageIndex, out totalCount);
         }
 
+        public virtual IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambada, string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount, params Expression<Func<T, object>>[] includes)
+        {
+            return CurrentDao.GetListByPage(whereLambada, sortField, sortOrder, pageSize, pageIndex, out totalCount, includes);
+        }
+
         public virtual IEnumerable<T> GetListByPage(string sql, string sortField, string sortOrder, int pageSize, int pageIndex)
         {
             return CurrentDao.GetListByPage(sql, sortField, sortOrder, pageSize, pageIndex);

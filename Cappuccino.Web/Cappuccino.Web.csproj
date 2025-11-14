@@ -326,6 +326,7 @@
     <Content Include="Content\component\pear\css\pear-module\button.css" />
     <Content Include="Content\component\pear\css\pear-module\card.css" />
     <Content Include="Content\component\pear\css\pear-module\code.css" />
+    <Content Include="Content\component\pear\css\pear-module\cropper.css" />
     <Content Include="Content\component\pear\css\pear-module\dropdown.css" />
     <Content Include="Content\component\pear\css\pear-module\dtree\dtree.css" />
     <Content Include="Content\component\pear\css\pear-module\dtree\dtree.js" />
@@ -358,6 +359,8 @@
     <Content Include="Content\component\pear\module\card.js" />
     <Content Include="Content\component\pear\module\common.js" />
     <Content Include="Content\component\pear\module\count.js" />
+    <Content Include="Content\component\pear\module\cropper.js" />
+    <Content Include="Content\component\pear\module\croppers.js" />
     <Content Include="Content\component\pear\module\design.js" />
     <Content Include="Content\component\pear\module\drawer.js" />
     <Content Include="Content\component\pear\module\dropdown.js" />
@@ -599,6 +602,7 @@
     <Content Include="Areas\System\Views\SysConfig\Index.cshtml" />
     <Content Include="Areas\System\Views\SysConfig\Create.cshtml" />
     <Content Include="Areas\System\Views\SysConfig\Edit.cshtml" />
+    <Content Include="Areas\System\Views\SysUser\Portrait.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\Tip.cshtml" />

@@ -29,7 +29,6 @@ namespace Cappuccino.BLL
         }
         #endregion
 
-
         public List<SysActionEntity> GetPermission(int userId)
         {
             List<SysActionEntity> sysActions = new List<SysActionEntity>();

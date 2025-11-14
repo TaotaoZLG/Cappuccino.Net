@@ -1,0 +1,166 @@
+﻿@using Cappuccino.Web.Core
+@{
+    ViewBag.Title = "Portrait";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+@section Style{
+    <link href="~/Content/component/pear/css/pear-module/cropper.css" rel="stylesheet" />
+}
+
+<div class="layui-row layui-col-space10">
+    <!-- 图片裁剪区域 -->
+    <div class="layui-col-xs9">
+        <div class="layui-card">
+            <div class="layui-card-header">图片裁剪</div>
+            <div class="layui-card-body">
+                <div style="height: 355px; background-color: #f7f7f7; display: flex; align-items: center; justify-content: center;">
+                    <img id="cropImage" src="@UserManager.GetCurrentUserInfo().HeadIcon" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 15px;">
+            <div class="layui-input-inline layui-btn-container container-btn" style="width: auto;vertical-align:top;">
+                <button class="pear-btn pear-btn-sm pear-btn-primary layui-icon layui-icon-screen-full" cropper-event="crop" data-option="">裁剪</button>
+                <button class="pear-btn pear-btn-sm pear-btn-primary layui-icon layui-icon-ok-circle" cropper-event="cropok" data-option="" style="margin-right:30px;">确定</button>
+                <button class="pear-btn pear-btn-sm pear-btn-primary layui-icon layui-icon-left" cropper-event="rotate" data-option="-15" title="左旋15°">左旋</button>
+                <button class="pear-btn pear-btn-sm pear-btn-primary layui-icon layui-icon-right" cropper-event="rotate" data-option="15" title="右旋15°">右旋</button>
+                <button class="pear-btn pear-btn-sm pear-btn-primary layui-icon layui-icon-addition" cropper-event="zoom" data-option="0.1" title="放大10%">放大</button>
+                <button class="pear-btn pear-btn-sm pear-btn-primary layui-icon layui-icon-subtraction" cropper-event="zoom" data-option="-0.1" title="缩小10%">缩小</button>
+                <button class="pear-btn pear-btn-sm pear-btn-danger layui-icon layui-icon-refresh" cropper-event="reset">重置</button>
+                <label for="uploadPicture" class="pear-btn pear-btn-sm pear-btn-success layui-icon layui-icon-upload">选择图片</label>
+                <input class="layui-upload-file" id="uploadPicture" type="file" value="选择图片" accept="image/*">
+            </div>
+        </div>
+    </div>
+    <!-- 预览区域 -->
+    <div class="layui-col-xs3">
+        <div class="layui-card">
+            <div class="layui-card-header">预览</div>
+            <div class="layui-card-body">
+                <div style="">
+                    <div id="previewImage" style="width: 150px; height: 150px; border: 1px solid rgb(200, 200, 200); border-radius: 50%; overflow: hidden; margin: 0 auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="bottom">
+    <div class="button-container">
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" id="savePortrait"><i class="layui-icon layui-icon-ok"></i>提交</button>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick="parent.layer.closeAll();">关闭</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        layui.use(['jquery', 'layer', 'cropper','common'], function () {
+            let $ = layui.jquery;
+            let layer = layui.layer;
+            let cropper = layui.cropper;
+            let common = layui.common;
+
+            var options = {
+                aspectRatio: 1 / 1, // 裁剪框比例
+                preview: '#previewImage', // 预览div
+                viewMode: 1,
+                dragMode: 'none', // 拖拽图片模式
+                autoCrop: false, // 关闭自动显示裁剪框
+                autoCropArea: 0.8, // 默认裁剪区域占图片的80%
+                scalable: true, // 允许缩放图像
+                zoomable: true, // 允许放大图像
+                movable: true   // 允许平移
+            };
+
+            // 初始化
+            $("#cropImage").cropper(options);
+
+            $("#uploadPicture").on('change', function (e) {
+                var file = this.files[0];
+
+                var uploadFileSize = file.size / 1024;
+                if (uploadFileSize > 5120) {
+                    parent.layer.msg("上传文件不得超过5mb", { icon: 5 });
+                    return false;
+                }
+
+                var reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function (e) {
+                    $("#cropImage")
+                        .cropper('destroy') // 销毁旧实例
+                        .attr('src', e.target.result)
+                        .cropper(options);
+                };
+            });
+
+            $(".container-btn .pear-btn").on('click', function () {
+                var event = $(this).attr("cropper-event");
+                var option = $(this).attr('data-option');
+
+                if (event === 'crop') {
+                    $("#cropImage").cropper('crop');
+                } else if (event === 'cropok') {
+                    // 获取裁剪后的画布
+                    var canvas = $("#cropImage").cropper("getCroppedCanvas", {
+                        width: 500,  // 保持1:1比例，确保图片不失真
+                        height: 500
+                    });
+
+                    // 将裁剪结果转为图片源
+                    const newImgSrc = canvas.toDataURL('image/jpeg');
+
+                    // 销毁旧实例，加载新图片并重新初始化裁剪
+                    $('#cropImage')
+                        .cropper('destroy')
+                        .attr('src', newImgSrc)
+                        .cropper(options);
+                } else if (event === 'rotate') {
+                    $("#cropImage").cropper('rotate', option);
+                } else if (event === 'zoom') {
+                    $("#cropImage").cropper('zoom', option);
+                } else if (event === 'reset') {
+                    $("#cropImage").cropper('reset');
+                }
+            });
+
+            $("#savePortrait").on('click', function () {
+                $("#cropImage").crossOrigin = 'anonymous';//解决跨域图片问题
+                $("#cropImage").cropper("getCroppedCanvas").toBlob(function (blob) {
+                    var timeStamp = Date.parse(new Date());
+                    var fileName = timeStamp + '.jpg';
+                    var formData = new FormData();
+                    formData.append('file', blob, fileName);
+
+                    $.ajax({
+                        url: '/Home/ExportFile',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.code === 0) {
+                                var imageUrl = data.src;
+
+                                common.ajax("/System/SysUser/UploadPortrait", "post", {
+                                    id: @UserManager.GetCurrentUserInfo().Id,
+                                    portraitUrl: imageUrl
+                                }, true, true).done(function (response) {
+                                    layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
+                                        parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
+                                        $('#userAvatar', parent.document).attr('src', imageUrl);
+                                    });
+                                }).fail(function (error) {
+                                    console.log(error)
+                                });
+                            }
+                            else {
+                                layer.msg('头像更新失败: ' + data.msg, { icon: 5 });
+                            }
+                        },
+                    });
+                });
+            });
+        });
+    </script>
+}

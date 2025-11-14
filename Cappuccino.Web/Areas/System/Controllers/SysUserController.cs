@@ -68,6 +68,11 @@ namespace Cappuccino.Web.Areas.System.Controllers
             ViewBag.UserId = id;
             return View();
         }
+
+        public ActionResult Portrait()
+        {
+            return View();
+        }
         #endregion
 
         #region 提交数据
@@ -217,6 +222,19 @@ namespace Cappuccino.Web.Areas.System.Controllers
             _sysUserService.Update(entity, new string[] { "PasswordSalt", "PasswordHash", "UpdateTime", "UpdateUserId" });
             return WriteSuccess("重置密码成功，新密码:" + pwd);
         }
+
+        public ActionResult UploadPortrait(int id, string portraitUrl)
+        {
+            SysUserEntity entity = new SysUserEntity
+            {
+                Id = id,
+                HeadIcon = portraitUrl,
+                UpdateTime = DateTime.Now,
+                UpdateUserId = UserManager.GetCurrentUserInfo().Id
+            };
+            _sysUserService.Update(entity, new string[] { "HeadIcon", "UpdateTime", "UpdateUserId" });
+            return WriteSuccess("修改头像成功");
+        }
         #endregion
 
         #region 获取数据
@@ -232,11 +250,12 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 queries.Add(new Query { Name = "NickName", Operator = Query.Operators.Contains, Value = viewModel.NickName });
             }
-            if (!string.IsNullOrEmpty(viewModel.DepartmentId.ToString()))
-            { 
+            if (viewModel.DepartmentId != null)
+            {
                 queries.Add(new Query { Name = "DepartmentId", Operator = Query.Operators.Equal, Value = viewModel.DepartmentId });
             }
-            var list = _sysUserService.GetListByPage(queries.AsExpression<SysUserEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new
+
+            var list = _sysUserService.GetListByPage(queries.AsExpression<SysUserEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount, x => x.Department, x => x.SysRoles).Select(x => new
             {
                 x.Id,
                 x.UserName,
@@ -244,7 +263,9 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 x.HeadIcon,
                 x.MobilePhone,
                 x.Email,
-                x.EnabledMark
+                x.EnabledMark,
+                DepartmentName = x.Department.Name,
+                RoleNames = x.SysRoles.Select(r => r.Name).ToList()
             }).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
         }

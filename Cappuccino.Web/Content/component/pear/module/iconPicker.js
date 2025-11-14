@@ -1,4 +1,4 @@
-layui.define(['laypage', 'form'], function (exports) {
+﻿layui.define(['laypage', 'form'], function (exports) {
     "use strict";
 
     var IconPicker =function () {
