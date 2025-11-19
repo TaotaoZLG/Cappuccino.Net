@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cappuccino.Common.AutoJob;
 using Cappuccino.Common.Log;
 using Cappuccino.Entity.System;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Util;
 
-namespace Cappuccino.Web.Core.AutoJob
+namespace Cappuccino.AutoJob
 {
     /// <summary>
     /// 实现调度器接口（基于Quartz.NET）
@@ -116,7 +115,7 @@ namespace Cappuccino.Web.Core.AutoJob
 
                 // 调度任务
                 await _scheduler.ScheduleJob(jobDetail, trigger);  //将创建的任务和触发器条件添加到创建的任务调度器当中
-                await _scheduler.Start();  //启动任务调度器
+                //await _scheduler.Start();  //启动任务调度器
                 Log4netHelper.Info($"任务 [{jobEntity.JobGroup}.{jobEntity.JobName}] 已添加，Cron 表达式：{jobEntity.CronExpression}");
                 return true;
             }

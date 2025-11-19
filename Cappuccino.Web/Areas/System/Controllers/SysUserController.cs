@@ -41,8 +41,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [HttpGet, CheckPermission("system.user.create")]
         public ActionResult Create()
         {
-            ViewBag.UploadFileSize = ConfigUtils.GetValue("UploadFileByImgSize");
-            ViewBag.UploadFileType = ConfigUtils.GetValue("UploadFileByImgType");
+            ViewBag.UploadFileSize = ConfigUtils.AppSetting.GetValue("UploadFileByImgSize");
+            ViewBag.UploadFileType = ConfigUtils.AppSetting.GetValue("UploadFileByImgType");
             ViewBag.RoleSelectList = RoleSelectList;
             return View();
         }
@@ -50,8 +50,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [HttpGet, CheckPermission("system.user.edit")]
         public ActionResult Edit(int id)
         {
-            ViewBag.UploadFileSize = ConfigUtils.GetValue("UploadFileByImgSize");
-            ViewBag.UploadFileType = ConfigUtils.GetValue("UploadFileByImgType");
+            ViewBag.UploadFileSize = ConfigUtils.AppSetting.GetValue("UploadFileByImgSize");
+            ViewBag.UploadFileType = ConfigUtils.AppSetting.GetValue("UploadFileByImgType");
             var entity = _sysUserService.GetList(x => x.Id == id).FirstOrDefault();
             ViewBag.RoleSelectList = RoleSelectList;
             var viewModel = entity.EntityMap();
@@ -92,7 +92,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                     return WriteError("该账号已存在");
                 }
                 string salt = VerifyCodeUtils.CreateVerifyCode(5);
-                string passwordHash = Md5Utils.EncryptTo32(salt + ConfigUtils.GetValue("InitUserPwd"));
+                string passwordHash = Md5Utils.EncryptTo32(salt + ConfigUtils.AppSetting.GetValue("InitUserPwd"));
                 SysUserEntity entity = viewModel.EntityMap();
                 entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
@@ -209,7 +209,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         public ActionResult InitPwd(int id)
         {
             string salt = VerifyCodeUtils.CreateVerifyCode(5);
-            string pwd = ConfigUtils.GetValue("InitUserPwd");
+            string pwd = ConfigUtils.AppSetting.GetValue("InitUserPwd");
             string passwordHash = Md5Utils.EncryptTo32(salt + pwd);
             SysUserEntity entity = new SysUserEntity
             {

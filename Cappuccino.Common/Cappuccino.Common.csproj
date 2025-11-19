@@ -80,6 +80,7 @@
     <Compile Include="Util\ConfigUtils.cs" />
     <Compile Include="Util\DESUtils.cs" />
     <Compile Include="Util\Md5Utils.cs" />
+    <Compile Include="Util\Model\TData.cs" />
     <Compile Include="Util\VerifyCodeUtils.cs" />
   </ItemGroup>
   <ItemGroup>

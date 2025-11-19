@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cappuccino.AutoJob;
 using Cappuccino.Common.Log;
 using Cappuccino.Entity.System;
 using Cappuccino.IBLL.System;
 using Cappuccino.IDAL;
 using Cappuccino.IDAL.System;
-using Cappuccino.Web.Core.AutoJob;
 
 namespace Cappuccino.BLL.System
 {
@@ -86,6 +86,7 @@ namespace Cappuccino.BLL.System
                 }
 
                 // 更新数据库状态
+                jobEntity.JobStatus = 0; // 标记为停止状态
                 jobEntity.LastExecuteTime = DateTime.Now;
                 jobEntity.UpdateTime = DateTime.Now;
                 _autoJobDao.Update(jobEntity);

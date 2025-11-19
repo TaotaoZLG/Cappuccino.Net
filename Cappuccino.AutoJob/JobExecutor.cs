@@ -4,13 +4,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Cappuccino.AutoJob.Job;
 using Cappuccino.Common.Log;
 using Cappuccino.Entity.System;
 using Cappuccino.IBLL.System;
-using Cappuccino.Web.Core.AutoJob;
 using Quartz;
 
-namespace Cappuccino.Common.AutoJob
+namespace Cappuccino.AutoJob
 {
     /// <summary>
     /// 任务执行器
@@ -44,38 +44,41 @@ namespace Cappuccino.Common.AutoJob
 
             try
             {
-                // 反射执行任务类
-                var assembly = Assembly.GetExecutingAssembly();
-                var jobType = assembly.GetType(jobEntity.JobType);
+                if (jobEntity.JobStatus != 1) // 任务未启用则直接记录日志
+                {
+                    jobLogEntity.ExecuteStatus = 0;
+                    jobLogEntity.ExecuteResult = "任务未启用（状态为停止）";
+                    return;
+                }
+
+                // 从所有程序集查找任务类型（解决跨程序集问题）
+                var jobType = AppDomain.CurrentDomain.GetAssemblies()
+                    .Select(asm => asm.GetType(jobEntity.JobType))
+                    .FirstOrDefault(t => t != null);
+
                 if (jobType == null)
                 {
-                    Log4netHelper.Info($"未找到任务类型：{jobEntity.JobType}");
+                    var errorMsg = $"未找到任务类型：{jobEntity.JobType}";
+                    Log4netHelper.Info(errorMsg);
+                    jobLogEntity.ExecuteStatus = 0;
+                    jobLogEntity.ExecuteResult = errorMsg;
+                    return;
                 }
 
-                // 执行任务（假设任务类实现了IJobTask接口）
-                var jobInstance = (IJobTask)Activator.CreateInstance(jobType);
-                if (jobInstance is IJob jobTask)
-                {
-                    await jobTask.Execute(context); // 调用正确的执行方法
-                    jobLogEntity.ExecuteStatus = 1;
-                }
-                else
-                {
-                    Log4netHelper.Info($"任务类型 {jobEntity.JobType} 未实现 IJob 接口");
-                }
+                // 实例化任务并执行（调用IJobTask的Execute方法）
+                var jobInstance = (IJob)Activator.CreateInstance(jobType);
+                await jobInstance.Execute(context);
 
-                // 更新日志成功信息
+                // 更新日志和任务状态
                 jobLogEntity.ExecuteStatus = 1;
                 jobLogEntity.ExecuteResult = "执行成功";
 
-                // 更新任务最后执行时间
                 jobEntity.LastExecuteTime = DateTime.Now;
                 jobEntity.NextExecuteTime = context.NextFireTimeUtc?.LocalDateTime;
                 await _jobService.UpdateAsync(jobEntity);
             }
             catch (Exception ex)
             {
-                // 记录异常信息
                 jobLogEntity.ExecuteStatus = 0;
                 jobLogEntity.ExecuteResult = "执行失败";
                 jobLogEntity.Exception = ex.ToString();

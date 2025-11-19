@@ -361,6 +361,7 @@
     <Content Include="Content\component\pear\module\count.js" />
     <Content Include="Content\component\pear\module\cropper.js" />
     <Content Include="Content\component\pear\module\croppers.js" />
+    <Content Include="Content\component\pear\module\date.js" />
     <Content Include="Content\component\pear\module\design.js" />
     <Content Include="Content\component\pear\module\drawer.js" />
     <Content Include="Content\component\pear\module\dropdown.js" />
@@ -616,6 +617,10 @@
     <Content Include="Views\Shared\_LayoutIndex.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cappuccino.AutoJob\Cappuccino.AutoJob.csproj">
+      <Project>{1686eaa5-0c86-46f5-bc73-7926f2f93310}</Project>
+      <Name>Cappuccino.AutoJob</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cappuccino.BLL\Cappuccino.BLL.csproj">
       <Project>{b870b085-52fe-4c4f-a775-e38d05a56b5d}</Project>
       <Name>Cappuccino.BLL</Name>

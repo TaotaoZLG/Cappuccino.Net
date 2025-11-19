@@ -10,51 +10,47 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">任务名称</label>
                     <div class="layui-input-block">
-                        <input type="text" name="JobName" value="@Model?.JobName" required lay-verify="required" class="layui-input">
+                        <input type="text" name="JobName" required lay-verify="required" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">任务分组</label>
                     <div class="layui-input-block">
-                        <input type="text" name="JobGroup" value="@Model?.JobGroup ?? " 默认分组"" class="layui-input">
+                        <input type="text" name="JobGroup" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">Cron表达式 <span class="layui-red">*</span></label>
                     <div class="layui-input-block">
-                        <input type="text" name="CronExpression" lay-verify="required" placeholder="例如：0 0/5 * * * ?"
-                               value="@Model?.CronExpression" class="layui-input">
+                        <input type="text" name="CronExpression" lay-verify="required" placeholder="例如：0 0/5 * * * ?" class="layui-input">
                         <div class="layui-form-mid layui-word-aux">Cron表达式生成工具：<a href="https://cron.qqe2.com/" target="_blank">点击访问</a></div>
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">执行类名 <span class="layui-red">*</span></label>
                     <div class="layui-input-block">
-                        <input type="text" name="JobType" lay-verify="required" placeholder="包含命名空间的完整类名"
-                               value="@Model?.JobType" class="layui-input">
+                        <input type="text" name="JobType" lay-verify="required" placeholder="包含命名空间的完整类名" class="layui-input">
                         <div class="layui-form-mid layui-word-aux">例如：Cappuccino.Web.Tasks.SampleTask</div>
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">开始时间</label>
                     <div class="layui-input-block">
-                        <input type="datetime" name="StartTime" placeholder="请选择开始时间"
-                               value="@Model?.StartTime?.ToString(" yyyy-MM-dd HH:mm:ss")" class="layui-input" id="startTime">
+                        <input type="text" name="StartTime" placeholder="请选择开始时间" class="layui-input time-input" data-type="datetime">
                     </div>
                 </div>
 
                 <div class="layui-form-item">
                     <label class="layui-form-label">结束时间</label>
                     <div class="layui-input-block">
-                        <input type="datetime" name="EndTime" placeholder="请选择结束时间"
-                               value="@Model?.EndTime?.ToString(" yyyy-MM-dd HH:mm:ss")" class="layui-input" id="endTime">
+                        <input type="text" name="EndTime" placeholder="请选择结束时间" class="layui-input time-input" data-type="datetime">
                     </div>
                 </div>
                 @Html.EnabledMarkRadioHtml()
                 <div class="layui-form-item">
                     <label class="layui-form-label">任务描述</label>
                     <div class="layui-input-block">
-                        <textarea name="Description" class="layui-textarea">@Model?.Description</textarea>
+                        <textarea name="Description" class="layui-textarea"></textarea>
                     </div>
                 </div>
             </div>
@@ -75,25 +71,13 @@
 </form>
 @section Scripts {
     <script>
-        layui.use(['form', 'jquery', 'common', 'laydate'], function () {
+        layui.use(['form', 'jquery', 'common'], function () {
             let form = layui.form;
             let $ = layui.jquery;
             let common = layui.common;
-            var laydate = layui.laydate;
-
-            // 日期时间选择器
-            laydate.render({
-                elem: '#startTime',
-                type: 'datetime'
-            });
-            laydate.render({
-                elem: '#endTime',
-                type: 'datetime'
-            });
-
 
             form.on("submit(create)", function (data) {
-                common.ajax("/System/SysRole/Create", "post", data.field, true, true).done(function (response) {
+                common.ajax("/System/SysAutoJob/Create", "post", data.field, true, true).done(function (response) {
                     layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
                         parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
                         parent.layui.table.reload("tableId");

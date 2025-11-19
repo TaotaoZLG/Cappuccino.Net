@@ -34,7 +34,6 @@ namespace Cappuccino.Entity
         /// 修改时间
         /// </summary>
         public DateTime UpdateTime { get; set; }
-
     }
 
     /// <summary>

@@ -75,11 +75,8 @@
                         { field: 'cronExpression', title: 'Cron表达式' },
                         { field: 'jobType', title: '执行类' },
                         {
-                            field: 'jobStatus',
-                            title: '状态',
-                            templet: function (d) {
-                                return d.jobStatus == 1 ? '<span class="layui-badge layui-bg-green">运行中</span>' :
-                                    '<span class="layui-badge">已停止</span>';
+                            field: 'jobStatus', title: '状态', templet: function (d) {
+                                return d.jobStatus == 1 ? '<span class="layui-badge layui-bg-green">运行中</span>' : '<span class="layui-badge">已停止</span>';
                             }
                         },
                         { field: 'lastRunTime', title: '上次执行时间', width: 160 },
@@ -139,7 +136,7 @@
                     type: 2,
                     title: '新增',
                     shade: 0.1,
-                    area: ['600px', '500px'],
+                    area: ['720px', '740px'],
                     content: MODULE_PATH + 'Create'
                 });
             }

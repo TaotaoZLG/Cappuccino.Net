@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
 using Cappuccino.Common.Extensions;
+using Cappuccino.Entity;
 using Cappuccino.Entity.System;
 using Cappuccino.IBLL.System;
 using Cappuccino.Model;
@@ -68,14 +69,21 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 {
                     return WriteError("实体验证失败");
                 }
-
                 SysAutoJobEntity entity = new SysAutoJobEntity
                 {
-                    CreateTime = DateTime.Now,
-                    UpdateTime = DateTime.Now,
+                    Id = viewModel.Id,
+                    JobName = viewModel.JobName,
+                    JobGroup = viewModel.JobGroup,
+                    Description = viewModel.Description,
+                    JobType = viewModel.JobType,
+                    CronExpression = viewModel.CronExpression,
+                    JobStatus = viewModel.JobStatus,
+                    StartTime = viewModel.StartTime,
+                    EndTime = viewModel.EndTime,
                     CreateUserId = UserManager.GetCurrentUserInfo().Id,
                     UpdateUserId = UserManager.GetCurrentUserInfo().Id,
-                    JobStatus = 0 // 默认为停止状态
+                    CreateTime = DateTime.Now,
+                    UpdateTime = DateTime.Now
                 };
                 _sysAutoJobService.Insert(entity);
 
@@ -209,9 +217,9 @@ namespace Cappuccino.Web.Areas.System.Controllers
         public JsonResult GetLogList(int jobId, PageInfo pageInfo)
         {
             var queries = new QueryCollection
-                {
-                    new Query { Name = "JobId", Operator = Query.Operators.Equal, Value = jobId }
-                };
+            {
+                new Query { Name = "JobId", Operator = Query.Operators.Equal, Value = jobId }
+            };
 
             var list = _sysAutoJobLogService.GetListByPage(
                 queries.AsExpression<SysAutoJobLogEntity>(),

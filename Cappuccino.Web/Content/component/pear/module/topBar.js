@@ -1,4 +1,4 @@
-layui.define(['jquery', 'element','util'], function(exports) {
+﻿layui.define(['jquery', 'element','util'], function(exports) {
 	"use strict";
 
 	var MOD_NAME = 'topBar',

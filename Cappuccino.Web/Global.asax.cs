@@ -5,8 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Cappuccino.AutoJob;
 using Cappuccino.Common.Log;
-using Cappuccino.Web.Core.AutoJob;
 using Cappuccino.Web.Core.Filters;
 
 namespace Cappuccino.Web
@@ -53,7 +53,10 @@ namespace Cappuccino.Web
             });
 
             // 启动Quartz调度器
-            new JobScheduler().Start().GetAwaiter().GetResult();
+            //new JobScheduler().Start().GetAwaiter().GetResult();
+            // 从Autofac容器获取单例调度器并启动（仅启动一次）
+            var scheduler = DependencyResolver.Current.GetService<IJobScheduler>();
+            scheduler.Start().GetAwaiter().GetResult();
         }
     }
 }

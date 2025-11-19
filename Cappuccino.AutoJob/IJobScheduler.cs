@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Cappuccino.Entity.System;
 using Quartz;
 
-namespace Cappuccino.Web.Core.AutoJob
+namespace Cappuccino.AutoJob
 {
     /// <summary>
     /// 调度器接口

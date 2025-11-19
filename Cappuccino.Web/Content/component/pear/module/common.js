@@ -1,6 +1,7 @@
-﻿layui.define(['jquery', 'popup'], function (exports) {
+﻿layui.define(['jquery', 'popup', 'date'], function (exports) {
     var $ = layui.jquery;
     var popup = layui.popup;
+
     var common = {
         /**
         * 是否前后端分离
