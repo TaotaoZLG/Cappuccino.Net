@@ -38,7 +38,6 @@ namespace Cappuccino.BLL.System
         public async Task<int> WriteJobLogAsync(SysAutoJobLogEntity entity)
         {
             entity.CreateTime = DateTime.Now;
-            entity.CreateUserId = UserManager.GetCurrentUserInfo()?.Id ?? 0;
             return await InsertAsync(entity);
         }
     }

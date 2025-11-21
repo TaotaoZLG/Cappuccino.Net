@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cappuccino.Common.Log;
 using Cappuccino.Entity.System;
+using Cappuccino.IBLL.System;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Util;
@@ -20,17 +21,13 @@ namespace Cappuccino.AutoJob
 
         private readonly IScheduler _scheduler = null;
 
-        /// <summary>
-        /// 构造函数，初始化调度器
-        /// </summary>
         public JobScheduler()
         {
             lock (_lockHelper)
             {
-                // 创建默认的调度器工厂
                 ISchedulerFactory factory = new StdSchedulerFactory();
-                // 获取调度器实例
-                _scheduler = factory.GetScheduler().GetAwaiter().GetResult();
+                _scheduler = factory.GetScheduler().Result;
+                Log4netHelper.Info("JobScheduler实例化");
             }
         }
 
@@ -110,7 +107,10 @@ namespace Cappuccino.AutoJob
                     .StartAt(starRunTime)  // 支持开始时间
                     .EndAt(endRunTime)  // 支持结束时间
                     .WithIdentity($"{jobEntity.JobName}_trigger", jobEntity.JobGroup)
-                    .WithCronSchedule(jobEntity.CronExpression) // 设置 Cron 表达式
+                    .WithCronSchedule(
+                        jobEntity.CronExpression,   // 设置 Cron 表达式
+                        x => x.WithMisfireHandlingInstructionDoNothing() // 错过执行时不补做
+                    )
                     .Build();
 
                 // 调度任务

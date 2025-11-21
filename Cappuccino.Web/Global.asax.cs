@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -52,10 +53,8 @@ namespace Cappuccino.Web
                 }
             });
 
-            // 启动Quartz调度器
-            //new JobScheduler().Start().GetAwaiter().GetResult();
-            // 从Autofac容器获取单例调度器并启动（仅启动一次）
-            var scheduler = DependencyResolver.Current.GetService<IJobScheduler>();
+            // 从容器中获取调度器并启动（而非直接new xxx ()）
+            var scheduler = DependencyResolver.Current.GetService<JobCenter>();
             scheduler.Start().GetAwaiter().GetResult();
         }
     }

@@ -76,7 +76,7 @@
                         { field: 'jobType', title: '执行类' },
                         {
                             field: 'jobStatus', title: '状态', templet: function (d) {
-                                return d.jobStatus == 1 ? '<span class="layui-badge layui-bg-green">运行中</span>' : '<span class="layui-badge">已停止</span>';
+                                return d.jobStatus === 1 ? '<span class="layui-badge layui-bg-green">运行中</span>' : '<span class="layui-badge">已停止</span>';
                             }
                         },
                         { field: 'lastRunTime', title: '上次执行时间', width: 160 },

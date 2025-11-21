@@ -203,7 +203,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 x.Description,
                 x.JobType,
                 x.CronExpression,
-                JobStatus = x.JobStatus == 1 ? "运行中" : "已停止",
+                x.JobStatus,
                 x.StartTime,
                 x.EndTime,
                 x.LastExecuteTime,
@@ -214,7 +214,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         }
 
         [CheckPermission("system.autojob.log")]
-        public JsonResult GetLogList(int jobId, PageInfo pageInfo)
+        public JsonResult GetJobLogList(int jobId, PageInfo pageInfo)
         {
             var queries = new QueryCollection
             {

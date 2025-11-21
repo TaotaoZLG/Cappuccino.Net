@@ -1,6 +1,7 @@
 ﻿using System.Configuration;
 using System.Net.Configuration;
 using System.Web;
+using Newtonsoft.Json.Linq;
 
 namespace Cappuccino.Common.Util
 {
@@ -27,7 +28,13 @@ namespace Cappuccino.Common.Util
             /// <param name="key"></param>
             public static string GetValue(string key)
             {
-                return ConfigurationManager.AppSettings[key].ToString().Trim();
+                string value = ConfigurationManager.AppSettings[key];
+
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    return null;
+                }
+                return value.Trim();
             }
 
             /// <summary>

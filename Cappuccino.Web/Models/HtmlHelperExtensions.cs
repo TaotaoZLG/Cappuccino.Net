@@ -62,17 +62,17 @@ namespace Cappuccino.Web
         /// <summary>
         /// 状态单选框
         /// </summary>
-        public static HtmlString EnabledMarkRadioHtml(this HtmlHelper helper, int defaultVal = 0)
+        public static HtmlString EnabledMarkRadioHtml(this HtmlHelper helper, string keyName = "enabledMark", int defaultVal = 0)
         {
             var enabled = defaultVal == 1 ? "checked" : "";
             var disabled = defaultVal == 0 ? "checked" : "";
             return new HtmlString(string.Format(@"<div class='layui-form-item'>
                                         <label class='layui-form-label'>状态</label>
                                         <div class='layui-input-block'>
-                                            <input type='radio' name='enabledMark' value='1' title='开启' {0}>
-                                            <input type='radio' name='enabledMark' value='0' title='禁用' {1}>
+                                            <input type='radio' name='{2}' value='1' title='开启' {0}>
+                                            <input type='radio' name='{2}' value='0' title='禁用' {1}>
                                         </div>
-                                    </div>", enabled, disabled));
+                                    </div>", enabled, disabled, keyName));
         }
     }
 }

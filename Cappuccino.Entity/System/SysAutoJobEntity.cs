@@ -41,7 +41,7 @@ namespace Cappuccino.Entity.System
         /// <summary>
         /// 任务状态（0-停止 1-运行）
         /// </summary>
-        public int JobStatus { get; set; }
+        public int? JobStatus { get; set; }
 
         /// <summary>
         /// 开始时间

@@ -7,6 +7,7 @@ using Cappuccino.BLL.System;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.IBLL;
+using Cappuccino.IBLL.System;
 
 namespace Cappuccino.Web
 {
@@ -48,10 +49,20 @@ namespace Cappuccino.Web
             // 注册过滤器提供者
             builder.RegisterFilterProvider();
 
+            // 注册业务服务
+            builder.RegisterType<SysAutoJobService>().As<ISysAutoJobService>().SingleInstance();
+            builder.RegisterType<SysAutoJobLogService>().As<ISysAutoJobLogService>().SingleInstance();
+
+            // 注册JobExecutor
+            builder.RegisterType<JobExecutor>().InstancePerLifetimeScope();
+
             // 注册调度器（单例）
             builder.RegisterType<JobScheduler>().As<IJobScheduler>().SingleInstance();
 
-            // 3. 注册所有实现IJobTask的业务任务
+            //
+            builder.RegisterType<JobCenter>().AsSelf().SingleInstance();
+
+            // 注册所有实现IJobTask的业务任务
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
                 .Where(t => typeof(IJobTask).IsAssignableFrom(t) && !t.IsAbstract)
                 .AsSelf()

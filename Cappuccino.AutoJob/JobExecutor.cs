@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Cappuccino.AutoJob.Job;
+using Cappuccino.Common;
+using Cappuccino.Common.Caching;
 using Cappuccino.Common.Log;
 using Cappuccino.Entity.System;
 using Cappuccino.IBLL.System;
 using Quartz;
+using Autofac;
 
 namespace Cappuccino.AutoJob
 {
@@ -17,14 +21,24 @@ namespace Cappuccino.AutoJob
     /// </summary>
     public class JobExecutor : IJob
     {
+        public static Autofac.IContainer Container { get; set; }
+
         private readonly ISysAutoJobService _jobService;
         private readonly ISysAutoJobLogService _jobLogService;
 
-        // 依赖注入
-        public JobExecutor(ISysAutoJobService jobService, ISysAutoJobLogService jobLogService)
+        // 无参构造函数（供Quartz实例化）
+        public JobExecutor()
         {
-            _jobService = jobService;
-            _jobLogService = jobLogService;
+            // 从缓存获取Autofac容器
+            var container = CacheManager.Get<Autofac.IContainer>(KeyManager.AutofacContainer);
+            if (container == null)
+            {
+                throw new InvalidOperationException("Autofac容器未初始化，请检查AutofacConfig配置");
+            }
+
+            // 通过容器解析服务
+            _jobService = container.Resolve<ISysAutoJobService>();
+            _jobLogService = container.Resolve<ISysAutoJobLogService>();
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -41,6 +55,7 @@ namespace Cappuccino.AutoJob
             jobLogEntity.JobName = jobEntity.JobName;
             jobLogEntity.JobGroup = jobEntity.JobGroup;
             jobLogEntity.StartTime = DateTime.Now;
+            jobLogEntity.CreateUserId = jobEntity.CreateUserId;
 
             try
             {
@@ -65,13 +80,13 @@ namespace Cappuccino.AutoJob
                     return;
                 }
 
-                // 实例化任务并执行（调用IJobTask的Execute方法）
-                var jobInstance = (IJob)Activator.CreateInstance(jobType);
-                await jobInstance.Execute(context);
+                // 实例化任务并执行（调用IJobTask的Start方法）
+                var jobInstance = (IJobTask)Activator.CreateInstance(jobType);
+                var result = await jobInstance.Start(); // 执行业务任务
 
                 // 更新日志和任务状态
-                jobLogEntity.ExecuteStatus = 1;
-                jobLogEntity.ExecuteResult = "执行成功";
+                jobLogEntity.ExecuteStatus = result.Status;
+                jobLogEntity.ExecuteResult = result.Message;
 
                 jobEntity.LastExecuteTime = DateTime.Now;
                 jobEntity.NextExecuteTime = context.NextFireTimeUtc?.LocalDateTime;
