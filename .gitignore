@@ -349,3 +349,4 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 /Cappuccino.Web/Upload
+/Cappuccino.Web/App_Data/DbBackups
