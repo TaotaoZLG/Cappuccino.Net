@@ -85,7 +85,7 @@ namespace Cappuccino.Entity
         public string Browser { get; set; }
 
         /// <summary>
-        /// 执行状态(0成功 1失败)
+        /// 执行状态（0-失败 1-成功）
         /// </summary>
         public int LogStatus { get; set; }
     }

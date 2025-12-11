@@ -55,12 +55,12 @@
 
     <script>
         layui.use(['table', 'form', 'jquery', 'common'], function () {
-            let table = layui.table;
-            let form = layui.form;
-            let $ = layui.jquery;
-            let common = layui.common;
+            var table = layui.table;
+            var form = layui.form;
+            var $ = layui.jquery;
+            var common = layui.common;
 
-            let MODULE_PATH = "/System/SysAutoJob/";
+            var MODULE_PATH = "/System/SysAutoJob/";
 
             table.render({
                 elem: '#tableId',
@@ -73,14 +73,14 @@
                         { field: 'jobName', title: '任务名称' },
                         { field: 'jobGroup', title: '任务分组' },
                         { field: 'cronExpression', title: 'Cron表达式' },
-                        { field: 'jobType', title: '执行类' },
+                        { field: 'jobClassName', title: '工作类名' },
                         {
                             field: 'jobStatus', title: '状态', templet: function (d) {
-                                return d.jobStatus === 1 ? '<span class="layui-badge layui-bg-green">运行中</span>' : '<span class="layui-badge">已停止</span>';
+                                return d.jobStatus === 1 ? '<span class="layui-btn layui-btn-xs layui-btn-success">运行中</span>' : '<span class="layui-btn layui-btn-xs layui-btn-danger">已停止</span>';
                             }
                         },
-                        { field: 'lastRunTime', title: '上次执行时间', width: 160 },
-                        { field: 'nextRunTime', title: '下次执行时间' },
+                        { field: 'lastExecuteTime', title: '上次执行时间', width: 160 },
+                        { field: 'nextExecuteTime', title: '下次执行时间' },
                         { title: '操作', toolbar: '#operationTpl', align: 'center', width: 195 }
                     ]
                 ],
@@ -104,6 +104,8 @@
             table.on('toolbar(tableFilter)', function (obj) {
                 if (obj.event === 'create') {
                     window.create();
+                } else if (obj.event === 'log') {
+                    window.log();
                 } else if (obj.event === 'refresh') {
                     window.refresh();
                 } else if (obj.event === 'batchDel') {
@@ -160,6 +162,14 @@
                     }).fail(function (error) {
                         console.log(error)
                     });
+                });
+            }
+
+            window.log = function () {
+                top.layui.admin.addNewTab({
+                    id: 'jobLogTab',
+                    title: '任务日志', 
+                    url: '/System/SysAutoJobLog/Index',
                 });
             }
 

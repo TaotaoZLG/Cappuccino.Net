@@ -28,10 +28,10 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">执行类名 <span class="layui-red">*</span></label>
+                    <label class="layui-form-label">工作类名 <span class="layui-red">*</span></label>
                     <div class="layui-input-block">
-                        <input type="text" name="JobType" lay-verify="required" placeholder="包含命名空间的完整类名"
-                               value="@Model?.JobType" class="layui-input">
+                        <input type="text" name="JobClassName" lay-verify="required" placeholder="包含命名空间的完整类名"
+                               value="@Model?.JobClassName" class="layui-input">
                         <div class="layui-form-mid layui-word-aux">例如：Cappuccino.Web.Tasks.SampleTask</div>
                     </div>
                 </div>
@@ -90,7 +90,6 @@
                 elem: '#endTime',
                 type: 'datetime'
             });
-
 
             form.on("submit(create)", function (data) {
                 common.ajax("/System/SysRole/Create", "post", data.field, true, true).done(function (response) {

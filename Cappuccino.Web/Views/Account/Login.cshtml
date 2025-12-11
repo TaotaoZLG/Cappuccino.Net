@@ -57,26 +57,20 @@
             //给表单赋值
             form.val("formLogon", {
                 "LoginName": "@Model.LoginName",
-             });
+            });
 
             //数据校验
             form.verify({
                 password: [/^[\S]{6,12}$/, "密码必须6到12位，且不能出现空格"],
             });
 
-            //刷新验证码
-            window.resetVCode = function () {
-                var url = "@Url.Action("CreateVerifyCode","Account")?rid=" + Math.random()
-                $(".codeImage").attr("src", url);
-            };
-
             // 登 录 提 交
             form.on('submit(login)', function (data) {
                 common.ajax("@Url.Action("Login","Account")", "post", data.field, true, true).done(function (response) {
                     window.location = "/Home";
                     //popup.success("登录成功", function() {
-							//  window.location = "/Home";
-					//});
+                    //  window.location = "/Home";
+                    //});
                 }).fail(function (error) {
                     console.log(error)
                     //刷新二维码
@@ -86,7 +80,12 @@
                 return false;
             });
 
-        })
+            //刷新验证码
+            window.resetVCode = function () {
+                var url = "@Url.Action("CreateVerifyCode","Account")?rid=" + Math.random()
+                $(".codeImage").attr("src", url);
+            };
+        });
     </script>
 </body>
 </html>

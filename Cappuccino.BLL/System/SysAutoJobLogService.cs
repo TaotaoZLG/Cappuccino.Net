@@ -18,7 +18,7 @@ namespace Cappuccino.BLL.System
 
         public SysAutoJobLogService(ISysAutoJobLogDao logDao)
         {
-            _logDao = logDao;
+            this._logDao = logDao;
             base.CurrentDao = logDao;
             AddDisposableObject(CurrentDao);
         }

@@ -34,7 +34,7 @@ namespace Cappuccino.AutoJob.Job
                 }
 
                 // 生成备份文件名（包含时间戳）
-                string fileName = $"DB_Backup_{DateTime.Now:yyyyMMddHHmmss}.bak";
+                string fileName = $"Cappuccino_{DateTime.Now:yyyyMMddHHmmss}.bak";
                 string filePath = Path.Combine(physicalPath, fileName);
 
                 // 执行备份（SQL Server示例）
@@ -46,7 +46,7 @@ namespace Cappuccino.AutoJob.Job
                     Log4netHelper.Info($"数据库备份成功，文件路径：{filePath}");
 
                     // 可选：清理旧备份文件（保留最近30天）
-                    DbCleanupOldBackups(physicalPath, 30);
+                    CleanupDbOldBackups(physicalPath, 30);
                 }
                 else
                 {
@@ -90,10 +90,10 @@ namespace Cappuccino.AutoJob.Job
         /// <summary>
         /// 清理旧备份文件
         /// </summary>
-        private void DbCleanupOldBackups(string path, int keepDays)
+        private void CleanupDbOldBackups(string path, int keepDays)
         {
             var cutoffDate = DateTime.Now.AddDays(-keepDays);
-            var files = Directory.GetFiles(path, "DB_Backup_*.bak")
+            var files = Directory.GetFiles(path, "Cappuccino_*.bak")
                                  .Select(f => new FileInfo(f))
                                  .Where(f => f.CreationTime < cutoffDate);
 

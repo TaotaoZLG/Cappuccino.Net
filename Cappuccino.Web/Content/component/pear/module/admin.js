@@ -23,7 +23,7 @@
 						applyConfig(param);
 					});
 				}
-			}
+			}			
 			
 			this.logoRender = function(param) {
 				$(".layui-logo .logo").attr("src", param.logo.image);
@@ -83,14 +83,14 @@
 						$(".refresh a").addClass("layui-anim-rotate");
 						$(".refresh a").addClass("layui-anim-loop");
 						$(".refresh a").addClass("layui-icon-loading");
-						bodyTab.refresh(400);
+						bodyTab.refresh(100);
 						setTimeout(function() {
 							$(".refresh a").addClass("layui-icon-refresh-1");
 							$(".refresh a").removeClass("layui-anim");
 							$(".refresh a").removeClass("layui-anim-rotate");
 							$(".refresh a").removeClass("layui-anim-loop");
 							$(".refresh a").removeClass("layui-icon-loading");
-						}, 600)
+						}, 300)
 					})
 					sideMenu.click(function(dom, data) {
 						bodyTab.addTabOnly({
@@ -213,6 +213,25 @@
 				}
 				$("#pearadmin-bg-color").html(style);
 			}
+
+			this.addNewTab = function (option) {
+				if (!bodyTab || typeof bodyTab.addTabOnly !== 'function') {
+					console.warn('选项卡组件未初始化');
+					return false;
+				}
+				if (!option || !option.url) {
+					console.warn('URL不能为空');
+					return false;
+				}
+				bodyTab.addTabOnly({
+					id: option.id || "tab_" + Date.now(),
+					title: option.title || "新选项卡",
+					url: option.url,
+					icon: option.icon || "",
+					close: option.close !== undefined ? option.close : true
+				}, 300);
+				compatible();
+			};
 		};
 
 		$("body").on("click", ".collaspe,.pear-cover", function() {
@@ -335,7 +354,7 @@
 			var color = getColorById(colorId);
 			pearAdmin.colorSet(color.color);
 		});
-		
+
 		function readConfig(){
 		    var defer = $.Deferred();
 			$.getJSON("/pear.config.json?fresh=" + Math.random(), function(result) {

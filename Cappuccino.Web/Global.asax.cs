@@ -53,9 +53,9 @@ namespace Cappuccino.Web
                 }
             });
 
-            // 从容器中获取调度器并启动（而非直接new xxx ()）
-            var scheduler = DependencyResolver.Current.GetService<JobCenter>();
-            scheduler.Start().GetAwaiter().GetResult();
+            // 从容器中获取调度器并启动
+            var _jobCenter = DependencyResolver.Current.GetService<JobCenter>();
+            _jobCenter.Start();
         }
     }
 }

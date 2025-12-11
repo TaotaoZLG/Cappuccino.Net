@@ -6,6 +6,7 @@ using Cappuccino.AutoJob;
 using Cappuccino.BLL.System;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
+using Cappuccino.Common.Log;
 using Cappuccino.IBLL;
 using Cappuccino.IBLL.System;
 
@@ -49,24 +50,18 @@ namespace Cappuccino.Web
             // 注册过滤器提供者
             builder.RegisterFilterProvider();
 
-            // 注册业务服务
+            // 注册业务服务（单例）
             builder.RegisterType<SysAutoJobService>().As<ISysAutoJobService>().SingleInstance();
             builder.RegisterType<SysAutoJobLogService>().As<ISysAutoJobLogService>().SingleInstance();
 
             // 注册JobExecutor
-            builder.RegisterType<JobExecutor>().InstancePerLifetimeScope();
+            builder.RegisterType<JobExecutor>().InstancePerDependency();
 
             // 注册调度器（单例）
             builder.RegisterType<JobScheduler>().As<IJobScheduler>().SingleInstance();
 
-            //
+            // 注册JobCenter（单例）
             builder.RegisterType<JobCenter>().AsSelf().SingleInstance();
-
-            // 注册所有实现IJobTask的业务任务
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-                .Where(t => typeof(IJobTask).IsAssignableFrom(t) && !t.IsAbstract)
-                .AsSelf()
-                .InstancePerDependency();
 
             //创建一个Autofac的容器
             var container = builder.Build();

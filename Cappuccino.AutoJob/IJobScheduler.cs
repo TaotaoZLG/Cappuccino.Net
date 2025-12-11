@@ -14,9 +14,14 @@ namespace Cappuccino.AutoJob
     public interface IJobScheduler
     {
         /// <summary>
-        /// 启动调度器
+        /// 同步方式启动调度器
         /// </summary>
-        Task Start();
+        void Start();
+
+        /// <summary>
+        /// 异步方式启动调度器
+        /// </summary>
+        Task StartAsync();
 
         /// <summary>
         /// 关闭调度器

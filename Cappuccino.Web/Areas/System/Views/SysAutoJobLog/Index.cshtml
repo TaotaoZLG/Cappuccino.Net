@@ -50,15 +50,20 @@
                     [
                         { type: 'checkbox' },
                         { field: 'id', title: 'ID', hide: true },
-                        { field: 'jobName', title: '任务名称', width: 150 },
-                        { field: 'jobGroup', title: '任务分组', width: 120 },
-                        { field: 'executeStatus', title: '执行状态', width: 100 },
+                        { field: 'jobName', title: '任务名称' },
+                        { field: 'jobGroup', title: '任务分组' },
                         { field: 'startTime', title: '开始时间', width: 160 },
                         { field: 'endTime', title: '结束时间', width: 160 },
-                        { field: 'executeDuration', title: '执行时长（ms）', width: 100 },
                         {
-                            field: 'Exception', title: '异常信息', width: 400, templet: function (d) {
-                                return d.Exception ? '<div style="color:red;">' + d.Exception.substring(0, 100) + '...</div>' : '无';
+                            field: 'executeStatus', title: '执行状态', width: 100, templet: function (d) {
+                                return top.getDataDictValue("sys_success_status", d.executeStatus);
+                            }
+                        },
+                        { field: 'executeResult', title: '执行结果' },
+                        { field: 'executeDuration', title: '执行时长（ms）', width: 130 },
+                        {
+                            field: 'exception', title: '异常信息', width: 400, templet: function (d) {
+                                return d.exception ? '<div style="color:red;">' + d.exception + '</div>' : '';
                             }
                         }
                     ]
@@ -75,9 +80,7 @@
                 if (obj.event === 'create') {
                     window.create();
                 } else if (obj.event === 'refresh') {
-                    window.refresh();
-                } else if (obj.event === 'batchDel') {
-                    window.batchDel(obj);
+                    table.reload('tableId');
                 }
             });
 
@@ -85,32 +88,6 @@
                 table.reload('tableId', { where: data.field })
                 return false;
             });
-
-            window.batchDel = function (obj) {
-                let data = table.checkStatus(obj.config.id).data;
-                if (data.length === 0) {
-                    layer.msg("未选中数据", { icon: 3, time: 1000 });
-                    return false;
-                }
-                let ids = "";
-                for (let i = 0; i < data.length; i++) {
-                    ids += data[i].id + ",";
-                }
-                ids = ids.substr(0, ids.length - 1);
-                layer.confirm('确定要删除这些角色', { icon: 3, title: '提示' }, function (index) {
-                    common.ajax(MODULE_PATH + "batchDel", "post", { idsStr: ids }, true, true).done(function (response) {
-                        layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
-                            table.reload('tableId');
-                        });
-                    }).fail(function (error) {
-                        console.log(error)
-                    });
-                });
-            }
-
-            window.refresh = function () {
-                table.reload('tableId');
-            }
         })
     </script>
 

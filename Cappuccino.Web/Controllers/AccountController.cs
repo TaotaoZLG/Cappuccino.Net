@@ -80,6 +80,7 @@ namespace Cappuccino.Web.Controllers
                 {
                     SysUserEntity user = _sysUserService.GetList(x => x.UserName == loginModel.LoginName).FirstOrDefault();
                     string userLoginId = Guid.NewGuid().ToString();
+                    // 若选择"记住登录"（IsMember为true），缓存10天，Cookie长期有效
                     if (loginModel.IsMember)
                     {
                         List<string> list = new List<string>
@@ -88,18 +89,19 @@ namespace Cappuccino.Web.Controllers
                             "0"
                         };
                         CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()));
-                        CacheManager.Set(userLoginId, user, new TimeSpan(10, 0, 0, 0));
+                        CacheManager.Set(userLoginId, user, new TimeSpan(10, 0, 0, 0)); // 10天过期
                     }
                     else
                     {
+                        // 不记住登录，缓存30分钟，Cookie 30分钟过期
                         CookieHelper.Remove(KeyManager.IsMember);
                         List<string> list = new List<string>
                         {
                             userLoginId,
                             "1"
                         };
-                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30);
-                        CacheManager.Set(userLoginId, user, new TimeSpan(0, 30, 0));
+                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30); // 30分钟过期
+                        CacheManager.Set(userLoginId, user, new TimeSpan(0, 30, 0));    // 30分钟过期
                     }
                     _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
                     {
@@ -177,12 +179,12 @@ namespace Cappuccino.Web.Controllers
                         list[0] = Guid.NewGuid().ToString();
                         if (list[1] == "0")
                         {
-                            CacheManager.Set(list[0], userinfo, new TimeSpan(10, 0, 0, 0));
+                            CacheManager.Set(list[0], userinfo, new TimeSpan(10, 0, 0, 0)); // 10天
                             CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()));
                         }
                         else if (list[1] == "1")
                         {
-                            CacheManager.Set(list[0], userinfo, new TimeSpan(0, 30, 0));
+                            CacheManager.Set(list[0], userinfo, new TimeSpan(0, 30, 0));    // 30分钟
                             CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30);
                         }
                     }

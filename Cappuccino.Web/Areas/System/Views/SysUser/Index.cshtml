@@ -146,17 +146,23 @@
             dtree.on("node(organizationTree)", function (obj) {
                 var param = obj.param; //获取节点参数
 
+                deptDtree.clickSpread(obj.dom); //调用内置函数展开节点
+                table.reload("tableId", {
+                    where: {
+                        DepartmentId: param.nodeId
+                    }
+                });
+
                 // 当前节点为最后一级节点时触发事件
-                if (!param.leaf) {
-                    var $div = obj.dom;
-                    deptDtree.clickSpread($div); //调用内置函数展开节点
-                } else {
-                    table.reload("tableId", {
-                        where: {
-                            DepartmentId: param.nodeId
-                        }
-                    });
-                }
+                //if (!param.leaf) {
+                //    deptDtree.clickSpread(obj.dom); //调用内置函数展开节点
+                //} else {
+                //    table.reload("tableId", {
+                //        where: {
+                //            DepartmentId: param.nodeId
+                //        }
+                //    });
+                //}
             });
 
             table.on('tool(tableFilter)', function (obj) {

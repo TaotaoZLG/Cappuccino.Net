@@ -51,7 +51,6 @@
      * @returns {string} 显示文本或带样式HTML
      */
     function getDataDictValue(typeCode, dictKey) {
-        console.log(dataDict);
         // 提示未加载完成
         if (!isDictLoaded) {
             console.warn('字典尚未加载完成，可能返回空值');

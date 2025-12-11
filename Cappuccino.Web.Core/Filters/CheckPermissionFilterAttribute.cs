@@ -43,11 +43,11 @@ namespace Cappuccino.Web.Core
                     {
                         CacheManager.Set(list[0], userEntity, new TimeSpan(10, 0, 0, 0));
                     }
-                    // 1为滑动key
+                    // 1为滑动key（30分钟过期，每次访问续期）
                     else if (list[1] == "1")
                     {
-                        CacheManager.Set(list[0], userEntity, new TimeSpan(0, 30, 0));
                         CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30);
+                        CacheManager.Set(list[0], userEntity, new TimeSpan(0, 30, 0));
                     }
                     else
                     {
@@ -67,6 +67,13 @@ namespace Cappuccino.Web.Core
                 return;
             }
 
+            // 判断是否为超级管理员（IsSystem=1），若是则直接跳过权限检查
+            var currentUser = UserManager.GetCurrentUserInfo();
+            if (currentUser != null && currentUser.IsSystem == 1)
+            {
+                return; // 超级管理员直接通过验证
+            }
+
             // 获得当前要执行的Action上标注的CheckPermissionAttribute实例对象，执行权限验证
             CheckPermission[] permAtts = (CheckPermission[])filterContext.ActionDescriptor
                 .GetCustomAttributes(typeof(CheckPermission), false);
@@ -79,7 +86,7 @@ namespace Cappuccino.Web.Core
                 foreach (var permAtt in permAtts)
                 {
                     // 判断当前登录用户是否具有permAtt.Permission权限
-                    if (!sysActionService.HasPermission(UserManager.GetCurrentUserInfo().Id, permAtt.Permission))
+                    if (!sysActionService.HasPermission(currentUser.Id, permAtt.Permission))
                     {
                         NoPermission(filterContext);
                         return;

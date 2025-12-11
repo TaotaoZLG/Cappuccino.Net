@@ -18,35 +18,68 @@ namespace Cappuccino.AutoJob
     public class JobScheduler : IJobScheduler
     {
         private static object _lockHelper = new object();
-
         private readonly IScheduler _scheduler = null;
 
-        public JobScheduler()
+        public JobScheduler() 
         {
             lock (_lockHelper)
             {
-                ISchedulerFactory factory = new StdSchedulerFactory();
-                _scheduler = factory.GetScheduler().Result;
-                Log4netHelper.Info("JobScheduler实例化");
+                ISchedulerFactory schedf = new StdSchedulerFactory();
+                _scheduler = schedf.GetScheduler().GetAwaiter().GetResult();
+                Log4netHelper.Info("调度器初始化完成");
+            }
+        }
+
+        //public static IScheduler GetScheduler()
+        //{
+        //    lock (_lockHelper)
+        //    {
+        //        if (_scheduler == null)
+        //        {
+        //            ISchedulerFactory schedf = new StdSchedulerFactory();
+        //            _scheduler = schedf.GetScheduler().GetAwaiter().GetResult();
+        //            Log4netHelper.Info("调度器初始化完成");
+        //        }
+        //    }
+        //    return _scheduler;
+        //}
+
+        /// <summary>
+        /// 同步方式启动调度器（适合在应用启动时使用）
+        /// </summary>
+        public void Start()
+        {
+            try
+            {
+                if (!_scheduler.IsStarted)
+                {
+                    _scheduler.Start();
+                    Log4netHelper.Info("调度器已同步启动");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error("启动调度器失败", ex);
+                throw;
             }
         }
 
         /// <summary>
-        /// 启动调度器
+        /// 异步方式启动调度器
         /// </summary>
-        public async Task Start()
+        public async Task StartAsync()
         {
             try
             {
                 if (!_scheduler.IsStarted)
                 {
                     await _scheduler.Start();
-                    Log4netHelper.Info("调度器已启动");
+                    Log4netHelper.Info("调度器已异步启动");
                 }
             }
             catch (Exception ex)
             {
-                Log4netHelper.Info("初始化调度器失败", ex);
+                Log4netHelper.Info("异步启动调度器失败", ex);
             }
         }
 
@@ -115,7 +148,7 @@ namespace Cappuccino.AutoJob
 
                 // 调度任务
                 await _scheduler.ScheduleJob(jobDetail, trigger);  //将创建的任务和触发器条件添加到创建的任务调度器当中
-                //await _scheduler.Start();  //启动任务调度器
+                await _scheduler.Start();  //启动任务调度器
                 Log4netHelper.Info($"任务 [{jobEntity.JobGroup}.{jobEntity.JobName}] 已添加，Cron 表达式：{jobEntity.CronExpression}");
                 return true;
             }
@@ -214,6 +247,7 @@ namespace Cappuccino.AutoJob
             try
             {
                 JobKey jobKey = new JobKey(jobName, groupName);
+
                 if (!await _scheduler.CheckExists(jobKey))
                 {
                     Log4netHelper.Error($"任务[{jobKey}]不存在，无法立即执行");

@@ -13,7 +13,7 @@ namespace Cappuccino.Entity
         public string MobilePhone { get; set; }
         public string Email { get; set; }
         public int EnabledMark { get; set; }
-        public int? IsSystem { get; set; }
+        public int IsSystem { get; set; }
 
         // 用户角色
         public virtual ICollection<SysRoleEntity> SysRoles { get; set; } = new List<SysRoleEntity>();

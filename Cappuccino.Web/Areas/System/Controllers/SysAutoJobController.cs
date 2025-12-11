@@ -19,14 +19,11 @@ namespace Cappuccino.Web.Areas.System.Controllers
     public class SysAutoJobController : BaseController
     {
         private readonly ISysAutoJobService _sysAutoJobService;
-        private readonly ISysAutoJobLogService _sysAutoJobLogService;
 
-        public SysAutoJobController(ISysAutoJobService sysAutoJobService, ISysAutoJobLogService sysAutoJobLogService)
+        public SysAutoJobController(ISysAutoJobService sysAutoJobService)
         {
             _sysAutoJobService = sysAutoJobService;
-            _sysAutoJobLogService = sysAutoJobLogService;
             AddDisposableObject(_sysAutoJobService);
-            AddDisposableObject(_sysAutoJobLogService);
         }
 
         #region 视图
@@ -75,7 +72,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                     JobName = viewModel.JobName,
                     JobGroup = viewModel.JobGroup,
                     Description = viewModel.Description,
-                    JobType = viewModel.JobType,
+                    JobClassName = viewModel.JobClassName,
                     CronExpression = viewModel.CronExpression,
                     JobStatus = viewModel.JobStatus,
                     StartTime = viewModel.StartTime,
@@ -111,7 +108,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                     JobName = viewModel.JobName,
                     JobGroup = viewModel.JobGroup,
                     Description = viewModel.Description,
-                    JobType = viewModel.JobType,
+                    JobClassName = viewModel.JobClassName,
                     CronExpression = viewModel.CronExpression,
                     StartTime = viewModel.StartTime,
                     EndTime = viewModel.EndTime,
@@ -119,7 +116,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                     UpdateUserId = UserManager.GetCurrentUserInfo().Id
                 };
 
-                _sysAutoJobService.Update(entity, new string[] { "JobName", "JobGroup", "Description", "JobType", "UpdateTime", "CronExpression", "StartTime", "EndTime", "UpdateTime", "UpdateUserId" });
+                _sysAutoJobService.Update(entity, new string[] { "JobName", "JobGroup", "Description", "JobClassName", "UpdateTime", "CronExpression", "StartTime", "EndTime", "UpdateTime", "UpdateUserId" });
                 return WriteSuccess();
             }
             catch (Exception ex)
@@ -145,29 +142,29 @@ namespace Cappuccino.Web.Areas.System.Controllers
         #endregion
 
         #region 任务管控
-        [HttpPost, CheckPermission("system.autojob.start")]
-        [LogOperate(Title = "启动任务计划", BusinessType = (int)OperateType.Other)]
-        public ActionResult Start(int id)
-        {
-            var result = _sysAutoJobService.StartJob(id).Result;
-            return result ? WriteSuccess("启动成功") : WriteError("启动失败");
-        }
+        //[HttpPost, CheckPermission("system.autojob.start")]
+        //[LogOperate(Title = "启动任务计划", BusinessType = (int)OperateType.Other)]
+        //public ActionResult Start(int id)
+        //{
+        //    var result = _sysAutoJobService.StartJob(id).Result;
+        //    return result ? WriteSuccess("启动成功") : WriteError("启动失败");
+        //}
 
-        [HttpPost, CheckPermission("system.autojob.stop")]
-        [LogOperate(Title = "停止任务计划", BusinessType = (int)OperateType.Other)]
-        public ActionResult Stop(int id)
-        {
-            var result = _sysAutoJobService.StopJob(id).Result;
-            return result ? WriteSuccess("停止成功") : WriteError("停止失败");
-        }
+        //[HttpPost, CheckPermission("system.autojob.stop")]
+        //[LogOperate(Title = "停止任务计划", BusinessType = (int)OperateType.Other)]
+        //public ActionResult Stop(int id)
+        //{
+        //    var result = _sysAutoJobService.StopJob(id).Result;
+        //    return result ? WriteSuccess("停止成功") : WriteError("停止失败");
+        //}
 
-        [HttpPost, CheckPermission("system.autojob.execute")]
-        [LogOperate(Title = "立即执行任务", BusinessType = (int)OperateType.Other)]
-        public ActionResult ExecuteImmediately(int id)
-        {
-            var result = _sysAutoJobService.ExecuteJob(id).Result;
-            return result ? WriteSuccess("执行命令已发送") : WriteError("执行失败");
-        }
+        //[HttpPost, CheckPermission("system.autojob.execute")]
+        //[LogOperate(Title = "立即执行任务", BusinessType = (int)OperateType.Other)]
+        //public ActionResult ExecuteImmediately(int id)
+        //{
+        //    var result = _sysAutoJobService.ExecuteJob(id).Result;
+        //    return result ? WriteSuccess("执行命令已发送") : WriteError("执行失败");
+        //}
         #endregion
 
         #region 数据获取
@@ -201,43 +198,13 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 x.JobName,
                 x.JobGroup,
                 x.Description,
-                x.JobType,
+                x.JobClassName,
                 x.CronExpression,
                 x.JobStatus,
                 x.StartTime,
                 x.EndTime,
                 x.LastExecuteTime,
                 x.NextExecuteTime
-            }).ToList();
-
-            return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
-        }
-
-        [CheckPermission("system.autojob.log")]
-        public JsonResult GetJobLogList(int jobId, PageInfo pageInfo)
-        {
-            var queries = new QueryCollection
-            {
-                new Query { Name = "JobId", Operator = Query.Operators.Equal, Value = jobId }
-            };
-
-            var list = _sysAutoJobLogService.GetListByPage(
-                queries.AsExpression<SysAutoJobLogEntity>(),
-                pageInfo.Field,
-                pageInfo.Order,
-                pageInfo.Limit,
-                pageInfo.Page,
-                out int totalCount
-            ).Select(x => new
-            {
-                x.Id,
-                x.JobName,
-                x.JobGroup,
-                x.ExecuteStatus,
-                x.StartTime,
-                x.EndTime,
-                x.ExecuteDuration,
-                x.Exception
             }).ToList();
 
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);

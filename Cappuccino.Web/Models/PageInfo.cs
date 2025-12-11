@@ -10,7 +10,7 @@
         /// <summary>
         /// 每页数据量
         /// </summary>
-        public int Limit { get; set; } = 15;
+        public int Limit { get; set; } = 10;
 
         /// <summary>
         /// 排序字段

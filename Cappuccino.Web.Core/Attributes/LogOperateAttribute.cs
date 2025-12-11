@@ -75,14 +75,14 @@ namespace Cappuccino.Web.Attributes
                     }
                     stringBuilder.Append(innerEx.Message);
 
-                    logOperateEntity.LogStatus = 1;
+                    logOperateEntity.LogStatus = 0;
                 }
                 else
                 {
                     var result = context.Result as JsonResult;
                     stringBuilder.Append(result?.Data?.ToString());
 
-                    logOperateEntity.LogStatus = 0;
+                    logOperateEntity.LogStatus = 1;
                 }
 
                 // 基础配置信息

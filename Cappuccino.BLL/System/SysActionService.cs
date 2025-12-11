@@ -5,6 +5,7 @@ using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
 using Cappuccino.Model;
+using Cappuccino.Web.Core;
 
 namespace Cappuccino.BLL
 {
@@ -38,6 +39,13 @@ namespace Cappuccino.BLL
             {
                 return sysActions;
             }
+
+            //如果是超级管理员（IsSystem=1），直接返回所有权限
+            if (user.IsSystem == 1)
+            {
+                return dao.GetList(x => true).ToList(); // 返回所有权限
+            }
+
             //根据角色查找用户所拥有的权限
             var userRoles = user.SysRoles.Where(x => x.EnabledMark == (int)EnabledMarkEnum.Valid).Select(x => x.SysActions).ToList();
             foreach (var item in userRoles)
@@ -116,6 +124,12 @@ namespace Cappuccino.BLL
 
         public bool HasPermission(int id, string permission)
         {
+            //超级管理员直接返回true
+            if (UserManager.GetCurrentUserInfo().IsSystem == 1)
+            {
+                return true;
+            }
+
             return GetPermission(id).Any(x => x.Code.ToLower() == permission.ToLower());
         }
 

@@ -15,11 +15,12 @@ namespace Cappuccino.BLL.System
     public class SysAutoJobService : BaseService<SysAutoJobEntity>, ISysAutoJobService
     {
         private readonly ISysAutoJobDao _autoJobDao;
-        public IJobScheduler _jobScheduler;
+        private readonly IJobScheduler _jobScheduler;
 
-        public SysAutoJobService(ISysAutoJobDao autoJobDao)
+        public SysAutoJobService(ISysAutoJobDao autoJobDao, IJobScheduler jobScheduler)
         {
             _autoJobDao = autoJobDao;
+            _jobScheduler = jobScheduler;
             base.CurrentDao = autoJobDao;
             this.AddDisposableObject(this.CurrentDao);
         }

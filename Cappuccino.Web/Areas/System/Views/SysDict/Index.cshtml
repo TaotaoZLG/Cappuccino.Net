@@ -118,11 +118,13 @@
 
             window.renderDictDetail = function (id) {
                 dictId = id;
+                console.log(id);
+                console.log(dictId);
                 $(".empty").hide();
 
                 table.render({
                     elem: '#tableDictDetailId',
-                    url: MODULE_PATH + "SysDictDetail/GetList?typeId=" + dictId,
+                    url: MODULE_PATH + "SysDictDetail/GetList?DictId=" + dictId,
                     page: true,
                     height: 'full-148',
                     cols: [
@@ -145,6 +147,7 @@
 
             table.on('tool(tableDictFilter)', function (obj) {
                 let data = obj.data;
+                console.log(data);
                 if (obj.event === 'delete') {
                     window.deleteDict(data.id);
                 } else if (obj.event === 'edit') {
@@ -297,7 +300,7 @@
             });
 
             form.on('submit(search)', function (data) {
-                data.field.dictId = typeId;
+                data.field.dictId = dictId;
                 table.reload('tableDictId', {
                     where: data.field
                 })

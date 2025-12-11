@@ -136,7 +136,7 @@
 
             table.on('tool(tableId)', function (obj) {
                 if (obj.event === 'delete') {
-                    window.delete(obj.data.id);
+                    window.delete(obj);
                 } else if (obj.event === 'edit') {
                     window.edit(obj.data.id);
                 }

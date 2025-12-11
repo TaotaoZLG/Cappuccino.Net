@@ -13,6 +13,7 @@ using Cappuccino.Entity.System;
 using Cappuccino.IBLL.System;
 using Quartz;
 using Autofac;
+using IContainer = Autofac.IContainer;
 
 namespace Cappuccino.AutoJob
 {
@@ -21,8 +22,6 @@ namespace Cappuccino.AutoJob
     /// </summary>
     public class JobExecutor : IJob
     {
-        public static Autofac.IContainer Container { get; set; }
-
         private readonly ISysAutoJobService _jobService;
         private readonly ISysAutoJobLogService _jobLogService;
 
@@ -30,7 +29,7 @@ namespace Cappuccino.AutoJob
         public JobExecutor()
         {
             // 从缓存获取Autofac容器
-            var container = CacheManager.Get<Autofac.IContainer>(KeyManager.AutofacContainer);
+            var container = CacheManager.Get<IContainer>(KeyManager.AutofacContainer);
             if (container == null)
             {
                 throw new InvalidOperationException("Autofac容器未初始化，请检查AutofacConfig配置");
@@ -68,19 +67,18 @@ namespace Cappuccino.AutoJob
 
                 // 从所有程序集查找任务类型（解决跨程序集问题）
                 var jobType = AppDomain.CurrentDomain.GetAssemblies()
-                    .Select(asm => asm.GetType(jobEntity.JobType))
+                    .Select(asm => asm.GetType(jobEntity.JobClassName))
                     .FirstOrDefault(t => t != null);
 
                 if (jobType == null)
                 {
-                    var errorMsg = $"未找到任务类型：{jobEntity.JobType}";
+                    var errorMsg = $"未找到任务类型：{jobEntity.JobClassName}";
                     Log4netHelper.Info(errorMsg);
                     jobLogEntity.ExecuteStatus = 0;
                     jobLogEntity.ExecuteResult = errorMsg;
                     return;
                 }
 
-                // 实例化任务并执行（调用IJobTask的Start方法）
                 var jobInstance = (IJobTask)Activator.CreateInstance(jobType);
                 var result = await jobInstance.Start(); // 执行业务任务
 

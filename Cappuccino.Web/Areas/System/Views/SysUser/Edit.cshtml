@@ -147,10 +147,6 @@
                     }
                 }
             });
-            layer.photos({
-                photos: '#layer-photos-demo',
-                anim: 1
-            });
 
             form.verify({
                 myPhone: [/(^$)|^1\d{10}$/, '请输入正确的手机号'],
@@ -166,6 +162,16 @@
                     console.log(error)
                 });
                 return false;
+            });
+
+            $("body").on("click", "#layer-photos-demo img", function (e) {
+                var imgsrc = e.target.src || e.target.getAttribute("layer-src");
+                layer.photos({
+                    photos: { data: [{ "src": imgsrc }] },
+                    closeBtn: 2,
+                    anim: 1
+                });
+
             });
         });
     </script>
