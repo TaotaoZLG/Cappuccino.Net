@@ -8,53 +8,36 @@
         <div class="main-container">
             <div class="main-container">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">任务名称</label>
+                    <label class="layui-form-label">参数名称</label>
                     <div class="layui-input-block">
-                        <input type="text" name="JobName" value="@Model?.JobName" required lay-verify="required" class="layui-input">
+                        <input type="text" name="Name" lay-verify="required" placeholder="请输入参数名称" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">任务分组</label>
+                    <label class="layui-form-label">参数键名</label>
                     <div class="layui-input-block">
-                        <input type="text" name="JobGroup" value="@Model?.JobGroup ?? " 默认分组"" class="layui-input">
+                        <input type="text" name="Keys" lay-verify="required" placeholder="请输入参数键名（英文标识）" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">Cron表达式 <span class="layui-red">*</span></label>
+                    <label class="layui-form-label">参数值</label>
                     <div class="layui-input-block">
-                        <input type="text" name="CronExpression" lay-verify="required" placeholder="例如：0 0/5 * * * ?"
-                               value="@Model?.CronExpression" class="layui-input">
-                        <div class="layui-form-mid layui-word-aux">Cron表达式生成工具：<a href="https://cron.qqe2.com/" target="_blank">点击访问</a></div>
+                        <input type="text" name="Value" lay-verify="required" placeholder="请输入参数值" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">工作类名 <span class="layui-red">*</span></label>
+                    <label class="layui-form-label">参数类型</label>
                     <div class="layui-input-block">
-                        <input type="text" name="JobClassName" lay-verify="required" placeholder="包含命名空间的完整类名"
-                               value="@Model?.JobClassName" class="layui-input">
-                        <div class="layui-form-mid layui-word-aux">例如：Cappuccino.Web.Tasks.SampleTask</div>
+                        <select name="Type" lay-verify="required">
+                            <option value="2" @(Model?.Type == 2 ? "selected" : "")>自定义</option>
+                            <option value="1" @(Model?.Type == 1 ? "selected" : "") disabled>系统内置（不可删除）</option>
+                        </select>
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">开始时间</label>
+                    <label class="layui-form-label">备注</label>
                     <div class="layui-input-block">
-                        <input type="datetime" name="StartTime" placeholder="请选择开始时间"
-                               value="@Model?.StartTime?.ToString(" yyyy-MM-dd HH:mm:ss")" class="layui-input" id="startTime">
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
-                    <label class="layui-form-label">结束时间</label>
-                    <div class="layui-input-block">
-                        <input type="datetime" name="EndTime" placeholder="请选择结束时间"
-                               value="@Model?.EndTime?.ToString(" yyyy-MM-dd HH:mm:ss")" class="layui-input" id="endTime">
-                    </div>
-                </div>
-                @Html.EnabledMarkRadioHtml()
-                <div class="layui-form-item">
-                    <label class="layui-form-label">任务描述</label>
-                    <div class="layui-input-block">
-                        <textarea name="Description" class="layui-textarea">@Model?.Description</textarea>
+                        <textarea name="Remark" placeholder="请输入备注信息" class="layui-textarea" rows="3"></textarea>
                     </div>
                 </div>
             </div>
@@ -92,7 +75,7 @@
             });
 
             form.on("submit(create)", function (data) {
-                common.ajax("/System/SysRole/Create", "post", data.field, true, true).done(function (response) {
+                common.ajax("/System/SysConfig/Create", "post", data.field, true, true).done(function (response) {
                     layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
                         parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
                         parent.layui.table.reload("tableId");

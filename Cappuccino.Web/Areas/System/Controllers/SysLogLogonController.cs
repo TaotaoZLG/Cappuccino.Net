@@ -50,7 +50,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 queries.Add(new Query { Name = "CreateTime", Operator = Query.Operators.GreaterThanOrEqual, Value = StartEndDateHelper.GteStartDate(viewModel.StartEndDate) });
                 queries.Add(new Query { Name = "CreateTime", Operator = Query.Operators.LessThanOrEqual, Value = StartEndDateHelper.GteEndDate(viewModel.StartEndDate) });
             }
-            var list = _sysLogLogonService.GetListByPage(queries.AsExpression<SysLogLogonEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new
+            var list = _sysLogLogonService.GetListByPage(queries.AsExpression<SysLogLogonEntity>(Query.Condition.AndAlso), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new
             {
                 x.Id,
                 x.LogType,

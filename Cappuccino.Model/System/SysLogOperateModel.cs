@@ -1,11 +1,12 @@
 ﻿using System;
+using Cappuccino.Entity;
 
 namespace Cappuccino.Model
 {
     /// <summary>
     /// 登录日志
     /// </summary>
-    public class SysLogOperateModel
+    public class SysLogOperateModel : BaseCreateEntity
     {
         /// <summary>
         /// 主键
@@ -91,11 +92,6 @@ namespace Cappuccino.Model
         /// 执行状态（0-失败 1-成功）
         /// </summary>
         public int LogStatus { get; set; }
-
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        public DateTime CreateTime { get; set; }
 
         /// <summary>
         /// 日志查询时间范围

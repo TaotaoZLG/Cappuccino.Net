@@ -187,7 +187,6 @@ namespace Cappuccino.IDAL
         Task<bool> UpdateAsync(T entity, string[] propertys);
         Task<int> UpdateListAsync(params T[] entities);
         Task<int> SaveChangesAsync();
-
         Task<IEnumerable<TElement>> ExecuteSqlQueryAsync<TElement>(string sql, params object[] parameters);
     }
 }

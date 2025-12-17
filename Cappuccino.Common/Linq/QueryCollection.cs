@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Cappuccino.Common.Extensions;
 
 namespace Cappuccino.Common
 {
@@ -26,11 +29,11 @@ namespace Cappuccino.Common
             /// </summary>
             GreaterThanOrEqual = 3,
             /// <summary>
-            /// 少于 <
+            /// 小于 <
             /// </summary>
             LessThan = 4,
             /// <summary>
-            /// 少于 <=
+            /// 小于 <=
             /// </summary>
             LessThanOrEqual = 5,
             /// <summary>
@@ -48,11 +51,21 @@ namespace Cappuccino.Common
             /// <summary>
             /// 范围
             /// </summary>
-            Range = 9
+            Range = 9,
+            /// <summary>
+            /// 包含在集合中（等价于 SQL 的 IN）
+            /// </summary>
+            In = 10  // 新增In枚举值
         }
         public enum Condition
         {
+            /// <summary>
+            /// 或（OR）
+            /// </summary>
             OrElse = 1,
+            /// <summary>
+            /// 且（AND）
+            /// </summary>
             AndAlso = 2
         }
         public string Name { get; set; }
@@ -79,6 +92,7 @@ namespace Cappuccino.Common
                 {
                     return exp2;
                 }
+                // 默认用 OrElse（逻辑或）连接条件
                 return (condition ?? Query.Condition.OrElse) == Query.Condition.OrElse ? Expression.OrElse(exp1, exp2) : Expression.AndAlso(exp1, exp2);
             };
             foreach (var item in this)
@@ -182,6 +196,57 @@ namespace Cappuccino.Common
                                 expression = Append(expression, maxExp);
                             }
 
+                            break;
+                        }
+                    case Query.Operators.In:
+                        {
+                            // 校验Value是否为string数组（或IEnumerable<string>）
+                            if (item.Value == null)
+                                break;
+
+                            var stringEnumerable = item.Value as IEnumerable<string>;
+                            if (stringEnumerable == null)
+                                break; // 非string集合则跳过
+
+                            // 转换数组元素类型与实体属性类型一致（如string转int、Guid等）
+                            var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+                            var convertedValues = new List<object>();
+                            foreach (var strVal in stringEnumerable)
+                            {
+                                if (string.IsNullOrWhiteSpace(strVal))
+                                    continue;
+
+                                // 利用现有转换扩展方法（如ParseToInt、ParseToGuid等）处理类型转换
+                                object convertedVal;
+                                if (propertyType == typeof(int))
+                                    convertedVal = strVal.ParseToInt(); // 现有扩展方法
+                                else if (propertyType == typeof(Guid))
+                                    convertedVal = strVal.ParseToGuid(); // 现有扩展方法
+                                else if (propertyType == typeof(string))
+                                    convertedVal = strVal; // 字符串无需转换
+                                else
+                                    convertedVal = Convert.ChangeType(strVal, propertyType); // 通用转换
+
+                                convertedValues.Add(convertedVal);
+                            }
+                            if (!convertedValues.Any())
+                                break;
+
+                            // 直接用数组构建常量表达式（无需转List）
+                            var array = convertedValues.ToArray(); // 转为数组（保持与输入一致）
+                            var arrayExpr = Expression.Constant(array);
+
+                            // 构建属性访问表达式（x => x.Property）
+                            var propertyAccess = Expression.Property(parameter, item.Name);
+
+                            // 调用Enumerable.Contains方法（支持数组）
+                            var containsMethod = typeof(Enumerable)
+                                .GetMethod("Contains")
+                                .MakeGenericMethod(propertyType);
+                            var containsExpr = Expression.Call(containsMethod, arrayExpr, propertyAccess);
+
+                            // 添加到整体表达式中
+                            expression = Append(expression, containsExpr);
                             break;
                         }
                 }

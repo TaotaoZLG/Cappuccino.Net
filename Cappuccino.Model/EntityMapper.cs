@@ -155,5 +155,29 @@ namespace Cappuccino.Model
             return Mapper.Map<SysAutoJobModel, SysAutoJobEntity>(model);
         }
         #endregion
+
+        #region SysNotice
+        public static SysNoticeModel EntityMap(this SysNoticeEntity model)
+        {
+            return Mapper.Map<SysNoticeEntity, SysNoticeModel>(model);
+        }
+
+        public static SysNoticeEntity EntityMap(this SysNoticeModel model)
+        {
+            return Mapper.Map<SysNoticeModel, SysNoticeEntity>(model);
+        }
+        #endregion
+
+        #region SysNotice
+        public static SysConfigModel EntityMap(this SysConfigEntity model)
+        {
+            return Mapper.Map<SysConfigEntity, SysConfigModel>(model);
+        }
+
+        public static SysConfigEntity EntityMap(this SysConfigModel model)
+        {
+            return Mapper.Map<SysConfigModel, SysConfigEntity>(model);
+        }
+        #endregion
     }
 }

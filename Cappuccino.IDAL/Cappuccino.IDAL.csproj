@@ -57,6 +57,7 @@
     <Compile Include="System\ISysActionDao.cs" />
     <Compile Include="System\ISysActionButtonDao.cs" />
     <Compile Include="System\ISysActionMenuDao.cs" />
+    <Compile Include="System\ISysConfigDao.cs" />
     <Compile Include="System\ISysDictDetailDao.cs" />
     <Compile Include="System\ISysDictDao.cs" />
     <Compile Include="System\ISysLogOperateDao.cs" />

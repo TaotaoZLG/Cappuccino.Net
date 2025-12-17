@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Cappuccino.Entity
+{
+    [Table("SysConfig")]
+    public class SysConfigEntity : BaseEntity
+    {
+        /// <summary>
+        /// 参数名称
+        /// </summary>
+        public string ConfigName { get; set; }
+
+        /// <summary>
+        /// 参数键名
+        /// </summary>
+        public string ConfigKeys { get; set; }
+
+        /// <summary>
+        /// 参数值
+        /// </summary>
+        public string ConfigValue { get; set; }
+
+        /// <summary>
+        /// 参数类型（1：系统内置 2：自定义）
+        /// </summary>
+        public int ConfigType { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string Remark { get; set; }
+    }
+}

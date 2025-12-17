@@ -50,7 +50,7 @@
      * @param {string|number} dictKey 字典项匹配键（对应后端Value）
      * @returns {string} 显示文本或带样式HTML
      */
-    function getDataDictValue(typeCode, dictKey) {
+    function getDataDictValue(typeCode, dictKey, isClass = true) {
         // 提示未加载完成
         if (!isDictLoaded) {
             console.warn('字典尚未加载完成，可能返回空值');
@@ -69,7 +69,7 @@
             var item = dicts[i];
             if (item.value == dictKey) {
                 // 样式类逻辑（后端若未来添加ListClass字段可直接兼容）
-                if (item.class) {
+                if (item.class && isClass) {
                     return `<span class="layui-btn layui-btn-xs layui-btn-${item.class}">${item.label}</span>`;
                 } else {
                     return item.label;

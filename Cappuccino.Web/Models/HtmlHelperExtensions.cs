@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -26,9 +27,9 @@ namespace Cappuccino.Web
         }
 
         /// <summary>
-        /// 表格内按钮组
-        /// </summary>]
-        public static HtmlString RightToolBarHtml(this HtmlHelper helper, dynamic _list = null)
+        /// 表格内按钮组（支持排除指定按钮）
+        /// </summary>
+        public static HtmlString RightToolBarHtml(this HtmlHelper helper, dynamic _list = null, params string[] excludeButtonCodes)
         {
             StringBuilder sb = new StringBuilder();
             List<ButtonModel> list = _list as List<ButtonModel>;
@@ -36,7 +37,11 @@ namespace Cappuccino.Web
             {
                 foreach (var item in list)
                 {
-                    sb.AppendLine(string.Format(@"<button class='{0}' lay-event='{1}'><i class='layui-icon {2}'></i></button>", item.ClassName, item.ButtonCode, item.Icon));
+                    // 判断当前按钮是否在排除列表中，不在则添加
+                    if (excludeButtonCodes == null || !excludeButtonCodes.Contains(item.ButtonCode))
+                    {
+                        sb.AppendLine(string.Format(@"<button class='{0}' lay-event='{1}'><i class='layui-icon {2}'></i></button>", item.ClassName, item.ButtonCode, item.Icon));
+                    }
                 }
             }
             return new HtmlString(sb.ToString());

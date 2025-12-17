@@ -1,12 +1,21 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Web;
 using System.Web.Mvc;
+using Cappuccino.BLL;
 using Cappuccino.Common;
+using Cappuccino.Common.Enum;
 using Cappuccino.Common.Helper;
+using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
+using Cappuccino.Web.Attributes;
 using Cappuccino.Web.Core;
 using Cappuccino.Web.Models;
+using MiniExcelLibs;
 
 namespace Cappuccino.Web.Areas.System.Controllers
 {
@@ -33,6 +42,65 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [CheckPermission("system.logoperate.list")]
         public JsonResult GetList(SysLogOperateModel viewModel, PageInfo pageInfo)
         {
+            var queries = BuildUserQueries(viewModel);
+            var list = _sysLogOperateService.GetListByPage(queries.AsExpression<SysLogOperateEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).ToList();
+            return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
+        }
+
+        [CheckPermission("system.logoperate.export")]
+        [LogOperate(Title = "导出操作日志", BusinessType = (int)OperateType.Export)]
+        public ActionResult ExportLogOperate(SysLogOperateModel viewModel, string checkedIds = null)
+        {
+            try
+            {
+                var queries = BuildUserQueries(viewModel);
+
+                List<SysLogOperateEntity> logOperateList;
+                if (!string.IsNullOrEmpty(checkedIds))
+                {
+                    // 导出勾选的用户（拆分ID列表）
+                    var ids = checkedIds.Split(',');
+                    queries.Add(new Query { Name = "Id", Operator = Query.Operators.In, Value = ids });
+                }
+               
+                logOperateList = _sysLogOperateService.GetList(queries.AsExpression<SysLogOperateEntity>()).ToList();
+
+                // 转换为导出模型（避免直接暴露实体，只包含需要的字段）
+                //var exportData = logOperateList.Select(user => new
+                //{
+                //    用户ID = user.Id,
+                //    用户名 = user.UserName,
+                //    昵称 = user.NickName,
+                //    部门 = user.Department?.Name ?? "无部门",
+                //    手机号 = user.MobilePhone,
+                //    邮箱 = user.Email,
+                //    状态 = user.EnabledMark == (int)EnabledMarkEnum.Valid ? "启用" : "禁用",
+                //    角色 = string.Join("，", user.SysRoles.Select(r => r.Name)),
+                //    创建时间 = user.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")
+                //}).ToList();
+
+                var memoryStream = new MemoryStream();
+                memoryStream.SaveAs(logOperateList);
+                memoryStream.Seek(0, SeekOrigin.Begin); // 重置流位置
+                return new FileStreamResult(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                {
+                    FileDownloadName = HttpUtility.UrlEncode("操作日志数据导出.xlsx")
+                };
+            }
+            catch (Exception ex)
+            {
+                // 记录日志并返回错误信息
+                return WriteError($"导出失败：{ex.Message}");
+            }
+        }
+        #endregion
+
+        #region 私有方法
+        /// <summary>
+        /// 复用查询条件构建逻辑（与GetList统一，避免重复代码）
+        /// </summary>
+        private QueryCollection BuildUserQueries(SysLogOperateModel viewModel)
+        {
             QueryCollection queries = new QueryCollection();
             if (!string.IsNullOrEmpty(viewModel.RequestUrl))
             {
@@ -51,8 +119,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 queries.Add(new Query { Name = "CreateTime", Operator = Query.Operators.GreaterThanOrEqual, Value = StartEndDateHelper.GteStartDate(viewModel.StartEndDate) });
                 queries.Add(new Query { Name = "CreateTime", Operator = Query.Operators.LessThanOrEqual, Value = StartEndDateHelper.GteEndDate(viewModel.StartEndDate) });
             }
-            var list = _sysLogOperateService.GetListByPage(queries.AsExpression<SysLogOperateEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).ToList();
-            return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
+            return queries;
         }
         #endregion
     }

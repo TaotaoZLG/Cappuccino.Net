@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Cappuccino.Common.Extensions;
 
 namespace Cappuccino.Common.Helper
 {
@@ -8,46 +9,64 @@ namespace Cappuccino.Common.Helper
     /// </summary>
     public class StartEndDateHelper
     {
+        /// <summary>
+        /// 获取开始时间（支持yyyy-MM-dd和yyyy-MM-dd HH:mm:ss格式）
+        /// 纯日期默认00:00:00，带时间则保留原时间
+        /// </summary>
         public static DateTime GteStartDate(string startEndDate)
         {
             if (!string.IsNullOrEmpty(startEndDate) && startEndDate != " ~ ")
             {
                 if (startEndDate.Contains("~"))
                 {
-                    if (startEndDate.Contains("+"))
-                    {
-                        startEndDate = startEndDate.Replace("+", "");
-                    }
+                    // 移除可能的"+"字符
+                    startEndDate = startEndDate.Replace("+", "");
                     var dts = startEndDate.Split('~');
-                    DateTimeFormatInfo dtFormat = new DateTimeFormatInfo();
-                    dtFormat.ShortDatePattern = "yyyy-MM-dd";
-                    DateTime startDt = Convert.ToDateTime(dts[0].Trim(), dtFormat);
+                    string startDateStr = dts[0].Trim();
+
+                    DateTime startDt = startDateStr.ParseToDateTime(DateTime.MinValue);
+
                     return startDt;
                 }
             }
-            return new DateTime();
+            return DateTime.MinValue;
         }
 
+        /// <summary>
+        /// 获取结束时间（支持yyyy-MM-dd和yyyy-MM-dd HH:mm:ss格式）
+        /// 纯日期默认23:59:59，带时间则保留原时间
+        /// </summary>
         public static DateTime GteEndDate(string startEndDate)
         {
             if (!string.IsNullOrEmpty(startEndDate) && startEndDate != " ~ ")
             {
                 if (startEndDate.Contains("~"))
                 {
-                    if (startEndDate.Contains("+"))
-                    {
-                        startEndDate = startEndDate.Replace("+", "");
-                    }
+                    // 移除可能的"+"字符
+                    startEndDate = startEndDate.Replace("+", "");
                     var dts = startEndDate.Split('~');
-                    DateTimeFormatInfo dtFormat = new DateTimeFormatInfo();
-                    dtFormat.ShortDatePattern = "yyyy-MM-dd";
-                    DateTime startDt = Convert.ToDateTime(dts[1].Trim(), dtFormat);
-                    return startDt;
+                    string endDateStr = dts[1].Trim();
+
+                    DateTime endDt = endDateStr.ParseToDateTime(DateTime.MinValue);
+
+                    if (endDt != DateTime.MinValue)
+                    {
+                        // 检查原字符串是否仅为日期（不含时间部分）
+                        bool isDateOnly = !endDateStr.Contains(" ") && (endDateStr.Length == 10 || endDateStr.Contains("/"));
+
+                        if (isDateOnly)
+                        {
+                            return endDt.Date.AddDays(1).AddSeconds(-1);
+                        }
+                        else
+                        {
+                            return endDt;
+                        }
+                    }
                 }
             }
-            return new DateTime();
+            return DateTime.MinValue;
         }
-
     }
 }
 

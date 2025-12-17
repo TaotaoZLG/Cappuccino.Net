@@ -54,6 +54,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\ActionModel.cs" />
     <Compile Include="System\ButtonModel.cs" />
+    <Compile Include="System\SysConfigModel.cs" />
+    <Compile Include="System\SysNoticeModel.cs" />
     <Compile Include="System\SysActionButtonModel.cs" />
     <Compile Include="System\SysActionModel.cs" />
     <Compile Include="System\SysActionMenuModel.cs" />

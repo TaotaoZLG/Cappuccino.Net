@@ -45,11 +45,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\SysAutoJobLogService.cs" />
     <Compile Include="System\SysAutoJobService.cs" />
+    <Compile Include="System\SysNoticeService.cs" />
     <Compile Include="System\SysDepartmentService.cs" />
     <Compile Include="System\SysActionService.cs" />
     <Compile Include="System\SysActionButtonService.cs" />
     <Compile Include="System\SysActionMenuService.cs" />
     <Compile Include="System\SysDictDetailService.cs" />
+    <Compile Include="System\SysConfigService.cs" />
     <Compile Include="System\SysDictService.cs" />
     <Compile Include="System\SysLogOperateService.cs" />
     <Compile Include="System\SysRoleService.cs" />

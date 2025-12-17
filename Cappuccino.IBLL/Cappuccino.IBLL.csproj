@@ -44,11 +44,13 @@
     <Compile Include="IBaseService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\ISysAutoJobLogService.cs" />
+    <Compile Include="System\ISysNoticeService.cs" />
     <Compile Include="System\ISysDepartmentService.cs" />
     <Compile Include="System\ISysActionService.cs" />
     <Compile Include="System\ISysActionButtonService.cs" />
     <Compile Include="System\ISysActionMenuService.cs" />
     <Compile Include="System\ISysDictDetailService.cs" />
+    <Compile Include="System\ISysConfigService.cs" />
     <Compile Include="System\ISysDictService.cs" />
     <Compile Include="System\ISysLogOperateService.cs" />
     <Compile Include="System\ISysRoleService.cs" />
