@@ -26,7 +26,6 @@ namespace Cappuccino.BLL
         public List<PearMenuModel> GetMenu(int userId)
         {
             var sysActionList = SysActionService.GetPermissionByType(userId, ActionTypeEnum.Menu).OrderBy(x => x.SortCode).ToList();
-            var sysActionMenus = dao.GetList(x => true).ToList();
             if (sysActionList == null)
             {
                 return null;

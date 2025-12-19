@@ -51,9 +51,11 @@
     <!-- 权限类型模板 -->
     <script type="text/html" id="typeTpl">
         {{#  if(d.type==0){ }}
-        <span class="layui-btn layui-btn-normal layui-btn-xs">菜单</span>
+        <span class="layui-btn layui-btn layui-btn-xs">菜单</span>
         {{#  } else if(d.type==1){ }}
         <span class="layui-btn layui-btn-warm layui-btn-xs">按钮</span>
+        {{#  } else if(d.type==2){ }}
+        <span class="layui-btn layui-btn-normal layui-btn-xs">目录</span>
         {{#  } }}
     </script>
 

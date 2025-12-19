@@ -61,6 +61,18 @@
                 });
                 return false;
             });
+
+            $(function () {
+                common.ajax("/System/SysDict/GetMaxSortCode", "get").done(function (response) {
+                    if (response.status === 0) {
+                        form.val("formCreate", {
+                            "sortCode": response.data
+                        });
+                    }
+                }).fail(function (error) {
+                    console.log(error)
+                });
+            });
         });
     </script>
 }

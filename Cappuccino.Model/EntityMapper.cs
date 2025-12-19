@@ -8,7 +8,7 @@ namespace Cappuccino.Model
     public static class EntityMapper
     {
         /// <summary>
-        /// 负责将所有实体做一次映射操作
+        /// 负责将所有实体做一次映射操作，注册类型的映射关系
         /// </summary>
         static EntityMapper()
         {
@@ -22,6 +22,9 @@ namespace Cappuccino.Model
             Mapper.CreateMap<SysDictDetailEntity, SysDictDetailModel>();
             Mapper.CreateMap<SysDictEntity, SysDictModel>();
             Mapper.CreateMap<SysLogLogonEntity, SysLogLogonModel>();
+            Mapper.CreateMap<SysAutoJobEntity, SysAutoJobModel>();
+            Mapper.CreateMap<SysNoticeEntity, SysNoticeModel>();
+            Mapper.CreateMap<SysConfigEntity, SysConfigModel>();
 
             //2.将Model和Entity中的所有实体类在AutoMapper内部建立一个关联
             Mapper.CreateMap<SysUserModel, SysUserEntity>();
@@ -33,6 +36,9 @@ namespace Cappuccino.Model
             Mapper.CreateMap<SysDictDetailModel, SysDictDetailEntity>();
             Mapper.CreateMap<SysDictModel, SysDictEntity>();
             Mapper.CreateMap<SysLogLogonModel, SysLogLogonEntity>();
+            Mapper.CreateMap<SysAutoJobModel, SysAutoJobEntity>();
+            Mapper.CreateMap<SysNoticeModel, SysNoticeEntity>();
+            Mapper.CreateMap<SysConfigModel, SysConfigEntity>();
         }
 
         #region SysUser
@@ -168,7 +174,7 @@ namespace Cappuccino.Model
         }
         #endregion
 
-        #region SysNotice
+        #region SysConfig
         public static SysConfigModel EntityMap(this SysConfigEntity model)
         {
             return Mapper.Map<SysConfigEntity, SysConfigModel>(model);

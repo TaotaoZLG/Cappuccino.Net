@@ -24,7 +24,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">排序码</label>
                     <div class="layui-input-block">
-                        <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
+                        <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2" value="@Model.SortCode">
                     </div>
                 </div>
             </div>
@@ -49,10 +49,6 @@
             let form = layui.form;
             let $ = layui.jquery;
             let common = layui.common;
-
-             form.val("formEdit", {
-                "sortCode": "@Model.SortCode"
-             });
 
             form.on("submit(edit)", function (data) {
                 common.ajax("/System/SysDictDetail/Edit", "post", data.field, true, true).done(function (response) {

@@ -53,9 +53,9 @@ namespace Cappuccino.Common
             /// </summary>
             Range = 9,
             /// <summary>
-            /// 包含在集合中（等价于 SQL 的 IN）
+            /// 包含在集合中（等价于 IN）
             /// </summary>
-            In = 10  // 新增In枚举值
+            In = 10
         }
         public enum Condition
         {

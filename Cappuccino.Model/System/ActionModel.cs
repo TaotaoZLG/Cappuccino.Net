@@ -23,7 +23,7 @@ namespace Cappuccino.Model
         public int ParentId { get; set; }
 
         /// <summary>
-        /// 权限类型 0为菜单 1为功能
+        /// 权限类型 0为菜单 1为功能 2为目录
         /// </summary>
         public ActionTypeEnum Type { get; set; }
 

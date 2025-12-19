@@ -41,6 +41,12 @@ namespace Cappuccino.IBLL
         /// </summary>
         /// <returns></returns>
         List<DtreeData> GetMenuTree();
+
+        /// <summary>
+        /// 批量删除菜单
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
         bool DeleteByIds(int[] ids);
     }
 }

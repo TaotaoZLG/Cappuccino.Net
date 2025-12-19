@@ -66,22 +66,12 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 {
                     return WriteError("实体验证失败");
                 }
-                SysAutoJobEntity entity = new SysAutoJobEntity
-                {
-                    Id = viewModel.Id,
-                    JobName = viewModel.JobName,
-                    JobGroup = viewModel.JobGroup,
-                    Description = viewModel.Description,
-                    JobClassName = viewModel.JobClassName,
-                    CronExpression = viewModel.CronExpression,
-                    JobStatus = viewModel.JobStatus,
-                    StartTime = viewModel.StartTime,
-                    EndTime = viewModel.EndTime,
-                    CreateUserId = UserManager.GetCurrentUserInfo().Id,
-                    UpdateUserId = UserManager.GetCurrentUserInfo().Id,
-                    CreateTime = DateTime.Now,
-                    UpdateTime = DateTime.Now
-                };
+                SysAutoJobEntity entity = viewModel.EntityMap();
+                entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
+                entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
+                entity.CreateTime = DateTime.Now;
+                entity.UpdateTime = DateTime.Now;
+
                 _sysAutoJobService.Insert(entity);
 
                 return WriteSuccess();
@@ -96,25 +86,17 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [LogOperate(Title = "编辑任务计划", BusinessType = (int)OperateType.Update)]
         public ActionResult Edit(SysAutoJobModel viewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return WriteError("实体验证失败");
-            }
-
             try
             {
-                SysAutoJobEntity entity = new SysAutoJobEntity
+                if (!ModelState.IsValid)
                 {
-                    JobName = viewModel.JobName,
-                    JobGroup = viewModel.JobGroup,
-                    Description = viewModel.Description,
-                    JobClassName = viewModel.JobClassName,
-                    CronExpression = viewModel.CronExpression,
-                    StartTime = viewModel.StartTime,
-                    EndTime = viewModel.EndTime,
-                    UpdateTime = DateTime.Now,
-                    UpdateUserId = UserManager.GetCurrentUserInfo().Id
-                };
+                    return WriteError("实体验证失败");
+                }
+
+                viewModel.Id = viewModel.Id;
+                viewModel.UpdateTime = DateTime.Now;
+                viewModel.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
+                SysAutoJobEntity entity = viewModel.EntityMap();
 
                 _sysAutoJobService.Update(entity, new string[] { "JobName", "JobGroup", "Description", "JobClassName", "UpdateTime", "CronExpression", "StartTime", "EndTime", "UpdateTime", "UpdateUserId" });
                 return WriteSuccess();

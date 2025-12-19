@@ -8,5 +8,7 @@ namespace Cappuccino.Common.Enum
         Menu = 0,
         [Display(Name = "按钮")]
         Button = 1,
+        [Display(Name = "目录")]
+        Directory = 2,
     }
 }

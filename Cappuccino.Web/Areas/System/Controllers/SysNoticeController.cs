@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
 using Cappuccino.Entity;
@@ -17,6 +18,12 @@ namespace Cappuccino.Web.Areas.System.Controllers
     public class SysNoticeController : BaseController
     {
         private readonly ISysNoticeService _noticeService;
+
+        public SysNoticeController(ISysNoticeService noticeService)
+        {
+            _noticeService = noticeService;
+            AddDisposableObject(_noticeService);
+        }
 
         // GET: Tool/Notice
         #region 视图
@@ -36,7 +43,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [HttpGet, CheckPermission("system.notice.edit")]
         public ActionResult Edit(int id)
         {
-            return View();
+            var viewModel = _noticeService.GetList(x => x.Id == id).FirstOrDefault();
+            return View(viewModel.EntityMap());
         }
         #endregion
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Cappuccino.BLL;
 using Cappuccino.BLL.System;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
@@ -42,7 +43,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [HttpGet, CheckPermission("system.config.edit")]
         public ActionResult Edit(int id)
         {
-            return View();
+            SysConfigEntity viewModel = _configService.GetList(x => x.Id == id).FirstOrDefault();
+            return View(viewModel.EntityMap());
         }
         #endregion
 
@@ -83,7 +85,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             viewModel.UpdateTime = DateTime.Now;
             viewModel.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
             SysConfigEntity entity = viewModel.EntityMap();
-            _configService.Update(entity, new string[] { "Name", "Code", "EnabledMark", "Remark", "UpdateTime", "UpdateUserId" });
+            _configService.Update(entity, new string[] { "ConfigName", "ConfigKeys", "ConfigValue", "ConfigType", "Remark", "UpdateTime", "UpdateUserId" });
             return WriteSuccess();
         }
 

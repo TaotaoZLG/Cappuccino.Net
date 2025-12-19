@@ -8,13 +8,13 @@ namespace Cappuccino.BLL
 {
     public class SysDictDetailService : BaseService<SysDictDetailEntity>, ISysDictDetailService
     {
-        private readonly ISysDictDetailDao _detailDao;
+        private readonly ISysDictDetailDao _dictDetailDao;
 
         #region 依赖注入
-        public SysDictDetailService(ISysDictDetailDao detailDao)
+        public SysDictDetailService(ISysDictDetailDao dictDetailDao)
         {
-            _detailDao = detailDao;
-            base.CurrentDao = detailDao;
+            _dictDetailDao = dictDetailDao;
+            base.CurrentDao = dictDetailDao;
             this.AddDisposableObject(this.CurrentDao);
         }
         #endregion
@@ -25,7 +25,7 @@ namespace Cappuccino.BLL
         /// <returns></returns>
         public int GetMaxSortCode(int dictId)
         {
-            var result = _detailDao.ExecuteSqlQuery<int?>($"SELECT MAX(SortCode) FROM SysDictDetail WHERE DictId = {dictId}").FirstOrDefault();
+            var result = _dictDetailDao.ExecuteSqlQuery<int?>($"SELECT MAX(SortCode) FROM SysDictDetail WHERE DictId = {dictId}").FirstOrDefault();
             int maxSortCode = result.ParseToInt();
             maxSortCode++;
             return maxSortCode;
