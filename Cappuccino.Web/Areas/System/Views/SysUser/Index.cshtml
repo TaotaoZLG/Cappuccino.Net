@@ -81,7 +81,7 @@
 
     <!-- 头像模板 -->
     <script type="text/html" id="headIconTpl">
-        <image src="{{d.headIcon}}" class="header-img"/>
+        
     </script>
 
     <script>
@@ -123,11 +123,15 @@
                         { title: '昵称', field: 'nickName', align: 'center' },
                         {
                             title: '角色', field: 'roleNames', align: 'center', templet: function (d) {
-                                return d.roleNames.join(',')
+                                return d.roleNames.join(',');
                             }
                         },
                         { title: '所在部门', field: 'departmentName', align: 'center' },
-                        { title: '头像', field: 'headIcon', align: 'center', templet: '#headIconTpl' },
+                        {
+                            title: '头像', field: 'headIcon', align: 'center', templet: function (d) {
+                                return '<image src="' + d.headIcon + '" class="header-img"/>';
+                            }
+                        },
                         { title: '手机号码', field: 'mobilePhone', align: 'center' },
                         { title: '邮箱', field: 'email', align: 'center' },
                         { title: '是否可用', field: 'enabledMark', align: 'center', templet: '#enabledMarkTpl' },

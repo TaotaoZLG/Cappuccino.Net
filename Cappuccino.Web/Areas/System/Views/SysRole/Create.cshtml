@@ -10,20 +10,20 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">角色名</label>
                     <div class="layui-input-block">
-                        <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入角色名" class="layui-input">
+                        <input type="text" name="name" lay-verify="required" lay-reqtext="请输入角色名" autocomplete="off" placeholder="请输入角色名" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">角色编码</label>
                     <div class="layui-input-block">
-                        <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入编码" class="layui-input">
+                        <input type="text" name="code" lay-verify="required" lay-reqtext="请输入角色编码" autocomplete="off" placeholder="请输入角色编码" class="layui-input">
                     </div>
                 </div>
                 @Html.EnabledMarkRadioHtml()
                 <div class="layui-form-item">
                     <label class="layui-form-label">备注</label>
                     <div class="layui-input-block">
-                        <textarea name="remark" required lay-verify="required" placeholder="请输入" class="layui-textarea"></textarea>
+                        <textarea name="remark" placeholder="请输入备注" class="layui-textarea" style="resize:none";></textarea>
                     </div>
                 </div>
             </div>

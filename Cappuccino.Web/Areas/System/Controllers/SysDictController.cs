@@ -165,9 +165,9 @@ namespace Cappuccino.Web.Areas.System.Controllers
                         Label = d.Name,  // 字典项名称（如"男"）
                         Value = d.Code,  // 字典项值（如"boy"）
                         Sort = d.SortCode,  // 排序号
-                        Class = d.ListClass  // 样式
+                        Class = d.ListClass  // 显示样式
                     })
-                    .OrderBy(d => d.Sort)  // 按排序号排序
+                    .OrderBy(d => d.Sort)
                     .ToList()
             }).ToDictionary(x => x.TypeCode);
 

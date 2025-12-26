@@ -78,14 +78,11 @@
                         { field: 'configKeys', title: '参数键名' },
                         { field: 'configValue', title: '参数值' },
                         {
-                            field: 'configType',
-                            title: '参数类型',
-                            templet: function (d) {
-                                return d.jobStatus == 1 ? '<span class="layui-badge layui-bg-green">运行中</span>' :
-                                    '<span class="layui-badge">已停止</span>';
+                            field: 'configType', title: '参数类型', templet: function (d) {
+                                return d.configType == 1 ? '系统内置' : '自定义';
                             }
                         },
-                        { field: 'remark', title: '备注', width: 160 },
+                        { field: 'remark', title: '备注', width: 360 },
                         { title: '操作', toolbar: '#operationTpl', align: 'center', width: 195 }
                     ]
                 ],

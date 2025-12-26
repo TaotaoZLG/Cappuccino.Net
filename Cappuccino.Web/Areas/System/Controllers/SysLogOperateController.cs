@@ -55,15 +55,17 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 var queries = BuildUserQueries(viewModel);
 
-                List<SysLogOperateEntity> logOperateList;
+                List<SysLogOperateEntity> logOperateList = null;
                 if (!string.IsNullOrEmpty(checkedIds))
                 {
                     // 导出勾选的用户（拆分ID列表）
                     var ids = checkedIds.Split(',');
                     queries.Add(new Query { Name = "Id", Operator = Query.Operators.In, Value = ids });
                 }
-               
-                logOperateList = _sysLogOperateService.GetList(queries.AsExpression<SysLogOperateEntity>()).ToList();
+                else
+                {
+                    logOperateList = _sysLogOperateService.GetList(queries.AsExpression<SysLogOperateEntity>()).ToList();
+                }
 
                 // 转换为导出模型（避免直接暴露实体，只包含需要的字段）
                 //var exportData = logOperateList.Select(user => new

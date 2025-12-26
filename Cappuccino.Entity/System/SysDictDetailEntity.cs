@@ -21,7 +21,7 @@ namespace Cappuccino.Entity
         public string Name { get; set; }
 
         /// <summary>
-        /// 样式
+        /// 显示样式
         /// </summary>
         public string ListClass { get; set; }
 

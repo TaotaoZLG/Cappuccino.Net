@@ -6,11 +6,30 @@ using System.Net.Sockets;
 using System.Text;
 using System.Web;
 using Cappuccino.Common.Extensions;
+using Cappuccino.Common.Log;
 
 namespace Cappuccino.Common.Net
 {
     public class NetHelper
     {
+        public static string UserAgent
+        {
+            get
+            {
+                string userAgent = string.Empty;
+                try
+                {
+                    // 使用 HttpContext.Current 代替 HttpContext
+                    userAgent = HttpContext.Current?.Request?.Headers["User-Agent"];
+                }
+                catch (Exception ex)
+                {
+                    Log4netHelper.Error(ex.Message, ex);
+                }
+                return userAgent;
+            }
+        }
+
         #region Ip(获取Ip)
         /// <summary>
         /// 获取Ip
@@ -270,10 +289,10 @@ namespace Cappuccino.Common.Net
         /// <returns>操作系统名称（如Windows 10、macOS、Android等）</returns>
         public static string GetSystemOs(string userAgent)
         {
+            userAgent = string.IsNullOrWhiteSpace(userAgent) ? UserAgent.ToLower() : userAgent.ToLower();
+
             if (string.IsNullOrWhiteSpace(userAgent))
                 return "未知操作系统";
-
-            userAgent = userAgent.ToLower();
 
             // Windows系统
             if (userAgent.Contains("windows"))
@@ -333,10 +352,10 @@ namespace Cappuccino.Common.Net
         /// <returns>浏览器名称（如Chrome、Firefox、Edge等）</returns>
         public static string GetBrowser(string userAgent)
         {
+            userAgent = string.IsNullOrWhiteSpace(userAgent) ? UserAgent.ToLower() : userAgent.ToLower();
+
             if (string.IsNullOrWhiteSpace(userAgent))
                 return "未知浏览器";
-
-            userAgent = userAgent.ToLower();
 
             // 基于Chromium的浏览器（优先判断特殊标识）
             if (userAgent.Contains("edg"))
@@ -349,6 +368,7 @@ namespace Cappuccino.Common.Net
                     return "QQ浏览器";
                 if (userAgent.Contains("sougou"))
                     return "搜狗浏览器";
+
                 return "Google Chrome";
             }
 
@@ -462,5 +482,42 @@ namespace Cappuccino.Common.Net
             }
         }
 
+
+        /// <summary>
+        /// 从参数字符串中提取指定参数的值（支持动态分隔符）
+        /// </summary>
+        /// <param name="paramString">参数字符串（格式：key1=value1{separator}key2=value2...）</param>
+        /// <param name="paramKey">要提取的参数名</param>
+        /// <param name="separator">参数之间的分隔符（默认：&）</param>
+        /// <returns>参数值（若不存在则返回null）</returns>
+        public static string ExtractParamValue(string paramString, string paramKey, char separator = '&')
+        {
+            if (string.IsNullOrEmpty(paramString) || string.IsNullOrEmpty(paramKey))
+                return null;
+
+            // 按动态传入的分隔符分割所有键值对
+            string[] keyValuePairs = paramString.Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string pair in keyValuePairs)
+            {
+                // 按=分割键和值（仅以第一个=作为分割点）
+                int equalIndex = pair.IndexOf('=');
+                if (equalIndex <= 0) // 没有=或键为空，跳过
+                    continue;
+
+                string key = pair.Substring(0, equalIndex).Trim();
+                string value = equalIndex < pair.Length - 1
+                    ? pair.Substring(equalIndex + 1).Trim()
+                    : string.Empty; // 处理key=的情况
+
+                // 匹配目标参数名（不区分大小写）
+                if (string.Equals(key, paramKey, StringComparison.OrdinalIgnoreCase))
+                {
+                    return value;
+                }
+            }
+
+            return null; // 未找到参数
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿@model  Cappuccino.Model.ActionModel
+@using Cappuccino.Common.Enum
 
 @{
     ViewBag.Title = "Create";
@@ -12,7 +13,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">权限类型</label>
                     <div class="layui-input-block">
-                        @Html.EnumDropDownListFor(model => model.Type, new Dictionary<string, object> { { "lay-filter", "type" } })
+                        @Html.EnumDropDownListFor(model => model.Type, ActionTypeEnum.Directory, new Dictionary<string, object> { { "lay-filter", "type" } })
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -82,6 +83,23 @@
                     $("#actionPartial").load('/System/SysActionMenu/CreateMenuPartial', null, function () {
                         iconPicker.render({
                             elem: '#icon',
+                            type: 'fontClass',
+                            search: true,
+                            page: true,
+                            limit: 16,
+                            click: function (data) {
+                                console.log(data);
+                            },
+                            success: function (d) {
+                                console.log(d);
+                            }
+                        });
+                    });
+                }
+                else if (data.value == 2) {
+                    $("#actionPartial").load('/System/SysActionMenu/CreateDirectoryPartial', null, function () {
+                        iconPicker.render({
+                            elem: '#directoryIcon',
                             type: 'fontClass',
                             search: true,
                             page: true,

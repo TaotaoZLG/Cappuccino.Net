@@ -49,6 +49,10 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 return View("EditMenu", viewModel);
             }
+            else if (viewModel.Type == ActionTypeEnum.Directory)
+            {
+                return View("EditDirectory", viewModel);
+            }
             else if (viewModel.Type == ActionTypeEnum.Button)
             {
                 return View("EditButton", viewModel);
@@ -87,7 +91,18 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
                 if (viewModel.Type == ActionTypeEnum.Menu)
                 {
-                    sysAction.SysActionMenu = new SysActionMenuEntity { Icon = viewModel.Icon, Url = viewModel.Url };
+                    sysAction.SysActionMenu = new SysActionMenuEntity 
+                    { 
+                        Icon = viewModel.Icon, 
+                        Url = viewModel.Url 
+                    };
+                }
+                else if (viewModel.Type == ActionTypeEnum.Directory)
+                {
+                    sysAction.SysActionMenu = new SysActionMenuEntity
+                    {
+                        Icon = viewModel.Icon,
+                    };
                 }
                 else if (viewModel.Type == ActionTypeEnum.Button)
                 {
@@ -137,6 +152,10 @@ namespace Cappuccino.Web.Areas.System.Controllers
                     action.SysActionMenu.Icon = viewModel.Icon;
                     action.SysActionMenu.Url = viewModel.Url;
                 }
+                else if (viewModel.Type == ActionTypeEnum.Directory)
+                {
+                    action.SysActionMenu.Icon = viewModel.Icon;
+                }
                 else if (viewModel.Type == ActionTypeEnum.Button)
                 {
                     action.SysActionButton.ButtonCode = viewModel.ButtonCode;
@@ -161,7 +180,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             try
             {
                 var action = _sysActionService.GetList(x => x.Id == id).FirstOrDefault();
-                if (action.Type == ActionTypeEnum.Menu)
+                if (action.Type == ActionTypeEnum.Menu || action.Type == ActionTypeEnum.Directory)
                 {
                     _sysActionMenuService.DeleteBy(x => x.Id == id);
                     _sysActionService.DeleteBy(x => x.Id == id);

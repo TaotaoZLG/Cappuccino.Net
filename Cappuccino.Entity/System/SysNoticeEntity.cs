@@ -8,15 +8,15 @@ namespace Cappuccino.Entity
 {
     public class SysNoticeEntity : BaseEntity
     {
-        public string Title { get; set; }
+        public string NoticeTitle { get; set; }
 
-        public string Contents { get; set; }
+        public string NoticeContents { get; set; }
 
-        public int Type { get; set; }
+        public int NoticeType { get; set; }
 
-        public int Sender { get; set; }
+        public int NoticeSender { get; set; }
 
-        public int Accept { get; set; }
+        public int NoticeAccept { get; set; }
 
         public int SortCode { get; set; }
 

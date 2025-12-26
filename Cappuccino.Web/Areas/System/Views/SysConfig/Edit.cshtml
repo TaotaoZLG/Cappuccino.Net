@@ -23,14 +23,14 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">参数值</label>
                     <div class="layui-input-block">
-                        <input type="text" name="configValue" lay-verify="required" placeholder="请输入参数值" class="layui-input" value="@Model.ConfigValue">
+                        <input type="text" name="configValue" placeholder="请输入参数值" class="layui-input" value="@Model.ConfigValue">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">参数类型</label>
                     <div class="layui-input-block">
                         <select name="configType" lay-verify="required">
-                            <option value="2" @(Model.ConfigType == 2 ? "selected" : "")>自定义</option>
+                            <option value="2" @(Model.ConfigType == 2 ? "selected" : "disabled")>自定义</option>
                             <option value="1" @(Model.ConfigType == 1 ? "selected" : "")>系统内置（不可删除）</option>
                         </select>
                     </div>

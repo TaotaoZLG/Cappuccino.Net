@@ -41,6 +41,12 @@
                         <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
                     </div>
                 </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">菜单图标</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="icon" name="icon" value="layui-icon-face-smile" lay-filter="icon" style="display: none;">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -70,8 +76,25 @@
                 "Type": "@Model.Type",
                 "name": "@Model.Name",
                 "code": "@Model.Code",
-                "sortCode": "@Model.SortCode"
+                "sortCode": "@Model.SortCode",
+                "icon": "@Model.SysActionMenu.Icon"
             });
+
+            iconPicker.render({
+                elem: '#icon',
+                type: 'fontClass',
+                search: true,
+                page: true,
+                limit: 16,
+                click: function (data) {
+                    console.log(data);
+                },
+                success: function (d) {
+                    console.log(d);
+                }
+            });
+
+            iconPicker.checkIcon('iconPicker', '@Model.SysActionMenu.Icon');
 
             dtree.render({
                 elem: "#parentIdSelect",

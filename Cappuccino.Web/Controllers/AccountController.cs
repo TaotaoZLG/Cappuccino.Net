@@ -6,6 +6,7 @@ using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.Common.Enum;
 using Cappuccino.Common.Helper;
+using Cappuccino.Common.Net;
 using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
@@ -108,6 +109,8 @@ namespace Cappuccino.Web.Controllers
                         LogType = OperateType.Login.ToString(),
                         Account = user.UserName,
                         RealName = user.NickName,
+                        SystemOs = NetHelper.GetSystemOs(null),
+                        Browser = NetHelper.GetBrowser(null),
                         Description = "登陆成功",
                     });
                     return WriteSuccess("登录成功");
@@ -124,6 +127,8 @@ namespace Cappuccino.Web.Controllers
                     LogType = OperateType.Exception.ToString(),
                     Account = loginModel.LoginName,
                     RealName = loginModel.LoginName,
+                    SystemOs = NetHelper.GetSystemOs(null),
+                    Browser = NetHelper.GetBrowser(null),
                     Description = "登录失败，" + ex.Message
                 });
                 return WriteError(ex);

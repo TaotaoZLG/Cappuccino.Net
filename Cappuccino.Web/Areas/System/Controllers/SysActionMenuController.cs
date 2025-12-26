@@ -19,6 +19,12 @@ namespace Cappuccino.Web.Areas.System.Controllers
         {
             return PartialView("_ActionMenuPartial");
         }
+
+        [CheckPermission("system.menu.create")]
+        public ActionResult CreateDirectoryPartial()
+        {
+            return PartialView("_ActionDirectoryPartial");
+        }
         #endregion
     }
 }

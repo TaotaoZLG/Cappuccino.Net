@@ -116,10 +116,8 @@
                 }, 'filter', 'print', 'exports']
             });
 
-            window.renderDictDetail = function (id) {
-                dictId = id;
-                console.log(id);
-                console.log(dictId);
+            window.renderDictDetail = function (data) {
+                dictId = data.id;
                 $(".empty").hide();
 
                 table.render({
@@ -132,6 +130,11 @@
                             { type: 'checkbox' },
                             { title: '字典键', field: 'name', align: 'center', width: 120 },
                             { title: '字典值', field: 'code', align: 'center' },
+                            {
+                                title: '显示样式', field: 'listClass', align: 'center', templet: function (d) {
+                                    return top.getDataDictValue(data.code, d.code);
+                                }
+                            },
                             { title: '排序码', field: 'sortCode', align: 'center' },
                             { title: '操作', toolbar: '#operationTpl', align: 'center', width: 180 }
                         ]
@@ -147,13 +150,12 @@
 
             table.on('tool(tableDictFilter)', function (obj) {
                 let data = obj.data;
-                console.log(data);
                 if (obj.event === 'delete') {
                     window.deleteDict(data.id);
                 } else if (obj.event === 'edit') {
                     window.editDict(data.id);
                 } else if (obj.event === 'details') {
-                    window.renderDictDetail(data.id)
+                    window.renderDictDetail(data)
                 }
             });
 

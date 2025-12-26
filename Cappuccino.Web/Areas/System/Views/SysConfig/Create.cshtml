@@ -10,27 +10,27 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">参数名称</label>
                     <div class="layui-input-block">
-                        <input type="text" name="Name" lay-verify="required" placeholder="请输入参数名称" class="layui-input">
+                        <input type="text" name="configName" lay-verify="required" lay-reqtext="请输入参数名称" placeholder="请输入参数名称" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">参数键名</label>
                     <div class="layui-input-block">
-                        <input type="text" name="Keys" lay-verify="required" placeholder="请输入参数键名（英文标识）" class="layui-input">
+                        <input type="text" name="configKeys" lay-verify="required" lay-reqtext="请输入参数键名" placeholder="请输入参数键名（英文标识）" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">参数值</label>
                     <div class="layui-input-block">
-                        <input type="text" name="Value" lay-verify="required" placeholder="请输入参数值" class="layui-input">
+                        <input type="text" name="configValue" placeholder="请输入参数值" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">参数类型</label>
                     <div class="layui-input-block">
-                        <select name="Type" lay-verify="required">
-                            <option value="2" @(Model?.Type == 2 ? "selected" : "")>自定义</option>
-                            <option value="1" @(Model?.Type == 1 ? "selected" : "") disabled>系统内置（不可删除）</option>
+                        <select name="Type" lay-verify="required" lay-reqtext="请选择参数类型">
+                            <option value="2" @(Model?.configType == 2 ? "selected" : "")>自定义</option>
+                            <option value="1" @(Model?.configType == 1 ? "selected" : "")>系统内置（不可删除）</option>
                         </select>
                     </div>
                 </div>

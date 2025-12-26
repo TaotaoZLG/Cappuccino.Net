@@ -648,7 +648,8 @@
     <Content Include="Areas\System\Views\SysNotice\Edit.cshtml" />
     <Content Include="Areas\System\Views\SysNotice\Index.cshtml" />
     <Content Include="Areas\Tool\Views\web.config" />
-    <Content Include="Areas\System\Views\SysAction\EditDir.cshtml" />
+    <Content Include="Areas\System\Views\SysAction\EditDirectory.cshtml" />
+    <Content Include="Areas\System\Views\Shared\_ActionDirectoryPartial.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\Tip.cshtml" />

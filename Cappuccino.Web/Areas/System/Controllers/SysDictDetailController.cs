@@ -139,6 +139,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 x.Id,
                 x.Name,
                 x.Code,
+                x.ListClass,
                 x.SortCode
             }).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);

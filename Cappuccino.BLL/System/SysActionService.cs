@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cappuccino.Common.Enum;
 using Cappuccino.Entity;
@@ -12,21 +13,21 @@ namespace Cappuccino.BLL
     public class SysActionService : BaseService<SysActionEntity>, ISysActionService
     {
         #region 依赖注入
-        ISysActionDao dao;
-        ISysUserDao SysUserDao;
-        ISysActionMenuDao SysActionMenuDao;
-        ISysActionButtonDao SysActionButtonDao;
-        public SysActionService(ISysActionDao dao, ISysUserDao sysUserDao, ISysActionMenuDao sysActionMenuDao, ISysActionButtonDao sysActionButtonDao)
+        ISysActionDao _actionDao;
+        ISysUserDao _userDao;
+        ISysActionMenuDao _actionMenuDao;
+        ISysActionButtonDao _actionButtonDao;
+        public SysActionService(ISysActionDao actionDao, ISysUserDao userDao, ISysActionMenuDao actionMenuDao, ISysActionButtonDao actionButtonDao)
         {
-            this.dao = dao;
-            base.CurrentDao = dao;
-            SysUserDao = sysUserDao;
-            SysActionMenuDao = sysActionMenuDao;
-            SysActionButtonDao = sysActionButtonDao;
+            _actionDao = actionDao;
+            base.CurrentDao = actionDao;
+            _userDao = userDao;
+            _actionMenuDao = actionMenuDao;
+            _actionButtonDao = actionButtonDao;
             this.AddDisposableObject(this.CurrentDao);
-            this.AddDisposableObject(this.SysUserDao);
-            this.AddDisposableObject(this.SysActionMenuDao);
-            this.AddDisposableObject(this.SysActionButtonDao);
+            this.AddDisposableObject(this._userDao);
+            this.AddDisposableObject(this._actionMenuDao);
+            this.AddDisposableObject(this._actionButtonDao);
         }
         #endregion
 
@@ -34,7 +35,7 @@ namespace Cappuccino.BLL
         {
             List<SysActionEntity> sysActions = new List<SysActionEntity>();
             //获取用户
-            var user = SysUserDao.GetList(x => x.Id == userId && x.EnabledMark == (int)EnabledMarkEnum.Valid).FirstOrDefault();
+            var user = _userDao.GetList(x => x.Id == userId && x.EnabledMark == (int)EnabledMarkEnum.Valid).FirstOrDefault();
             if (user == null)
             {
                 return sysActions;
@@ -43,7 +44,7 @@ namespace Cappuccino.BLL
             //如果是超级管理员（IsSystem=1），直接返回所有权限
             if (user.IsSystem == 1)
             {
-                return dao.GetList(x => true).ToList(); // 返回所有权限
+                return _actionDao.GetList(x => true).ToList(); // 返回所有权限
             }
 
             //根据角色查找用户所拥有的权限
@@ -84,7 +85,7 @@ namespace Cappuccino.BLL
 
         public List<DtreeData> GetDtree(int roleId)
         {
-            var sysActions = dao.GetList(x => true).ToList();
+            var sysActions = _actionDao.GetList(x => true).ToList();
             List<DtreeData> list = new List<DtreeData>();
             foreach (var item in sysActions)
             {
@@ -135,7 +136,7 @@ namespace Cappuccino.BLL
 
         public List<DtreeData> GetMenuTree()
         {
-            var sysActions = dao.GetList(x => x.Type == ActionTypeEnum.Menu).ToList();
+            var sysActions = _actionDao.GetList(x => x.Type == ActionTypeEnum.Menu || x.Type == ActionTypeEnum.Directory).ToList();
             //节点的名称为菜单管理
             DtreeData node = new DtreeData
             {
@@ -195,23 +196,23 @@ namespace Cappuccino.BLL
 
         public bool DeleteByIds(int[] ids)
         {
-            var actions = dao.GetList(x => ids.Contains(x.Id)).ToList();
+            var actions = _actionDao.GetList(x => ids.Contains(x.Id)).ToList();
             foreach (var item in actions)
             {
-                if (item.Type == ActionTypeEnum.Menu)
+                if (item.Type == ActionTypeEnum.Menu || item.Type == ActionTypeEnum.Directory)
                 {
-                    SysActionMenuDao.DeleteBy(x => x.Id == item.Id);
+                    _actionMenuDao.DeleteBy(x => x.Id == item.Id);
                 }
                 else if (item.Type == ActionTypeEnum.Button)
                 {
-                    SysActionButtonDao.DeleteBy(x => x.Id == item.Id);
+                    _actionButtonDao.DeleteBy(x => x.Id == item.Id);
                 }
                 else
                 {
                     return false;
                 }
-                dao.Delete(item);
-                dao.SaveChanges();
+                _actionDao.Delete(item);
+                _actionDao.SaveChanges();
             }
             return true;
         }

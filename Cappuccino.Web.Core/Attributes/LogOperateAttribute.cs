@@ -60,6 +60,8 @@ namespace Cappuccino.Web.Attributes
                 var response = context.HttpContext.Response; // 获取响应对象
 
                 var user = UserManager.GetCurrentUserInfo() ?? context.Controller.TempData["UserInfo"] as SysUserEntity; // 当前登录用户
+                string requestParams = NetHelper.GetRequestParams(request);
+                string loginName = NetHelper.ExtractParamValue(requestParams, "LoginName");
 
                 // 构建日志实体
                 SysLogOperateEntity logOperateEntity = new SysLogOperateEntity();
@@ -94,7 +96,7 @@ namespace Cappuccino.Web.Attributes
                 logOperateEntity.RequestMethod = request.HttpMethod;
                 logOperateEntity.RequestUrl = request.Url?.AbsolutePath;
                 logOperateEntity.Method = $"{context.Controller.GetType().Name}/{context.ActionDescriptor.ActionName}";
-                logOperateEntity.RequestParam = NetHelper.GetRequestParams(request);
+                logOperateEntity.RequestParam = requestParams;
                 logOperateEntity.RequestBody = request.HttpMethod.ToUpper() == "POST" ? NetHelper.GetRequestBody(request) : null;
 
                 // 请求结果
@@ -103,7 +105,7 @@ namespace Cappuccino.Web.Attributes
                 // 环境信息
                 logOperateEntity.IPAddress = NetHelper.GetIp;
                 logOperateEntity.IPAddressName = NetHelper.GetIpLocation(NetHelper.GetIp);
-                logOperateEntity.OperateName = user?.UserName;
+                logOperateEntity.OperateName = user?.UserName ?? loginName;
                 logOperateEntity.SystemOs = NetHelper.GetSystemOs(request.UserAgent);
                 logOperateEntity.Browser = NetHelper.GetBrowser(request.UserAgent);
                 logOperateEntity.CreateUserId = user?.Id ?? 1;

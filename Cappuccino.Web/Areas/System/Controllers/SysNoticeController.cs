@@ -25,7 +25,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             AddDisposableObject(_noticeService);
         }
 
-        // GET: Tool/Notice
+        // GET: System/Notice
         #region 视图
         [CheckPermission("system.notice.list")]
         public override ActionResult Index()
@@ -110,19 +110,19 @@ namespace Cappuccino.Web.Areas.System.Controllers
         public JsonResult GetList(SysNoticeModel viewModel, PageInfo pageInfo)
         {
             QueryCollection queries = new QueryCollection();
-            if (!string.IsNullOrEmpty(viewModel.Title))
+            if (!string.IsNullOrEmpty(viewModel.NoticeTitle))
             {
-                queries.Add(new Query { Name = "Name", Operator = Query.Operators.Contains, Value = viewModel.Title });
+                queries.Add(new Query { Name = "Name", Operator = Query.Operators.Contains, Value = viewModel.NoticeTitle });
             }
             
             var list = _noticeService.GetListByPage(queries.AsExpression<SysNoticeEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new
             {
                 x.Id,
-                x.Title,
-                x.Contents,
+                x.NoticeTitle,
+                x.NoticeContents,
                 x.SortCode,
-                x.Sender,
-                x.Accept,
+                x.NoticeSender,
+                x.NoticeAccept,
                 x.Remark
             }).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);

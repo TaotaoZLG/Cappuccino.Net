@@ -134,7 +134,7 @@
             id: 33,
             title: "首页",
             icon: "layui-icon layui-icon-home", // 首页图标
-            type: 1, // 类型为菜单（可点击）
+            type: 0, // 类型为菜单（可点击）
             openType: "_iframe", // 打开方式
             href: "/Home/Console", // 首页链接
             children: [] // 无子菜单
@@ -168,10 +168,12 @@
                 target = "target='_blank'";
                 className = "";  // 新窗口打开时移除点击类
             }
-            // 关键修改1：1级菜单缩进（基础20px）
+            // 1级菜单缩进（基础20px）
             var paddingLeft = 20 + "px";
-            // 关键修改：处理 type=0 菜单
-            if (item.type == 0) {
+
+            if (item.type == 2) {  // 目录（无跳转）
+                content += '<a href="javascript:;" menu-type="' + item.type + '" menu-id="' + item.id + '" style="padding-left: ' + paddingLeft + ';"><i class="' + item.icon + '"></i><span>' + item.title + '</span></a>';
+            } else if (item.type == 0) {  // 父菜单
                 // 若 type=0 且无子级：按可点击项渲染
                 if (!item.children || item.children.length === 0) {
                     content += '<a class="' + className + '" menu-type="' + item.type + '" menu-url="' + item.href + '" menu-id="' +
@@ -183,13 +185,15 @@
                         '" ' + target + ' style="padding-left: ' + paddingLeft + ';"><i class="' + item.icon + '"></i><span>' + item.title +
                         '</span></a>';
                 }
-            } else if (item.type == 1) {
-                // 原有 type=1 处理逻辑不变，添加缩进
+            } else if (item.type == 1) { // 叶子菜单（可跳转）
                 content += '<a class="' + className + '" menu-type="' + item.type + '" menu-url="' + item.href + '" menu-id="' +
                     item.id + '" menu-title="' + item.title + '"  href="' + href + '"  ' + target + ' style="padding-left: ' + paddingLeft + ';"><i class="' + item.icon +
                     '"></i><span>' + item.title + '</span></a>';
+            } else {
+                content += '<a href="javascript:;" style="padding-left: ' + paddingLeft + ';"><i class="' + item.icon + '"></i><span>未知菜单</span></a>';
             }
-            // 加载子菜单（关键修改2：传递层级=2）
+
+            // 加载子菜单（传递当前层级+1）
             if (item.children && item.children.length > 0) {
                 content += loadchild(item, 2);
             }

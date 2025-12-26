@@ -60,7 +60,7 @@
             var $ = layui.jquery;
             var common = layui.common;
 
-            var MODULE_PATH = "/System/SysAutoJob/";
+            var MODULE_PATH = "/System/Notice/";
 
             table.render({
                 elem: '#tableId',
@@ -70,17 +70,20 @@
                     [
                         { type: 'checkbox' },
                         { field: 'id', title: 'ID', hide: true },
-                        { field: 'jobName', title: '任务名称' },
-                        { field: 'jobGroup', title: '任务分组' },
-                        { field: 'cronExpression', title: 'Cron表达式' },
-                        { field: 'jobClassName', title: '工作类名' },
                         {
-                            field: 'jobStatus', title: '状态', templet: function (d) {
-                                return d.jobStatus === 1 ? '<span class="layui-btn layui-btn-xs layui-btn-success">运行中</span>' : '<span class="layui-btn layui-btn-xs layui-btn-danger">已停止</span>';
+                            field: 'noticeTitle', title: '公告标题', templet: function (d) {
+                                return d.noticeTitle;
                             }
                         },
-                        { field: 'lastExecuteTime', title: '上次执行时间', width: 160 },
-                        { field: 'nextExecuteTime', title: '下次执行时间' },
+                        {
+                            field: 'noticeType', title: '公告类型', templet: function (d) {
+                                return d.noticeType;
+                            }
+                        },
+                        { field: 'noticeSender', title: '公告发送人' },
+                        { field: 'noticeAccept', title: '公告接收人' },
+                        { field: 'sortCode', title: '排序' },
+                        { field: 'remark', title: '备注' },
                         { title: '操作', toolbar: '#operationTpl', align: 'center', width: 195 }
                     ]
                 ],
@@ -154,7 +157,7 @@
             }
 
             window.delete = function (id) {
-                layer.confirm('确定要删除该任务计划吗？', { icon: 3, title: '提示' }, function (index) {
+                layer.confirm('确定要删除该通知公告', { icon: 3, title: '提示' }, function (index) {
                     common.ajax(MODULE_PATH + "Delete", "post", { id: id }, true, true).done(function (response) {
                         layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
                             table.reload('tableId');
@@ -162,14 +165,6 @@
                     }).fail(function (error) {
                         console.log(error)
                     });
-                });
-            }
-
-            window.log = function () {
-                top.layui.admin.addNewTab({
-                    id: 'jobLogTab',
-                    title: '任务日志', 
-                    url: '/System/SysAutoJobLog/Index',
                 });
             }
 

@@ -59,6 +59,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 x.Description,
                 x.IPAddress,
                 x.IPAddressName,
+                x.SystemOs,
+                x.Browser,
                 x.CreateTime
             }).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
