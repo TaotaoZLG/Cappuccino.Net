@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Cappuccino.WebApi</name>
+    </assembly>
+    <members>
+        <member name="T:Cappuccino.WebApi.Controllers.UsersController">
+            <summary>
+            用户相关操作的 Web API 控制器。
+            </summary>
+        </member>
+        <member name="M:Cappuccino.WebApi.Controllers.UsersController.GetAll">
+            <summary>
+            获取所有用户
+            </summary>
+            <returns>用户列表</returns>
+        </member>
+    </members>
+</doc>

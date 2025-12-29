@@ -31,7 +31,7 @@ namespace Cappuccino.WebApi
         // 获取XML注释文件路径（需在项目属性中启用）
         private static string GetXmlCommentsPath()
         {
-            return $@"{AppDomain.CurrentDomain.BaseDirectory}\bin\Cappuccino.WebApi.XML";
+            return $@"{AppDomain.CurrentDomain.BaseDirectory}\Cappuccino.WebApi.XML";
         }
     }
 }
