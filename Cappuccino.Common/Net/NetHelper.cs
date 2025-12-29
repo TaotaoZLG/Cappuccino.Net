@@ -480,44 +480,6 @@ namespace Cappuccino.Common.Net
             {
                 return $"解析参数失败：{ex.Message.Substring(0, 100)}"; // 限制错误信息长度
             }
-        }
-
-
-        /// <summary>
-        /// 从参数字符串中提取指定参数的值（支持动态分隔符）
-        /// </summary>
-        /// <param name="paramString">参数字符串（格式：key1=value1{separator}key2=value2...）</param>
-        /// <param name="paramKey">要提取的参数名</param>
-        /// <param name="separator">参数之间的分隔符（默认：&）</param>
-        /// <returns>参数值（若不存在则返回null）</returns>
-        public static string ExtractParamValue(string paramString, string paramKey, char separator = '&')
-        {
-            if (string.IsNullOrEmpty(paramString) || string.IsNullOrEmpty(paramKey))
-                return null;
-
-            // 按动态传入的分隔符分割所有键值对
-            string[] keyValuePairs = paramString.Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (string pair in keyValuePairs)
-            {
-                // 按=分割键和值（仅以第一个=作为分割点）
-                int equalIndex = pair.IndexOf('=');
-                if (equalIndex <= 0) // 没有=或键为空，跳过
-                    continue;
-
-                string key = pair.Substring(0, equalIndex).Trim();
-                string value = equalIndex < pair.Length - 1
-                    ? pair.Substring(equalIndex + 1).Trim()
-                    : string.Empty; // 处理key=的情况
-
-                // 匹配目标参数名（不区分大小写）
-                if (string.Equals(key, paramKey, StringComparison.OrdinalIgnoreCase))
-                {
-                    return value;
-                }
-            }
-
-            return null; // 未找到参数
-        }
+        }        
     }
 }

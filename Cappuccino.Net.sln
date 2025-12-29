@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.DataAccess", "Ca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.AutoJob", "Cappuccino.AutoJob\Cappuccino.AutoJob.csproj", "{1686EAA5-0C86-46F5-BC73-7926F2F93310}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.WebApi", "Cappuccino.WebApi\Cappuccino.WebApi.csproj", "{24FEDB70-3821-403A-A28C-A3C984622275}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 		{1686EAA5-0C86-46F5-BC73-7926F2F93310}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1686EAA5-0C86-46F5-BC73-7926F2F93310}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1686EAA5-0C86-46F5-BC73-7926F2F93310}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24FEDB70-3821-403A-A28C-A3C984622275}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24FEDB70-3821-403A-A28C-A3C984622275}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24FEDB70-3821-403A-A28C-A3C984622275}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24FEDB70-3821-403A-A28C-A3C984622275}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,6 +114,7 @@ Global
 		{A42FC2EF-0277-4ED7-B6A2-223323D52EFC} = {CFE6CC83-F883-4942-8A9A-B3FE73FF6907}
 		{0C3210E2-68B6-4E93-B160-C87E1963BACD} = {CFE6CC83-F883-4942-8A9A-B3FE73FF6907}
 		{1686EAA5-0C86-46F5-BC73-7926F2F93310} = {CFE6CC83-F883-4942-8A9A-B3FE73FF6907}
+		{24FEDB70-3821-403A-A28C-A3C984622275} = {12B56218-4818-4405-98AA-06617049FAC7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEE7F93B-93C4-4C52-B912-3C6862B7FA94}

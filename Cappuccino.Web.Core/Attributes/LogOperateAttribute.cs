@@ -61,7 +61,7 @@ namespace Cappuccino.Web.Attributes
 
                 var user = UserManager.GetCurrentUserInfo() ?? context.Controller.TempData["UserInfo"] as SysUserEntity; // 当前登录用户
                 string requestParams = NetHelper.GetRequestParams(request);
-                string loginName = NetHelper.ExtractParamValue(requestParams, "LoginName");
+                string loginName = TextHelper.ExtractParamValue(requestParams, "LoginName");
 
                 // 构建日志实体
                 SysLogOperateEntity logOperateEntity = new SysLogOperateEntity();
