@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
 
 namespace Cappuccino.WebApi.Controllers
@@ -27,7 +25,7 @@ namespace Cappuccino.WebApi.Controllers
         [HttpGet]
         public IHttpActionResult GetAll()
         {
-            var users = _userService.GetList(x => true);
+            List<SysUserEntity> users = _userService.GetList(x => true).ToList();
             return Ok(users);
         }
     }

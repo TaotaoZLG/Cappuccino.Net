@@ -1,8 +1,6 @@
-﻿using System.Web.Http;
-using WebActivatorEx;
-using Cappuccino.WebApi;
+﻿using System;
+using System.Web.Http;
 using Swashbuckle.Application;
-using System;
 
 namespace Cappuccino.WebApi
 {
