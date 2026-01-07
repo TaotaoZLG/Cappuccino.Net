@@ -22,12 +22,12 @@ namespace Cappuccino.Common.Caching
             switch (cacheType.ToLower())
             {
                 case "memory":
-                    return new MemoryCacheManager(); // 你后续要实现的
+                    return new MemoryCacheManager();
                 case "redis":
-                    return new RedisCacheManager();  // 你后续要实现的
+                    return new RedisCacheManager();
                 case "httpruntime":
                 default:
-                    return new HttpRuntimeCacheManager(); // 默认使用原来的
+                    return new HttpRuntimeCacheManager();
             }
         }
 

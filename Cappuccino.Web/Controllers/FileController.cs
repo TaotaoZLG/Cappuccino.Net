@@ -30,8 +30,8 @@ namespace Cappuccino.Web.Controllers
                 var file = Request.Files[0];
                 if (file == null || file.ContentLength == 0)
                 {
-                    uploadFile.Code = -1;
-                    uploadFile.Msg = "请选择有效的文件";
+                    uploadFile.Status = -1;
+                    uploadFile.Message = "请选择有效的文件";
                     return Json(uploadFile, JsonRequestBehavior.AllowGet);
                 }
 
@@ -39,8 +39,8 @@ namespace Cappuccino.Web.Controllers
                 var fileExt = Path.GetExtension(file.FileName)?.ToLower();
                 if (!_allowedExcelExtensions.Contains(fileExt))
                 {
-                    uploadFile.Code = -1;
-                    uploadFile.Msg = $"不支持的文件类型，允许的类型：{string.Join(",", _allowedExcelExtensions)}";
+                    uploadFile.Status = -1;
+                    uploadFile.Message = $"不支持的文件类型，允许的类型：{string.Join(",", _allowedExcelExtensions)}";
                     return Json(uploadFile, JsonRequestBehavior.AllowGet);
                 }
 
@@ -59,15 +59,15 @@ namespace Cappuccino.Web.Controllers
                 // 解析Excel内容（返回前100行预览）
                 var data = MiniExcel.Query(savePath).Take(100).ToList();
 
-                uploadFile.Code = 0;
+                uploadFile.Status = 0;
                 uploadFile.Src = Path.Combine(ExcelUploadPath.Replace("~", ""), fileName);
-                uploadFile.Msg = "上传并解析成功";
+                uploadFile.Message = "上传并解析成功";
                 return Json(new { uploadFile, previewData = data }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                uploadFile.Code = -1;
-                uploadFile.Msg = $"处理失败：{ex.Message}";
+                uploadFile.Status = -1;
+                uploadFile.Message = $"处理失败：{ex.Message}";
                 return Json(uploadFile, JsonRequestBehavior.AllowGet);
             }
         }

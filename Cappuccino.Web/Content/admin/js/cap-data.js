@@ -15,13 +15,13 @@
             type: 'get',
             dataType: 'json',
             success: function (response) {
-                if (response.code === 0 && response.data) {
+                if (response.status === 0 && response.data) {
                     // 直接赋值后端返回数据，结构完全对齐
                     dataDict = response.data;
                     isDictLoaded = true;
                     //console.log('字典数据加载完成（后端同步接口）');
                 } else {
-                    console.error('字典数据加载失败:', response.msg || '未知错误');
+                    console.error('字典数据加载失败:', response.message || '未知错误');
                 }
             },
             error: function (xhr, status, error) {

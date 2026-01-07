@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
+using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
@@ -171,13 +173,13 @@ namespace Cappuccino.Web.Areas.System.Controllers
                     .ToList()
             }).ToDictionary(x => x.TypeCode);
 
-            return Json(new { code = 0, data = result }, JsonRequestBehavior.AllowGet);
+            return Json(new { Status = 0, Data = result, Message = "查询成功" }, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetMaxSortCode()
         {
             int maxSortCode = _sysDictService.GetMaxSortCode();
-            var result = new { status = 0, Message = "查询成功", data = maxSortCode };
+            var result = new { Status = 0, Message = "查询成功", Data = maxSortCode };
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         #endregion

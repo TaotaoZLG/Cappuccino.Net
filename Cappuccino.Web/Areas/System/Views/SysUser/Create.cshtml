@@ -121,11 +121,11 @@
                 url: '/Home/ExportFile',
                 size: '@ViewBag.UploadFileSize',
                 exts: '@ViewBag.UploadFileType',
-                done: function (res) {
-                    if (res.code == 0) {
-                        $("#HeadShot").val(res.src);
-                        $("#imgHeadShot").attr("src", res.src);
-                        $("#imgHeadShot").attr("layer-src", res.src)
+                done: function (response) {
+                    if (response.status == 0) {
+                        $("#HeadShot").val(response.src);
+                        $("#imgHeadShot").attr("src", response.src);
+                        $("#imgHeadShot").attr("layer-src", response.src)
                     }
                 }
             });

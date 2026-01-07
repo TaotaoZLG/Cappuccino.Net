@@ -31,7 +31,7 @@ namespace Cappuccino.Web.Core.Filters
             if (filterContext.HttpContext.Request.IsAjaxRequest())
             {
                 JsonResult json = new JsonResult();
-                json.Data = new { Status = (int)AjaxStateEnum.Error, Message = innerEx.Message };
+                json.Data = new { status = (int)AjaxStateEnum.Error, msg = innerEx.Message };
                 json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
                 filterContext.Result = json;
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NPOI.SS.Formula.Functions;
 
 namespace Cappuccino.Common.Util
@@ -13,7 +14,7 @@ namespace Cappuccino.Common.Util
     public class TData
     {
         /// <summary>
-        /// 操作结果，Status为1代表成功，0代表失败，其他的验证返回结果，可根据需要设置
+        /// 操作结果，Status为0代表成功，1代表失败，其他的验证返回结果，可根据需要设置
         /// </summary>
         public int Status { get; set; }
 
@@ -34,10 +35,5 @@ namespace Cappuccino.Common.Util
         /// 数据
         /// </summary>
         public T Data { get; set; }
-
-        /// <summary>
-        /// 扩展Message
-        /// </summary>
-        public string Description { get; set; }
     }
 }

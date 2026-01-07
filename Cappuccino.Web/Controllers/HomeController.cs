@@ -47,9 +47,9 @@ namespace Cappuccino.Web.Controllers
                 var filecombin = file.FileName.Split('.');
                 if (file == null || string.IsNullOrEmpty(file.FileName) || file.ContentLength == 0 || filecombin.Length < 2)
                 {
-                    uploadFile.Code = -1;
+                    uploadFile.Status = -1;
                     uploadFile.Src = "";
-                    uploadFile.Msg = "上传出错!请检查文件名或文件内容";
+                    uploadFile.Message = "上传出错!请检查文件名或文件内容";
                     return Json(uploadFile, JsonRequestBehavior.AllowGet);
                 }
                 //定义本地路径位置
@@ -62,16 +62,16 @@ namespace Cappuccino.Web.Controllers
                     Directory.CreateDirectory(localPath);
                 }
                 file.SaveAs(Path.Combine(localPath, filePathName));  //保存图片
-                uploadFile.Code = 0;
+                uploadFile.Status = 0;
                 uploadFile.Src = Path.Combine("/Upload/", filePathName);
-                uploadFile.Msg = "上传成功";
+                uploadFile.Message = "上传成功";
                 return Json(uploadFile, JsonRequestBehavior.AllowGet);
             }
             catch (Exception)
             {
-                uploadFile.Code = -1;
+                uploadFile.Status = -1;
                 uploadFile.Src = "";
-                uploadFile.Msg = "上传出错!程序异常";
+                uploadFile.Message = "上传出错!程序异常";
                 return Json(uploadFile, JsonRequestBehavior.AllowGet);
             }
         }

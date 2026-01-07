@@ -2,8 +2,8 @@
 {
     public class UploadFile
     {
-        public int Code { get; set; }
-        public string Msg { get; set; }
+        public int Status { get; set; }
+        public string Message { get; set; }
         public string Src { get; set; }
     }
 }

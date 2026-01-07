@@ -139,7 +139,7 @@
                         contentType: false,
                         dataType: 'json',
                         success: function (response) {
-                            if (response.code === 0) {
+                            if (response.status === 0) {
                                 var imageUrl = response.src;
 
                                 common.ajax("/System/SysUser/UploadPortrait", "post", {
