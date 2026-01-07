@@ -138,9 +138,13 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Filters\ApiExceptionFilter.cs" />
+    <Compile Include="Filters\ApiPermissionFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\BaseApiController.cs" />
+    <Compile Include="Models\JsonNetApiResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -159,7 +163,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
@@ -188,6 +191,10 @@
     <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Model.csproj">
       <Project>{a42fc2ef-0277-4ed7-b6a2-223323d52efc}</Project>
       <Name>Cappuccino.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cappuccino.Web.Core\Cappuccino.Web.Core.csproj">
+      <Project>{BFB1C0BF-BFAE-4E45-B92B-D89009434132}</Project>
+      <Name>Cappuccino.Web.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

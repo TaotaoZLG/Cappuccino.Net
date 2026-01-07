@@ -84,8 +84,9 @@
     <Compile Include="Attributes\CheckPermission.cs" />
     <Compile Include="Attributes\LogOperateAttribute.cs" />
     <Compile Include="BaseController.cs" />
+    <Compile Include="Filters\IpBlackListFilterAttribute.cs" />
     <Compile Include="Filters\MyExceptionAttribute.cs" />
-    <Compile Include="Json\JsonNetActionFilter.cs" />
+    <Compile Include="Filters\JsonNetActionFilter.cs" />
     <Compile Include="Json\JsonNetResult.cs" />
     <Compile Include="Attributes\SkipCheckLogin.cs" />
     <Compile Include="Filters\CheckPermissionFilterAttribute.cs" />

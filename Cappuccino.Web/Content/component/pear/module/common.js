@@ -33,16 +33,16 @@
                         loadIndex = layer.load(0, { shade: false });
                     }
                 },
-                success: function (data) {
-                    if (data.status == "0") {
+                success: function (response) {
+                    if (response.status == "0") {
                         // 业务正常
-                        deferred.resolve(data)
-                    } else if (data.status == "2") {
-                        popup.warming(data.msg, function () { window.top.location ="/Account/Login" })
+                        deferred.resolve(response)
+                    } else if (response.status == "2") {
+                        popup.warming(response.msg, function () { window.top.location ="/Account/Login" })
                     } else {
                         // 业务异常
-                        popup.warming(data.msg)
-                        deferred.reject("common.ajax warn: " + data.msg);
+                        popup.warming(response.msg)
+                        deferred.reject("common.ajax warn: " + response.msg);
                     }
                 },
                 complete: function () {

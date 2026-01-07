@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Cappuccino.Common.Enum;
+using Newtonsoft.Json;
 
 namespace Cappuccino.Entity
 {
@@ -32,12 +33,16 @@ namespace Cappuccino.Entity
         /// </summary>
         public int SortCode { get; set; }
 
+        [JsonIgnore]
         public SysActionMenuEntity SysActionMenu { get; set; }
 
+        [JsonIgnore]
         public SysActionButtonEntity SysActionButton { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<SysRoleEntity> SysRoles { get; set; } = new List<SysRoleEntity>();
 
+        [JsonIgnore]
         public virtual ICollection<SysUserActionEntity> SysUserActions { get; set; } = new List<SysUserActionEntity>();
     }
 }

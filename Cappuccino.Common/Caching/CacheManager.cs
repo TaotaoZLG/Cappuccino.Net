@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Configuration;
+using Cappuccino.Common.Caching;
+using Cappuccino.Common.Util;
 
 namespace Cappuccino.Common.Caching
 {
@@ -7,10 +10,25 @@ namespace Cappuccino.Common.Caching
     /// </summary>
     public class CacheManager
     {
-        public static ICacheManager Cache { get; set; }
-        static CacheManager()
+        private static readonly Lazy<ICacheManager> _instance = new Lazy<ICacheManager>(CreateCacheManager);
+
+        public static ICacheManager Cache => _instance.Value;
+
+        public static ICacheManager CreateCacheManager()
         {
-            Cache = new HttpRuntimeCacheManager();
+            // 从配置文件读取缓存类型
+            var cacheType = ConfigurationManager.AppSettings["CacheType"] ?? "HttpRuntime";
+
+            switch (cacheType.ToLower())
+            {
+                case "memory":
+                    return new MemoryCacheManager(); // 你后续要实现的
+                case "redis":
+                    return new RedisCacheManager();  // 你后续要实现的
+                case "httpruntime":
+                default:
+                    return new HttpRuntimeCacheManager(); // 默认使用原来的
+            }
         }
 
         public static void Clear()

@@ -28,7 +28,13 @@ namespace Cappuccino.Web.Areas.System.Controllers
             this.AddDisposableObject(_sysRoleService);
         }
 
-        public SelectList RoleSelectList { get { return new SelectList(_sysRoleService.GetList(x => true).Select(x => new { x.Id, x.Name }), "Id", "Name"); } }
+        public SelectList RoleSelectList 
+        { 
+            get 
+            { 
+                return new SelectList(_sysRoleService.GetList(x => true).Select(x => new { x.Id, x.Name }), "Id", "Name"); 
+            } 
+        }
 
         #region 视图
         [CheckPermission("system.user.list")]

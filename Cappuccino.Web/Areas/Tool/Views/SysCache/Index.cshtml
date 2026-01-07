@@ -1,0 +1,90 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            <span class="layui-icon layui-icon-set"></span> 缓存信息管理            
+        </div>
+        <div class="layui-card-body">
+            <table id="cacheTable" lay-filter="cacheTable"></table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <!-- 工具栏模板 -->
+    <script type="text/html" id="cacheBar">
+        <a class="layui-btn layui-btn-xs" lay-event="remove">清除该缓存</a>
+    </script>
+
+    <!-- 状态模板：是否永不过期 -->
+    <script type="text/html" id="isNeverExpireTpl">
+        {{#  if(d.IsNeverExpire){ }}
+        <span class="layui-badge layui-bg-green">永不过期</span>
+        {{#  } else { }}
+        <span class="layui-badge layui-bg-orange">有过期时间</span>
+        {{#  } }}
+    </script>
+
+
+    <script>
+    layui.use(['table', 'form', 'layer'], function () {
+        var table = layui.table;
+        var layer = layui.layer;
+        var $ = layui.$;
+
+        // 渲染表格
+        var cacheTable = table.render({
+            elem: '#cacheTable',
+            url: '@Url.Action("GetCacheList")',
+            method: 'GET',
+            page: true,
+            limit: 10,
+            limits: [10, 20, 50, 100],
+            cols: [[
+                { field: 'cacheKey', title: '缓存Key', width: 300 },
+                { field: 'valueType', title: '值类型', width: 250 },
+                { field: 'valuePreview', title: '值预览', minWidth: 300 },
+                { field: 'isNeverExpire', title: '过期类型', templet: '#isNeverExpireTpl', width: 120 },
+                { field: 'absoluteExpiration', title: '绝对过期时间', width: 200, templet: function (d) {
+                    return d.absoluteExpiration == '9999-12-31 23:59:59' ? '无' : layui.util.toDateString(d.absoluteExpiration, 'yyyy-MM-dd HH:mm:ss');
+                }},
+                //{ field: 'SlidingExpiration', title: '滑动过期时间(秒)', width: 150, templet: function (d) {
+                //    return d.SlidingExpiration.TotalSeconds == 0 ? '无' : d.SlidingExpiration.TotalSeconds + '秒';
+                //}},
+                { field: 'createTime', title: '创建时间', width: 200, templet: function (d) {
+                    return layui.util.toDateString(d.CreateTime, 'yyyy-MM-dd HH:mm:ss');
+                }},
+                { title: '操作', toolbar: '#cacheBar', width: 120 }
+            ]],
+            done: function (res, curr, count) {
+                // 表格渲染完成回调
+            }
+        });
+
+        // 监听工具条事件
+        table.on('tool(cacheTable)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'remove') {
+                layer.confirm('确定要清除【' + data.cacheKey + '】缓存吗？', { icon: 3, title: '提示' }, function (index) {
+                    $.post('@Url.Action("RemoveCache")', { cacheKey: data.cacheKey }, function (response) {
+                        if (response.status == 0) {
+                            layer.msg(response.msg, { icon: 1 });
+                            cacheTable.reload(); // 刷新表格
+                        } else {
+                            layer.msg(response.msg, { icon: 5 });
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+    });
+    </script>
+
+}

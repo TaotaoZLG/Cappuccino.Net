@@ -152,7 +152,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         public JsonResult GetMaxSortCode()
         {
             int maxSortCode = _sysDepartmentService.GetMaxSortCode();
-            var result = new { status = 0, msg = "查询成功", data = maxSortCode };
+            var result = new { status = 0, Message = "查询成功", data = maxSortCode };
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 

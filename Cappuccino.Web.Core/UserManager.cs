@@ -20,11 +20,12 @@ namespace Cappuccino.Web.Core
         public static SysUserEntity GetCurrentUserInfo()
         {
             var cacheId = GetCurrentUserCacheId();
-            if (!string.IsNullOrEmpty(GetCurrentUserCacheId()))
+            if (string.IsNullOrEmpty(cacheId))
             {
-                return CacheManager.Cache.Get<SysUserEntity>(cacheId);
+                return null;
             }
-            return new SysUserEntity() { };
+            var userEntity = CacheManager.Cache.Get<SysUserEntity>(cacheId);
+            return userEntity ?? null;
         }
 
         /// <summary>
@@ -33,12 +34,13 @@ namespace Cappuccino.Web.Core
         /// <returns></returns>
         public static string GetCurrentUserCacheId()
         {
-            List<string> list = DESUtils.Decrypt(CookieHelper.Get(KeyManager.IsMember)).ToList<string>();
-            if (list != null && list.Count() == 2)
+            string cookieValue = CookieHelper.Get(KeyManager.IsMember);
+            if (string.IsNullOrEmpty(cookieValue))
             {
-                return list[0];
+                return "";
             }
-            return "";
+            List<string> list = DESUtils.Decrypt(cookieValue).ToList<string>();
+            return (list != null && list.Count == 2) ? list[0] : "";
         }
     }
 }

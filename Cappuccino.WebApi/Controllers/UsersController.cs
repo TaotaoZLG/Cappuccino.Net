@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
+using Cappuccino.WebApi.Models;
 
 namespace Cappuccino.WebApi.Controllers
 {
     /// <summary>
     /// 用户相关操作的 Web API 控制器。
     /// </summary>
-    public class UsersController : ApiController
+    public class UsersController : BaseApiController
     {
         private readonly ISysUserService _userService;
 
@@ -25,8 +27,8 @@ namespace Cappuccino.WebApi.Controllers
         [HttpGet]
         public IHttpActionResult GetAll()
         {
-            List<SysUserEntity> users = _userService.GetList(x => true).ToList();
-            return Ok(users);
+            var users = _userService.GetList(x => true).ToList();
+            return ApiSuccess("成功", users);
         }
     }
 }

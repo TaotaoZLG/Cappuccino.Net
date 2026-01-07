@@ -15,5 +15,40 @@
             </summary>
             <returns>用户列表</returns>
         </member>
+        <member name="T:Cappuccino.WebApi.Models.BaseApiController">
+            <summary>
+            Web API 基础控制器（提供统一响应格式）
+            </summary>
+        </member>
+        <member name="M:Cappuccino.WebApi.Models.BaseApiController.ApiSuccess(System.String)">
+            <summary>
+            成功响应（无数据）
+            </summary>
+        </member>
+        <member name="M:Cappuccino.WebApi.Models.BaseApiController.ApiSuccess(System.String,System.Object)">
+            <summary>
+            成功响应（带数据）
+            </summary>
+        </member>
+        <member name="M:Cappuccino.WebApi.Models.BaseApiController.ApiError(System.String,System.Net.HttpStatusCode)">
+            <summary>
+            错误响应（自定义消息）
+            </summary>
+        </member>
+        <member name="M:Cappuccino.WebApi.Models.BaseApiController.ApiError(System.Exception,System.Net.HttpStatusCode)">
+            <summary>
+            错误响应（异常信息）
+            </summary>
+        </member>
+        <member name="M:Cappuccino.WebApi.Models.BaseApiController.Dispose(System.Boolean)">
+            <summary>
+            释放资源
+            </summary>
+        </member>
+        <member name="T:Cappuccino.WebApi.Models.JsonNetApiResult">
+            <summary>
+            Web API 自定义 JSON 结果（基于 Newtonsoft.Json）
+            </summary>
+        </member>
     </members>
 </doc>

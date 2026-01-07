@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Cappuccino.Entity
 {
@@ -30,6 +31,7 @@ namespace Cappuccino.Entity
         public string Remark { get; set; }
 
         // 反向导航属性（部门包含的用户）
+        [JsonIgnore]
         public virtual ICollection<SysUserEntity> SysUsers { get; set; } = new List<SysUserEntity>();
     }
 }

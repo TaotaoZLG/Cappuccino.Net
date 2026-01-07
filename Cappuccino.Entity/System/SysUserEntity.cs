@@ -21,9 +21,9 @@ namespace Cappuccino.Entity
         public virtual ICollection<SysUserActionEntity> SysUserActions { get; set; } = new List<SysUserActionEntity>();
 
         // 部门外键（关联SysDepartmentEntity.Id）
-        [ForeignKey("Department")] // 指定导航属性对应的外键
         public int? DepartmentId { get; set; } // 用户所属部门ID
-        // 导航属性（用户所属部门）
+
+        [ForeignKey("DepartmentId")]  // 指定导航属性对应的外键
         public virtual SysDepartmentEntity Department { get; set; }
 
     }

@@ -90,7 +90,7 @@ namespace Cappuccino.Web.Controllers
                             "0"
                         };
                         CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()));
-                        CacheManager.Set(userLoginId, user, new TimeSpan(10, 0, 0, 0)); // 10天过期
+                        CacheManager.Set(userLoginId, user, TimeSpan.FromDays(10)); // 10天过期
                     }
                     else
                     {
@@ -102,7 +102,7 @@ namespace Cappuccino.Web.Controllers
                             "1"
                         };
                         CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30); // 30分钟过期
-                        CacheManager.Set(userLoginId, user, new TimeSpan(0, 30, 0));    // 30分钟过期
+                        CacheManager.Set(userLoginId, user, TimeSpan.FromMinutes(30));    // 30分钟过期
                     }
                     _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
                     {

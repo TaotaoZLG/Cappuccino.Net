@@ -3,6 +3,6 @@ namespace Cappuccino.IBLL
 {
     public interface ISysConfigService : IBaseService<SysConfigEntity>
     {
-        SysConfigEntity GetByKey(string key);
+        SysConfigEntity GetByConfig(string key);
     }
 }

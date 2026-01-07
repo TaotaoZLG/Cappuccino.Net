@@ -112,7 +112,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             QueryCollection queries = new QueryCollection();
             if (!string.IsNullOrEmpty(viewModel.NoticeTitle))
             {
-                queries.Add(new Query { Name = "Name", Operator = Query.Operators.Contains, Value = viewModel.NoticeTitle });
+                queries.Add(new Query { Name = "NoticeTitle", Operator = Query.Operators.Contains, Value = viewModel.NoticeTitle });
             }
             
             var list = _noticeService.GetListByPage(queries.AsExpression<SysNoticeEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new

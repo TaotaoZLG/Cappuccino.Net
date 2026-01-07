@@ -68,6 +68,12 @@ namespace Cappuccino.Common.Enum
         /// 异常
         /// </summary>
         [Display(Name = "异常")]
-        Exception = 10
+        Exception = 10,
+
+        /// <summary>
+        /// 清空
+        /// </summary>
+        [Display(Name = "清空")]
+        Clean = 11,
     }
 }

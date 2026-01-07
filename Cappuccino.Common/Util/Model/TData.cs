@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NPOI.SS.Formula.Functions;
 
 namespace Cappuccino.Common.Util
 {
+    /// <summary>
+    /// 数据传输对象
+    /// </summary>
     public class TData
     {
         /// <summary>
@@ -16,7 +20,20 @@ namespace Cappuccino.Common.Util
         /// <summary>
         /// 提示信息或异常信息
         /// </summary>
-        public string Message { get; set; }
+        public string Message { get; set; }        
+    }
+
+    public class TData<T> : TData
+    {
+        /// <summary>
+        /// 列表的记录数
+        /// </summary>
+        public int Total { get; set; }
+
+        /// <summary>
+        /// 数据
+        /// </summary>
+        public T Data { get; set; }
 
         /// <summary>
         /// 扩展Message

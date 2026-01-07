@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -7,11 +8,17 @@ using System.Text;
 using System.Web;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Log;
+using log4net;
 
 namespace Cappuccino.Common.Net
 {
     public class NetHelper
     {
+        public static HttpContext HttpContext
+        {
+            get { return HttpContext.Current; }
+        }
+
         public static string UserAgent
         {
             get
@@ -19,8 +26,7 @@ namespace Cappuccino.Common.Net
                 string userAgent = string.Empty;
                 try
                 {
-                    // 使用 HttpContext.Current 代替 HttpContext
-                    userAgent = HttpContext.Current?.Request?.Headers["User-Agent"];
+                    userAgent = HttpContext?.Request?.Headers["User-Agent"];
                 }
                 catch (Exception ex)
                 {
@@ -39,7 +45,7 @@ namespace Cappuccino.Common.Net
             get
             {
                 var result = string.Empty;
-                if (HttpContext.Current != null)
+                if (HttpContext != null)
                     result = GetWebClientIp();
                 if (result.IsEmpty())
                     result = GetLanIp();
@@ -66,7 +72,23 @@ namespace Cappuccino.Common.Net
         /// </summary>
         private static string GetWebRemoteIp()
         {
-            return HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+            //return HttpContext.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? HttpContext.Request.ServerVariables["REMOTE_ADDR"];
+
+            // 优先从X-Forwarded-For头获取，这是代理服务器（如Nginx）转发的真实IP
+            var ipAddress = HttpContext.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                // 如果没有代理，则从REMOTE_ADDR获取
+                ipAddress = HttpContext.Request.ServerVariables["REMOTE_ADDR"];
+            }
+            // 如果X-Forwarded-For包含多个IP（多级代理），通常第一个是真实客户端IP
+            else if (ipAddress.Contains(','))
+            {
+                ipAddress = ipAddress.Split(',')[0].Trim();
+            }
+
+            return ipAddress;
         }
 
         /// <summary>
@@ -93,7 +115,7 @@ namespace Cappuccino.Common.Net
         {
             get
             {
-                return HttpContext.Current == null ? Dns.GetHostName() : GetWebClientHostName();
+                return HttpContext == null ? Dns.GetHostName() : GetWebClientHostName();
             }
         }
 
@@ -102,7 +124,7 @@ namespace Cappuccino.Common.Net
         /// </summary>
         private static string GetWebClientHostName()
         {
-            if (!HttpContext.Current.Request.IsLocal)
+            if (!HttpContext.Request.IsLocal)
                 return string.Empty;
             var ip = GetWebRemoteIp();
             var result = Dns.GetHostEntry(IPAddress.Parse(ip)).HostName;
@@ -218,9 +240,9 @@ namespace Cappuccino.Common.Net
         {
             get
             {
-                if (HttpContext.Current == null)
+                if (HttpContext == null)
                     return string.Empty;
-                var browser = HttpContext.Current.Request.Browser;
+                var browser = HttpContext.Request.Browser;
                 return string.Format("{0} {1}", browser.Browser, browser.Version);
             }
         }

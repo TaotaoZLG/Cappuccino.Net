@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
+using Cappuccino.Web.Core.Json;
 
-namespace Cappuccino.Web.Core.Json
+namespace Cappuccino.Web.Core.Filters
 {
     public class JsonNetActionFilter : IActionFilter
     {

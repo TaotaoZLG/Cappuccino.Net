@@ -13,6 +13,8 @@ namespace Cappuccino.DataAccess
         {
             // 禁用数据库初始化器
             Database.SetInitializer<EfDbContext>(null);
+            // 禁用延迟加载
+            //Configuration.LazyLoadingEnabled = false;
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

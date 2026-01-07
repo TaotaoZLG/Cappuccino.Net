@@ -12,7 +12,7 @@ using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 
-namespace Cappuccino.Web.Core
+namespace Cappuccino.Web.Core.Filters
 {
     public class CheckPermissionFilterAttribute : IAuthorizationFilter
     {
@@ -101,7 +101,7 @@ namespace Cappuccino.Web.Core
             if (isAjaxRequst)
             {
                 JsonResult json = new JsonResult();
-                json.Data = new { status = (int)AjaxStateEnum.NoLogin, msg = "您未登录或登录已失效，请重新登录" };
+                json.Data = new { Status = (int)AjaxStateEnum.NoLogin, Message = "您未登录或登录已失效，请重新登录" };
                 json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
                 filterContext.Result = json;
             }
@@ -128,7 +128,7 @@ namespace Cappuccino.Web.Core
             {
                 JsonResult json = new JsonResult
                 {
-                    Data = new { status = (int)AjaxStateEnum.NoPermission, msg = "您没有执行此操作的权限" },
+                    Data = new { Status = (int)AjaxStateEnum.NoPermission, Message = "您没有执行此操作的权限" },
                     JsonRequestBehavior = JsonRequestBehavior.AllowGet
                 };
                 filterContext.Result = json;

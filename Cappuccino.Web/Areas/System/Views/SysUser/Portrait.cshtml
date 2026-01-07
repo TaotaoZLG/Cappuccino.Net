@@ -138,9 +138,9 @@
                         processData: false,
                         contentType: false,
                         dataType: 'json',
-                        success: function (data) {
-                            if (data.code === 0) {
-                                var imageUrl = data.src;
+                        success: function (response) {
+                            if (response.code === 0) {
+                                var imageUrl = response.src;
 
                                 common.ajax("/System/SysUser/UploadPortrait", "post", {
                                     id: @UserManager.GetCurrentUserInfo().Id,
@@ -155,7 +155,7 @@
                                 });
                             }
                             else {
-                                layer.msg('头像更新失败: ' + data.msg, { icon: 5 });
+                                layer.msg('头像更新失败: ' + response.message, { icon: 5 });
                             }
                         },
                     });

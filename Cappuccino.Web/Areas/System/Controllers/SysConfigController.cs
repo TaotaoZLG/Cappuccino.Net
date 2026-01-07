@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Cappuccino.BLL;
 using Cappuccino.BLL.System;
 using Cappuccino.Common;
+using Cappuccino.Common.Caching;
 using Cappuccino.Common.Enum;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
@@ -86,6 +87,13 @@ namespace Cappuccino.Web.Areas.System.Controllers
             viewModel.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
             SysConfigEntity entity = viewModel.EntityMap();
             _configService.Update(entity, new string[] { "ConfigName", "ConfigKeys", "ConfigValue", "ConfigType", "Remark", "UpdateTime", "UpdateUserId" });
+
+            // 如果修改的是IP黑名单配置，刷新缓存
+            if (entity.ConfigKeys == "sys_ipBlackList")
+            {
+                CacheManager.Remove(KeyManager.IpBlackCacheKey);
+            }
+
             return WriteSuccess();
         }
 
