@@ -21,7 +21,7 @@
                     isDictLoaded = true;
                     //console.log('字典数据加载完成（后端同步接口）');
                 } else {
-                    console.error('字典数据加载失败:', response.message || '未知错误');
+                    console.error('字典数据加载失败:', response.message || response.msg || '未知错误');
                 }
             },
             error: function (xhr, status, error) {

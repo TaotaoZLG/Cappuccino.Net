@@ -7,7 +7,7 @@ namespace Cappuccino.Entity
     {
         public string Name { get; set; }
         public string Code { get; set; }
-        public int EnabledMark { get; set; }
+        public int? EnabledMark { get; set; }
         public string Remark { get; set; }
 
         public virtual ICollection<SysUserEntity> SysUsers { get; set; } = new List<SysUserEntity>();

@@ -17,9 +17,9 @@ namespace Cappuccino.BLL
         }
         #endregion
 
-        public SysConfigEntity GetByConfig(string key)
+        public SysConfigEntity GetByConfig(string configKey)
         {
-            return _configDao.GetByConfig(key);
+            return _configDao.GetByConfig(configKey);
         }
     }
 }

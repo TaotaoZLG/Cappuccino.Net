@@ -46,15 +46,15 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [CheckPermission("system.role.assign")]
         public ActionResult Assign(int id)
         {
-            ViewBag.RoleId = id;
-            return View();
+            var viewModel = _sysRoleService.GetList(x => x.Id == id).FirstOrDefault();
+            return View(viewModel.EntityMap());
         }
         #endregion
 
         #region 提交数据
         [HttpPost, CheckPermission("system.role.create")]
         [LogOperate(Title = "新增角色", BusinessType = (int)OperateType.Add)]
-        public ActionResult Create(SysRoleModel viewModel)
+        public ActionResult Create(SysRoleModel viewModel, List<DtreeResponse> menuPermissions)
         {
             try
             {
@@ -68,6 +68,9 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 entity.CreateTime = DateTime.Now;
                 entity.UpdateTime = DateTime.Now;
                 _sysRoleService.Insert(entity);
+
+                // 保存菜单权限
+                _sysRoleService.SaveMenuPermissions(entity, menuPermissions);
                 return WriteSuccess();
             }
             catch (Exception ex)
@@ -78,17 +81,31 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         [HttpPost, CheckPermission("system.role.edit")]
         [LogOperate(Title = "编辑角色", BusinessType = (int)OperateType.Update)]
-        public ActionResult Edit(int id, SysRoleModel viewModel)
+        public ActionResult Edit(SysRoleModel viewModel, List<DtreeResponse> menuPermissions)
         {
             if (ModelState.IsValid == false)
             {
                 return WriteError("实体验证失败");
             }
-            viewModel.Id = id;
-            viewModel.UpdateTime = DateTime.Now;
-            viewModel.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
-            SysRoleEntity entity = viewModel.EntityMap();
-            _sysRoleService.Update(entity, new string[] { "Name", "Code", "EnabledMark", "Remark", "UpdateTime", "UpdateUserId" });
+
+            SysRoleEntity roleEntity = _sysRoleService.GetList(x => x.Id == viewModel.Id).FirstOrDefault();
+            if (roleEntity == null)
+            {
+                return WriteError("角色不存在");
+            }
+
+            // 保存菜单权限
+            _sysRoleService.SaveMenuPermissions(roleEntity, menuPermissions);
+
+            roleEntity.Name = viewModel.Name;
+            roleEntity.Code = viewModel.Code;
+            roleEntity.EnabledMark = viewModel.EnabledMark;
+            roleEntity.Remark = viewModel.Remark;
+            roleEntity.UpdateTime = DateTime.Now;
+            roleEntity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
+
+            _sysRoleService.Update(roleEntity, new string[] { "Name", "Code", "EnabledMark", "Remark", "UpdateTime", "UpdateUserId" });
+
             return WriteSuccess();
         }
 
@@ -126,10 +143,10 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         [HttpPost, CheckPermission("system.role.assign")]
         [LogOperate(Title = "角色授权", BusinessType = (int)OperateType.Authorize)]
-        public ActionResult Assign(int id, List<DtreeResponse> menuPermissions, List<DtreeResponse> dataPermissions)
+        public ActionResult Assign(int id, List<DtreeResponse> dataPermissions)
         {
-            //_sysRoleService.Add(id, dtrees);
-            _sysRoleService.SavePermissions(id, menuPermissions, dataPermissions);
+            // 保存数据权限
+            _sysRoleService.SaveDataPermissions(id, dataPermissions);
             return WriteSuccess("保存成功");
         }
 
@@ -157,7 +174,6 @@ namespace Cappuccino.Web.Areas.System.Controllers
             if (!string.IsNullOrEmpty(viewModel.Name))
             {
                 queries.Add(new Query { Name = "Name", Operator = Query.Operators.Contains, Value = viewModel.Name });
-
             }
             else if (!string.IsNullOrEmpty(viewModel.Code))
             {
@@ -169,7 +185,9 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 x.Name,
                 x.Code,
                 x.EnabledMark,
-                x.Remark
+                x.Remark,
+                x.CreateUserId,
+                x.CreateTime
             }).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
         }

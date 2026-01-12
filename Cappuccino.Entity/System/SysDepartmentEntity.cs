@@ -4,9 +4,6 @@ using Newtonsoft.Json;
 
 namespace Cappuccino.Entity
 {
-    /// <summary>
-    /// 部门
-    /// </summary>
     [Table("SysDepartment")]
     public class SysDepartmentEntity : BaseEntity
     {

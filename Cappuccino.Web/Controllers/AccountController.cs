@@ -162,42 +162,71 @@ namespace Cappuccino.Web.Controllers
         [LogOperate(Title = "修改密码", BusinessType = (int)OperateType.Update)]
         public ActionResult ModifyUserPwd(ChangePasswordModel viewModel)
         {
+            // 验证新密码与确认密码是否一致
+            if (viewModel.Password != viewModel.Repassword)
+            {
+                return WriteError("新密码与确认密码不一致");
+            }
+
             int userId = UserManager.GetCurrentUserInfo().Id;
             var result = WriteError("出现异常，密码修改失败");
-            if (!_sysUserService.CheckLogin(viewModel.UserName, viewModel.OldPassword))
+
+            try
             {
-                return WriteError("旧密码不正常");
-            }
-            else
-            {
+                // 验证旧密码是否正确
+                if (!_sysUserService.CheckLogin(viewModel.UserName, viewModel.OldPassword))
+                {
+                    return WriteError("旧密码不正确");
+                }
+
+                SysUserEntity currentUser = _sysUserService.GetList(x => x.Id == userId).FirstOrDefault();
+                if (currentUser == null)
+                {
+                    return WriteError("用户信息不存在");
+                }
+
+                // 验证新密码是否和旧密码一致
+                string newPwdHash = Md5Utils.EncryptTo32(currentUser.PasswordSalt + viewModel.Password);
+                if (currentUser.PasswordHash == newPwdHash)
+                {
+                    return WriteError("密码未更改，新密码和原密码一致");
+                }
+
                 if (_sysUserService.ModifyUserPwd(userId, viewModel))
                 {
-                    result = WriteSuccess("密码修改成功");
-                    List<string> list = DESUtils.Decrypt(CookieHelper.Get(KeyManager.IsMember)).ToList<string>();
-                    if (list == null || list.Count() != 2)
+                    string cookieValue = CookieHelper.Get(KeyManager.IsMember);
+                    if (!string.IsNullOrEmpty(cookieValue))
                     {
-                        //获取缓存的用户信息
-                        SysUserEntity userinfo = CacheManager.Get<SysUserEntity>(list[0]);
-                        //删除缓存的用户信息
-                        CacheManager.Remove(list[0]);
-                        //更新缓存用户信息的KEY
-                        list[0] = Guid.NewGuid().ToString();
-                        if (list[1] == "0")
+                        List<string> list = DESUtils.Decrypt(cookieValue).ToList<string>();
+                        if (list != null && list.Count == 2)
                         {
-                            CacheManager.Set(list[0], userinfo, new TimeSpan(10, 0, 0, 0)); // 10天
-                            CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()));
-                        }
-                        else if (list[1] == "1")
-                        {
-                            CacheManager.Set(list[0], userinfo, new TimeSpan(0, 30, 0));    // 30分钟
-                            CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30);
+                            //获取缓存的用户信息
+                            SysUserEntity userinfo = CacheManager.Get<SysUserEntity>(list[0]);
+                            if (userinfo != null)
+                            {
+                                //删除缓存的用户信息
+                                CacheManager.Remove(list[0]);
+                                //更新缓存用户信息的KEY
+                                list[0] = Guid.NewGuid().ToString();
+                                if (list[1] == "0")  //记住密码（10天）
+                                {
+                                    CacheManager.Set(list[0], userinfo, TimeSpan.FromDays(10)); // 10天
+                                    CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()));
+                                }
+                                else if (list[1] == "1")   //不记住密码（30分钟）
+                                {
+                                    CacheManager.Set(list[0], userinfo, TimeSpan.FromMinutes(30));    // 30分钟
+                                    CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30);
+                                }
+                            }
                         }
                     }
+                    result = WriteSuccess("密码修改成功");
                 }
-                else
-                {
-                    result = WriteError("密码修改失败");
-                }
+            }
+            catch (Exception ex)
+            {
+                result = WriteError("密码修改失败：" + ex.Message);
             }
             return result;
         }

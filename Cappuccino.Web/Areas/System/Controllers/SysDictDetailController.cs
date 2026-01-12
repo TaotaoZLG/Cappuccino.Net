@@ -79,7 +79,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             viewModel.UpdateTime = DateTime.Now;
             viewModel.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
             SysDictDetailEntity entity = viewModel.EntityMap();
-            _sysDictDetailService.Update(entity, new string[] { "Name", "Code", "SortCode", "UpdateTime", "UpdateUserId" });
+            _sysDictDetailService.Update(entity, new string[] { "Name", "Code", "ListClass", "SortCode", "UpdateTime", "UpdateUserId" });
             return WriteSuccess();
         }
 

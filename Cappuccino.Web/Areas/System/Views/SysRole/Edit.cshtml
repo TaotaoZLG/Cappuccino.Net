@@ -20,17 +20,22 @@
                         <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入编码" class="layui-input" value="@Model.Code">
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">显示样式</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="listClass" autocomplete="off" placeholder="请输入显示样式" class="layui-input">
-                    </div>
-                </div>
                 @Html.EnabledMarkRadioHtml()
                 <div class="layui-form-item">
                     <label class="layui-form-label">备注</label>
                     <div class="layui-input-block">
-                        <textarea name="remark" required lay-verify="required" placeholder="请输入" class="layui-textarea">@Model.Remark</textarea>
+                        <textarea name="remark" placeholder="请输入" class="layui-textarea" style="resize:none;">@Model.Remark</textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">菜单权限</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="expandAllCb" id="expandAllCb" lay-filter="dtreeCheck" lay-skin="primary" title="展开/折叠">
+                        <input type="checkbox" name="checkAllCb" id="checkAllCb" lay-filter="dtreeCheck" lay-skin="primary" title="全选/不全选">
+                        <input type="checkbox" name="linkageCheck" id="linkageCheck" lay-filter="dtreeCheck" lay-skin="primary" title="父子联动" checked>
+                        <div style="overflow: auto; margin-top: 10px;">
+                            <ul id="assignMenuTree" class="dtree" data-id="0"></ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -51,27 +56,73 @@
 </form>
 @section Scripts {
     <script>
-        layui.use(['form', 'jquery', 'common'], function () {
+        layui.use(['form', 'jquery', 'common', 'dtree'], function () {
             let form = layui.form;
             let $ = layui.jquery;
             let common = layui.common;
+            let dtree = layui.dtree;
 
-             form.val("formEdit", {
+            form.val("formEdit", {
                 "enabledMark": "@Model.EnabledMark"
-             });
+            });
+
+            var treeIns = dtree.render({
+                elem: "#assignMenuTree",
+                url: "/System/SysAction/Assign/@Model.Id",
+                method: "get",
+                height: 300,
+                checkbar: true, //开启复选框
+                line: true,
+                icon: ["0", "-1"], //显示非最后一级节点图标，隐藏最后一级节点图标
+                ficon: ["1", "7"],
+                checkbarType: "self", //默认就是all，其他的值为： no-all  p-casc   self  only
+                initLevel: 2,
+            });
+
+            form.on('checkbox(dtreeCheck)', function (data) {
+                if (data.elem.id === 'expandAllCb') {
+                    // 展开/折叠
+                    data.elem.checked ? treeIns.menubarMethod().openAllNode() : treeIns.menubarMethod().closeAllNode();
+                } else if (data.elem.id === 'checkAllCb') {
+                    // 全选/全不选（联动模式下会同步处理父子节点）
+                    data.elem.checked ? treeIns.checkAllNode("assignDataTree") : treeIns.cancelCheckedNode("assignDataTree");
+                } else if (data.elem.id === 'linkageCheck') {
+                    // 父子联动切换（核心修改）
+                    var oldCheckedIds = [];
+                    // 1. 保存当前已勾选节点ID（避免切换后勾选状态丢失）
+                    var checkedNodes = dtree.getCheckbarNodesParam("assignDataTree");
+                    if (checkedNodes.length > 0) {
+                        oldCheckedIds = checkedNodes.map(item => item.nodeId).join(",");
+                    }
+
+                    // 2. 修改联动配置并刷新树
+                    treeConfig.checkbarType = data.elem.checked ? "all" : "self";
+                    treeIns = dtree.reload("assignDataTree", treeConfig);
+
+                    // 3. 恢复之前的勾选状态
+                    if (oldCheckedIds) {
+                        treeIns.chooseDataInit(oldCheckedIds);
+                        // 4. 联动模式下，初始化父子节点状态（子节点同步父节点勾选）
+                        if (data.elem.checked) {
+                            treeIns.initAllCheck();
+                        }
+                    }
+                }
+            });
 
             form.on("submit(edit)", function (data) {
-                common.ajax("/System/SysRole/Edit", "post", data.field, true, true).done(function (response) {
+                var menuParams = dtree.getCheckbarNodesParam("assignMenuTree");
+                common.ajax("/System/SysRole/Edit", "post", { viewModel: data.field, menuPermissions: menuParams }, true, true).done(function (response) {
                     layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
                         parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
                         parent.layui.table.reload("tableId");
                     });
-                    }).fail(function (error) {
-                        console.log(error)
-                    });
-                    return false;
+                }).fail(function (error) {
+                    console.log(error)
                 });
+                return false;
             });
+        });
 
     </script>
 }

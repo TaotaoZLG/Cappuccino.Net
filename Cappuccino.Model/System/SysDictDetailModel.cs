@@ -18,6 +18,11 @@ namespace Cappuccino.Model
         public string Name { get; set; }
 
         /// <summary>
+        /// 显示样式
+        /// </summary>
+        public string ListClass { get; set; }
+
+        /// <summary>
         /// 分类主键
         /// </summary>
         public int DictId { get; set; }

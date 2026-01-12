@@ -41,13 +41,14 @@ namespace Cappuccino.Web.Core.Filters
                     // 0为永久key
                     if (list[1] == "0")
                     {
-                        CacheManager.Set(list[0], userEntity, new TimeSpan(10, 0, 0, 0));
+                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()));
+                        CacheManager.Set(list[0], userEntity, TimeSpan.FromDays(10));
                     }
                     // 1为滑动key（30分钟过期，每次访问续期）
                     else if (list[1] == "1")
                     {
                         CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30);
-                        CacheManager.Set(list[0], userEntity, new TimeSpan(0, 30, 0));
+                        CacheManager.Set(list[0], userEntity, TimeSpan.FromMinutes(30));
                     }
                     else
                     {

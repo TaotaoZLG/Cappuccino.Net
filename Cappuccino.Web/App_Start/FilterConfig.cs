@@ -13,7 +13,7 @@ namespace Cappuccino.Web
             //权限验证过滤器
             filters.Add(new CheckPermissionFilterAttribute());
             //注册IP黑名单过滤器
-            filters.Add(new IpBlackListFilterAttribute());
+            //filters.Add(new IpBlackListFilterAttribute());
             //Json.Net(Newtonsoft.Json)和 ASP.net MVC 的结合
             filters.Add(new JsonNetActionFilter());
         }

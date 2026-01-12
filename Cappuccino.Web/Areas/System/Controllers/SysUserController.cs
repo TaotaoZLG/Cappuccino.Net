@@ -19,11 +19,13 @@ namespace Cappuccino.Web.Areas.System.Controllers
     {
         private readonly ISysUserService _sysUserService;
         private readonly ISysRoleService _sysRoleService;
+        private readonly ISysConfigService _sysConfigService;
 
-        public SysUserController(ISysUserService sysUserService, ISysRoleService sysRoleService)
+        public SysUserController(ISysUserService sysUserService, ISysRoleService sysRoleService, ISysConfigService sysConfigService)
         {
             _sysUserService = sysUserService;
             _sysRoleService = sysRoleService;
+            _sysConfigService = sysConfigService;
             this.AddDisposableObject(_sysUserService);
             this.AddDisposableObject(_sysRoleService);
         }
@@ -215,7 +217,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         public ActionResult InitPwd(int id)
         {
             string salt = VerifyCodeUtils.CreateVerifyCode(5);
-            string pwd = ConfigUtils.AppSetting.GetValue("InitUserPwd");
+            string pwd = _sysConfigService.GetByConfig("sys_initPassword").ConfigValue;
             string passwordHash = Md5Utils.EncryptTo32(salt + pwd);
             SysUserEntity entity = new SysUserEntity
             {

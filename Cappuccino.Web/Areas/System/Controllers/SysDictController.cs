@@ -146,7 +146,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 x.Id,
                 x.Name,
                 x.Code,
-                x.SortCode
+                x.SortCode,
+                x.CreateTime
             }).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
         }
@@ -159,13 +160,13 @@ namespace Cappuccino.Web.Areas.System.Controllers
             // 按类型Code分组，关联字典项
             var result = dictList.Select(type => new
             {
-                TypeCode = type.Code,  // 字典类型编码（如"user_sex"）
-                TypeName = type.Name,  // 字典类型名称（如"用户性别"）
+                TypeCode = type.Code,  // 字典类型编码
+                TypeName = type.Name,  // 字典类型名称
                 Dicts = _sysDictDetailService.GetList(d => d.DictId == type.Id)
                     .Select(d => new
                     {
-                        Label = d.Name,  // 字典项名称（如"男"）
-                        Value = d.Code,  // 字典项值（如"boy"）
+                        Label = d.Name,  // 字典项名称
+                        Value = d.Code,  // 字典项值
                         Sort = d.SortCode,  // 排序号
                         Class = d.ListClass  // 显示样式
                     })

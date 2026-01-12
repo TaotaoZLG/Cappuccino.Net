@@ -1,4 +1,4 @@
-layui.define(['jquery', 'element'], function(exports) {
+﻿layui.define(['jquery', 'element'], function(exports) {
 	"use strict";
 
 	var MOD_NAME = 'count',

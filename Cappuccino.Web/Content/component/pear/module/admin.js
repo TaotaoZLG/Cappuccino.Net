@@ -1,4 +1,4 @@
-﻿layui.define(['table', 'jquery', 'element', 'form', 'tab', 'menu', 'frame'],
+﻿layui.define(['table', 'jquery', 'element', 'form', 'tab', 'menu', 'frame','fullscreen'],
 	function(exports) {
 		"use strict";
 
@@ -7,7 +7,8 @@
 			element = layui.element,
 			pearTab = layui.tab,
 			pearMenu = layui.menu,
-			pearFrame = layui.frame;
+			pearFrame = layui.frame,
+			fullscreen = layui.fullscreen;;
 
 		var bodyFrame;
 		var sideMenu;
@@ -248,17 +249,9 @@
 		});
 
 		$("body").on("click", ".fullScreen", function() {
-			if ($(this).hasClass("layui-icon-screen-restore")) {
-				screenFun(2).then(function() {
-					$(".fullScreen").eq(0).removeClass("layui-icon-screen-restore");
-				});
-			} else {
-				screenFun(1).then(function() {
-					$(".fullScreen").eq(0).addClass("layui-icon-screen-restore");
-				});
-			}
+			fullscreen.isFullscreen() ? fullscreen.fullClose() : fullscreen.fullScreen();
 		});
-		
+
 		$("body").on("click",'[user-menu-id]',function(){
 			if(config.tab.muiltTab){
 				bodyTab.addTabOnly({

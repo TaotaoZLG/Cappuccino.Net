@@ -70,20 +70,6 @@
         @Html.RightToolBarHtml(ViewData["RightButtonList"])
     </script>
 
-    <!-- 启用|停用模板 -->
-    <script type="text/html" id="enabledMarkTpl">
-        {{#  if(d.enabledMark){ }}
-        <input type="checkbox" name="enabledMark" value="{{d.id}}" lay-skin="switch" lay-text="启用|禁用" lay-filter="enabledMark" checked>
-        {{#  } else{ }}
-        <input type="checkbox" name="enabledMark" value="{{d.id}}" lay-skin="switch" lay-text="启用|禁用" lay-filter="enabledMark">
-        {{#  } }}
-    </script>
-
-    <!-- 头像模板 -->
-    <script type="text/html" id="headIconTpl">
-        
-    </script>
-
     <script>
         layui.use(['table', 'form', 'jquery', 'common', 'dtree'], function () {
             let table = layui.table;
@@ -97,7 +83,7 @@
             var deptDtree = dtree.render({
                 elem: "#organizationTree",
                 method: 'get',
-                initLevel: "2", //默认展开层级
+                initLevel: "3", //默认展开层级
                 line: true, // 有线树
                 icon: ["0", "-1"], // 显示非最后一级节点图标，隐藏最后一级节点图标
                 ficon: ["1", "7"],
@@ -134,7 +120,15 @@
                         },
                         { title: '手机号码', field: 'mobilePhone', align: 'center' },
                         { title: '邮箱', field: 'email', align: 'center' },
-                        { title: '是否可用', field: 'enabledMark', align: 'center', templet: '#enabledMarkTpl' },
+                        {
+                            title: '是否可用', field: 'enabledMark', align: 'center', templet: function (d) {
+                                if (d.enabledMark) {
+                                    return '<input type="checkbox" name="enabledMark" value="' + d.id + '" lay-skin="switch" lay-text="启用|禁用" lay-filter="enabledMark" checked>';
+                                } else {
+                                    return '<input type="checkbox" name="enabledMark" value="' + d.id +'" lay-skin="switch" lay-text="启用|禁用" lay-filter="enabledMark">';
+                                }
+                            }
+                        },
                         { title: '操作', toolbar: '#operationTpl', align: 'center', width: 195 }
                     ]
                 ],
@@ -246,9 +240,9 @@
                     shade: 0.1,
                     area: ['800px', '650px'],
                     content: MODULE_PATH + 'Edit/' + id,
-                    cancel: function (index, layero) {
-                        table.reload('tableId');
-                    }
+                    //cancel: function (index, layero) {
+                    //    table.reload('tableId');
+                    //}
                 });
             }
 
