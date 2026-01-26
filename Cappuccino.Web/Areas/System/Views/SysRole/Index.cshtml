@@ -41,7 +41,9 @@
 
     <!-- 行工具栏模板 -->
     <script type="text/html" id="operationTpl">
+        {{# if(d.id != 1){ }}
         @Html.RightToolBarHtml(ViewData["RightButtonList"])
+        {{# } }}
     </script>
 
     <!-- 启用|停用模板 -->

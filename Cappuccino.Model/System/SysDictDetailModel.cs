@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Cappuccino.Model
+﻿namespace Cappuccino.Model
 {
     /// <summary>
     /// 数据字典

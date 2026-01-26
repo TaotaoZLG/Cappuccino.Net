@@ -14,6 +14,13 @@ namespace Cappuccino.IDAL
     {
         int SaveChanges();
 
+        /// <summary>
+        /// 解除EF实体跟踪
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        void DetachEntity<T>(T entity);
+
         #region 查询
         /// <summary>
         /// 查询

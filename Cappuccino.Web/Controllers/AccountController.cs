@@ -44,11 +44,6 @@ namespace Cappuccino.Web.Controllers
             return View(loginModel);
         }
 
-        /// <summary>
-        /// 修改密码
-        /// </summary>
-        /// <returns></returns>
-        [LogOperate(Title = "修改密码", BusinessType = (int)OperateType.Update)]
         public ActionResult ChangePassword()
         {
             ViewBag.UserName = UserManager.GetCurrentUserInfo().UserName;
@@ -158,7 +153,7 @@ namespace Cappuccino.Web.Controllers
             return RedirectToAction("Login", "Account");
         }
 
-        [HttpPost]
+        [HttpPost, CheckPermission("system.user.edit")]
         [LogOperate(Title = "修改密码", BusinessType = (int)OperateType.Update)]
         public ActionResult ModifyUserPwd(ChangePasswordModel viewModel)
         {

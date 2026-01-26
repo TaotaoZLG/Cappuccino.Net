@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Cappuccino.Common.Net;
 using Cappuccino.Entity;
-using Cappuccino.Entity.System;
 using Cappuccino.IBLL.System;
 using Cappuccino.IDAL.System;
 using Cappuccino.Web.Core;

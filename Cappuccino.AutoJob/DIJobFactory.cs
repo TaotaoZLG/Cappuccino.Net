@@ -1,6 +1,5 @@
 ﻿using System;
 using Autofac;
-using Cappuccino.Common.Log;
 using Quartz;
 using Quartz.Spi;
 

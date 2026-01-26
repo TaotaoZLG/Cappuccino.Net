@@ -31,9 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoMapper, Version=1.1.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoMapper.1.1.2\lib\net35\AutoMapper.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -48,7 +45,6 @@
     <Compile Include="Account\ChangePasswordModel.cs" />
     <Compile Include="Account\LoginModel.cs" />
     <Compile Include="BaseEntity.cs" />
-    <Compile Include="EntityMapper.cs" />
     <Compile Include="Layui\DtreeModel.cs" />
     <Compile Include="Layui\PearMenuModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,10 +71,6 @@
     <ProjectReference Include="..\Cappuccino.Common\Cappuccino.Common.csproj">
       <Project>{471e7f22-fdc4-4f8c-b985-3336d4b14e0b}</Project>
       <Name>Cappuccino.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Cappuccino.Entity\Cappuccino.Entity.csproj">
-      <Project>{93fe2ce0-1a84-4138-b18f-d984ae0f4d81}</Project>
-      <Name>Cappuccino.Entity</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

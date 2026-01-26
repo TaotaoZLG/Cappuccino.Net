@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using Cappuccino.Common.Caching;
-using Cappuccino.Common.Util;
 
 namespace Cappuccino.Common.Caching
 {

@@ -91,10 +91,10 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
                 if (viewModel.Type == ActionTypeEnum.Menu)
                 {
-                    sysAction.SysActionMenu = new SysActionMenuEntity 
-                    { 
-                        Icon = viewModel.Icon, 
-                        Url = viewModel.Url 
+                    sysAction.SysActionMenu = new SysActionMenuEntity
+                    {
+                        Icon = viewModel.Icon,
+                        Url = viewModel.Url
                     };
                 }
                 else if (viewModel.Type == ActionTypeEnum.Directory)

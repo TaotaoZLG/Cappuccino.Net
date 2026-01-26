@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using Cappuccino.AutoJob.Job;
+using Autofac;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.Common.Log;
-using Cappuccino.Entity.System;
+using Cappuccino.Entity;
 using Cappuccino.IBLL.System;
 using Quartz;
-using Autofac;
 using IContainer = Autofac.IContainer;
 
 namespace Cappuccino.AutoJob

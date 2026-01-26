@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using Cappuccino.Common.Extensions;
 
 namespace Cappuccino.Common.Helper

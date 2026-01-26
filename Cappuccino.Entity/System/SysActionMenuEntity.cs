@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Cappuccino.Entity
+﻿namespace Cappuccino.Entity
 {
     public class SysActionMenuEntity
     {

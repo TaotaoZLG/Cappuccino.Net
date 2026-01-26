@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cappuccino.Entity
 {
@@ -12,7 +6,7 @@ namespace Cappuccino.Entity
     /// 数据权限实体类
     /// </summary>
     [Table("SysDataAuthorize")]
-    public class SysDataAuthorizeEntity: BaseCreateEntity
+    public class SysDataAuthorizeEntity : BaseCreateEntity
     {
         /// <summary>
         /// 数据ID（部门Id或用户Id）

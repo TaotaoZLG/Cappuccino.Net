@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cappuccino.Entity
 {
@@ -8,7 +7,7 @@ namespace Cappuccino.Entity
     /// </summary>
     public class SysDictEntity : BaseEntity
     {
-         /// <summary>
+        /// <summary>
         /// 编码
         /// </summary>
         public string Code { get; set; }

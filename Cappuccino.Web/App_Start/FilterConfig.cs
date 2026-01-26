@@ -1,5 +1,4 @@
 ﻿using System.Web.Mvc;
-using Cappuccino.BLL;
 using Cappuccino.Web.Core.Filters;
 
 namespace Cappuccino.Web

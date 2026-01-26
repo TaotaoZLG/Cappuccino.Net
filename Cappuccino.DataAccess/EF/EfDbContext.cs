@@ -9,12 +9,21 @@ namespace Cappuccino.DataAccess
     /// </summary>
     public class EfDbContext : DbContext
     {
-        public EfDbContext() : base("sqlconn") 
+        public EfDbContext() : base("sqlconn")
         {
             // 禁用数据库初始化器
             Database.SetInitializer<EfDbContext>(null);
-            // 禁用延迟加载
-            //Configuration.LazyLoadingEnabled = false;
+
+            // 禁用实体状态改变跟踪
+            //this.Configuration.AutoDetectChangesEnabled = false;
+            //// 禁用数据库null语义
+            //this.Configuration.UseDatabaseNullSemantics = true;
+            //// 禁用导航属性延迟加载
+            //this.Configuration.LazyLoadingEnabled = true;
+            //// 禁用自动创建代理类
+            //this.Configuration.ProxyCreationEnabled = false;
+            //// 禁用保存时验证所跟踪实体
+            //this.Configuration.ValidateOnSaveEnabled = false;
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

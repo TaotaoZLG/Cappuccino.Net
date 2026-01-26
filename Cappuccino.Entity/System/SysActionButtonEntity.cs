@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Cappuccino.Common.Enum;
+﻿using Cappuccino.Common.Enum;
 
 namespace Cappuccino.Entity
 {

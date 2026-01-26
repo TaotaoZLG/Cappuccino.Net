@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
 using Cappuccino.Entity;
@@ -11,7 +9,6 @@ using Cappuccino.IBLL;
 using Cappuccino.Model;
 using Cappuccino.Web.Attributes;
 using Cappuccino.Web.Core;
-using Cappuccino.Web.Models;
 
 namespace Cappuccino.Web.Areas.System.Controllers
 {
@@ -42,7 +39,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
         public ActionResult Edit(int id)
         {
             SysDepartmentEntity departmentEntity = _sysDepartmentService.GetList(x => x.Id == id).FirstOrDefault();
-          
+
             SysDepartmentModel model = new SysDepartmentModel
             {
                 Id = departmentEntity.Id,

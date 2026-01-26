@@ -4,11 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
 using Cappuccino.Common.Helper;
-using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
@@ -22,7 +20,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
     public class SysLogOperateController : BaseController
     {
         private readonly ISysLogOperateService _sysLogOperateService;
-      
+
         public SysLogOperateController(ISysLogOperateService sysLogOperateService)
         {
             _sysLogOperateService = sysLogOperateService;

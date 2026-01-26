@@ -94,17 +94,17 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 return WriteError("角色不存在");
             }
 
-            // 保存菜单权限
-            _sysRoleService.SaveMenuPermissions(roleEntity, menuPermissions);
-
+            // 更新角色信息
             roleEntity.Name = viewModel.Name;
             roleEntity.Code = viewModel.Code;
             roleEntity.EnabledMark = viewModel.EnabledMark;
             roleEntity.Remark = viewModel.Remark;
             roleEntity.UpdateTime = DateTime.Now;
             roleEntity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
-
             _sysRoleService.Update(roleEntity, new string[] { "Name", "Code", "EnabledMark", "Remark", "UpdateTime", "UpdateUserId" });
+
+            // 保存菜单权限
+            _sysRoleService.SaveMenuPermissions(roleEntity, menuPermissions);
 
             return WriteSuccess();
         }

@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=1.1.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.1.1.2\lib\net35\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -46,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseEntity.cs" />
+    <Compile Include="EntityMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\SysConfigEntity.cs" />
     <Compile Include="System\SysNoticeEntity.cs" />
@@ -69,9 +73,17 @@
       <Project>{471E7F22-FDC4-4F8C-B985-3336D4B14E0B}</Project>
       <Name>Cappuccino.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Model.csproj">
+      <Project>{a42fc2ef-0277-4ed7-b6a2-223323d52efc}</Project>
+      <Name>Cappuccino.Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

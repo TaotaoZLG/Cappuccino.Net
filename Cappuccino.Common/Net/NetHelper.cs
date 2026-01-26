@@ -8,7 +8,6 @@ using System.Text;
 using System.Web;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Log;
-using log4net;
 
 namespace Cappuccino.Common.Net
 {
@@ -502,6 +501,6 @@ namespace Cappuccino.Common.Net
             {
                 return $"解析参数失败：{ex.Message.Substring(0, 100)}"; // 限制错误信息长度
             }
-        }        
+        }
     }
 }

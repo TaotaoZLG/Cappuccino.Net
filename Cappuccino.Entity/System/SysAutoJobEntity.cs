@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Cappuccino.Entity.System
+namespace Cappuccino.Entity
 {
     /// <summary>
     /// 任务计划实体

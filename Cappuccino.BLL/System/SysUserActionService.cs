@@ -3,7 +3,7 @@ using System.Linq;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
-using Cappuccino.Model.System;
+using Cappuccino.Model;
 
 namespace Cappuccino.BLL
 {

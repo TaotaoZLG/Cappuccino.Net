@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Log;
-using Cappuccino.Common.Net;
 using Cappuccino.Common.Util;
 
 namespace Cappuccino.Common.Helper

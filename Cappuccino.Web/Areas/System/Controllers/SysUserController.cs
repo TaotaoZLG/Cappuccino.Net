@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
 using Cappuccino.Common.Util;
+using Cappuccino.DataAccess;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
@@ -30,12 +30,12 @@ namespace Cappuccino.Web.Areas.System.Controllers
             this.AddDisposableObject(_sysRoleService);
         }
 
-        public SelectList RoleSelectList 
-        { 
-            get 
-            { 
-                return new SelectList(_sysRoleService.GetList(x => true).Select(x => new { x.Id, x.Name }), "Id", "Name"); 
-            } 
+        public SelectList RoleSelectList
+        {
+            get
+            {
+                return new SelectList(_sysRoleService.GetList(x => true).Select(x => new { x.Id, x.Name }), "Id", "Name");
+            }
         }
 
         #region 视图
@@ -231,6 +231,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
             return WriteSuccess("重置密码成功，新密码:" + pwd);
         }
 
+        [HttpPost, CheckPermission("system.user.edit")]
+        [LogOperate(Title = "修改头像", BusinessType = (int)OperateType.Update)]
         public ActionResult UploadPortrait(int id, string portraitUrl)
         {
             SysUserEntity entity = new SysUserEntity
@@ -249,32 +251,29 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [CheckPermission("system.user.list")]
         public JsonResult GetList(SysUserModel viewModel, PageInfo pageInfo)
         {
-            QueryCollection queries = new QueryCollection();
-            if (!string.IsNullOrEmpty(viewModel.UserName))
-            {
-                queries.Add(new Query { Name = "UserName", Operator = Query.Operators.Contains, Value = viewModel.UserName });
-            }
-            if (!string.IsNullOrEmpty(viewModel.NickName))
-            {
-                queries.Add(new Query { Name = "NickName", Operator = Query.Operators.Contains, Value = viewModel.NickName });
-            }
-            if (viewModel.DepartmentId != null)
-            {
-                queries.Add(new Query { Name = "DepartmentId", Operator = Query.Operators.Equal, Value = viewModel.DepartmentId });
-            }
+            var coreSql = $@"
+                SELECT 
+                    u.Id, u.UserName, u.NickName, u.HeadIcon, u.MobilePhone, u.Email, 
+                    u.EnabledMark, u.CreateTime, u.DepartmentId,
+                    d.Name AS DepartmentName, -- 关联部门名称
+                    ISNULL((
+                        SELECT STUFF((
+                            SELECT ',' + r.Name 
+                            FROM SysUserRole ur 
+                            JOIN SysRole r ON ur.RoleId = r.Id 
+                            WHERE ur.UserId = u.Id 
+                            FOR XML PATH('')
+                        ), 1, 1, '')
+                    ), '') AS RoleName -- 关联角色名称（拼接多角色）
+                FROM SysUser u
+                LEFT JOIN SysDepartment d ON u.DepartmentId = d.Id
+                WHERE 1=1
+                {(!string.IsNullOrEmpty(viewModel.UserName) ? $"AND u.UserName LIKE '%{viewModel.UserName}%'" : "")}
+                {(!string.IsNullOrEmpty(viewModel.NickName) ? $"AND u.NickName LIKE '%{viewModel.NickName}%'" : "")}
+                {(viewModel.EnabledMark.HasValue ? $"AND u.EnabledMark = '{viewModel.EnabledMark}'" : "")}
+            ";
 
-            var list = _sysUserService.GetListByPage(queries.AsExpression<SysUserEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount, x => x.Department, x => x.SysRoles).Select(x => new
-            {
-                x.Id,
-                x.UserName,
-                x.NickName,
-                x.HeadIcon,
-                x.MobilePhone,
-                x.Email,
-                x.EnabledMark,
-                DepartmentName = x.Department.Name,
-                RoleNames = x.SysRoles.Select(r => r.Name).ToList()
-            }).ToList();
+            var list = DapperRepository.QueryPage<dynamic>(coreSql, pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, "", out int totalCount).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
         }
         #endregion

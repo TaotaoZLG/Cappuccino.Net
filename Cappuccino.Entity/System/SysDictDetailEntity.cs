@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Cappuccino.Entity
+﻿namespace Cappuccino.Entity
 {
     /// <summary>
     /// 字典详情

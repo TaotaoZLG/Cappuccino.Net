@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cappuccino.Entity
 {
@@ -7,7 +6,7 @@ namespace Cappuccino.Entity
     /// 操作日志
     /// </summary>
     [Table("SysLogOperate")]
-    public class SysLogOperateEntity: BaseCreateEntity
+    public class SysLogOperateEntity : BaseCreateEntity
     {
         /// <summary>
         /// 模块标题

@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Autofac;
 using Cappuccino.Common;
@@ -73,6 +70,6 @@ namespace Cappuccino.Web.Core.Filters
             CacheManager.Set(KeyManager.IpBlackCacheKey, blackList);
 
             return blackList;
-        }     
+        }
     }
 }

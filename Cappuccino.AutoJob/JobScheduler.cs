@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Cappuccino.Common.Log;
-using Cappuccino.Entity.System;
-using Cappuccino.IBLL.System;
+using Cappuccino.Entity;
 using Quartz;
 using Quartz.Impl;
-using Quartz.Util;
 
 namespace Cappuccino.AutoJob
 {
@@ -20,7 +15,7 @@ namespace Cappuccino.AutoJob
         private static object _lockHelper = new object();
         private readonly IScheduler _scheduler = null;
 
-        public JobScheduler() 
+        public JobScheduler()
         {
             lock (_lockHelper)
             {

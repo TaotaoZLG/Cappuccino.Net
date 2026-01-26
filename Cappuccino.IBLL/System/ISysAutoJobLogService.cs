@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Cappuccino.Entity;
-using Cappuccino.Entity.System;
 
 namespace Cappuccino.IBLL.System
 {

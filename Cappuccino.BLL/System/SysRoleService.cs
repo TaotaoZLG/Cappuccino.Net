@@ -30,25 +30,24 @@ namespace Cappuccino.BLL
         /// <summary>
         /// 保存角色菜单权限
         /// </summary>
-        /// <param name="roleId"></param>
+        /// <param name="roleEntity"></param>
         /// <param name="menuPermissions"></param>
         public void SaveMenuPermissions(SysRoleEntity roleEntity, List<DtreeResponse> menuPermissions)
         {
+            // 删除旧菜单权限
             roleEntity.SysActions.Clear();
 
-            if (menuPermissions == null || !menuPermissions.Any())
+            // 处理新菜单权限
+            if (menuPermissions != null && menuPermissions.Any())
             {
-                _roleDao.SaveChanges();
-                return;
+                var actionIds = menuPermissions.Select(p => Convert.ToInt32(p.NodeId)).Distinct().ToList();
+                var actionList = _actionDao.GetList(x => actionIds.Contains(x.Id)).ToList();
+                actionList.ForEach(action => roleEntity.SysActions.Add(action));
+                //foreach (var item in actionList)
+                //{
+                //    roleEntity.SysActions.Add(item);
+                //}
             }
-
-            var actionIds = menuPermissions.Select(p => Convert.ToInt32(p.NodeId)).Distinct().ToList();
-            var actionList = _actionDao.GetList(x => actionIds.Contains(x.Id)).ToList();
-            actionList.ForEach(action => roleEntity.SysActions.Add(action));
-            //foreach (var item in actionList)
-            //{
-            //    roleEntity.SysActions.Add(item);
-            //}
             _roleDao.SaveChanges();
         }
 
@@ -62,7 +61,7 @@ namespace Cappuccino.BLL
             // 删除旧数据权限
             _dataAuthorizeDao.DeleteByRoleId(roleId);
 
-            // 处理数据权限
+            // 处理新数据权限
             if (dataPermissions != null && dataPermissions.Any())
             {
                 List<SysDataAuthorizeEntity> authorizeEntityList = new List<SysDataAuthorizeEntity>();

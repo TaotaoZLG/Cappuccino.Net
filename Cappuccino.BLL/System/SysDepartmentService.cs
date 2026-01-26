@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Cappuccino.Common.Enum;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;

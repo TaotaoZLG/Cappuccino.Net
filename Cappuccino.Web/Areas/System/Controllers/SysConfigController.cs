@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using Cappuccino.BLL;
-using Cappuccino.BLL.System;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.Common.Enum;
@@ -21,12 +17,12 @@ namespace Cappuccino.Web.Areas.System.Controllers
     {
         private readonly ISysConfigService _configService;
 
-        public SysConfigController(ISysConfigService configService) 
+        public SysConfigController(ISysConfigService configService)
         {
             _configService = configService;
             this.AddDisposableObject(_configService);
         }
-       
+
         #region 视图
         [CheckPermission("system.config.list")]
         public override ActionResult Index()
@@ -110,7 +106,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 return WriteError(ex);
             }
-        }        
+        }
         #endregion
 
         #region 获取数据
@@ -126,7 +122,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 queries.Add(new Query { Name = "ConfigKeys", Operator = Query.Operators.Contains, Value = viewModel.ConfigKeys });
             }
-         
+
             var list = _configService.GetListByPage(queries.AsExpression<SysConfigEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new
             {
                 x.Id,

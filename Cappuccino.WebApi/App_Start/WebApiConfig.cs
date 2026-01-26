@@ -1,6 +1,4 @@
 ﻿using System.Web.Http;
-using Cappuccino.Web.Core.Filters;
-using Cappuccino.Web.Core.Json;
 using Cappuccino.WebApi.Filters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;

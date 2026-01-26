@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Cappuccino.AutoJob;
 using Cappuccino.Common.Log;
-using Cappuccino.Entity.System;
+using Cappuccino.Entity;
 using Cappuccino.IBLL.System;
-using Cappuccino.IDAL;
 using Cappuccino.IDAL.System;
 
 namespace Cappuccino.BLL.System

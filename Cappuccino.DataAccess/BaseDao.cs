@@ -7,7 +7,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Cappuccino.IDAL;
 
 namespace Cappuccino.DataAccess
@@ -49,6 +48,17 @@ namespace Cappuccino.DataAccess
         public int SaveChanges()
         {
             return Db.SaveChanges();
+        }
+
+        /// <summary>
+        /// 解除EF实体跟踪
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        public void DetachEntity<T>(T entity)
+        {
+            var entry = Db.Entry(entity);
+            if (entry != null) entry.State = EntityState.Detached;
         }
 
         #region 查询
@@ -130,7 +140,7 @@ namespace Cappuccino.DataAccess
         /// <param name="totalCount">总记录数</param>
         /// <param name="includes">需要关联查询的导航属性</param>
         /// <returns>分页查询结果</returns>
-        public virtual IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambda,string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount, params Expression<Func<T, object>>[] includes)
+        public virtual IQueryable<T> GetListByPage(Expression<Func<T, bool>> whereLambda, string sortField, string sortOrder, int pageSize, int pageIndex, out int totalCount, params Expression<Func<T, object>>[] includes)
         {
             // 1. 基础查询 + 关联表加载
             IQueryable<T> query = DbSet;
@@ -153,10 +163,7 @@ namespace Cappuccino.DataAccess
             }
 
             // 反射获取排序字段（忽略大小写）
-            var property = typeof(T).GetProperty(
-                sortField,
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
-            );
+            var property = typeof(T).GetProperty(sortField, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
             if (property == null)
             {
                 throw new ArgumentException($"实体 {typeof(T).Name} 中不存在字段 {sortField}");
@@ -168,8 +175,7 @@ namespace Cappuccino.DataAccess
             var orderByExpr = Expression.Lambda(propertyAccess, parameter);
 
             // 确定排序方向
-            bool isAsc = !string.IsNullOrEmpty(sortOrder) &&
-                         sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase);
+            bool isAsc = !string.IsNullOrEmpty(sortOrder) && sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase);
 
             // 反射调用OrderBy/OrderByDescending方法
             var queryableType = typeof(Queryable);

@@ -1,4 +1,4 @@
-﻿namespace Cappuccino.Model.System
+﻿namespace Cappuccino.Model
 {
     public class UserActionModel
     {

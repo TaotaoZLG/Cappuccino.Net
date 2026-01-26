@@ -3,7 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Cappuccino.Common.Enum;
 using Cappuccino.IBLL;
-using Cappuccino.Model.System;
+using Cappuccino.Model;
 using Cappuccino.Web.Attributes;
 using Cappuccino.Web.Core;
 

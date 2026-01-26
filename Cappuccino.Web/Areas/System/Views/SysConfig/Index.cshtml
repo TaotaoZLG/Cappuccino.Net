@@ -42,9 +42,9 @@
     <!-- 行工具栏模板 -->
     <script type="text/html" id="operationTpl">
         {{# if(d.configType === 1){ }}
-        @Html.RightToolBarHtml(ViewData["RightButtonList"], "delete")
+            @Html.RightToolBarHtml(ViewData["RightButtonList"], "delete")
         {{# } else{ }}
-        @Html.RightToolBarHtml(ViewData["RightButtonList"])
+            @Html.RightToolBarHtml(ViewData["RightButtonList"])
         {{# } }}
     </script>
 

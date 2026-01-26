@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Cappuccino.Common.Log;

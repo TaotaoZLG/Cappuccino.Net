@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Mvc;
 using Cappuccino.Common;
-using Cappuccino.Entity.System;
+using Cappuccino.Entity;
 using Cappuccino.IBLL.System;
 using Cappuccino.Model;
 using Cappuccino.Web.Core;
@@ -34,7 +31,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
             if (!string.IsNullOrEmpty(viewModel.JobName))
             {
                 queries.Add(new Query { Name = "JobName", Operator = Query.Operators.Equal, Value = viewModel.JobName });
-            };
+            }
+            ;
 
             var list = _sysAutoJobLogService.GetListByPage(
                 queries.AsExpression<SysAutoJobLogEntity>(),

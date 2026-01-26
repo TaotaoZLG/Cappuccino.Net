@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Cappuccino.Entity
+﻿namespace Cappuccino.Entity
 {
     /// <summary>
     /// 登录日志

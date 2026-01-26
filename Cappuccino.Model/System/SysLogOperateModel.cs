@@ -1,7 +1,4 @@
-﻿using System;
-using Cappuccino.Entity;
-
-namespace Cappuccino.Model
+﻿namespace Cappuccino.Model
 {
     /// <summary>
     /// 登录日志

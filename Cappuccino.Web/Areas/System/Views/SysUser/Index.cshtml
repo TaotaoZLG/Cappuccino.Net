@@ -67,7 +67,9 @@
 
     <!-- 行工具栏模板 -->
     <script type="text/html" id="operationTpl">
+        {{# if(d.id != 1){ }}
         @Html.RightToolBarHtml(ViewData["RightButtonList"])
+        {{# } }}
     </script>
 
     <script>
@@ -107,11 +109,7 @@
                         { title: 'ID', field: 'id', hide: true },
                         { title: '账号', field: 'userName', align: 'center' },
                         { title: '昵称', field: 'nickName', align: 'center' },
-                        {
-                            title: '角色', field: 'roleNames', align: 'center', templet: function (d) {
-                                return d.roleNames.join(',');
-                            }
-                        },
+                        { title: '角色', field: 'roleName', align: 'center' },
                         { title: '所在部门', field: 'departmentName', align: 'center' },
                         {
                             title: '头像', field: 'headIcon', align: 'center', templet: function (d) {
@@ -125,7 +123,7 @@
                                 if (d.enabledMark) {
                                     return '<input type="checkbox" name="enabledMark" value="' + d.id + '" lay-skin="switch" lay-text="启用|禁用" lay-filter="enabledMark" checked>';
                                 } else {
-                                    return '<input type="checkbox" name="enabledMark" value="' + d.id +'" lay-skin="switch" lay-text="启用|禁用" lay-filter="enabledMark">';
+                                    return '<input type="checkbox" name="enabledMark" value="' + d.id + '" lay-skin="switch" lay-text="启用|禁用" lay-filter="enabledMark">';
                                 }
                             }
                         },

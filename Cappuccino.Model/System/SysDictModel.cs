@@ -27,6 +27,6 @@ namespace Cappuccino.Model
         /// </summary>
         public int SortCode { get; set; }
 
-        public virtual ICollection<SysDictDetailModel> SysDictDetails { get; set; }        
+        public virtual ICollection<SysDictDetailModel> SysDictDetails { get; set; }
     }
 }

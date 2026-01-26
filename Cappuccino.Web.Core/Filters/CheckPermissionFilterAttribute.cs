@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using System.Web.Routing;
 using Autofac;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
@@ -37,7 +36,7 @@ namespace Cappuccino.Web.Core.Filters
                 }
                 SysUserEntity userEntity = CacheManager.Get<SysUserEntity>(list[0]);
                 if (userEntity != null)
-                {                    
+                {
                     // 0为永久key
                     if (list[1] == "0")
                     {
@@ -111,14 +110,6 @@ namespace Cappuccino.Web.Core.Filters
                 ViewResult view = new ViewResult();
                 view.ViewName = "/Views/Shared/Tip.cshtml";
                 filterContext.Result = view;
-                //var routeValues = new RouteValueDictionary
-                //{
-                //    { "controller", "Account" },
-                //    { "action", "Login" }
-                //};
-
-                //// 设置重定向结果
-                //filterContext.Result = new RedirectToRouteResult(routeValues);
             }
         }
 

@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using Cappuccino.Entity;
-using Cappuccino.Entity.System;
-using Cappuccino.Model.System;
+using Cappuccino.Model;
 
-namespace Cappuccino.Model
+namespace Cappuccino.Entity
 {
     public static class EntityMapper
     {

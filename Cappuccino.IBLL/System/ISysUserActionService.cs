@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cappuccino.Entity;
-using Cappuccino.Model.System;
+using Cappuccino.Model;
 
 namespace Cappuccino.IBLL
 {

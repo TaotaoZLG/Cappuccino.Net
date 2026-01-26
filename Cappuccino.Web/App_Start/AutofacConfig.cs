@@ -6,7 +6,6 @@ using Cappuccino.AutoJob;
 using Cappuccino.BLL.System;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
-using Cappuccino.Common.Log;
 using Cappuccino.IBLL;
 using Cappuccino.IBLL.System;
 
