@@ -27,9 +27,6 @@ namespace Cappuccino.Web.Areas.Tool.Controllers
         }
 
         #region 获取数据
-        /// <summary>
-        /// 获取缓存列表（适配Layui分页）
-        /// </summary>
         [HttpGet, CheckPermission("system.cache.list")]
         public ActionResult GetCacheList(PageInfo pageInfo)
         {

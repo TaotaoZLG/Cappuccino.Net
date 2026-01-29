@@ -76,7 +76,7 @@
                         { field: 'id', title: 'ID', hide: true },
                         { field: 'configName', title: '参数名称' },
                         { field: 'configKeys', title: '参数键名' },
-                        { field: 'configValue', title: '参数值' },
+                        { field: 'configValue', title: '参数值', edit: 'text' },
                         {
                             field: 'configType', title: '参数类型', templet: function (d) {
                                 return d.configType == 1 ? '系统内置' : '自定义';
@@ -111,6 +111,17 @@
                 } else if (obj.event === 'batchDel') {
                     window.batchDel(obj);
                 }
+            });
+
+            table.on('edit(tableFilter)', function (obj) {
+                common.ajax("/System/SysConfig/UpdateConfigValue", "post", obj.data, true, true).done(function (response) {
+                    layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
+                        table.reload("tableId");
+                    });
+                }).fail(function (error) {
+                    console.log(error)
+                });
+                return false;
             });
 
             form.on('submit(search)', function (data) {

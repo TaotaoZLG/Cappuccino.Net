@@ -6,11 +6,6 @@
     public class SysLogOperateModel : BaseCreateEntity
     {
         /// <summary>
-        /// 主键
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
         /// 模块标题
         /// </summary>
         public string Title { get; set; }

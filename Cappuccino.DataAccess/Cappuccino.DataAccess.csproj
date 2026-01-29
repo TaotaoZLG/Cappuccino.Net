@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseDao.cs" />
-    <Compile Include="Dapper\DapperRepository.cs" />
+    <Compile Include="Dapper\DapperHelper.cs" />
     <Compile Include="EF\DbContextFactory.cs" />
     <Compile Include="EF\EfDbContext.cs" />
     <Compile Include="EF\Mapping\SysActionButtonMap.cs" />

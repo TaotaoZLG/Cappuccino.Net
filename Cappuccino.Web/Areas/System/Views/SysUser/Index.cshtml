@@ -89,7 +89,6 @@
                 line: true, // 有线树
                 icon: ["0", "-1"], // 显示非最后一级节点图标，隐藏最后一级节点图标
                 ficon: ["1", "7"],
-                checkbarType: "self", // 默认就是all，其他的值为： no-all  p-casc   self  only
                 url: "/System/SysDepartment/GetDepartmentTree",
                 selectInputName: {
                     nodeId: "departmentId",
@@ -119,11 +118,11 @@
                         { title: '手机号码', field: 'mobilePhone', align: 'center' },
                         { title: '邮箱', field: 'email', align: 'center' },
                         {
-                            title: '是否可用', field: 'enabledMark', align: 'center', templet: function (d) {
-                                if (d.enabledMark) {
-                                    return '<input type="checkbox" name="enabledMark" value="' + d.id + '" lay-skin="switch" lay-text="启用|禁用" lay-filter="enabledMark" checked>';
+                            title: '用户状态', field: 'userStatus', align: 'center', templet: function (d) {
+                                if (d.userStatus) {
+                                    return '<input type="checkbox" name="userStatus" value="' + d.id + '" lay-skin="switch" lay-text="启用|禁用" lay-filter="userStatus" checked>';
                                 } else {
-                                    return '<input type="checkbox" name="enabledMark" value="' + d.id + '" lay-skin="switch" lay-text="启用|禁用" lay-filter="enabledMark">';
+                                    return '<input type="checkbox" name="userStatus" value="' + d.id + '" lay-skin="switch" lay-text="启用|禁用" lay-filter="userStatus">';
                                 }
                             }
                         },
@@ -143,22 +142,18 @@
                 var param = obj.param; //获取节点参数
 
                 deptDtree.clickSpread(obj.dom); //调用内置函数展开节点
+
+                if (!param.leaf) {
+                    var $div = obj.dom;
+                    deptDtree.clickSpread($div);  //调用内置函数展开节点
+                }
+
                 table.reload("tableId", {
                     where: {
                         DepartmentId: param.nodeId
                     }
                 });
 
-                // 当前节点为最后一级节点时触发事件
-                //if (!param.leaf) {
-                //    deptDtree.clickSpread(obj.dom); //调用内置函数展开节点
-                //} else {
-                //    table.reload("tableId", {
-                //        where: {
-                //            DepartmentId: param.nodeId
-                //        }
-                //    });
-                //}
             });
 
             table.on('tool(tableFilter)', function (obj) {
@@ -189,9 +184,9 @@
                 return false;
             });
 
-            form.on('switch(enabledMark)', function (obj) {
+            form.on('switch(userStatus)', function (obj) {
                 layer.confirm('确定更改状态', { icon: 3, title: '提示' }, function (index) {
-                    common.ajax(MODULE_PATH + "UpdateEnabledMark", "post", { id: parseInt(obj.value), enabledMark: obj.elem.checked * 1 }, true, true).done(function (response) {
+                    common.ajax(MODULE_PATH + "UpdateUserStatus", "post", { id: parseInt(obj.value), userStatus: obj.elem.checked * 1 }, true, true).done(function (response) {
                         layer.msg(response.msg, { icon: 1 });
                     }).fail(function (error) {
                         $(obj.elem).prop('checked', !obj.elem.checked);

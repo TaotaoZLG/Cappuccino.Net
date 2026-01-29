@@ -1,5 +1,5 @@
 ﻿// 添加到页面的window对象上面，在页面中用ys.进行访问
-; window.ys = {};
+; window.cap = {};
 (function ($, ys) {
     "use strict";
     $.extend(ys, {
@@ -498,6 +498,29 @@
             }
             return value;
         },
+        // 过滤字符串"null"/空值为null
+        filterNullField: function (obj) {
+            // 场景1：处理单个值（字符串/undefined/null）
+            if (obj === null || obj === undefined || obj === "null" || obj === "" || obj === "undefined") {
+                return null;
+            }
+
+            // 场景2：非对象类型（数字、布尔等），直接返回原值
+            if (typeof obj !== 'object' || obj === null) {
+                return obj;
+            }
+
+            // 场景3：处理对象（遍历所有字段）
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    // 匹配无效值："null"、空字符串、"undefined"、undefined、null
+                    if (obj[key] === null || obj[key] === undefined || obj[key] === "null" || obj[key] === "" || obj[key] === "undefined") {
+                        obj[key] = null;
+                    }
+                }
+            }
+            return obj;
+        },
         // 是否显示数据 为空默认为显示
         visible: function (value) {
             if (ys.isEmpty(value) || value == true) {
@@ -941,4 +964,4 @@
             },
         }
     });
-})(window.jQuery, window.ys);
+})(window.jQuery, window.cap);

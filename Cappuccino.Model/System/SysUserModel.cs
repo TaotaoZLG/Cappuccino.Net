@@ -6,16 +6,13 @@ namespace Cappuccino.Model
     {
         public string UserName { get; set; }
         public string NickName { get; set; }
-        public int? DepartmentId { get; set; } // 用户所属部门ID
+        public int? DepartmentId { get; set; }
         public string PasswordHash { get; set; }
         public string PasswordSalt { get; set; }
         public string HeadIcon { get; set; }
         public string MobilePhone { get; set; }
         public string Email { get; set; }
-        /// <summary>
-        /// 可空是用于查询
-        /// </summary>
-        public int? EnabledMark { get; set; }
+        public int? UserStatus { get; set; }
         public string RoleIds { get; set; }
         public virtual ICollection<SysRoleModel> SysRoles { get; set; }
         public virtual ICollection<SysUserActionModel> SysUserActions { get; set; }

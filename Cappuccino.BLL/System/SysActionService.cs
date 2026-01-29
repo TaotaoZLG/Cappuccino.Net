@@ -34,7 +34,7 @@ namespace Cappuccino.BLL
         {
             List<SysActionEntity> sysActions = new List<SysActionEntity>();
             //获取用户
-            var user = _userDao.GetList(x => x.Id == userId && x.EnabledMark == (int)EnabledMarkEnum.Valid).FirstOrDefault();
+            var user = _userDao.GetList(x => x.Id == userId && x.UserStatus == (int)EnabledMarkEnum.Valid).FirstOrDefault();
             if (user == null)
             {
                 return sysActions;

@@ -79,7 +79,7 @@ namespace Cappuccino.Web
             return new HtmlString(string.Format(@"<div class='layui-form-item'>
                                         <label class='layui-form-label'>状态</label>
                                         <div class='layui-input-block'>
-                                            <input type='radio' name='{2}' value='1' title='开启' {0}>
+                                            <input type='radio' name='{2}' value='1' title='启用' {0}>
                                             <input type='radio' name='{2}' value='0' title='禁用' {1}>
                                         </div>
                                     </div>", enabled, disabled, keyName));

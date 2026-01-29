@@ -203,6 +203,24 @@
                 }
             });
 
+            table.on('checkbox(tableId)', function (obj) {
+                var data = obj.data; // 获取当前行数据
+                var checked = obj.checked; // 获取当前行是否选中状态（true 或 false）
+                var type = obj.type; // 获取点击的元素类型，如：one 表示单选框；all 表示全选框/全不选框；tree 表示树节点本身
+                var childrenData = treetable.getChildrenData(data); // 获取当前节点的所有子节点数据（如果有的话）
+                if (type === 'one') { // 单个复选框变化时触发的事件处理逻辑
+                    if (checked) { // 如果当前行被选中，则可能需要联动选中所有子节点（如果有的话）
+                        childrenData.forEach(function (child) {
+                            treetable.setChecked(child, true); // 为每个子节点设置选中状态为 true（此处仅为示例，实际使用时请确保正确使用）
+                        });
+                    } else { // 如果当前行被取消选中，则可能需要联动取消选中所有子节点（如果有的话）
+                        childrenData.forEach(function (child) {
+                            treetable.setChecked(child, false); // 为每个子节点设置选中状态为 false（此处仅为示例，实际使用时请确保正确使用）
+                        });
+                    }
+                }
+            });
+
             window.save = function (obj) {
                 console.log(obj.data)
             }

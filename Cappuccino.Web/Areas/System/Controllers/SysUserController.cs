@@ -127,9 +127,10 @@ namespace Cappuccino.Web.Areas.System.Controllers
         [LogOperate(Title = "编辑用户", BusinessType = (int)OperateType.Update)]
         public ActionResult Edit(int id, SysUserModel viewModel)
         {
-            if (ModelState.IsValid == false)
+            if (!ModelState.IsValid)
             {
-                return WriteError("实体验证失败");
+                List<string> errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return WriteError("实体验证失败:" + string.Join("; ", errors));
             }
             var user = _sysUserService.GetList(x => x.UserName == viewModel.UserName && x.Id != id).FirstOrDefault();
             if (user != null)
@@ -144,7 +145,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 roleList = _sysRoleService.GetList(x => RoleIdsArray.Contains(x.Id)).ToList();
             }
             //赋值
-            var entity = _sysUserService.GetList(x => x.Id == id).FirstOrDefault();
+            SysUserEntity entity = _sysUserService.GetList(x => x.Id == id).FirstOrDefault();
             entity.SysRoles.Clear();
             foreach (var item in roleList)
             {
@@ -152,11 +153,11 @@ namespace Cappuccino.Web.Areas.System.Controllers
             }
             entity.UserName = viewModel.UserName;
             entity.NickName = viewModel.NickName;
-            entity.DepartmentId = viewModel.DepartmentId;
+            entity.DepartmentId = viewModel?.DepartmentId;
             entity.HeadIcon = viewModel.HeadIcon;
             entity.MobilePhone = viewModel.MobilePhone;
             entity.Email = viewModel.Email;
-            entity.EnabledMark = (int)viewModel.EnabledMark;
+            entity.UserStatus = viewModel.UserStatus.Value;
             entity.MobilePhone = viewModel.MobilePhone;
             entity.Email = viewModel.Email;
             entity.UpdateTime = DateTime.Now;
@@ -199,16 +200,16 @@ namespace Cappuccino.Web.Areas.System.Controllers
 
         [HttpPost, CheckPermission("system.user.edit")]
         [LogOperate(Title = "禁用用户", BusinessType = (int)OperateType.Authorize)]
-        public ActionResult UpdateEnabledMark(int id, int enabledMark)
+        public ActionResult UpdateUserStatus(int id, int userStatus)
         {
             SysUserEntity entity = new SysUserEntity
             {
                 Id = id,
-                EnabledMark = enabledMark,
+                UserStatus = userStatus,
                 UpdateTime = DateTime.Now,
                 UpdateUserId = UserManager.GetCurrentUserInfo().Id
             };
-            _sysUserService.Update(entity, new string[] { "EnabledMark", "UpdateTime", "UpdateUserId" });
+            _sysUserService.Update(entity, new string[] { "UserStatus", "UpdateTime", "UpdateUserId" });
             return WriteSuccess("更新成功");
         }
 
@@ -254,8 +255,8 @@ namespace Cappuccino.Web.Areas.System.Controllers
             var coreSql = $@"
                 SELECT 
                     u.Id, u.UserName, u.NickName, u.HeadIcon, u.MobilePhone, u.Email, 
-                    u.EnabledMark, u.CreateTime, u.DepartmentId,
-                    d.Name AS DepartmentName, -- 关联部门名称
+                    u.UserStatus, u.CreateTime, u.DepartmentId,
+                    d.Name AS DepartmentName,
                     ISNULL((
                         SELECT STUFF((
                             SELECT ',' + r.Name 
@@ -264,16 +265,17 @@ namespace Cappuccino.Web.Areas.System.Controllers
                             WHERE ur.UserId = u.Id 
                             FOR XML PATH('')
                         ), 1, 1, '')
-                    ), '') AS RoleName -- 关联角色名称（拼接多角色）
+                    ), '') AS RoleName
                 FROM SysUser u
                 LEFT JOIN SysDepartment d ON u.DepartmentId = d.Id
                 WHERE 1=1
                 {(!string.IsNullOrEmpty(viewModel.UserName) ? $"AND u.UserName LIKE '%{viewModel.UserName}%'" : "")}
                 {(!string.IsNullOrEmpty(viewModel.NickName) ? $"AND u.NickName LIKE '%{viewModel.NickName}%'" : "")}
-                {(viewModel.EnabledMark.HasValue ? $"AND u.EnabledMark = '{viewModel.EnabledMark}'" : "")}
+                {(viewModel.DepartmentId.HasValue ? $"AND u.DepartmentId = {viewModel.DepartmentId}" : "")}
+                {(viewModel.UserStatus.HasValue ? $"AND u.UserStatus = {viewModel.UserStatus}" : "")}
             ";
 
-            var list = DapperRepository.QueryPage<dynamic>(coreSql, pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, "", out int totalCount).ToList();
+            var list = DapperHelper.QueryPage<dynamic>(coreSql, pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount);
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
         }
         #endregion

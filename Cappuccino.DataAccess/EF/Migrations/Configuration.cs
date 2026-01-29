@@ -23,14 +23,14 @@ namespace Cappuccino.DataAccess.Migrations
             string passwordHash = Md5Utils.EncryptTo32(salt + "123456");
             var sysUsers = new List<SysUserEntity>
             {
-              new SysUserEntity{UserName="admin",NickName="超级管理员",HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
-                          Email="admin@Cappuccino.com",EnabledMark=(int)EnabledMarkEnum.Valid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-              new SysUserEntity{UserName="system",NickName="系统管理员",HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
-                          Email="system@Cappuccino.com",EnabledMark=(int)EnabledMarkEnum.Invalid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-              new SysUserEntity{UserName="user",NickName="普通用户",HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
-                          Email="user@Cappuccino.com",EnabledMark=(int)EnabledMarkEnum.Invalid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
-              new SysUserEntity{UserName="test",NickName="测试用户",HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
-                          Email="test@Cappuccino.com",EnabledMark=(int)EnabledMarkEnum.Invalid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+              new SysUserEntity{UserName="admin",NickName="超级管理员",DepartmentId=null,HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
+                          Email="admin@Cappuccino.com",UserStatus=(int)EnabledMarkEnum.Valid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+              new SysUserEntity{UserName="system",NickName="系统管理员",DepartmentId=null,HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
+                          Email="system@Cappuccino.com",UserStatus=(int)EnabledMarkEnum.Invalid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+              new SysUserEntity{UserName="user",NickName="普通用户",DepartmentId=null,HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
+                          Email="user@Cappuccino.com",UserStatus=(int)EnabledMarkEnum.Invalid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
+              new SysUserEntity{UserName="test",NickName="测试用户",DepartmentId=null,HeadIcon="/Content/admin/images/avatar.jpg",PasswordSalt=salt,PasswordHash=passwordHash,
+                          Email="test@Cappuccino.com",UserStatus=(int)EnabledMarkEnum.Invalid,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
             };
             sysUsers.ForEach(s => context.Set<SysUserEntity>().Add(s));
             context.SaveChanges();

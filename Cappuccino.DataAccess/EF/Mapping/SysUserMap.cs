@@ -22,7 +22,7 @@ namespace Cappuccino.DataAccess.Mapping
             this.Property(x => x.HeadIcon).HasMaxLength(50).IsRequired();
             this.Property(x => x.MobilePhone).HasMaxLength(11).IsOptional();
             this.Property(x => x.Email).HasMaxLength(50).IsRequired();
-            this.Property(x => x.EnabledMark).IsRequired();
+            this.Property(x => x.UserStatus).IsRequired();
         }
     }
 }

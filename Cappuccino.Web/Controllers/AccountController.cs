@@ -18,8 +18,8 @@ namespace Cappuccino.Web.Controllers
 {
     public class AccountController : BaseController
     {
-        private readonly ISysUserService _sysUserService;
-        private readonly ISysLogLogonService _sysLogLogonService;
+        private ISysUserService _sysUserService;
+        private ISysLogLogonService _sysLogLogonService;
 
         public AccountController(ISysUserService sysUserService, ISysLogLogonService sysLogLogonService)
         {

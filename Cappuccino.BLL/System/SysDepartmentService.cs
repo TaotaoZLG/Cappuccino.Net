@@ -13,7 +13,6 @@ namespace Cappuccino.BLL
         #region 依赖注入
         private ISysDepartmentDao _departmentDao;
         private ISysUserDao _userDao;
-        private ISysRoleDao _roleDao;
         private ISysDataAuthorizeDao _dataAuthorizeDao;
 
         public SysDepartmentService(ISysDepartmentDao departmentDao, ISysUserDao userDao, ISysDataAuthorizeDao authorizeDao)
@@ -37,7 +36,7 @@ namespace Cappuccino.BLL
             DtreeData node = new DtreeData
             {
                 Title = "部门管理",
-                Id = "0",
+                Id = null,
                 //定义树节点的子节点
                 Children = new List<DtreeData>()
             };

@@ -93,6 +93,31 @@ namespace Cappuccino.Web.Areas.System.Controllers
             return WriteSuccess();
         }
 
+        [HttpPost, CheckPermission("system.config.edit")]
+        [LogOperate(Title = "编辑系统参数", BusinessType = (int)OperateType.Update)]
+        public ActionResult UpdateConfigValue(SysConfigModel viewModel)
+        {
+            if (ModelState.IsValid == false)
+            {
+                return WriteError("实体验证失败");
+            }
+
+            SysConfigEntity entity = new SysConfigEntity();
+            entity.Id = viewModel.Id;
+            entity.ConfigValue = viewModel.ConfigValue;
+            entity.UpdateTime = DateTime.Now;
+            entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
+            _configService.Update(entity, new string[] { "ConfigValue", "UpdateTime", "UpdateUserId" });
+
+            // 如果修改的是IP黑名单配置，刷新缓存
+            if (entity.ConfigKeys == "sys_ipBlackList")
+            {
+                CacheManager.Remove(KeyManager.IpBlackCacheKey);
+            }
+
+            return WriteSuccess();
+        }
+
         [HttpPost, CheckPermission("system.config.delete")]
         [LogOperate(Title = "删除系统参数", BusinessType = (int)OperateType.Delete)]
         public ActionResult Delete(int id)

@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Cappuccino.Common.Log;
 
 namespace Cappuccino.Common.Net
 {
@@ -130,9 +131,9 @@ namespace Cappuccino.Common.Net
                 HttpWebResponse HttpWResp = (HttpWebResponse)request.GetResponse();
                 myStream = HttpWResp.GetResponseStream();
             }
-            catch (WebException e)
+            catch (WebException ex)
             {
-                //LogResult(e.Message);
+                //Log4netHelper.Error(ex.Message);
                 return "";
             }
             finally

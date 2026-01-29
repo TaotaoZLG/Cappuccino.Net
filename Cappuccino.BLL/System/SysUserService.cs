@@ -23,7 +23,7 @@ namespace Cappuccino.BLL
 
         public bool CheckLogin(string loginName, string loginPassword)
         {
-            var user = dao.GetList(x => x.UserName == loginName && x.EnabledMark == (int)EnabledMarkEnum.Valid).SingleOrDefault(x => x.UserName == loginName);
+            var user = dao.GetList(x => x.UserName == loginName && x.UserStatus == (int)EnabledMarkEnum.Valid).SingleOrDefault(x => x.UserName == loginName);
             if (user == null)
             {
                 return false;

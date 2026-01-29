@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Cappuccino.Common.Log;
 using Cappuccino.IDAL;
 
 namespace Cappuccino.DataAccess
@@ -47,7 +49,23 @@ namespace Cappuccino.DataAccess
 
         public int SaveChanges()
         {
-            return Db.SaveChanges();
+            try
+            {
+                return Db.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                // 遍历验证错误，输出详细信息
+                foreach (var validationErrors in ex.EntityValidationErrors)
+                {
+                    foreach (var validationError in validationErrors.ValidationErrors)
+                    {
+                        // 输出：实体类型 + 字段名 + 错误信息
+                        Log4netHelper.Error($"验证失败：{validationErrors.Entry.Entity.GetType().Name} - {validationError.PropertyName}: {validationError.ErrorMessage}");
+                    }
+                }
+                throw; // 重新抛出异常
+            }
         }
 
         /// <summary>

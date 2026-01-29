@@ -11,6 +11,18 @@ namespace Cappuccino.Common.Util
     {
         private static string DESKey = "Cappuccino@DESKey";
 
+        // 新增：用于生成8字节的DES密钥和IV（MD5哈希前8字节）
+        private static byte[] GetDesKeyBytes(string sKey)
+        {
+            using (var md5 = MD5.Create())
+            {
+                byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(sKey));
+                byte[] keyBytes = new byte[8];
+                Array.Copy(hash, keyBytes, 8);
+                return keyBytes;
+            }
+        }
+
         #region ========加密========
         /// <summary>
         /// 加密
@@ -30,10 +42,10 @@ namespace Cappuccino.Common.Util
         public static string Encrypt(string Text, string sKey)
         {
             DESCryptoServiceProvider des = new DESCryptoServiceProvider();
-            byte[] inputByteArray;
-            inputByteArray = Encoding.Default.GetBytes(Text);
-            des.Key = ASCIIEncoding.ASCII.GetBytes(System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(sKey, "md5").Substring(0, 8));
-            des.IV = ASCIIEncoding.ASCII.GetBytes(System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(sKey, "md5").Substring(0, 8));
+            byte[] inputByteArray = Encoding.Default.GetBytes(Text);
+            byte[] keyBytes = GetDesKeyBytes(sKey);
+            des.Key = keyBytes;
+            des.IV = keyBytes;
             System.IO.MemoryStream ms = new System.IO.MemoryStream();
             CryptoStream cs = new CryptoStream(ms, des.CreateEncryptor(), CryptoStreamMode.Write);
             cs.Write(inputByteArray, 0, inputByteArray.Length);
@@ -74,17 +86,16 @@ namespace Cappuccino.Common.Util
         public static string Decrypt(string Text, string sKey)
         {
             DESCryptoServiceProvider des = new DESCryptoServiceProvider();
-            int len;
-            len = Text.Length / 2;
+            int len = Text.Length / 2;
             byte[] inputByteArray = new byte[len];
-            int x, i;
-            for (x = 0; x < len; x++)
+            for (int x = 0; x < len; x++)
             {
-                i = Convert.ToInt32(Text.Substring(x * 2, 2), 16);
+                int i = Convert.ToInt32(Text.Substring(x * 2, 2), 16);
                 inputByteArray[x] = (byte)i;
             }
-            des.Key = ASCIIEncoding.ASCII.GetBytes(System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(sKey, "md5").Substring(0, 8));
-            des.IV = ASCIIEncoding.ASCII.GetBytes(System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(sKey, "md5").Substring(0, 8));
+            byte[] keyBytes = GetDesKeyBytes(sKey);
+            des.Key = keyBytes;
+            des.IV = keyBytes;
             System.IO.MemoryStream ms = new System.IO.MemoryStream();
             CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(), CryptoStreamMode.Write);
             cs.Write(inputByteArray, 0, inputByteArray.Length);
