@@ -53,18 +53,18 @@ namespace Cappuccino.Web.Areas.System.Controllers
             {
                 var queries = BuildUserQueries(viewModel);
 
-                List<SysLogOperateEntity> logOperateList = null;
                 if (!string.IsNullOrEmpty(checkedIds))
                 {
                     // 导出勾选的用户（拆分ID列表）
                     var ids = checkedIds.Split(',');
                     queries.Add(new Query { Name = "Id", Operator = Query.Operators.In, Value = ids });
                 }
-                else
-                {
-                    logOperateList = _sysLogOperateService.GetList(queries.AsExpression<SysLogOperateEntity>()).ToList();
-                }
 
+                var logOperateList = _sysLogOperateService.GetList(queries.AsExpression<SysLogOperateEntity>());
+
+                var file = new ExcelHelper<SysLogOperateEntity>().ExportToExcel("操作日志.xlsx","操作日志", logOperateList.ToList(), null);
+
+                return WriteSuccess("导出成功", file);
                 // 转换为导出模型（避免直接暴露实体，只包含需要的字段）
                 //var exportData = logOperateList.Select(user => new
                 //{
@@ -78,14 +78,6 @@ namespace Cappuccino.Web.Areas.System.Controllers
                 //    角色 = string.Join("，", user.SysRoles.Select(r => r.Name)),
                 //    创建时间 = user.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")
                 //}).ToList();
-
-                var memoryStream = new MemoryStream();
-                memoryStream.SaveAs(logOperateList);
-                memoryStream.Seek(0, SeekOrigin.Begin); // 重置流位置
-                return new FileStreamResult(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                {
-                    FileDownloadName = HttpUtility.UrlEncode("操作日志数据导出.xlsx")
-                };
             }
             catch (Exception ex)
             {

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Web.Hosting;
 using Cappuccino.Common.Extensions;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
@@ -30,7 +31,7 @@ namespace Cappuccino.Common.Helper
         public string ExportToExcel(string sFileName, string sHeaderText, List<T> list, string[] columns)
         {
             sFileName = string.Format("{0}_{1}", GuidHelper.GetGuid(true), sFileName);
-            string sRoot = "";
+            string sRoot = HostingEnvironment.MapPath("`/");
             string partDirectory = string.Format("Resource{0}Export{0}Excel", Path.DirectorySeparatorChar);
             string sDirectory = Path.Combine(sRoot, partDirectory);
             string sFilePath = Path.Combine(sDirectory, sFileName);

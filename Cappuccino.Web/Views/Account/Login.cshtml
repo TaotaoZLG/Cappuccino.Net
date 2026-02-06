@@ -28,7 +28,7 @@
             <input name="LoginName" lay-verify="required" lay-reqtext="请输入账户" placeholder="账 户 :" hover class="layui-input" />
         </div>
         <div class="layui-form-item">
-            <input type="password" name="LoginPassword" lay-verify="required|password" lay-reqtext="请输入密码" placeholder="密 码 : " hover class="layui-input" />
+            <input type="password" name="LoginPassword" lay-verify="required" lay-reqtext="请输入密码" placeholder="密 码 : " hover class="layui-input" />
         </div>
         <div class="layui-form-item">
             <input name="VerifyCode" lay-verify="required" lay-reqtext="请输入验证码" placeholder="验证码 : " hover class="code layui-input layui-input-inline" autocomplete="off" />
@@ -57,11 +57,6 @@
             //给表单赋值
             form.val("formLogon", {
                 "LoginName": "@Model.LoginName",
-            });
-
-            //数据校验
-            form.verify({
-                password: [/^[\S]{6,12}$/, "密码必须6到12位，且不能出现空格"],
             });
 
             // 登 录 提 交

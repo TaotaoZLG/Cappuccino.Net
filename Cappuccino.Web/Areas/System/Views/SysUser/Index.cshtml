@@ -67,7 +67,9 @@
 
     <!-- 行工具栏模板 -->
     <script type="text/html" id="operationTpl">
-        {{# if(d.id != 1){ }}
+        {{# if(d.id === 1){ }}
+        @Html.RightToolBarHtml(ViewData["RightButtonList"], "edit", "delete", "assign")
+        {{# } else { }}
         @Html.RightToolBarHtml(ViewData["RightButtonList"])
         {{# } }}
     </script>

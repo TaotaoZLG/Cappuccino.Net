@@ -20,11 +20,13 @@ namespace Cappuccino.Web.Controllers
     {
         private ISysUserService _sysUserService;
         private ISysLogLogonService _sysLogLogonService;
+        private ISysConfigService _sysConfigService;
 
-        public AccountController(ISysUserService sysUserService, ISysLogLogonService sysLogLogonService)
+        public AccountController(ISysUserService sysUserService, ISysLogLogonService sysLogLogonService,ISysConfigService sysConfigService)
         {
             _sysUserService = sysUserService;
             _sysLogLogonService = sysLogLogonService;
+            _sysConfigService = sysConfigService;
         }
 
         #region 视图
@@ -47,6 +49,7 @@ namespace Cappuccino.Web.Controllers
         public ActionResult ChangePassword()
         {
             ViewBag.UserName = UserManager.GetCurrentUserInfo().UserName;
+            ViewBag.ChrType = _sysConfigService.GetByConfig("sys_chrtype").ConfigValue;
             return View();
         }
 
@@ -157,27 +160,26 @@ namespace Cappuccino.Web.Controllers
         [LogOperate(Title = "修改密码", BusinessType = (int)OperateType.Update)]
         public ActionResult ModifyUserPwd(ChangePasswordModel viewModel)
         {
-            // 验证新密码与确认密码是否一致
-            if (viewModel.Password != viewModel.Repassword)
-            {
-                return WriteError("新密码与确认密码不一致");
-            }
-
-            int userId = UserManager.GetCurrentUserInfo().Id;
-            var result = WriteError("出现异常，密码修改失败");
-
             try
             {
-                // 验证旧密码是否正确
-                if (!_sysUserService.CheckLogin(viewModel.UserName, viewModel.OldPassword))
-                {
-                    return WriteError("旧密码不正确");
-                }
-
+                int userId = UserManager.GetCurrentUserInfo().Id;
+                // 验证用户是否存在
                 SysUserEntity currentUser = _sysUserService.GetList(x => x.Id == userId).FirstOrDefault();
                 if (currentUser == null)
                 {
                     return WriteError("用户信息不存在");
+                }
+
+                // 验证新密码与确认密码是否一致
+                if (viewModel.Password != viewModel.Repassword)
+                {
+                    return WriteError("新密码与确认密码不一致");
+                }
+
+                // 验证旧密码是否正确
+                if (!_sysUserService.CheckLogin(viewModel.UserName, viewModel.OldPassword))
+                {
+                    return WriteError("旧密码不正确");
                 }
 
                 // 验证新密码是否和旧密码一致
@@ -216,14 +218,13 @@ namespace Cappuccino.Web.Controllers
                             }
                         }
                     }
-                    result = WriteSuccess("密码修改成功");
                 }
+                return WriteSuccess("密码修改成功");
             }
             catch (Exception ex)
             {
-                result = WriteError("密码修改失败：" + ex.Message);
+                return WriteError("密码修改失败：" + ex.Message);
             }
-            return result;
         }
         #endregion
 

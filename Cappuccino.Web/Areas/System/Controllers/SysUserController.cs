@@ -17,9 +17,9 @@ namespace Cappuccino.Web.Areas.System.Controllers
 {
     public class SysUserController : BaseController
     {
-        private readonly ISysUserService _sysUserService;
-        private readonly ISysRoleService _sysRoleService;
-        private readonly ISysConfigService _sysConfigService;
+        private ISysUserService _sysUserService;
+        private ISysRoleService _sysRoleService;
+        private ISysConfigService _sysConfigService;
 
         public SysUserController(ISysUserService sysUserService, ISysRoleService sysRoleService, ISysConfigService sysConfigService)
         {

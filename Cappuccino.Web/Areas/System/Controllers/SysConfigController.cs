@@ -15,7 +15,7 @@ namespace Cappuccino.Web.Areas.System.Controllers
 {
     public class SysConfigController : BaseController
     {
-        private readonly ISysConfigService _configService;
+        private ISysConfigService _configService;
 
         public SysConfigController(ISysConfigService configService)
         {

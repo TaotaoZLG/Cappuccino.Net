@@ -153,6 +153,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Areas\Business\BusinessAreaRegistration.cs" />
     <Compile Include="Areas\Demo\Controllers\DialogController.cs" />
     <Compile Include="Areas\Demo\Controllers\FormController.cs" />
     <Compile Include="Areas\Demo\Controllers\IconController.cs" />
@@ -556,6 +557,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Business\Controllers\" />
+    <Folder Include="Areas\Business\Views\" />
     <Folder Include="Upload\" />
     <Folder Include="Views\Upload\" />
   </ItemGroup>
