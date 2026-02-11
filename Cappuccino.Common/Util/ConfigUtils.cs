@@ -21,7 +21,7 @@ namespace Cappuccino.Common.Util
         public class AppSetting
         {
             /// <summary>
-            /// 根据Key取Value值
+            /// 获取配置值，根据Key取Value值
             /// </summary>
             /// <param name="key"></param>
             public static string GetValue(string key)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Web.Hosting;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Log;
 using Cappuccino.Common.Util;
@@ -74,6 +75,14 @@ namespace Cappuccino.Common.Helper
             filePath = filePath.Replace("..", string.Empty);
             filePath = filePath.TrimStart('/');
             return filePath;
+        }
+
+        /// <summary>
+        /// 获取物理路径（转换虚拟路径）
+        /// </summary>
+        public static string GetPhysicalPath(string virtualPath)
+        {
+            return HostingEnvironment.MapPath(virtualPath);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Cappuccino.Web.Controllers
 {
     public class FileController : BaseController
     {
-        private const string ExcelUploadPath = "~/Upload/Excel";
+        private const string ExcelUploadPath = "~/Resource/Upload/Excel";
         private readonly List<string> _allowedExcelExtensions = new List<string> { ".xlsx", ".xls", ".csv" };
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Cappuccino.Web.Controllers
 
                 if (string.IsNullOrEmpty(fileName))
                 {
-                    fileName = $"导出数据导出_{DateTime.Now:yyyyMMddHHmmss}";
+                    fileName = $"导出数据_{DateTime.Now:yyyyMMddHHmmss}";
                 }
 
                 // 处理文件名编码

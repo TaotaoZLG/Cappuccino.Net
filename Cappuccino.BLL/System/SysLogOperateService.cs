@@ -10,7 +10,7 @@ namespace Cappuccino.BLL.System
     public class SysLogOperateService : BaseService<SysLogOperateEntity>, ISysLogOperateService
     {
         #region 依赖注入
-        private readonly IBaseDao<SysLogOperateEntity> _dao;
+        private ISysLogOperateDao _dao;
 
         public SysLogOperateService(ISysLogOperateDao dao)
         {

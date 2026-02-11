@@ -40,7 +40,7 @@ namespace Cappuccino.Web
             builder.RegisterTypes(serAss.GetTypes()).AsImplementedInterfaces();
 
             // 注册操作日志服务
-            builder.RegisterType<SysLogOperateService>().As<ISysLogOperateService>().InstancePerRequest();
+            builder.RegisterType<SysLogOperateService>().As<ISysLogOperateService>().AsImplementedInterfaces();
 
             // 注册MVC控制器并启用属性注入
             builder.RegisterControllers(Assembly.GetExecutingAssembly())

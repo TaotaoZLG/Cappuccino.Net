@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -31,7 +30,7 @@ namespace Cappuccino.Common.Helper
         public string ExportToExcel(string sFileName, string sHeaderText, List<T> list, string[] columns)
         {
             sFileName = string.Format("{0}_{1}", GuidHelper.GetGuid(true), sFileName);
-            string sRoot = HostingEnvironment.MapPath("`/");
+            string sRoot = HostingEnvironment.MapPath("/");
             string partDirectory = string.Format("Resource{0}Export{0}Excel", Path.DirectorySeparatorChar);
             string sDirectory = Path.Combine(sRoot, partDirectory);
             string sFilePath = Path.Combine(sDirectory, sFileName);
@@ -39,27 +38,45 @@ namespace Cappuccino.Common.Helper
             {
                 Directory.CreateDirectory(sDirectory);
             }
-            using (MemoryStream ms = CreateExportMemoryStream(list, sHeaderText, columns))
+
+            // 根据文件扩展名创建对应的Workbook
+            string fileExtension = Path.GetExtension(sFileName).ToLower();
+            IWorkbook workbook;
+
+            switch (fileExtension)
             {
-                using (FileStream fs = new FileStream(sFilePath, FileMode.Create, FileAccess.Write))
-                {
-                    byte[] data = ms.ToArray();
-                    fs.Write(data, 0, data.Length);
-                    fs.Flush();
-                }
+                case ".xls":
+                    workbook = new HSSFWorkbook();
+                    break;
+                case ".xlsx":
+                    workbook = new XSSFWorkbook();
+                    break;
+                default:
+                    // 默认使用xls格式
+                    workbook = new HSSFWorkbook();
+                    break;
             }
+
+            FillWorkbookData(workbook, list, sHeaderText, columns);
+
+            using (FileStream fs = new FileStream(sFilePath, FileMode.Create, FileAccess.Write))
+            {
+                workbook.Write(fs);
+            }
+
+            workbook.Close();
             return partDirectory + Path.DirectorySeparatorChar + sFileName;
         }
 
         /// <summary>  
-        /// List导出到Excel的MemoryStream  
+        /// 填充Workbook数据
         /// </summary>  
+        /// <param name="workbook">Workbook对象</param>
         /// <param name="list">数据源</param>  
         /// <param name="sHeaderText">表头文本</param>  
         /// <param name="columns">需要导出的属性</param>  
-        private MemoryStream CreateExportMemoryStream(List<T> list, string sHeaderText, string[] columns)
+        private void FillWorkbookData(IWorkbook workbook, List<T> list, string sHeaderText, string[] columns)
         {
-            HSSFWorkbook workbook = new HSSFWorkbook();
             ISheet sheet = workbook.CreateSheet();
 
             Type type = typeof(T);
@@ -208,18 +225,7 @@ namespace Cappuccino.Common.Helper
                 }
                 #endregion
             }
-
-            using (MemoryStream ms = new MemoryStream())
-            {
-                workbook.Write(ms);
-                workbook.Close();
-                ms.Flush();
-                ms.Position = 0;
-                return ms;
-            }
         }
-
-
         #endregion
 
         #region Excel导入
@@ -230,29 +236,27 @@ namespace Cappuccino.Common.Helper
         /// <returns></returns>
         public List<T> ImportFromExcel(string filePath)
         {
-            string absoluteFilePath = "";
             List<T> list = new List<T>();
-            HSSFWorkbook hssfWorkbook = null;
-            XSSFWorkbook xssWorkbook = null;
+            IWorkbook workbook = null;
             ISheet sheet = null;
-            using (FileStream file = new FileStream(absoluteFilePath, FileMode.Open, FileAccess.Read))
+
+            using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
-                switch (Path.GetExtension(filePath))
+                string fileExtension = Path.GetExtension(filePath).ToLower();
+                switch (fileExtension)
                 {
                     case ".xls":
-                        hssfWorkbook = new HSSFWorkbook(file);
-                        sheet = hssfWorkbook.GetSheetAt(0);
+                        workbook = new HSSFWorkbook(file);
                         break;
-
                     case ".xlsx":
-                        xssWorkbook = new XSSFWorkbook(file);
-                        sheet = xssWorkbook.GetSheetAt(0);
+                        workbook = new XSSFWorkbook(file);
                         break;
-
                     default:
                         throw new Exception("不支持的文件格式");
                 }
+                sheet = workbook.GetSheetAt(0);
             }
+
             IRow columnRow = sheet.GetRow(1); // 第二行为字段名
             Dictionary<int, PropertyInfo> mapPropertyInfoDict = new Dictionary<int, PropertyInfo>();
             for (int j = 0; j < columnRow.LastCellNum; j++)
@@ -268,6 +272,8 @@ namespace Cappuccino.Common.Helper
             for (int i = (sheet.FirstRowNum + 2); i <= sheet.LastRowNum; i++)
             {
                 IRow row = sheet.GetRow(i);
+                if (row == null) continue;
+
                 T entity = new T();
                 for (int j = row.FirstCellNum; j < columnRow.LastCellNum; j++)
                 {
@@ -331,8 +337,7 @@ namespace Cappuccino.Common.Helper
                 }
                 list.Add(entity);
             }
-            hssfWorkbook?.Close();
-            xssWorkbook?.Close();
+            workbook?.Close();
             return list;
         }
 
@@ -368,4 +373,3 @@ namespace Cappuccino.Common.Helper
         #endregion
     }
 }
-

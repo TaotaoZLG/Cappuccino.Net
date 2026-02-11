@@ -53,7 +53,7 @@ namespace Cappuccino.Web.Controllers
                     return Json(uploadFile, JsonRequestBehavior.AllowGet);
                 }
                 //定义本地路径位置
-                string localPath = Server.MapPath("~/Upload");
+                string localPath = Server.MapPath("~/Resource/Upload");
                 string filePathName = string.Empty; //最终文件名
                 filePathName = DateTimeExtensions.CreateNo() + "." + filecombin[1];
                 //Upload不存在则创建文件夹
@@ -63,7 +63,7 @@ namespace Cappuccino.Web.Controllers
                 }
                 file.SaveAs(Path.Combine(localPath, filePathName));  //保存图片
                 uploadFile.Status = 0;
-                uploadFile.Src = Path.Combine("/Upload/", filePathName);
+                uploadFile.Src = Path.Combine("/Resource/Upload/", filePathName);
                 uploadFile.Message = "上传成功";
                 return Json(uploadFile, JsonRequestBehavior.AllowGet);
             }
