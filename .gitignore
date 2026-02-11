@@ -350,3 +350,5 @@ MigrationBackup/
 .ionide/
 /Cappuccino.Web/Upload
 /Cappuccino.Web/App_Data/DbBackups
+/Cappuccino.Web/Resource/Upload/CompressTemp
+/Cappuccino.Web/Resource
