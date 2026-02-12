@@ -163,9 +163,6 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Areas\Business\BusinessAreaRegistration.cs" />
-    <Compile Include="Areas\Business\Controllers\SysCaseInfoController.cs" />
-    <Compile Include="Areas\Business\Controllers\SysFileProcessiongController.cs" />
     <Compile Include="Areas\Demo\Controllers\DialogController.cs" />
     <Compile Include="Areas\Demo\Controllers\FormController.cs" />
     <Compile Include="Areas\Demo\Controllers\IconController.cs" />
@@ -195,7 +192,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Hubs\ProcessProgressHub.cs" />
     <Compile Include="Models\HtmlHelperExtensions.cs" />
     <Compile Include="Models\PageInfo.cs" />
     <Compile Include="Models\Pager.cs" />
@@ -720,9 +716,6 @@
     <Content Include="Areas\System\Views\SysAction\EditDirectory.cshtml" />
     <Content Include="Areas\System\Views\Shared\_ActionDirectoryPartial.cshtml" />
     <Content Include="Areas\Tool\Views\SysCache\Index.cshtml" />
-    <Content Include="Areas\Business\Views\SysFileProcessiong\Index.cshtml" />
-    <Content Include="Areas\Business\Views\web.config" />
-    <Content Include="Areas\Business\Views\SysCaseInfo\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\Tip.cshtml" />

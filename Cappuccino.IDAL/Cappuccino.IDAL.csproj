@@ -52,7 +52,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\ISysAutoJobDao.cs" />
     <Compile Include="System\ISysAutoJobLogDao.cs" />
-    <Compile Include="System\ISysFileProcessiongDao.cs" />
     <Compile Include="System\ISysNoticeDao.cs" />
     <Compile Include="System\ISysDataAuthorizeDao.cs" />
     <Compile Include="System\ISysDepartmentDao.cs" />

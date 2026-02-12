@@ -102,7 +102,7 @@ namespace Cappuccino.Web.Attributes
 
                 // 环境信息
                 logOperateEntity.IPAddress = NetHelper.GetIp;
-                logOperateEntity.IPAddressName = NetHelper.GetIpLocation(NetHelper.GetIp);
+                logOperateEntity.IPAddressName = NetHelper.GetIpLocation(logOperateEntity.IPAddress ?? NetHelper.GetIp);
                 logOperateEntity.OperateName = user?.UserName ?? loginName;
                 logOperateEntity.SystemOs = NetHelper.GetSystemOs(request.UserAgent);
                 logOperateEntity.Browser = NetHelper.GetBrowser(request.UserAgent);

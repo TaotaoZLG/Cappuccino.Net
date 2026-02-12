@@ -11,7 +11,7 @@ namespace Cappuccino.DataAccess
     {
         public EfDbContext() : base("sqlconn")
         {
-            // 禁用数据库初始化器
+            // 禁用EF默认初始化器（避免自动创建/修改数据库）
             Database.SetInitializer<EfDbContext>(null);
 
             // 禁用实体状态改变跟踪
@@ -28,8 +28,6 @@ namespace Cappuccino.DataAccess
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
             // 自动注册所有实体类（继承自Entity）
             var entityTypes = EntityScanner.GetAllEntityTypes();
             foreach (var entityType in entityTypes)
@@ -38,8 +36,10 @@ namespace Cappuccino.DataAccess
                 modelBuilder.RegisterEntityType(entityType);
             }
 
-            // 加载程序集中的 Fluent API 配置（确保存在有效配置类）
+            // 批量注册映射类
             modelBuilder.Configurations.AddFromAssembly(Assembly.GetExecutingAssembly());
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

@@ -52,7 +52,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseDao.cs" />
     <Compile Include="Dapper\DapperHelper.cs" />
     <Compile Include="EF\DbContextFactory.cs" />
     <Compile Include="EF\EfDbContext.cs" />
@@ -71,6 +70,8 @@
     </Compile>
     <Compile Include="EF\Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Repository\Repository.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="EF\Migrations\202010210615300_InitialCreate.resx">

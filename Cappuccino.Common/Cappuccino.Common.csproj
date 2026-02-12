@@ -138,9 +138,7 @@
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\Extensions.Convert.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Helper\AIRecognitionHelper.cs" />
     <Compile Include="Helper\AsyncTaskHelper.cs" />
-    <Compile Include="Helper\CompressHelper.cs" />
     <Compile Include="Helper\CookieHelper.cs" />
     <Compile Include="Helper\DataTableHelper.cs" />
     <Compile Include="Helper\DeepCopyHelper.cs" />
@@ -168,7 +166,6 @@
     <Compile Include="Util\VerifyCodeUtils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

@@ -43,7 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseService.cs" />
-    <Compile Include="Business\SysFileProcessiongService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\SysAutoJobLogService.cs" />
     <Compile Include="System\SysAutoJobService.cs" />
@@ -69,6 +68,10 @@
     <ProjectReference Include="..\Cappuccino.Common\Cappuccino.Common.csproj">
       <Project>{471e7f22-fdc4-4f8c-b985-3336d4b14e0b}</Project>
       <Name>Cappuccino.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cappuccino.DataAccess\Cappuccino.DataAccess.csproj">
+      <Project>{0c3210e2-68b6-4e93-b160-c87e1963bacd}</Project>
+      <Name>Cappuccino.DataAccess</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cappuccino.Entity\Cappuccino.Entity.csproj">
       <Project>{93fe2ce0-1a84-4138-b18f-d984ae0f4d81}</Project>

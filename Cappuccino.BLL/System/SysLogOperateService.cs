@@ -40,14 +40,6 @@ namespace Cappuccino.BLL.System
         /// <returns>影响的行数</returns>
         public async Task<int> WriteOperateLogAsync(SysLogOperateEntity logOperate)
         {
-            logOperate.IPAddress = NetHelper.GetIp; // 复用现有工具类获取IP
-
-            // 如果NetHelper有异步版本的IP定位方法，建议使用：
-            // logOperate.IPAddressName = await NetHelper.GetIpLocationAsync(logOperate.IPAddress);
-
-            // 若只有同步版本，保持原有调用（IO操作建议最终改为异步）
-            logOperate.IPAddressName = NetHelper.GetIpLocation(logOperate.IPAddress);
-
             logOperate.CreateTime = DateTime.Now;
 
             return await InsertAsync(logOperate);
