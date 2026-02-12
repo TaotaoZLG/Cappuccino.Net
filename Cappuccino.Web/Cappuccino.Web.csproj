@@ -56,6 +56,12 @@
     <Reference Include="log4net, Version=2.0.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.11\lib\net45\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.4.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.4.3\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.4.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.4.3\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -68,6 +74,9 @@
     </Reference>
     <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.0.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
     <Reference Include="MiniExcel, Version=1.42.0.0, Culture=neutral, PublicKeyToken=e7310002a53eac39, processorArchitecture=MSIL">
       <HintPath>..\packages\MiniExcel.1.42.0\lib\net45\MiniExcel.dll</HintPath>
@@ -83,6 +92,7 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
@@ -154,6 +164,8 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Business\BusinessAreaRegistration.cs" />
+    <Compile Include="Areas\Business\Controllers\SysCaseInfoController.cs" />
+    <Compile Include="Areas\Business\Controllers\SysFileProcessiongController.cs" />
     <Compile Include="Areas\Demo\Controllers\DialogController.cs" />
     <Compile Include="Areas\Demo\Controllers\FormController.cs" />
     <Compile Include="Areas\Demo\Controllers\IconController.cs" />
@@ -183,6 +195,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Hubs\ProcessProgressHub.cs" />
     <Compile Include="Models\HtmlHelperExtensions.cs" />
     <Compile Include="Models\PageInfo.cs" />
     <Compile Include="Models\Pager.cs" />
@@ -543,6 +556,61 @@
     <Content Include="Global.asax" />
     <Content Include="Areas\System\Views\web.config" />
     <Content Include="Configs\database.config" />
+    <Content Include="Resource\Upload\CompressTemp\f9fa3a77-b3dc-411d-a531-fe3bd3b86b2c.rar" />
+    <None Include="Scripts\jquery-1.6.4-vsdoc.js" />
+    <Content Include="Resource\Upload\ValidFiles\02a76d55-0529-4201-8abc-6d6bc445921d.png" />
+    <Content Include="Resource\Upload\ValidFiles\02cfac80-ebe0-4353-9ad3-cdb35397874e.png" />
+    <Content Include="Resource\Upload\ValidFiles\05c57c18-e11f-472b-a109-392490898b8f.png" />
+    <Content Include="Resource\Upload\ValidFiles\0aa4939d-b5a2-43f8-9b0d-f3880277ae67.png" />
+    <Content Include="Resource\Upload\ValidFiles\0e5ae90f-e8a5-46f1-96db-85507b6699de.png" />
+    <Content Include="Resource\Upload\ValidFiles\10f444de-2759-424f-942e-35f661171b96.png" />
+    <Content Include="Resource\Upload\ValidFiles\19f6d7fc-2956-41db-af59-be47d628127a.png" />
+    <Content Include="Resource\Upload\ValidFiles\23e316b5-63d7-4726-b1dc-33da6343c08f.png" />
+    <Content Include="Resource\Upload\ValidFiles\241b2f5d-2250-4139-a5b2-922cace54127.png" />
+    <Content Include="Resource\Upload\ValidFiles\263dcee3-3e06-4fbc-99fb-0ffa80f6579e.png" />
+    <Content Include="Resource\Upload\ValidFiles\2b08f9f3-4396-4534-86f7-07610e0000f8.png" />
+    <Content Include="Resource\Upload\ValidFiles\321759d4-f50b-47a8-bd2b-559a1b25b1f8.png" />
+    <Content Include="Resource\Upload\ValidFiles\3b438a0a-5091-457e-bc12-316581ecf99f.png" />
+    <Content Include="Resource\Upload\ValidFiles\3cf74ea5-6dff-4e05-b5d5-da538abe5fe6.png" />
+    <Content Include="Resource\Upload\ValidFiles\3e647796-ae5a-49e5-80d0-a8d5827b6ee6.png" />
+    <Content Include="Resource\Upload\ValidFiles\40fb3041-8adf-403b-a903-3fb0c181e358.png" />
+    <Content Include="Resource\Upload\ValidFiles\476d4f40-45bf-4350-8433-005efb0942e0.png" />
+    <Content Include="Resource\Upload\ValidFiles\4e29f1e0-378f-4ef5-931c-3c123cc5aa69.png" />
+    <Content Include="Resource\Upload\ValidFiles\52dd5363-c387-4a4c-8ec2-e64c07c4a762.png" />
+    <Content Include="Resource\Upload\ValidFiles\558d4e65-906d-4df6-8d4d-1ee83c85ef59.png" />
+    <Content Include="Resource\Upload\ValidFiles\59846239-39a1-4f7d-a2eb-5a528bdf26e4.png" />
+    <Content Include="Resource\Upload\ValidFiles\5d8fa181-3fde-4f0a-a521-1e8763b8e194.png" />
+    <Content Include="Resource\Upload\ValidFiles\6e62284e-8649-4139-8270-1b5de51612f0.png" />
+    <Content Include="Resource\Upload\ValidFiles\71c5fc3a-b500-4bd0-83fe-096ffafdf26e.png" />
+    <Content Include="Resource\Upload\ValidFiles\79090919-8bad-46e3-93f4-e65e23f8cc05.png" />
+    <Content Include="Resource\Upload\ValidFiles\79b663cd-5c28-489d-a37d-ed7402a052b3.png" />
+    <Content Include="Resource\Upload\ValidFiles\79dadd57-8257-469b-a3a4-7195f8a4fdd2.png" />
+    <Content Include="Resource\Upload\ValidFiles\80c49ee3-35be-4b2c-ac8d-e0b78f0bf427.png" />
+    <Content Include="Resource\Upload\ValidFiles\8240596d-e548-435d-b399-b1efc340cf3e.png" />
+    <Content Include="Resource\Upload\ValidFiles\84b235e9-e682-4199-9244-c514d05ff178.png" />
+    <Content Include="Resource\Upload\ValidFiles\89e1876d-c4a1-4547-986c-ac04240b89f2.png" />
+    <Content Include="Resource\Upload\ValidFiles\b0eed8df-a2cf-474f-b6e9-9bec0b18ebb9.png" />
+    <Content Include="Resource\Upload\ValidFiles\b410d188-de2b-4dfc-bdd2-03e7393fa3ba.png" />
+    <Content Include="Resource\Upload\ValidFiles\b5862fce-d4b3-4ad8-80ad-4ee9501f3edb.png" />
+    <Content Include="Resource\Upload\ValidFiles\b80b35da-acb0-4b16-9f7f-9e4bb8d12e23.png" />
+    <Content Include="Resource\Upload\ValidFiles\ba97bcfc-6f68-4942-be1b-de98b7dcc138.png" />
+    <Content Include="Resource\Upload\ValidFiles\bb439741-dfd1-4107-8021-d18b50ec9f3a.png" />
+    <Content Include="Resource\Upload\ValidFiles\bb6247b6-38e6-428f-ab06-b64b0a7d63c0.png" />
+    <Content Include="Resource\Upload\ValidFiles\cb3d2ebf-136e-42d5-89b4-d28823c6137d.png" />
+    <Content Include="Resource\Upload\ValidFiles\cff89067-83a3-4075-b357-a6e6b1bdbc14.png" />
+    <Content Include="Resource\Upload\ValidFiles\d247fd42-2986-4362-b6b1-ec7fcb3a97b2.png" />
+    <Content Include="Resource\Upload\ValidFiles\da7a1393-012f-4b00-bd75-4ffc98f7b0d6.png" />
+    <Content Include="Resource\Upload\ValidFiles\e6f7b14b-bd91-4ea9-bf6b-f2f49a054fdd.png" />
+    <Content Include="Resource\Upload\ValidFiles\e7c4902c-3e69-4ff3-b6a3-b9ba72bfcfb9.png" />
+    <Content Include="Resource\Upload\ValidFiles\e8e0b5e0-619a-4a1e-b689-49102d8a2a2c.png" />
+    <Content Include="Resource\Upload\ValidFiles\e96ba05d-683c-4adc-9934-3a5b330e0249.png" />
+    <Content Include="Resource\Upload\ValidFiles\ed0f0ae0-4dbd-477f-8cc0-10e741bc33cf.png" />
+    <Content Include="Resource\Upload\ValidFiles\fb39173e-95fd-4811-a293-07742069f499.png" />
+    <Content Include="Resource\Upload\ValidFiles\ff2cf36e-dfb0-4353-92a9-d2a0240ce7b1.png" />
+    <Content Include="Scripts\jquery-1.6.4.js" />
+    <Content Include="Scripts\jquery-1.6.4.min.js" />
+    <Content Include="Scripts\jquery.signalR-2.4.3.js" />
+    <Content Include="Scripts\jquery.signalR-2.4.3.min.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -557,10 +625,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\Business\Controllers\" />
-    <Folder Include="Areas\Business\Views\" />
-    <Folder Include="Upload\" />
-    <Folder Include="Views\Upload\" />
+    <Folder Include="Resource\Upload\UnzipTemp\f9fa3a77-b3dc-411d-a531-fe3bd3b86b2c\" />
+    <Folder Include="Resource\Upload\ValidImages\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Configs\system.config" />
@@ -654,6 +720,9 @@
     <Content Include="Areas\System\Views\SysAction\EditDirectory.cshtml" />
     <Content Include="Areas\System\Views\Shared\_ActionDirectoryPartial.cshtml" />
     <Content Include="Areas\Tool\Views\SysCache\Index.cshtml" />
+    <Content Include="Areas\Business\Views\SysFileProcessiong\Index.cshtml" />
+    <Content Include="Areas\Business\Views\web.config" />
+    <Content Include="Areas\Business\Views\SysCaseInfo\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\Tip.cshtml" />

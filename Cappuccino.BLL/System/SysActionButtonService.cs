@@ -48,6 +48,5 @@ namespace Cappuccino.BLL
             }
             return buttonModelList;
         }
-
     }
 }

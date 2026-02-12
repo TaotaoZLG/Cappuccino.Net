@@ -113,18 +113,12 @@ namespace Cappuccino.BLL
                     string FilePath = aiResult.ImageType;
                     string AIRecognitionResult = aiResult.ToString();
 
-                    // 识别结果入库
-                    //_fileProcessiongDao.Insert(new SysFileRecognitionEntity
-                    //{
-                    //    BatchId = batchId,
-                    //    FilePath = targetPath,
-                    //    FileType = FilePath,
-                    //    AIRecognitionResult = AIRecognitionResult
-                    //});
+                    // 识别记录入库
 
-                    _fileProcessiongDao.Insert(new SysCaseInfoEntity
+                    // 识别结果入库
+                    Insert(new SysCaseInfoEntity
                     {
-                        BusinessBatchId = batchId,
+                        BatchId = batchId,
                         Remark1 = AIRecognitionResult
                     });
 

@@ -189,7 +189,7 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 业务批次Id
         /// </summary>
-        public string BusinessBatchId { get; set; }
+        public string BatchId { get; set; }
         /// <summary>
         /// 案件备注信息1
         /// </summary>

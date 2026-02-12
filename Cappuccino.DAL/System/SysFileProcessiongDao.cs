@@ -3,7 +3,7 @@ using Cappuccino.DataAccess;
 using Cappuccino.Entity;
 using Cappuccino.IDAL;
 
-namespace Cappuccino.DAL.System
+namespace Cappuccino.DAL
 {
     public class SysFileProcessiongDao : BaseDao<SysCaseInfoEntity>, ISysFileProcessiongDao
     {

@@ -6,7 +6,7 @@ namespace Cappuccino.BLL
 {
     public class SysConfigService : BaseService<SysConfigEntity>, ISysConfigService
     {
-        private readonly ISysConfigDao _configDao;
+        private ISysConfigDao _configDao;
 
         #region 依赖注入
         public SysConfigService(ISysConfigDao configDao)

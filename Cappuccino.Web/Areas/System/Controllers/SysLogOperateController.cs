@@ -60,24 +60,11 @@ namespace Cappuccino.Web.Areas.System.Controllers
                     queries.Add(new Query { Name = "Id", Operator = Query.Operators.In, Value = ids });
                 }
 
-                var logOperateList = _sysLogOperateService.GetList(queries.AsExpression<SysLogOperateEntity>());
+                var logOperateList = _sysLogOperateService.GetList(queries.AsExpression<SysLogOperateEntity>()).ToList();
 
-                var file = new ExcelHelper<SysLogOperateEntity>().ExportToExcel("操作日志.xlsx","操作日志", logOperateList.ToList(), null);
+                var file = new ExcelHelper<SysLogOperateEntity>().ExportToExcel("操作日志.xlsx", "操作日志", logOperateList, null);
 
                 return WriteSuccess("导出成功", file);
-                // 转换为导出模型（避免直接暴露实体，只包含需要的字段）
-                //var exportData = logOperateList.Select(user => new
-                //{
-                //    用户ID = user.Id,
-                //    用户名 = user.UserName,
-                //    昵称 = user.NickName,
-                //    部门 = user.Department?.Name ?? "无部门",
-                //    手机号 = user.MobilePhone,
-                //    邮箱 = user.Email,
-                //    状态 = user.EnabledMark == (int)EnabledMarkEnum.Valid ? "启用" : "禁用",
-                //    角色 = string.Join("，", user.SysRoles.Select(r => r.Name)),
-                //    创建时间 = user.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")
-                //}).ToList();
             }
             catch (Exception ex)
             {

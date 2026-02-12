@@ -108,6 +108,7 @@ namespace Cappuccino.Web.Attributes
                 logOperateEntity.Browser = NetHelper.GetBrowser(request.UserAgent);
                 logOperateEntity.CreateUserId = user?.Id ?? 1;
 
+                // 写入日志
                 Action action = async () =>
                 {
                     // 写入日志

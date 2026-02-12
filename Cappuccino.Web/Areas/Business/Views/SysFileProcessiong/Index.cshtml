@@ -337,16 +337,16 @@
             function initSignalR() {
                 if (hubStartPromise) return hubStartPromise;
 
-                $.connection.hub.url = "/signalr";
-                $.connection.hub.logging = true;
-                $.connection.hub.connectionTimeout = 10000;
-                $.connection.hub.disconnected(function () {
-                    showUploadTip("SignalR连接断开，正在重连...", false);
-                    setTimeout(function () {
-                        hubStartPromise = null;
-                        initSignalR();
-                    }, 3000);
-                });
+                //$.connection.hub.url = "/signalr";
+                //$.connection.hub.logging = true;
+                //$.connection.hub.connectionTimeout = 10000;
+                //$.connection.hub.disconnected(function () {
+                //    showUploadTip("SignalR连接断开，正在重连...", false);
+                //    setTimeout(function () {
+                //        hubStartPromise = null;
+                //        initSignalR();
+                //    }, 3000);
+                //});
 
                 hubStartPromise = $.connection.hub.start()
                     .done(function () {

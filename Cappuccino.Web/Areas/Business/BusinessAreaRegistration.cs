@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-namespace Cappuccino.Web.Areas.Demo
+namespace Cappuccino.Web.Areas.Business
 {
     public class BusinessAreaRegistration : AreaRegistration
     {
