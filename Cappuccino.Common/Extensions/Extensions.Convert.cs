@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Cappuccino.Common.Extensions
 {
@@ -291,6 +292,52 @@ namespace Cappuccino.Common.Extensions
             catch
             {
                 return DateTime.MinValue;
+            }
+        }
+
+        /// <summary>
+        /// 智能解析时间字符串，兼容多种格式
+        /// </summary>
+        public static DateTime ParseToDateTime2(this string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return DateTime.MinValue;
+            }
+
+            string[] formats = new string[]
+            {
+                // 带分隔符的格式 (兼容单数字和双数字，兼容 / 和 -)
+                "yyyy/M/d H:mm:ss",
+                "yyyy/M/d HH:mm:ss",
+                "yyyy/MM/dd HH:mm:ss",
+                "yyyy-M-d H:mm:ss",
+                "yyyy-M-d HH:mm:ss",
+                "yyyy-MM-dd HH:mm:ss",
+            
+                // 紧凑格式 (无分隔符)
+                "yyyyMMddHHmmss",
+                "yyyyMMddHHmm",
+                "yyyyMMddHH",
+                "yyyyMMdd",
+                "yyyyMM",
+                "yyyy"
+            };
+
+            try
+            {
+                return DateTime.ParseExact(str, formats, CultureInfo.CurrentCulture, DateTimeStyles.AllowWhiteSpaces);
+            }
+            catch
+            {
+                try
+                {
+                    return DateTime.Parse(str, CultureInfo.CurrentCulture);
+                }
+                catch
+                {
+                    return DateTime.MinValue;
+                }
             }
         }
 

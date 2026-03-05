@@ -97,15 +97,29 @@
                 if (obj.event === 'refresh') {
                     window.refresh();
                 } else if (obj.event === 'export') {
-                    layer.confirm('确定要导出操作日志', { icon: 3, title: '提示' }, function (index) {
+                    var checkStatus = table.checkStatus('tableId');
+                    var selectRow = checkStatus.data;
+                    var msg = "确定要根据搜索条件导出操作日志吗？";
+                    var postData = { viewModel: obj.field };
+                    if (ys.checkRowData(selectRow)) {
+                        msg = "确定要将选中的导出操作日志吗？"
+                        var id = ys.getIds(selectRow);
+                        postData = { idsStr: id };
+                    }
+                    ys.confirm(msg, function () {
+                        var url = MODULE_PATH + "ExportLogOperate";
+                        ys.exportExcel(url, postData);
+                    });
+
+                    @*layer.confirm('确定要导出操作日志', { icon: 3, title: '提示' }, function (index) {
                         common.ajax(MODULE_PATH + "ExportLogOperate", "post", { viewModel: obj.field }, true, true).done(function (response) {
-                            console.log(response);
-                            console.log(rootPath);
-                            ys.exportExcel(response.data);
+                            window.location.href = "@Url.Content("~/File/DownloadFile?filePath=")" + response.data + "&delete=1";
+                            parent.layer.close(parent.layer.getFrameIndex(window.name));
+                            //ys.exportExcel(MODULE_PATH + "ExportLogOperate", { viewModel: obj.field });
                         }).fail(function (error) {
                             console.log(error)
                         });
-                    });
+                    });*@
                 }
             });
 

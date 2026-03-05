@@ -164,11 +164,13 @@
     <Compile Include="Helper\CompressHelper.cs" />
     <Compile Include="Helper\CookieHelper.cs" />
     <Compile Include="Helper\DataTableHelper.cs" />
+    <Compile Include="Helper\DateTimeHelper.cs" />
     <Compile Include="Helper\DeepCopyHelper.cs" />
     <Compile Include="Extensions\JsonExtensions.cs" />
     <Compile Include="Helper\ExcelHelper.cs" />
     <Compile Include="Helper\FileHelper.cs" />
     <Compile Include="Helper\GuidHelper.cs" />
+    <Compile Include="Helper\JsonHelper.cs" />
     <Compile Include="Helper\ReflectionHelper.cs" />
     <Compile Include="Helper\SessionHelper.cs" />
     <Compile Include="Helper\StartEndDateHelper.cs" />

@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
+using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Helper;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
@@ -47,28 +48,24 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [CheckPermission("system.logoperate.export")]
         [LogOperate(Title = "导出操作日志", BusinessType = (int)OperateType.Export)]
-        public ActionResult ExportLogOperate(SysLogOperateModel viewModel, string checkedIds = null)
+        public ActionResult ExportLogOperate(SysLogOperateModel viewModel, string idsStr)
         {
             try
             {
                 var queries = BuildUserQueries(viewModel);
 
-                if (!string.IsNullOrEmpty(checkedIds))
+                if (!string.IsNullOrEmpty(idsStr))
                 {
-                    // 导出勾选的用户（拆分ID列表）
-                    var ids = checkedIds.Split(',');
+                    var ids = idsStr.Split(',');
                     queries.Add(new Query { Name = "Id", Operator = Query.Operators.In, Value = ids });
                 }
 
                 var logOperateList = _sysLogOperateService.GetList(queries.AsExpression<SysLogOperateEntity>()).ToList();
-
-                var file = new ExcelHelper<SysLogOperateEntity>().ExportToExcel("操作日志.xlsx", "操作日志", logOperateList, null);
-
-                return WriteSuccess("导出成功", FileHelper.DownloadFile(file,1));
+                var file = new ExcelHelper<SysLogOperateEntity>().ExportToExcel("操作日志.xlsx", "操作日志", logOperateList);
+                return WriteSuccess("导出成功", file);
             }
             catch (Exception ex)
             {
-                // 记录日志并返回错误信息
                 return WriteError($"导出失败：{ex.Message}");
             }
         }

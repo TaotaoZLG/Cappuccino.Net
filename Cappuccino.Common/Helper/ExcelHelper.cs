@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Web;
 using System.Web.Hosting;
 using Cappuccino.Common.Extensions;
 using NPOI.HSSF.UserModel;
@@ -27,10 +28,10 @@ namespace Cappuccino.Common.Helper
         /// <param name="sFileName"></param>
         /// <param name="sHeaderText"></param>
         /// <param name="list"></param>
-        public string ExportToExcel(string sFileName, string sHeaderText, List<T> list, string[] columns)
+        public string ExportToExcel(string sFileName, string sHeaderText, List<T> list, string[] columns = null)
         {
             sFileName = string.Format("{0}_{1}", GuidHelper.GetGuid(true), sFileName);
-            string sRoot = HostingEnvironment.MapPath("/");
+            string sRoot = HttpContext.Current != null ? HostingEnvironment.MapPath("~") : AppDomain.CurrentDomain.BaseDirectory;
             string partDirectory = string.Format("Resource{0}Export{0}Excel{0}", Path.DirectorySeparatorChar);
             string sDirectory = Path.Combine(sRoot, partDirectory);
             string sFilePath = Path.Combine(sDirectory, sFileName);
@@ -65,7 +66,7 @@ namespace Cappuccino.Common.Helper
             }
 
             workbook.Close();
-            return partDirectory + Path.DirectorySeparatorChar + sFileName;
+            return partDirectory + sFileName;
         }
 
         /// <summary>  
@@ -84,7 +85,7 @@ namespace Cappuccino.Common.Helper
 
             ICellStyle dateStyle = workbook.CreateCellStyle();
             IDataFormat format = workbook.CreateDataFormat();
-            dateStyle.DataFormat = format.GetFormat("yyyy-MM-dd");
+            dateStyle.DataFormat = format.GetFormat("yyyy-MM-dd HH:mm:ss");
             //单元格填充循环外设定单元格格式，避免4000行异常
             ICellStyle contentStyle = workbook.CreateCellStyle();
             contentStyle.Alignment = HorizontalAlignment.Left;
@@ -176,8 +177,8 @@ namespace Cappuccino.Common.Helper
 
                         case "System.DateTime":
                         case "System.Nullable`1[System.DateTime]":
-                            newCell.SetCellValue(drValue.ParseToDateTime());
-                            newCell.CellStyle = dateStyle; //格式化显示  
+                            newCell.SetCellValue(drValue.ParseToDateTime2());
+                            newCell.CellStyle = dateStyle; //格式化显示
                             break;
 
                         case "System.Boolean":

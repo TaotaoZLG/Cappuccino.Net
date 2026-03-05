@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Helper;
 using Cappuccino.Common.Util;
 using Cappuccino.Web.Core;
 using Cappuccino.Web.Models;
+using Microsoft.Owin;
 using MiniExcelLibs;
 
 namespace Cappuccino.Web.Controllers
@@ -111,6 +113,14 @@ namespace Cappuccino.Web.Controllers
             }
         }
 
+
+        /// <summary>
+        /// 下载文件（如Excel模板或处理结果），下载后可选择删除服务器上的文件
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="delete"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         [HttpGet]
         public FileContentResult DownloadFile(string filePath, int delete = 1)
         {

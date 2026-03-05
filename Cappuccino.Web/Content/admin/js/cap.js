@@ -278,10 +278,10 @@
             var ids = '';
             $.each(row, function (i, obj) {
                 if (i == 0) {
-                    ids = obj.Id;
+                    ids = obj.id;
                 }
                 else {
-                    ids += "," + obj.Id;
+                    ids += "," + obj.id;
                 }
             });
             return ids;
@@ -395,18 +395,17 @@
         },
         // 导出数据
         exportExcel: function (url, postData) {
-            console.log(rootPath);
+            console.log(url);
             ys.ajax({
                 url: url,
                 type: "post",
                 data: postData,
                 success: function (obj) {
-                    console.log(obj);
-                    if (obj.status == 1) {
-                        window.location.href = rootPath + "File/DownloadFile?filePath=" + obj.data + "&delete=1";
+                    if (obj.status == 0) {
+                        window.location.href = "/File/DownloadFile?filePath=" + obj.data + "&delete=1";
                     }
                     else {
-                        ys.msgError(obj.Message);
+                        ys.msgError(obj.msg);
                     }
                 },
                 beforeSend: function (xhr) {

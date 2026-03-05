@@ -108,6 +108,25 @@
                 if (obj.event === 'refresh') {
                     window.refresh();
                 }
+                else if (obj.event === 'uploadfile') {
+                    var formdata = new FormData();
+                    //formdata.append("fileList", img, imgFileName);
+                    ys.ajaxUploadFile({
+                        url: '',
+                        data: formdata,
+                        success: function (obj) {
+                            if (obj.Code == 1) {
+
+                            }
+                            else {
+                                ys.msgError(obj.Message);
+                            }
+                        }
+                    });
+                }
+                else if (obj.event === 'downloadfile') {
+
+                }
             });
 
             form.on('submit(search)', function (data) {

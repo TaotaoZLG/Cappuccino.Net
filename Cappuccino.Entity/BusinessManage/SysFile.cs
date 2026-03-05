@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Cappuccino.Entity.BusinessManage
 {
+    [Table("SysFile")]
     public class SysFile : BaseEntity
     {
         /// <summary>

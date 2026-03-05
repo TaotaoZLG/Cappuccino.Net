@@ -103,7 +103,9 @@ namespace Cappuccino.Common.Helper
                 throw new Exception("非法访问");
             }
             TData<FileContentResult> obj = new TData<FileContentResult>();
-            string absoluteFilePath = HostingEnvironment.MapPath("/") + Path.DirectorySeparatorChar + filePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            string rootPath = HttpContext.Current != null ? HostingEnvironment.MapPath("~") : AppDomain.CurrentDomain.BaseDirectory;
+            // 安全拼接路径（避免重复分隔符）
+            string absoluteFilePath = Path.Combine(rootPath, filePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar));
             byte[] fileBytes = File.ReadAllBytes(absoluteFilePath);
             if (delete == 1)
             {

@@ -106,7 +106,7 @@ namespace Cappuccino.Common
                     continue;
                 }
                 Type realType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-                if (item.Value != null)
+                if (item.Operator != Query.Operators.In && item.Value != null)
                 {
                     item.Value = Convert.ChangeType(item.Value, realType);
                 }
@@ -204,48 +204,88 @@ namespace Cappuccino.Common
                             if (item.Value == null)
                                 break;
 
-                            var stringEnumerable = item.Value as IEnumerable<string>;
-                            if (stringEnumerable == null)
-                                break; // 非string集合则跳过
-
-                            // 转换数组元素类型与实体属性类型一致（如string转int、Guid等）
-                            var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-                            var convertedValues = new List<object>();
-                            foreach (var strVal in stringEnumerable)
+                            // 1. 统一转换为IEnumerable<object>（兼容string[]/int[]/List<int>/List<string>等）
+                            IEnumerable<object> valueEnumerable = null;
+                            // 处理数组（任意类型数组）
+                            if (item.Value is Array array)
                             {
-                                if (string.IsNullOrWhiteSpace(strVal))
+                                valueEnumerable = array.Cast<object>();
+                            }
+                            // 处理IEnumerable（List/HashSet等）
+                            else if (item.Value is IEnumerable<object> enumerable)
+                            {
+                                valueEnumerable = enumerable;
+                            }
+                            // 处理字符串（逗号分隔的ID字符串，兼容前端传参）
+                            else if (item.Value is string str && str.Contains(","))
+                            {
+                                valueEnumerable = str.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                                     .Select(s => (object)s);
+                            }
+                            // 处理单个值（前端只选1条数据的情况）
+                            else
+                            {
+                                valueEnumerable = new List<object> { item.Value };
+                            }
+
+                            if (valueEnumerable == null || !valueEnumerable.Any())
+                                break;
+
+                            // 2. 转换集合元素类型与实体属性一致
+                            var convertedValues = new List<object>();
+                            foreach (var val in valueEnumerable)
+                            {
+                                if (val == null || string.IsNullOrWhiteSpace(val.ToString()))
                                     continue;
 
-                                // 利用现有转换扩展方法（如ParseToInt、ParseToGuid等）处理类型转换
                                 object convertedVal;
-                                if (propertyType == typeof(int))
-                                    convertedVal = strVal.ParseToInt(); // 现有扩展方法
-                                else if (propertyType == typeof(Guid))
-                                    convertedVal = strVal.ParseToGuid(); // 现有扩展方法
-                                else if (propertyType == typeof(string))
-                                    convertedVal = strVal; // 字符串无需转换
-                                else
-                                    convertedVal = Convert.ChangeType(strVal, propertyType); // 通用转换
-
+                                try
+                                {
+                                    // 优先用项目扩展方法转换（兼容自定义转换逻辑）
+                                    if (realType == typeof(int))
+                                        convertedVal = val.ToString().ParseToInt();
+                                    else if (realType == typeof(long))
+                                        convertedVal = val.ToString().ParseToLong();
+                                    else if (realType == typeof(Guid))
+                                        convertedVal = val.ToString().ParseToGuid();
+                                    else if (realType == typeof(DateTime))
+                                        convertedVal = val.ToString().ParseToDateTime();
+                                    else if (realType == typeof(string))
+                                        convertedVal = val.ToString().Trim();
+                                    else
+                                        convertedVal = Convert.ChangeType(val, realType);
+                                }
+                                catch
+                                {
+                                    continue; // 转换失败的元素跳过，不影响整体查询
+                                }
                                 convertedValues.Add(convertedVal);
                             }
+
                             if (!convertedValues.Any())
                                 break;
 
-                            // 直接用数组构建常量表达式（无需转List）
-                            var array = convertedValues.ToArray(); // 转为数组（保持与输入一致）
-                            var arrayExpr = Expression.Constant(array);
+                            // 3. 构建强类型数组（解决Contains方法泛型类型不匹配问题）
+                            var convertedArray = Array.CreateInstance(realType, convertedValues.Count);
+                            for (int i = 0; i < convertedValues.Count; i++)
+                            {
+                                convertedArray.SetValue(convertedValues[i], i);
+                            }
+                            var arrayExpr = Expression.Constant(convertedArray);
 
-                            // 构建属性访问表达式（x => x.Property）
+                            // 4. 构建属性访问表达式
                             var propertyAccess = Expression.Property(parameter, item.Name);
 
-                            // 调用Enumerable.Contains方法（支持数组）
+                            // 5. 精准获取Contains方法（避免重载匹配错误）
                             var containsMethod = typeof(Enumerable)
-                                .GetMethod("Contains")
-                                .MakeGenericMethod(propertyType);
+                                .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                                .First(m => m.Name == "Contains" && m.GetParameters().Length == 2)
+                                .MakeGenericMethod(realType);
+
+                            // 6. 构建Contains表达式
                             var containsExpr = Expression.Call(containsMethod, arrayExpr, propertyAccess);
 
-                            // 添加到整体表达式中
+                            // 7. 添加到整体表达式
                             expression = Append(expression, containsExpr);
                             break;
                         }
