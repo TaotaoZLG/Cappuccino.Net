@@ -31,7 +31,7 @@ namespace Cappuccino.Common.Helper
         {
             sFileName = string.Format("{0}_{1}", GuidHelper.GetGuid(true), sFileName);
             string sRoot = HostingEnvironment.MapPath("/");
-            string partDirectory = string.Format("Resource{0}Export{0}Excel", Path.DirectorySeparatorChar);
+            string partDirectory = string.Format("Resource{0}Export{0}Excel{0}", Path.DirectorySeparatorChar);
             string sDirectory = Path.Combine(sRoot, partDirectory);
             string sFilePath = Path.Combine(sDirectory, sFileName);
             if (!Directory.Exists(sDirectory))

@@ -1,4 +1,4 @@
-﻿layui.define(['jquery', 'popup', 'date'], function (exports) {
+﻿layui.define(['jquery', 'popup'], function (exports) {
     var $ = layui.jquery;
     var popup = layui.popup;
 

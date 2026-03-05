@@ -5,6 +5,9 @@ using System.Web.Hosting;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Log;
 using Cappuccino.Common.Util;
+using log4net;
+using System.Web;
+using System.Web.Mvc;
 
 namespace Cappuccino.Common.Helper
 {
@@ -84,5 +87,44 @@ namespace Cappuccino.Common.Helper
         {
             return HostingEnvironment.MapPath(virtualPath);
         }
+
+        #region 下载文件
+        /// <summary>
+        /// 下载文件
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="delete"></param>
+        /// <returns></returns>
+        public static TData<FileContentResult> DownloadFile(string filePath, int delete)
+        {
+            filePath = FilterFilePath(filePath);
+            if (!filePath.StartsWith("Resource", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception("非法访问");
+            }
+            TData<FileContentResult> obj = new TData<FileContentResult>();
+            string absoluteFilePath = HostingEnvironment.MapPath("/") + Path.DirectorySeparatorChar + filePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            byte[] fileBytes = File.ReadAllBytes(absoluteFilePath);
+            if (delete == 1)
+            {
+                File.Delete(absoluteFilePath);
+            }
+            // md5 值
+            string fileNamePrefix = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+            string title = fileNameWithoutExtension;
+            if (fileNameWithoutExtension.Contains("_"))
+            {
+                title = fileNameWithoutExtension.Split('_')[1].Trim();
+            }
+            string fileExtensionName = Path.GetExtension(filePath);
+            obj.Data = new FileContentResult(fileBytes, "application/octet-stream")
+            {
+                FileDownloadName = string.Format("{0}_{1}{2}", fileNamePrefix, title, fileExtensionName)
+            };
+            obj.Status = 1;
+            return obj;
+        }
+        #endregion 
     }
 }

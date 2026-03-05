@@ -1,0 +1,124 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">账户</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="account" placeholder="请输入账户" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="realName" placeholder="请输入姓名" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">日期范围</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input time-input" placeholder="日期范围" autocomplete="off" data-range="~" name="startEndDate" id="startEndDate" >
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                    @Html.SearchBtnHtml()
+                    @Html.ResetBtnHtml()
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="layui-card">
+    <div class="layui-card-body">
+        <table id="tableId" lay-filter="tableFilter"></table>
+    </div>
+</div>
+@section Scripts {
+    <!-- 头工具栏模板 -->
+    <script type="text/html" id="toolbarTpl">
+        @Html.TopToolBarHtml(ViewData["TopButtonList"])
+    </script>
+
+    <script>
+        layui.use(['table', 'form', 'laydate'], function () {
+            let table = layui.table;
+            let form = layui.form;
+            let laydate = layui.laydate;
+
+            let MODULE_PATH = "/BusinessManage/SysCaseInfo/";
+
+            table.render({
+                elem: '#tableId',
+                url: MODULE_PATH + "GetList",
+                page: true,
+                cellMinWidth: 120,
+                cols: [
+                    [
+                        { type: 'checkbox' },
+                        { title: 'ID', field: 'id', hide: true },
+                        { title: '客户编号', field: 'customerId', },
+                        { title: '客户姓名', field: 'custName', },
+                        { title: '身份证号', field: 'custIDNumber', },
+                        { title: '银行卡号', field: 'custCardNo', },
+                        { title: '贷款账号', field: 'custLoanAccountNo', },
+                        { title: '欠款金额', field: 'caseDebtAmount', },
+                        { title: '贷款城市', field: 'custLoanCity', },
+                        { title: '本金', field: 'caseCapital', },
+                        { title: '利息', field: 'caseInterest', },
+                        { title: '手别', field: 'caseLevel', },
+                        { title: '调解案号', field: 'caseMediationWmn', },
+                        { title: '逾期天数', field: 'overdueDays', },
+                        { title: '产品名称', field: 'productName', },
+                        { title: '案件编号', field: 'caseNo', },
+                        { title: '合同编号', field: 'caseContractNo', },
+                        { title: '案件状态', field: 'caseStatus', },
+                        {
+                            title: '调解开始日期', field: 'mediationStartDate', formatter: function (value, row, index) {
+                                return ys.formatDate(value);
+                            }
+                       , },
+                        {
+                            title: '调解结束日期', field: 'mediationEndDate', formatter: function (value, row, index) {
+                                return ys.formatDate(value);
+                            }
+                       , },
+                        { title: '案件所在部门', field: 'departmentName', },
+                        { title: '调解员', field: 'mediator', },
+                        { title: '助理调解员', field: 'assistantMediator', },
+                        { title: '客户邮箱', field: 'custEmail', },
+                        { title: '案件备注1', field: 'remark1', },
+                        { title: '案件备注2', field: 'remark2', },
+                        { title: '案件备注3', field: 'remark3', },
+                    ]
+                ],
+                skin: 'line',
+                toolbar: '#toolbarTpl',
+                defaultToolbar: [{
+                    layEvent: 'refresh',
+                    icon: 'layui-icon-refresh',
+                }, 'filter', 'print', 'exports']
+            });
+
+            table.on('toolbar(tableFilter)', function (obj) {
+                if (obj.event === 'refresh') {
+                    window.refresh();
+                }
+            });
+
+            form.on('submit(search)', function (data) {
+                table.reload('tableId', { where: data.field })
+                return false;
+            });
+
+            window.refresh = function () {
+                table.reload('tableId');
+            }
+        })
+    </script>
+
+}

@@ -50,23 +50,23 @@
   <ItemGroup>
     <Compile Include="IBaseDao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="System\ISysAutoJobDao.cs" />
-    <Compile Include="System\ISysAutoJobLogDao.cs" />
-    <Compile Include="System\ISysFileProcessiongDao.cs" />
-    <Compile Include="System\ISysNoticeDao.cs" />
-    <Compile Include="System\ISysDataAuthorizeDao.cs" />
-    <Compile Include="System\ISysDepartmentDao.cs" />
-    <Compile Include="System\ISysActionDao.cs" />
-    <Compile Include="System\ISysActionButtonDao.cs" />
-    <Compile Include="System\ISysActionMenuDao.cs" />
-    <Compile Include="System\ISysConfigDao.cs" />
-    <Compile Include="System\ISysDictDetailDao.cs" />
-    <Compile Include="System\ISysDictDao.cs" />
-    <Compile Include="System\ISysLogOperateDao.cs" />
-    <Compile Include="System\ISysRoleDao.cs" />
-    <Compile Include="System\ISysUserActionDao.cs" />
-    <Compile Include="System\ISysUserDao.cs" />
-    <Compile Include="System\ISysLogLogonDao.cs" />
+    <Compile Include="SystemManage\ISysAutoJobDao.cs" />
+    <Compile Include="SystemManage\ISysAutoJobLogDao.cs" />
+    <Compile Include="SystemManage\ISysFileProcessiongDao.cs" />
+    <Compile Include="SystemManage\ISysNoticeDao.cs" />
+    <Compile Include="SystemManage\ISysDataAuthorizeDao.cs" />
+    <Compile Include="SystemManage\ISysDepartmentDao.cs" />
+    <Compile Include="SystemManage\ISysActionDao.cs" />
+    <Compile Include="SystemManage\ISysActionButtonDao.cs" />
+    <Compile Include="SystemManage\ISysActionMenuDao.cs" />
+    <Compile Include="SystemManage\ISysConfigDao.cs" />
+    <Compile Include="SystemManage\ISysDictDetailDao.cs" />
+    <Compile Include="SystemManage\ISysDictDao.cs" />
+    <Compile Include="SystemManage\ISysLogOperateDao.cs" />
+    <Compile Include="SystemManage\ISysRoleDao.cs" />
+    <Compile Include="SystemManage\ISysUserActionDao.cs" />
+    <Compile Include="SystemManage\ISysUserDao.cs" />
+    <Compile Include="SystemManage\ISysLogLogonDao.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

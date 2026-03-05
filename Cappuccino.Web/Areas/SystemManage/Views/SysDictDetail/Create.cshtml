@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+<form class="layui-form" lay-filter="formCreate">
+    <input id="DictId" name="DictId" type="hidden" value="@ViewBag.DictId" />
+    <div class="mainBox">
+        <div class="main-container">
+            <div class="main-container">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">字典键</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" lay-verify="required" lay-reqtext="请输入字典键" autocomplete="off" placeholder="请输入字典键" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">字典值</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="code" lay-verify="required" lay-reqtext="请输入字典值" autocomplete="off" placeholder="请输入字典值" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">显示样式</label>
+                    <div class="layui-input-block">
+                        <select name="listClass">
+                            <option value="">请选择显示样式</option>
+                            <option value="primary">主要</option>
+                            <option value="info">成功</option>
+                            <option value="danger">危险</option>
+                            <option value="warm">警告</option>
+                            <option value="normal">信息</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">排序码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button type="submit" class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="" lay-filter="create">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+@section Scripts {
+    <script>
+        layui.use(['form', 'jquery', 'common'], function () {
+            let form = layui.form;
+            let $ = layui.jquery;
+            let common = layui.common;
+            form.on("submit(create)", function (data) {
+                common.ajax("/SystemManage/SysDictDetail/Create", "post", data.field, true, true).done(function (response) {
+                    layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
+                        if (top.initDataDict) {
+                            top.initDataDict();
+                        }
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
+                        parent.layui.table.reload("tableDictDetailId");
+                    });
+                }).fail(function (error) {
+                    console.log(error)
+                });
+                return false;
+            });
+
+            $(function () {
+                common.ajax("/SystemManage/SysDictDetail/GetMaxSortCode", "get", { dictId : @ViewBag.DictId }).done(function (response) {
+                    if (response.status === 0) {
+                        form.val("formCreate", {
+                            "sortCode": response.data
+                        });
+                    }
+                }).fail(function (error) {
+                    console.log(error)
+                });
+            });
+        });
+    </script>
+}

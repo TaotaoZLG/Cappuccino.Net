@@ -81,16 +81,16 @@ namespace Cappuccino.DataAccess.Migrations
             var sysActionByMenus = new List<SysActionEntity>
             {
                 new SysActionEntity{Id=2,Name="用户管理",Code="system.user.view",ParentId=systemMenu.Id,Type=0,SortCode=1
-                ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/System/SysUser" }
+                ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/SystemManage/SysUser" }
                 ,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
                 new SysActionEntity{Id=3,Name="角色管理",Code="system.role.view",ParentId=systemMenu.Id,Type=0,SortCode=2
-                ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/System/SysRole" }
+                ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/SystemManage/SysRole" }
                 ,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
                 new SysActionEntity{Id=4,Name="菜单管理",Code="system.menu.view",ParentId=systemMenu.Id,Type=0,SortCode=3
-                ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/System/SysAction" }
+                ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/SystemManage/SysAction" }
                 ,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
                 new SysActionEntity{Id=5,Name="数据字典",Code="system.dict.view",ParentId=systemMenu.Id,Type=0,SortCode=4
-                ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/System/SysDict" }
+                ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/SystemManage/SysDict" }
                 ,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
                 new SysActionEntity{Id=6,Name="日志管理",Code="system.log",ParentId=systemMenu.Id,Type=0,SortCode=5
                 ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry"}
@@ -104,7 +104,7 @@ namespace Cappuccino.DataAccess.Migrations
             var sysActionByMenuSystemLogs = new List<SysActionEntity>
             {
                 new SysActionEntity{Id=7,Name="登录日志",Code="system.loglogon.view",ParentId=systemMenuSystemLog.Id,Type=0,SortCode=6
-                ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/System/SysLogLogon" }
+                ,SysActionMenu=new SysActionMenuEntity{Icon="layui-icon-face-cry",Url="/SystemManage/SysLogLogon" }
                 ,CreateTime=DateTime.Now,UpdateTime=DateTime.Now,CreateUserId=1,UpdateUserId=1},
             };
             sysActionByMenuSystemLogs.ForEach(s => context.Set<SysActionEntity>().Add(s));

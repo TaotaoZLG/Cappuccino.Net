@@ -5,6 +5,9 @@
     <title>@ViewBag.Title</title>
     <link href="~/Content/component/pear/css/pear.css" rel="stylesheet" />
     <link href="~/Content/admin/css/admin.css" rel="stylesheet" />
+    <script type="text/javascript">
+        var rootPath = '@Url.Content("~/")';
+    </script>
     @RenderSection("style", required: false)
 </head>
 <body>
@@ -13,6 +16,7 @@
     <script src="~/Content/component/layui/layui.js"></script>
     <script src="~/Content/component/pear/pear.js"></script>
     <script src="~/Content/admin/js/cap.js"></script>
+    <script src="~/Content/admin/js/cap-init.js"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

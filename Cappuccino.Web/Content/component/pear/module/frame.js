@@ -1,4 +1,4 @@
-layui.define(['table', 'jquery', 'element'], function (exports) {
+﻿layui.define(['table', 'jquery', 'element'], function (exports) {
     "use strict";
 
     var MOD_NAME = 'frame',

@@ -49,26 +49,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseEntity.cs" />
-    <Compile Include="Business\SysCaseInfoEntity.cs" />
-    <Compile Include="Business\SysFileRecognitionEntity.cs" />
+    <Compile Include="BusinessManage\SysCaseInfoEntity.cs" />
+    <Compile Include="BusinessManage\SysFile.cs" />
+    <Compile Include="BusinessManage\SysFileRecognitionEntity.cs" />
     <Compile Include="EntityMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="System\SysConfigEntity.cs" />
-    <Compile Include="System\SysNoticeEntity.cs" />
-    <Compile Include="System\SysAutoJobEntity.cs" />
-    <Compile Include="System\SysActionEntity.cs" />
-    <Compile Include="System\SysActionButtonEntity.cs" />
-    <Compile Include="System\SysActionMenuEntity.cs" />
-    <Compile Include="System\SysAutoJobLogEntity.cs" />
-    <Compile Include="System\SysDataAuthorizeEntity.cs" />
-    <Compile Include="System\SysDepartmentEntity.cs" />
-    <Compile Include="System\SysLogOperateEntity.cs" />
-    <Compile Include="System\SysRoleEntity.cs" />
-    <Compile Include="System\SysDictDetailEntity.cs" />
-    <Compile Include="System\SysDictEntity.cs" />
-    <Compile Include="System\SysLogLogonEntity.cs" />
-    <Compile Include="System\SysUserEntity.cs" />
-    <Compile Include="System\SysUserActionEntity.cs" />
+    <Compile Include="SystemManage\SysConfigEntity.cs" />
+    <Compile Include="SystemManage\SysNoticeEntity.cs" />
+    <Compile Include="SystemManage\SysAutoJobEntity.cs" />
+    <Compile Include="SystemManage\SysActionEntity.cs" />
+    <Compile Include="SystemManage\SysActionButtonEntity.cs" />
+    <Compile Include="SystemManage\SysActionMenuEntity.cs" />
+    <Compile Include="SystemManage\SysAutoJobLogEntity.cs" />
+    <Compile Include="SystemManage\SysDataAuthorizeEntity.cs" />
+    <Compile Include="SystemManage\SysDepartmentEntity.cs" />
+    <Compile Include="SystemManage\SysLogOperateEntity.cs" />
+    <Compile Include="SystemManage\SysRoleEntity.cs" />
+    <Compile Include="SystemManage\SysDictDetailEntity.cs" />
+    <Compile Include="SystemManage\SysDictEntity.cs" />
+    <Compile Include="SystemManage\SysLogLogonEntity.cs" />
+    <Compile Include="SystemManage\SysUserEntity.cs" />
+    <Compile Include="SystemManage\SysUserActionEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cappuccino.Common\Cappuccino.Common.csproj">

@@ -1,0 +1,137 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">操作人员</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="operateName" placeholder="请输入操作人员" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">操作类型</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="businessType" placeholder="请输入操作类型" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">日期范围</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input time-input" placeholder="日期范围" autocomplete="off" data-range="~"  name="startEndDate" id="startEndDate">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                    @Html.SearchBtnHtml()
+                    @Html.ResetBtnHtml()
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="layui-card">
+    <div class="layui-card-body">
+        <table id="tableId" lay-filter="tableFilter"></table>
+    </div>
+</div>
+@section Scripts {
+
+    <!-- 头工具栏模板 -->
+    <script type="text/html" id="toolbarTpl">
+        @Html.TopToolBarHtml(ViewData["TopButtonList"])
+    </script>
+
+    <script>
+        layui.use(['table', 'form', 'laydate', 'common'], function () {
+            let table = layui.table;
+            let form = layui.form;
+            let laydate = layui.laydate;
+            let common = layui.common;
+
+            let MODULE_PATH = "/SystemManage/SysLogOperate/";
+
+            table.render({
+                elem: '#tableId',
+                url: MODULE_PATH + "GetList",
+                page: true,
+                limit: 10,
+                cols: [
+                    [
+                        { type: 'checkbox' },
+                        { title: 'ID', field: 'id', hide: true },
+                        { title: '操作模块', field: 'title', align: 'center' },
+                        {
+                            title: '操作类型', field: 'businessType', align: 'center', templet: function (d) {
+                                return top.getDataDictValue("sys_operate_type", d.businessType);
+                            }
+                        },
+                        { title: '操作人员', field: 'operateName', align: 'center' },
+                        { title: '请求方式', field: 'requestMethod', align: 'center' },
+                        { title: '请求地址', field: 'requestUrl', align: 'center' },
+                        { title: '请求参数', field: 'requestParam', align: 'center' },
+                        {
+                            title: '执行状态', field: 'logStatus', align: 'center', templet: function (d) {
+                                return top.getDataDictValue("sys_success_status", d.logStatus, false);
+                            }
+                        },
+                        { title: '请求结果', field: 'requestResult', align: 'center' },
+                        { title: 'IP地址', field: 'ipAddress', align: 'center' },
+                        { title: 'IP所在城市', field: 'ipAddressName', align: 'center' },
+                        { title: '创建时间', field: 'createTime', align: 'center', sort: true }
+                    ]
+                ],
+                skin: 'line',
+                toolbar: '#toolbarTpl',
+                defaultToolbar: [{
+                    layEvent: 'refresh',
+                    icon: 'layui-icon-refresh',
+                }, 'filter', 'print', 'exports']
+            });
+
+            table.on('toolbar(tableFilter)', function (obj) {
+                if (obj.event === 'refresh') {
+                    window.refresh();
+                } else if (obj.event === 'export') {
+                    layer.confirm('确定要导出操作日志', { icon: 3, title: '提示' }, function (index) {
+                        common.ajax(MODULE_PATH + "ExportLogOperate", "post", { viewModel: obj.field }, true, true).done(function (response) {
+                            console.log(response);
+                            console.log(rootPath);
+                            ys.exportExcel(response.data);
+                        }).fail(function (error) {
+                            console.log(error)
+                        });
+                    });
+                }
+            });
+
+            table.on('sort(tableFilter)', function (obj) {
+                //console.log(obj.field); //当前排序的字段名
+                //console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+                //console.log(this); //当前排序的 th 对象
+
+                table.reload('tableId', {
+                    initSort: obj //记录初始排序
+                    , where: {
+                        field: obj.field,
+                        order: obj.type
+                    }
+                });
+            });
+
+            form.on('submit(search)', function (data) {
+                table.reload('tableId', { where: data.field })
+                return false;
+            });
+
+            window.refresh = function () {
+                table.reload('tableId');
+            }
+        })
+    </script>
+
+}

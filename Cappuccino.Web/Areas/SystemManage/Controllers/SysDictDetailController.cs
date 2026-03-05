@@ -1,0 +1,155 @@
+﻿using System;
+using System.Linq;
+using System.Web.Mvc;
+using Cappuccino.Common;
+using Cappuccino.Common.Enum;
+using Cappuccino.Entity;
+using Cappuccino.IBLL;
+using Cappuccino.Model;
+using Cappuccino.Web.Attributes;
+using Cappuccino.Web.Core;
+using Cappuccino.Web.Models;
+
+namespace Cappuccino.Web.Areas.SystemManage.Controllers
+{
+    public class SysDictDetailController : BaseController
+    {
+        private readonly ISysDictDetailService _sysDictDetailService;
+        private readonly ISysActionButtonService _sysActionButtonService;
+
+        public SysDictDetailController(ISysDictDetailService sysDictDetailService, ISysActionButtonService sysActionButtonService)
+        {
+            _sysDictDetailService = sysDictDetailService;
+            _sysActionButtonService = sysActionButtonService;
+            this.AddDisposableObject(_sysDictDetailService);
+            this.AddDisposableObject(_sysActionButtonService);
+        }
+
+        #region 视图        
+        [HttpGet, CheckPermission("system.dict.create")]
+        public ActionResult Create(int dictId)
+        {
+            ViewBag.DictId = dictId;
+            return View();
+        }
+
+        [HttpGet, CheckPermission("system.dict.edit")]
+        public ActionResult Edit(int id)
+        {
+            SysDictDetailEntity viewModel = _sysDictDetailService.GetList(x => x.Id == id).FirstOrDefault();
+            return View(viewModel.EntityMap());
+        }
+        #endregion
+
+        #region 提交数据
+        [HttpPost, CheckPermission("system.dict.create")]
+        [LogOperate(Title = "新增字典详情", BusinessType = (int)OperateType.Add)]
+        public ActionResult Create(SysDictDetailModel viewModel)
+        {
+            try
+            {
+                if (ModelState.IsValid == false)
+                {
+                    return WriteError("实体验证失败");
+                }
+                SysDictDetailEntity entity = viewModel.EntityMap();
+                entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
+                entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
+                entity.CreateTime = DateTime.Now;
+                entity.UpdateTime = DateTime.Now;
+                _sysDictDetailService.Insert(entity);
+                return WriteSuccess();
+            }
+            catch (Exception ex)
+            {
+                return WriteError(ex);
+            }
+        }
+
+        [HttpPost, CheckPermission("system.dict.edit")]
+        [LogOperate(Title = "编辑字典详情", BusinessType = (int)OperateType.Update)]
+        public ActionResult Edit(SysDictDetailModel viewModel)
+        {
+            if (ModelState.IsValid == false)
+            {
+                return WriteError("实体验证失败");
+            }
+            viewModel.Id = viewModel.Id;
+            viewModel.UpdateTime = DateTime.Now;
+            viewModel.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
+            SysDictDetailEntity entity = viewModel.EntityMap();
+            _sysDictDetailService.Update(entity, new string[] { "Name", "Code", "ListClass", "SortCode", "UpdateTime", "UpdateUserId" });
+            return WriteSuccess();
+        }
+
+        [HttpPost, CheckPermission("system.dict.delete")]
+        [LogOperate(Title = "删除字典详情", BusinessType = (int)OperateType.Delete)]
+        public ActionResult Delete(int id)
+        {
+            try
+            {
+                _sysDictDetailService.DeleteBy(x => x.Id == id);
+                return WriteSuccess("数据删除成功");
+            }
+            catch (Exception ex)
+            {
+                return WriteError(ex);
+            }
+        }
+
+        [HttpPost, CheckPermission("system.dict.batchDel")]
+        [LogOperate(Title = "批量删除字典详情", BusinessType = (int)OperateType.Delete)]
+        public ActionResult BatchDel(string idsStr)
+        {
+            try
+            {
+                var idsArray = idsStr.Substring(0, idsStr.Length).Split(',');
+                int[] ids = Array.ConvertAll<string, int>(idsArray, int.Parse);
+                var result = _sysDictDetailService.DeleteBy(x => ids.Contains(x.Id)) > 0 ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return WriteError(ex);
+            }
+        }
+        #endregion
+
+        #region 获取数据
+        [CheckPermission("system.dict.list")]
+        public JsonResult GetList(SysDictDetailModel viewModel, PageInfo pageInfo)
+        {
+            QueryCollection queries = new QueryCollection();
+            if (!string.IsNullOrEmpty(viewModel.Name))
+            {
+                queries.Add(new Query { Name = "Name", Operator = Query.Operators.Contains, Value = viewModel.Name });
+
+            }
+            else if (!string.IsNullOrEmpty(viewModel.Code))
+            {
+                queries.Add(new Query { Name = "Code", Operator = Query.Operators.Contains, Value = viewModel.Code });
+            }
+            else if (viewModel.DictId != 0)
+            {
+                queries.Add(new Query { Name = "DictId", Operator = Query.Operators.Equal, Value = viewModel.DictId });
+            }
+            var list = _sysDictDetailService.GetListByPage(queries.AsExpression<SysDictDetailEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).Select(x => new
+            {
+                x.Id,
+                x.Name,
+                x.Code,
+                x.ListClass,
+                x.SortCode
+            }).ToList();
+            return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetMaxSortCode(int dictId)
+        {
+            int maxSortCode = _sysDictDetailService.GetMaxSortCode(dictId);
+            var result = new { Status = 0, Message = "查询成功", Data = maxSortCode };
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+    }
+}

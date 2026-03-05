@@ -11,7 +11,7 @@
      */
     function initDataDict() {
         $.ajax({
-            url: '/System/SysDict/GetDataDictList',
+            url: '/SystemManage/SysDict/GetDataDictList',
             type: 'get',
             dataType: 'json',
             success: function (response) {
