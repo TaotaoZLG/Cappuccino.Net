@@ -50,7 +50,7 @@
   <ItemGroup>
     <Compile Include="BaseEntity.cs" />
     <Compile Include="BusinessManage\SysCaseInfoEntity.cs" />
-    <Compile Include="BusinessManage\SysFile.cs" />
+    <Compile Include="BusinessManage\SysFileEntity.cs" />
     <Compile Include="BusinessManage\SysFileRecognitionEntity.cs" />
     <Compile Include="EntityMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

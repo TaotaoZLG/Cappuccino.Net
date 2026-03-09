@@ -30,7 +30,7 @@ namespace Cappuccino.BLL
         }
         #endregion
 
-        public List<SysActionEntity> GetPermission(int userId)
+        public List<SysActionEntity> GetPermission(long userId)
         {
             List<SysActionEntity> sysActions = new List<SysActionEntity>();
             //获取用户
@@ -77,12 +77,12 @@ namespace Cappuccino.BLL
             return sysActions;
         }
 
-        public List<SysActionEntity> GetPermissionByType(int userId, ActionTypeEnum type)
+        public List<SysActionEntity> GetPermissionByType(long userId, ActionTypeEnum type)
         {
             return GetPermission(userId).Where(x => x.Type == type).ToList();
         }
 
-        public List<DtreeData> GetDtree(int roleId)
+        public List<DtreeData> GetDtree(long roleId)
         {
             var sysActions = _actionDao.GetList(x => true).ToList();
             List<DtreeData> list = new List<DtreeData>();
@@ -122,7 +122,7 @@ namespace Cappuccino.BLL
             return dtreeDatas;
         }
 
-        public bool HasPermission(int id, string permission)
+        public bool HasPermission(long id, string permission)
         {
             //超级管理员直接返回true
             if (UserManager.GetCurrentUserInfo().IsSystem == 1)
@@ -193,7 +193,7 @@ namespace Cappuccino.BLL
             }
         }
 
-        public bool DeleteByIds(int[] ids)
+        public bool DeleteByIds(long[] ids)
         {
             var actions = _actionDao.GetList(x => ids.Contains(x.Id)).ToList();
             foreach (var item in actions)

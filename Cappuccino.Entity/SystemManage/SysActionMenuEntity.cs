@@ -1,9 +1,7 @@
 ﻿namespace Cappuccino.Entity
 {
-    public class SysActionMenuEntity
+    public class SysActionMenuEntity : BaseField
     {
-        public int Id { get; set; }
-
         /// <summary>
         /// 图标
         /// </summary>

@@ -27,9 +27,9 @@ namespace Cappuccino.BLL
         /// <returns></returns>
         public int WriteLogonLog(SysLogLogonEntity logLogon)
         {
+            logLogon.Create();
             logLogon.IPAddress = NetHelper.GetIp;
             logLogon.IPAddressName = NetHelper.GetIpLocation(logLogon.IPAddress);
-            logLogon.CreateTime = DateTime.Now;
             logLogon.CreateUserId = UserManager.GetCurrentUserInfo()?.Id ?? 0;
             return Insert(logLogon);
         }

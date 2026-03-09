@@ -10,20 +10,22 @@ using Cappuccino.Common.Helper;
 using Cappuccino.Common.Log;
 using Cappuccino.Common.Util;
 using Cappuccino.Entity;
-using Cappuccino.Entity.Business;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
+using static Cappuccino.Common.Helper.AIRecognitionHelper;
 
 namespace Cappuccino.BLL
 {
     public class SysFileProcessiongService : BaseService<SysCaseInfoEntity>, ISysFileProcessiongService
     {
         private ISysFileProcessiongDao _fileProcessiongDao;
+        private ISysFileDao _fileDao;
 
         #region 依赖注入
-        public SysFileProcessiongService(ISysFileProcessiongDao fileProcessiongDao)
+        public SysFileProcessiongService(ISysFileProcessiongDao fileProcessiongDao, ISysFileDao fileDao)
         {
             _fileProcessiongDao = fileProcessiongDao;
+            _fileDao = fileDao;
             base.CurrentDao = fileProcessiongDao;
             this.AddDisposableObject(this.CurrentDao);
         }
@@ -52,12 +54,13 @@ namespace Cappuccino.BLL
             var validImageDir = FileHelper.GetPhysicalPath(ValidFilePath);
 
             // 3. 保存上传的压缩包
-            var fileExt = Path.GetExtension(file.FileName).TrimStart('.').ToLower();
+            var fileName = file.FileName;
+            var fileExt = Path.GetExtension(fileName).TrimStart('.').ToLower();
             var zipPath = Path.Combine(uploadTempDir, $"{batchId}.{fileExt}");
             file.SaveAs(zipPath);
 
             try
-            {
+            {               
                 // 4. 解压压缩包（异步）- 进度通过回调返回
                 progress.Report(new ProcessProgress
                 {
@@ -113,11 +116,24 @@ namespace Cappuccino.BLL
                     string FilePath = aiResult.ImageType;
                     string AIRecognitionResult = aiResult.IdCardInfo.IdNumber;
 
-                    // 识别记录入库
+                    long Id = IdGeneratorHelper.Instance.GetId();
+
+                    // 保存文件信息到数据库
+                    _fileDao.Insert(new SysFileEntity
+                    {
+                        Id = Id,
+                        ObjectId = Id,
+                        FileName = fileName,
+                        FilePath = zipPath,
+                        FileType = fileExt
+                    });
 
                     // 识别结果入库
                     Insert(new SysCaseInfoEntity
                     {
+                        Id = Id,
+                        CustName = "Cappuccino客户",
+                        CustIDNumber= AIRecognitionResult,
                         BatchId = batchId,
                         Remark1 = AIRecognitionResult
                     });

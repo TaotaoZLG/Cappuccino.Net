@@ -20,7 +20,7 @@ namespace Cappuccino.IBLL
         /// <param name="roleId"></param>
         /// <param name="dataPermissions"></param>
         /// <returns></returns>
-        void SaveDataPermissions(int roleId, List<DtreeResponse> dataPermissions);
+        void SaveDataPermissions(long roleId, List<DtreeResponse> dataPermissions);
 
         /// <summary>
         /// 保存角色的菜单权限和数据权限
@@ -28,6 +28,6 @@ namespace Cappuccino.IBLL
         /// <param name="roleId">角色ID</param>
         /// <param name="menuPermissions">菜单权限列表</param>
         /// <param name="dataPermissions">数据权限列表</param>
-        void SavePermissions(int roleId, List<DtreeResponse> menuPermissions, List<DtreeResponse> dataPermissions);
+        void SavePermissions(long roleId, List<DtreeResponse> menuPermissions, List<DtreeResponse> dataPermissions);
     }
 }

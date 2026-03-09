@@ -40,7 +40,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         }
 
         [HttpGet, CheckPermission("system.menu.edit")]
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
             var entity = _sysActionService.GetList(x => x.Id == id).FirstOrDefault();
             _sysActionMenuService.GetList(x => x.Id == id).FirstOrDefault();
@@ -176,7 +176,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.menu.delete")]
         [LogOperate(Title = "删除菜单", BusinessType = (int)OperateType.Delete)]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(long id)
         {
             try
             {
@@ -206,7 +206,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             try
             {
                 var idsArray = idsStr.Substring(0, idsStr.Length).Split(',');
-                int[] ids = Array.ConvertAll<string, int>(idsArray, int.Parse);
+                long[] ids = Array.ConvertAll<string, long>(idsArray, long.Parse);
                 var result = _sysActionService.DeleteByIds(ids) ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
                 return result;
             }
@@ -236,7 +236,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         }
 
         [HttpGet, CheckPermission("system.role.assign")]
-        public JsonResult Assign(int id)
+        public JsonResult Assign(long id)
         {
             var data = _sysActionService.GetDtree(id);
             var result = new DtreeModel { Data = data, Status = new DtreeStatus() };

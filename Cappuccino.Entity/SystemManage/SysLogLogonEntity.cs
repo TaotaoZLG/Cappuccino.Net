@@ -1,8 +1,11 @@
-﻿namespace Cappuccino.Entity
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Cappuccino.Entity
 {
     /// <summary>
     /// 登录日志
     /// </summary>
+    [Table("SysLogLogon")]
     public class SysLogLogonEntity : BaseCreateEntity
     {
         /// <summary>

@@ -11,7 +11,7 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 数据ID（部门Id或用户Id）
         /// </summary>
-        public int? DataId { get; set; }
+        public long? DataId { get; set; }
 
         /// <summary>
         /// 数据类型（1-机构、2-部门、3-用户）
@@ -21,7 +21,7 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 授权对象ID（角色Id或者用户Id）
         /// </summary>
-        public int? AuthorizeId { get; set; }
+        public long? AuthorizeId { get; set; }
 
         /// <summary>
         /// 授权类型(1角色 2用户)

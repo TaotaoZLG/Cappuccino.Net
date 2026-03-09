@@ -23,9 +23,9 @@ namespace Cappuccino.BLL
         }
         #endregion
 
-        public List<PearMenuModel> GetMenu(int userId)
+        public List<PearMenuModel> GetMenu(long userId)
         {
-            var sysActionList = SysActionService.GetPermissionByType(userId, ActionTypeEnum.Menu)
+            List<SysActionEntity> sysActionList = SysActionService.GetPermissionByType(userId, ActionTypeEnum.Menu)
                 .Concat(SysActionService.GetPermissionByType(userId, ActionTypeEnum.Directory))
                 .OrderBy(x => x.SortCode)
                 .ToList();
@@ -38,7 +38,7 @@ namespace Cappuccino.BLL
             }
 
             List<PearMenuModel> allMenuList = new List<PearMenuModel>();
-            Dictionary<int, PearMenuModel> menuDict = new Dictionary<int, PearMenuModel>();
+            Dictionary<long, PearMenuModel> menuDict = new Dictionary<long, PearMenuModel>();
             foreach (var item in sysActionList)
             {
                 PearMenuModel pearMenuData = new PearMenuModel();

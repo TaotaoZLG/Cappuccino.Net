@@ -37,14 +37,14 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         }
 
         [HttpGet, CheckPermission("system.role.edit")]
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
             var viewModel = _sysRoleService.GetList(x => x.Id == id).FirstOrDefault();
             return View(viewModel.EntityMap());
         }
 
         [CheckPermission("system.role.assign")]
-        public ActionResult Assign(int id)
+        public ActionResult Assign(long id)
         {
             var viewModel = _sysRoleService.GetList(x => x.Id == id).FirstOrDefault();
             return View(viewModel.EntityMap());
@@ -111,7 +111,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.role.delete")]
         [LogOperate(Title = "删除角色", BusinessType = (int)OperateType.Delete)]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(long id)
         {
             try
             {
@@ -131,7 +131,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             try
             {
                 var idsArray = idsStr.Substring(0, idsStr.Length).Split(',');
-                int[] ids = Array.ConvertAll<string, int>(idsArray, int.Parse);
+                long[] ids = Array.ConvertAll<string, long>(idsArray, long.Parse);
                 var result = _sysRoleService.DeleteBy(x => ids.Contains(x.Id)) > 0 ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
                 return result;
             }
@@ -143,7 +143,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.role.assign")]
         [LogOperate(Title = "角色授权", BusinessType = (int)OperateType.Authorize)]
-        public ActionResult Assign(int id, List<DtreeResponse> dataPermissions)
+        public ActionResult Assign(long id, List<DtreeResponse> dataPermissions)
         {
             // 保存数据权限
             _sysRoleService.SaveDataPermissions(id, dataPermissions);
@@ -152,7 +152,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.role.edit")]
         [LogOperate(Title = "禁用角色", BusinessType = (int)OperateType.Authorize)]
-        public ActionResult UpdateEnabledMark(int id, int enabledMark)
+        public ActionResult UpdateEnabledMark(long id, int enabledMark)
         {
             SysRoleEntity entity = new SysRoleEntity
             {

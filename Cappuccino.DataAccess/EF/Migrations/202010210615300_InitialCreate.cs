@@ -136,21 +136,6 @@ namespace Cappuccino.DataAccess.Migrations
                 .PrimaryKey(t => t.Id);
 
             CreateTable(
-                "dbo.SysLogLogon",
-                c => new
-                {
-                    Id = c.Int(nullable: false, identity: true),
-                    LogType = c.String(nullable: false, maxLength: 50),
-                    Account = c.String(nullable: false, maxLength: 50),
-                    RealName = c.String(nullable: false, maxLength: 50),
-                    Description = c.String(nullable: false, maxLength: 200),
-                    IPAddress = c.String(nullable: false, maxLength: 50),
-                    IPAddressName = c.String(nullable: false, maxLength: 50),
-                    CreateTime = c.DateTime(nullable: false),
-                })
-                .PrimaryKey(t => t.Id);
-
-            CreateTable(
                 "dbo.SysRoleAction",
                 c => new
                 {
@@ -201,7 +186,6 @@ namespace Cappuccino.DataAccess.Migrations
             DropIndex("dbo.SysActionButton", new[] { "ActionId" });
             DropTable("dbo.SysUserRole");
             DropTable("dbo.SysRoleAction");
-            DropTable("dbo.SysLogLogon");
             DropTable("dbo.SysDict");
             DropTable("dbo.SysDictDetail");
             DropTable("dbo.SysUserAction");

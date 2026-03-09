@@ -12,7 +12,7 @@ namespace Cappuccino.IBLL
         /// </summary>
         /// <param name="userId">用户ID</param>
         /// <returns></returns>
-        List<SysActionEntity> GetPermission(int userId);
+        List<SysActionEntity> GetPermission(long userId);
 
         /// <summary>
         /// 根据用户获取所拥有的菜单或按钮
@@ -20,13 +20,13 @@ namespace Cappuccino.IBLL
         /// <param name="userId">用户ID</param>
         /// <param name="type">权限类型</param>
         /// <returns></returns>
-        List<SysActionEntity> GetPermissionByType(int userId, ActionTypeEnum type);
+        List<SysActionEntity> GetPermissionByType(long userId, ActionTypeEnum type);
 
         /// <summary>
         /// 获取dtree数据格式的权限
         /// </summary>
         /// <returns></returns>
-        List<DtreeData> GetDtree(int roleId);
+        List<DtreeData> GetDtree(long roleId);
 
         /// <summary>
         /// 是否包含该权限
@@ -34,7 +34,7 @@ namespace Cappuccino.IBLL
         /// <param name="id"></param>
         /// <param name="permission"></param>
         /// <returns></returns>
-        bool HasPermission(int id, string permission);
+        bool HasPermission(long id, string permission);
 
         /// <summary>
         /// 获取菜单树
@@ -47,6 +47,6 @@ namespace Cappuccino.IBLL
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        bool DeleteByIds(int[] ids);
+        bool DeleteByIds(long[] ids);
     }
 }

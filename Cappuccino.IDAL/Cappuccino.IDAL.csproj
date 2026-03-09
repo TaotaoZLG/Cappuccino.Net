@@ -48,11 +48,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessManage\ISysFileDao.cs" />
     <Compile Include="IBaseDao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemManage\ISysAutoJobDao.cs" />
     <Compile Include="SystemManage\ISysAutoJobLogDao.cs" />
-    <Compile Include="SystemManage\ISysFileProcessiongDao.cs" />
+    <Compile Include="BusinessManage\ISysFileProcessiongDao.cs" />
     <Compile Include="SystemManage\ISysNoticeDao.cs" />
     <Compile Include="SystemManage\ISysDataAuthorizeDao.cs" />
     <Compile Include="SystemManage\ISysDepartmentDao.cs" />

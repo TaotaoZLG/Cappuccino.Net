@@ -37,14 +37,14 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         }
 
         [HttpGet, CheckPermission("system.autojob.edit")]
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
             var viewModel = _sysAutoJobService.GetList(x => x.Id == id).FirstOrDefault();
             return View(viewModel.EntityMap());
         }
 
         [HttpGet, CheckPermission("system.autojob.log")]
-        public ActionResult Log(int jobId)
+        public ActionResult Log(long jobId)
         {
             ViewBag.JobId = jobId;
             return View();
@@ -105,7 +105,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.autojob.delete")]
         [LogOperate(Title = "删除任务计划", BusinessType = (int)OperateType.Delete)]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(long id)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         #region 任务管控
         //[HttpPost, CheckPermission("system.autojob.start")]
         //[LogOperate(Title = "启动任务计划", BusinessType = (int)OperateType.Other)]
-        //public ActionResult Start(int id)
+        //public ActionResult Start(long id)
         //{
         //    var result = _sysAutoJobService.StartJob(id).Result;
         //    return result ? WriteSuccess("启动成功") : WriteError("启动失败");
@@ -130,7 +130,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         //[HttpPost, CheckPermission("system.autojob.stop")]
         //[LogOperate(Title = "停止任务计划", BusinessType = (int)OperateType.Other)]
-        //public ActionResult Stop(int id)
+        //public ActionResult Stop(long id)
         //{
         //    var result = _sysAutoJobService.StopJob(id).Result;
         //    return result ? WriteSuccess("停止成功") : WriteError("停止失败");
@@ -138,7 +138,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         //[HttpPost, CheckPermission("system.autojob.execute")]
         //[LogOperate(Title = "立即执行任务", BusinessType = (int)OperateType.Other)]
-        //public ActionResult ExecuteImmediately(int id)
+        //public ActionResult ExecuteImmediately(long id)
         //{
         //    var result = _sysAutoJobService.ExecuteJob(id).Result;
         //    return result ? WriteSuccess("执行命令已发送") : WriteError("执行失败");

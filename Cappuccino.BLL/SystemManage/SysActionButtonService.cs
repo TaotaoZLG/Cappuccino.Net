@@ -26,7 +26,7 @@ namespace Cappuccino.BLL
         }
         #endregion
 
-        public List<ButtonModel> GetButtonListByUserIdAndMenuId(int userId, string url, PositionEnum position)
+        public List<ButtonModel> GetButtonListByUserIdAndMenuId(long userId, string url, PositionEnum position)
         {
             List<ButtonModel> buttonModelList = new List<ButtonModel>();
             var sysActionButtons = _actionButtonDao.GetList(x => true).ToList();

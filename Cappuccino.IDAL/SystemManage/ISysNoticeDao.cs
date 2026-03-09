@@ -3,6 +3,6 @@ namespace Cappuccino.IDAL
 {
     public interface ISysNoticeDao : IBaseDao<SysNoticeEntity>
     {
-        SysNoticeEntity GetByKey(int id);
+        SysNoticeEntity GetByKey(long id);
     }
 }

@@ -37,7 +37,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         }
 
         [HttpGet, CheckPermission("system.notice.edit")]
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
             var viewModel = _noticeService.GetList(x => x.Id == id).FirstOrDefault();
             return View(viewModel.EntityMap());
@@ -71,7 +71,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.notice.edit")]
         [LogOperate(Title = "编辑通知公告", BusinessType = (int)OperateType.Update)]
-        public ActionResult Edit(int id, SysNoticeModel viewModel)
+        public ActionResult Edit(long id, SysNoticeModel viewModel)
         {
             if (ModelState.IsValid == false)
             {
@@ -87,7 +87,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.notice.delete")]
         [LogOperate(Title = "删除通知公告", BusinessType = (int)OperateType.Delete)]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(long id)
         {
             try
             {

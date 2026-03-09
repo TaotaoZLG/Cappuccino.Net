@@ -36,7 +36,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         }
 
         [HttpGet, CheckPermission("system.department.edit")]
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
             SysDepartmentEntity departmentEntity = _sysDepartmentService.GetList(x => x.Id == id).FirstOrDefault();
 
@@ -108,7 +108,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.department.delete")]
         [LogOperate(Title = "删除部门", BusinessType = (int)OperateType.Delete)]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(long id)
         {
             try
             {
@@ -153,7 +153,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetDepartmentDtree(int id)
+        public JsonResult GetDepartmentDtree(long id)
         {
             var data = _sysDepartmentService.GetDepartmentDtree(id);
             var result = new DtreeModel { Data = data, Status = new DtreeStatus() };

@@ -7,7 +7,7 @@ namespace Cappuccino.DAL.System
 {
     public class SysNoticeDao : BaseDao<SysNoticeEntity>, ISysNoticeDao
     {
-        public SysNoticeEntity GetByKey(int id)
+        public SysNoticeEntity GetByKey(long id)
         {
             return GetList(x => x.Id == id).FirstOrDefault();
         }

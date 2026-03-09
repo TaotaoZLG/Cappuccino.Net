@@ -2,10 +2,8 @@
 
 namespace Cappuccino.Entity
 {
-    public class SysActionButtonEntity
+    public class SysActionButtonEntity : BaseField
     {
-        public int Id { get; set; }
-
         /// <summary>
         /// 按钮编码
         /// </summary>

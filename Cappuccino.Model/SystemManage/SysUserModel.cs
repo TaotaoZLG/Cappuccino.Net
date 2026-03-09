@@ -6,7 +6,7 @@ namespace Cappuccino.Model
     {
         public string UserName { get; set; }
         public string NickName { get; set; }
-        public int? DepartmentId { get; set; }
+        public long? DepartmentId { get; set; }
         public string PasswordHash { get; set; }
         public string PasswordSalt { get; set; }
         public string HeadIcon { get; set; }

@@ -7,7 +7,7 @@ namespace Cappuccino.Model
         /// <summary>
         /// 主键
         /// </summary>
-        public virtual int Id { get; set; }
+        public virtual long Id { get; set; }
     }
 
     /// <summary>
@@ -18,7 +18,7 @@ namespace Cappuccino.Model
         /// <summary>
         /// 创建用户主键
         /// </summary>
-        public virtual int? CreateUserId { get; set; }
+        public virtual long? CreateUserId { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -28,7 +28,7 @@ namespace Cappuccino.Model
         /// <summary>
         /// 修改用户主键
         /// </summary>
-        public virtual int? UpdateUserId { get; set; }
+        public virtual long? UpdateUserId { get; set; }
 
         /// <summary>
         /// 修改时间
@@ -44,7 +44,7 @@ namespace Cappuccino.Model
         /// <summary>
         /// 创建用户主键
         /// </summary>
-        public virtual int? CreateUserId { get; set; }
+        public virtual long? CreateUserId { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -60,7 +60,7 @@ namespace Cappuccino.Model
         /// <summary>
         /// 修改用户主键
         /// </summary>
-        public virtual int? UpdateUserId { get; set; }
+        public virtual long? UpdateUserId { get; set; }
 
         /// <summary>
         /// 修改时间

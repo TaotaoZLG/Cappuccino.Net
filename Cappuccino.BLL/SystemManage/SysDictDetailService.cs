@@ -23,7 +23,7 @@ namespace Cappuccino.BLL
         /// 获取最大的排序号
         /// </summary>
         /// <returns></returns>
-        public int GetMaxSortCode(int dictId)
+        public int GetMaxSortCode(long dictId)
         {
             var result = _dictDetailDao.ExecuteSqlQuery<int?>($"SELECT MAX(SortCode) FROM SysDictDetail WHERE DictId = {dictId}").FirstOrDefault();
             int maxSortCode = result.ParseToInt();

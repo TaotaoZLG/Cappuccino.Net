@@ -7,6 +7,6 @@ namespace Cappuccino.IBLL
     {
         bool CheckLogin(string loginName, string loginPassword);
 
-        bool ModifyUserPwd(int userId, ChangePasswordModel viewModel);
+        bool ModifyUserPwd(long userId, ChangePasswordModel viewModel);
     }
 }

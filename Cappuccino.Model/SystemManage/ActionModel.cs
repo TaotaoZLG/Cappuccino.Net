@@ -6,7 +6,7 @@ namespace Cappuccino.Model
     {
         /// Id
         /// </summary>
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// 权限名
         /// </summary>
@@ -18,9 +18,9 @@ namespace Cappuccino.Model
         public string Code { get; set; }
 
         /// <summary>
-        /// 上级
+        /// 上级Id
         /// </summary>
-        public int ParentId { get; set; }
+        public long ParentId { get; set; }
 
         /// <summary>
         /// 权限类型 0为菜单 1为按钮 2为目录

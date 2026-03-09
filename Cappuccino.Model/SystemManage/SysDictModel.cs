@@ -8,9 +8,9 @@ namespace Cappuccino.Model
     public class SysDictModel : BaseEntity
     {
         /// <summary>
-        /// 父级
+        /// 父级Id
         /// </summary>
-        public int ParentId { get; set; }
+        public long ParentId { get; set; }
 
         /// <summary>
         /// 编码

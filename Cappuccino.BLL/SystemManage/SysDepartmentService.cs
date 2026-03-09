@@ -78,7 +78,7 @@ namespace Cappuccino.BLL
             return maxSortCode;
         }
 
-        public List<DtreeData> GetDepartmentDtree(int roleId)
+        public List<DtreeData> GetDepartmentDtree(long roleId)
         {
             // 获取所有部门
             List<SysDepartmentEntity> departmentList = _departmentDao.GetList(x => true).ToList();
@@ -146,7 +146,7 @@ namespace Cappuccino.BLL
             return dtreeDatas;
         }
 
-        public List<DtreeData> GetDepartmentDtree1(int roleId)
+        public List<DtreeData> GetDepartmentDtree1(long roleId)
         {
             // 1. 批量查询基础数据（仅3次数据库查询，避免循环查库）
             List<SysDepartmentEntity> departmentList = _departmentDao.GetList(x => true).ToList();

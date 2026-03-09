@@ -42,7 +42,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         }
 
         [HttpGet, CheckPermission("system.dict.edit")]
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
             var viewModel = _sysDictService.GetList(x => x.Id == id).FirstOrDefault();
             return View(viewModel.EntityMap());
@@ -92,7 +92,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.dict.delete")]
         [LogOperate(Title = "删除字典", BusinessType = (int)OperateType.Delete)]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(long id)
         {
             try
             {
@@ -112,7 +112,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             try
             {
                 var idsArray = idsStr.Substring(0, idsStr.Length).Split(',');
-                int[] ids = Array.ConvertAll<string, int>(idsArray, int.Parse);
+                long[] ids = Array.ConvertAll<string, long>(idsArray, long.Parse);
                 var result = _sysDictService.DeleteBy(x => ids.Contains(x.Id)) > 0 ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
                 return result;
             }

@@ -17,7 +17,7 @@ namespace Cappuccino.BLL
         }
         #endregion
 
-        public SysNoticeEntity GetByKey(int id)
+        public SysNoticeEntity GetByKey(long id)
         {
             return _noticeDao.GetByKey(id);
         }

@@ -12,7 +12,7 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 任务ID
         /// </summary>
-        public int JobId { get; set; }
+        public long JobId { get; set; }
 
         /// <summary>
         /// 任务名称

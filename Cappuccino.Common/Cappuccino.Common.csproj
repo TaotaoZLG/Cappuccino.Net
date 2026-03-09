@@ -170,6 +170,7 @@
     <Compile Include="Helper\ExcelHelper.cs" />
     <Compile Include="Helper\FileHelper.cs" />
     <Compile Include="Helper\GuidHelper.cs" />
+    <Compile Include="Helper\IdGeneratorHelper.cs" />
     <Compile Include="Helper\JsonHelper.cs" />
     <Compile Include="Helper\ReflectionHelper.cs" />
     <Compile Include="Helper\SessionHelper.cs" />

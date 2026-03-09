@@ -25,7 +25,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         #region 提交数据
         [HttpPost, CheckPermission("system.user.assign")]
         [LogOperate(Title = "用户授权", BusinessType = (int)OperateType.Authorize)]
-        public ActionResult Save(int userId, List<UserActionModel> list)
+        public ActionResult Save(long userId, List<UserActionModel> list)
         {
             var result = _sysUserActionService.SaveUserAction(userId, list) ? WriteSuccess("保存成功") : WriteError("保存失败");
             return result;
@@ -34,7 +34,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         #region 获取数据
         [HttpGet, CheckPermission("system.user.assign")]
-        public ActionResult GetList(int id)
+        public ActionResult GetList(long id)
         {
             var list = _sysUserActionService.GetUserActionList(id);
             var result = new { code = 0, count = list.Count(), data = list };

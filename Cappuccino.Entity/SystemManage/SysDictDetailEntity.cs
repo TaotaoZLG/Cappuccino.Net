@@ -23,7 +23,7 @@
         /// <summary>
         /// 字典Id（关联SysDict表Id）
         /// </summary>
-        public int DictId { get; set; }
+        public long DictId { get; set; }
 
         /// <summary>
         /// 排序码

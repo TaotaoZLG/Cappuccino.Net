@@ -20,7 +20,7 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 上级
         /// </summary>
-        public int ParentId { get; set; }
+        public long ParentId { get; set; }
 
         /// <summary>
         /// 权限类型 0为菜单 1为按钮 2为目录

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
@@ -56,7 +57,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         }
 
         [HttpGet, CheckPermission("system.user.edit")]
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
             ViewBag.UploadFileSize = ConfigUtils.AppSetting.GetValue("UploadFileByImgSize");
             ViewBag.UploadFileType = ConfigUtils.AppSetting.GetValue("UploadFileByImgType");
@@ -71,7 +72,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         }
 
         [HttpGet, CheckPermission("system.user.assign")]
-        public ActionResult Assign(int id)
+        public ActionResult Assign(long id)
         {
             ViewBag.UserId = id;
             return View();
@@ -110,7 +111,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                 entity.PasswordHash = passwordHash;
                 if (!string.IsNullOrEmpty(viewModel.RoleIds))
                 {
-                    var RoleIdsArray = Array.ConvertAll(viewModel.RoleIds.Split(','), s => int.Parse(s));
+                    var RoleIdsArray = Array.ConvertAll(viewModel.RoleIds.Split(','), s => long.Parse(s));
                     var roleList = _sysRoleService.GetList(x => RoleIdsArray.Contains(x.Id)).ToList();
                     entity.SysRoles = roleList;
                 }
@@ -125,7 +126,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.user.edit")]
         [LogOperate(Title = "编辑用户", BusinessType = (int)OperateType.Update)]
-        public ActionResult Edit(int id, SysUserModel viewModel)
+        public ActionResult Edit(long id, SysUserModel viewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -141,7 +142,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             var roleList = new List<SysRoleEntity>();
             if (!string.IsNullOrEmpty(viewModel.RoleIds))
             {
-                var RoleIdsArray = Array.ConvertAll(viewModel.RoleIds.Split(','), s => int.Parse(s));
+                var RoleIdsArray = Array.ConvertAll(viewModel.RoleIds.Split(','), s => long.Parse(s));
                 roleList = _sysRoleService.GetList(x => RoleIdsArray.Contains(x.Id)).ToList();
             }
             //赋值
@@ -168,7 +169,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.user.delete")]
         [LogOperate(Title = "删除用户", BusinessType = (int)OperateType.Delete)]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(long id)
         {
             try
             {
@@ -188,7 +189,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             try
             {
                 var idsArray = idsStr.Substring(0, idsStr.Length).Split(',');
-                int[] ids = Array.ConvertAll<string, int>(idsArray, int.Parse);
+                long[] ids = Array.ConvertAll<string, long>(idsArray, long.Parse);
                 var result = _sysUserService.DeleteBy(x => ids.Contains(x.Id)) > 0 ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
                 return result;
             }
@@ -200,7 +201,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.user.edit")]
         [LogOperate(Title = "禁用用户", BusinessType = (int)OperateType.Authorize)]
-        public ActionResult UpdateUserStatus(int id, int userStatus)
+        public ActionResult UpdateUserStatus(long id, int userStatus)
         {
             SysUserEntity entity = new SysUserEntity
             {
@@ -215,7 +216,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.user.initPwd")]
         [LogOperate(Title = "重置密码", BusinessType = (int)OperateType.Update)]
-        public ActionResult InitPwd(int id)
+        public ActionResult InitPwd(long id)
         {
             string salt = VerifyCodeUtils.CreateVerifyCode(5);
             string pwd = _sysConfigService.GetByConfig("sys_initPassword").ConfigValue;
@@ -234,7 +235,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.user.edit")]
         [LogOperate(Title = "修改头像", BusinessType = (int)OperateType.Update)]
-        public ActionResult UploadPortrait(int id, string portraitUrl)
+        public ActionResult UploadPortrait(long id, string portraitUrl)
         {
             SysUserEntity entity = new SysUserEntity
             {

@@ -8,7 +8,7 @@
 
         public int NoticeType { get; set; }
 
-        public int NoticeSender { get; set; }
+        public long NoticeSender { get; set; }
 
         public int NoticeAccept { get; set; }
 

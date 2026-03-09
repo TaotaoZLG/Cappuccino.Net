@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Linq;
 using System.Threading;
 using System.Web;
@@ -6,6 +7,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Cappuccino.AutoJob;
+using Cappuccino.Common.Helper;
 using Cappuccino.Common.Log;
 using Cappuccino.Web.Core.Filters;
 
@@ -51,6 +53,14 @@ namespace Cappuccino.Web
                     }
                 }
             });
+
+            // 1. 初始化雪花算法（关键：不同服务器/实例需配置不同的WorkerId，范围0-31）
+            // 示例：测试环境WorkerId=1，生产环境可通过配置文件/环境变量读取
+            var workerId = long.TryParse(ConfigurationManager.AppSettings["Snowflake.WorkerId"], out var w) ? w : 1;
+            var datacenterId = long.TryParse(ConfigurationManager.AppSettings["Snowflake.DatacenterId"], out var d) ? d : 1;
+
+            // 必须在任何地方调用 Instance 之前执行
+            IdGeneratorHelper.Instance.SetConfig(workerId, datacenterId);
 
             // 从容器中获取调度器并启动
             var _jobCenter = DependencyResolver.Current.GetService<JobCenter>();

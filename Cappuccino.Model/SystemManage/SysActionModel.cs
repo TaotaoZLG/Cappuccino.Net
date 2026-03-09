@@ -17,9 +17,9 @@ namespace Cappuccino.Model
         public string Code { get; set; }
 
         /// <summary>
-        /// 上级
+        /// 上级Id
         /// </summary>
-        public int ParentId { get; set; }
+        public long ParentId { get; set; }
 
         /// <summary>
         /// 权限类型 0为菜单 1为功能

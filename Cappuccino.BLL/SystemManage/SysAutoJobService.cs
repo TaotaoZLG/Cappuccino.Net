@@ -25,7 +25,7 @@ namespace Cappuccino.BLL.System
         /// <summary>
         /// 启动任务：更新数据库状态 + 调用调度器启动定时任务
         /// </summary>
-        public async Task<bool> StartJob(int id)
+        public async Task<bool> StartJob(long id)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace Cappuccino.BLL.System
         /// <summary>
         /// 停止任务：更新数据库状态 + 调用调度器停止任务
         /// </summary>
-        public async Task<bool> StopJob(int id)
+        public async Task<bool> StopJob(long id)
         {
             try
             {
@@ -100,7 +100,7 @@ namespace Cappuccino.BLL.System
         /// <summary>
         /// 立即执行任务：触发调度器立即执行 + 记录执行时间
         /// </summary>
-        public async Task<bool> ExecuteJob(int id)
+        public async Task<bool> ExecuteJob(long id)
         {
             try
             {

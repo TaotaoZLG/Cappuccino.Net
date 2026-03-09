@@ -1,4 +1,5 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.ModelConfiguration;
 using Cappuccino.Entity;
 
 namespace Cappuccino.DataAccess.Mapping
@@ -9,6 +10,7 @@ namespace Cappuccino.DataAccess.Mapping
         {
             this.ToTable("SysRole");
             this.HasKey(x => x.Id);
+            this.Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
             this.HasMany(x => x.SysActions).WithMany(x => x.SysRoles).Map(x => x.ToTable("SysRoleAction").MapLeftKey("RoleId").MapRightKey("ActionId"));
             this.Property(x => x.Name).HasMaxLength(50).IsRequired();
             this.Property(x => x.Code).HasMaxLength(50).IsRequired();

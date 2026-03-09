@@ -20,7 +20,7 @@ namespace Cappuccino.BLL.System
 
         public int WriteJobLog(SysAutoJobLogEntity entity)
         {
-            entity.CreateTime = DateTime.Now;
+            entity.Create();
             entity.CreateUserId = UserManager.GetCurrentUserInfo()?.Id ?? 0;
             return Insert(entity);
         }
@@ -32,7 +32,7 @@ namespace Cappuccino.BLL.System
         /// <returns>影响的行数</returns>
         public async Task<int> WriteJobLogAsync(SysAutoJobLogEntity entity)
         {
-            entity.CreateTime = DateTime.Now;
+            entity.Create();
             return await InsertAsync(entity);
         }
     }

@@ -21,9 +21,9 @@
         public string ListClass { get; set; }
 
         /// <summary>
-        /// 分类主键
+        /// 分类Id
         /// </summary>
-        public int DictId { get; set; }
+        public long DictId { get; set; }
 
         /// <summary>
         /// 排序码

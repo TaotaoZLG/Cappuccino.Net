@@ -13,7 +13,7 @@
         /// <summary>
         /// 父部门Id(0表示是根部门)
         /// </summary>
-        public int ParentId { get; set; }
+        public long ParentId { get; set; }
 
         /// <summary>
         /// 排序码

@@ -40,7 +40,7 @@ namespace Cappuccino.BLL
             // 处理新菜单权限
             if (menuPermissions != null && menuPermissions.Any())
             {
-                var actionIds = menuPermissions.Select(p => Convert.ToInt32(p.NodeId)).Distinct().ToList();
+                var actionIds = menuPermissions.Select(p => long.Parse(p.NodeId)).Distinct().ToList();
                 var actionList = _actionDao.GetList(x => actionIds.Contains(x.Id)).ToList();
                 actionList.ForEach(action => roleEntity.SysActions.Add(action));
                 //foreach (var item in actionList)
@@ -56,7 +56,7 @@ namespace Cappuccino.BLL
         /// </summary>
         /// <param name="roleId"></param>
         /// <param name="dataPermissions"></param>
-        public void SaveDataPermissions(int roleId, List<DtreeResponse> dataPermissions)
+        public void SaveDataPermissions(long roleId, List<DtreeResponse> dataPermissions)
         {
             // 删除旧数据权限
             _dataAuthorizeDao.DeleteByRoleId(roleId);
@@ -65,13 +65,13 @@ namespace Cappuccino.BLL
             if (dataPermissions != null && dataPermissions.Any())
             {
                 List<SysDataAuthorizeEntity> authorizeEntityList = new List<SysDataAuthorizeEntity>();
-                int currentUserId = UserManager.GetCurrentUserInfo().Id;
+                long currentUserId = UserManager.GetCurrentUserInfo().Id;
 
                 foreach (var dp in dataPermissions)
                 {
                     SysDataAuthorizeEntity authorizeEntity = new SysDataAuthorizeEntity
                     {
-                        DataId = dp.NodeId.ParseToInt(),
+                        DataId = dp.NodeId.ParseToLong(),
                         AuthorizeId = roleId,
                         AuthorizeType = 1, // 1表示角色
                         DataType = dp.Type == "dept" ? 2 : 3,
@@ -90,11 +90,11 @@ namespace Cappuccino.BLL
         /// <param name="roleId"></param>
         /// <param name="menuPermissions"></param>
         /// <param name="dataPermissions"></param>
-        public void SavePermissions(int roleId, List<DtreeResponse> menuPermissions, List<DtreeResponse> dataPermissions)
+        public void SavePermissions(long roleId, List<DtreeResponse> menuPermissions, List<DtreeResponse> dataPermissions)
         {
             // 处理菜单权限
             var role = _roleDao.GetList(x => x.Id == roleId).FirstOrDefault();
-            var actionIds = menuPermissions.Select(p => Convert.ToInt32(p.NodeId)).ToList();
+            var actionIds = menuPermissions.Select(p => long.Parse(p.NodeId)).ToList();
             var actions = _actionDao.GetList(x => actionIds.Contains(x.Id)).ToList();
 
             //清空权限关系
@@ -109,7 +109,7 @@ namespace Cappuccino.BLL
             if (dataPermissions != null && dataPermissions.Any())
             {
                 List<SysDataAuthorizeEntity> authorizeEntityList = new List<SysDataAuthorizeEntity>();
-                int currentUserId = UserManager.GetCurrentUserInfo().Id;
+                long currentUserId = UserManager.GetCurrentUserInfo().Id;
 
                 foreach (var dp in dataPermissions)
                 {

@@ -162,7 +162,7 @@ namespace Cappuccino.Web.Controllers
         {
             try
             {
-                int userId = UserManager.GetCurrentUserInfo().Id;
+                long userId = UserManager.GetCurrentUserInfo().Id;
                 // 验证用户是否存在
                 SysUserEntity currentUser = _sysUserService.GetList(x => x.Id == userId).FirstOrDefault();
                 if (currentUser == null)

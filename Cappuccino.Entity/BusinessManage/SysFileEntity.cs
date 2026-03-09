@@ -5,38 +5,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cappuccino.Entity.BusinessManage
+namespace Cappuccino.Entity
 {
     [Table("SysFile")]
-    public class SysFile : BaseEntity
+    public class SysFileEntity : BaseEntity
     {
         /// <summary>
         /// 文件关联Id
         /// </summary>
-        private int ObjectId { get; set; }
+        public long ObjectId { get; set; }
         /// <summary>
         /// 原始文件名
         /// </summary>
-        private string FileName { get; set; }
+        public string FileName { get; set; }
         /// <summary>
         /// 文件扩展名
         /// </summary>
-        private string FileExtension { get; set; }
+        public string FileExtension { get; set; }
         /// <summary>
         /// 文件大小 (字节)
         /// </summary>
-        private int FileSizeBytes { get; set; }
+        public int FileSizeBytes { get; set; }
         /// <summary>
         /// 文件类型
         /// </summary>
-        private string FileType { get; set; }
+        public string FileType { get; set; }
         /// <summary>
         /// 文件存储路径
         /// </summary>
-        private string FilePath { get; set; }
+        public string FilePath { get; set; }
         /// <summary>
         /// 备注
         /// </summary>
-        private string Remark { get; set; }
+        public string Remark { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace Cappuccino.DataAccess.Mapping
         {
             ToTable("SysAction");
             HasKey(x => x.Id);
-            Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
             HasOptional(x => x.SysActionMenu).WithRequired(x => x.SysAction);
             HasOptional(x => x.SysActionButton).WithRequired(x => x.SysAction);
 

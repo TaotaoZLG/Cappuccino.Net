@@ -2,10 +2,10 @@
 {
     public class SysUserActionModel
     {
-        public int Id { get; set; }
-        public int UserId { get; set; }
+        public long Id { get; set; }
+        public long UserId { get; set; }
         public virtual SysUserModel SysUser { get; set; }
-        public int ActionId { get; set; }
+        public long ActionId { get; set; }
         public virtual SysActionModel SysAction { get; set; }
         public bool HasPermisssin { get; set; }
 

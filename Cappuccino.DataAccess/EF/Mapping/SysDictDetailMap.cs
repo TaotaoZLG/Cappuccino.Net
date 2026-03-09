@@ -1,4 +1,5 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.ModelConfiguration;
 using Cappuccino.Entity;
 
 namespace Cappuccino.DataAccess.Mapping
@@ -9,6 +10,7 @@ namespace Cappuccino.DataAccess.Mapping
         {
             this.ToTable("SysDictDetail");
             this.HasKey(x => x.Id);
+            this.Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
             this.HasRequired(x => x.SysDict).WithMany(x => x.SysDictDetails).HasForeignKey(x => x.DictId);
 
             this.Property(x => x.Code).HasMaxLength(50).IsRequired();

@@ -12,12 +12,16 @@ namespace Cappuccino.IBLL
         /// <returns></returns>
         List<DtreeData> GetDepartmentTree();
 
+        /// <summary>
+        /// 获取最大排序码
+        /// </summary>
+        /// <returns></returns>
         int GetMaxSortCode();
 
         /// <summary>
         /// 获取dtree数据格式的权限
         /// </summary>
         /// <returns></returns>
-        List<DtreeData> GetDepartmentDtree(int roleId);
+        List<DtreeData> GetDepartmentDtree(long roleId);
     }
 }

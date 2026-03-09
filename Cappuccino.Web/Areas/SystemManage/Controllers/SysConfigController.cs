@@ -38,7 +38,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         }
 
         [HttpGet, CheckPermission("system.config.edit")]
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
             SysConfigEntity viewModel = _configService.GetList(x => x.Id == id).FirstOrDefault();
             return View(viewModel.EntityMap());
@@ -72,7 +72,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.config.edit")]
         [LogOperate(Title = "编辑系统参数", BusinessType = (int)OperateType.Update)]
-        public ActionResult Edit(int id, SysConfigModel viewModel)
+        public ActionResult Edit(long id, SysConfigModel viewModel)
         {
             if (ModelState.IsValid == false)
             {
@@ -120,7 +120,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         [HttpPost, CheckPermission("system.config.delete")]
         [LogOperate(Title = "删除系统参数", BusinessType = (int)OperateType.Delete)]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(long id)
         {
             try
             {

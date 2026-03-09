@@ -25,10 +25,9 @@ namespace Cappuccino.BLL.System
         /// </summary>
         public int WriteOperateLog(SysLogOperateEntity logOperate)
         {
-            // 自动填充公共信息
+            logOperate.Create();
             logOperate.IPAddress = NetHelper.GetIp; // 复用现有工具类获取IP
             logOperate.IPAddressName = NetHelper.GetIpLocation(logOperate.IPAddress); // 获取IP所在地
-            logOperate.CreateTime = DateTime.Now;
 
             return Insert(logOperate);
         }
@@ -40,7 +39,7 @@ namespace Cappuccino.BLL.System
         /// <returns>影响的行数</returns>
         public async Task<int> WriteOperateLogAsync(SysLogOperateEntity logOperate)
         {
-            logOperate.CreateTime = DateTime.Now;
+            logOperate.Create();
 
             return await InsertAsync(logOperate);
         }

@@ -2,7 +2,7 @@
 {
     public class SysActionMenuModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 图标

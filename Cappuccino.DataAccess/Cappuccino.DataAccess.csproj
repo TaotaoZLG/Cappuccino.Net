@@ -61,7 +61,6 @@
     <Compile Include="EF\Mapping\SysActionMenuMap.cs" />
     <Compile Include="EF\Mapping\SysDictDetailMap.cs" />
     <Compile Include="EF\Mapping\SysDictMap.cs" />
-    <Compile Include="EF\Mapping\SysLogLogonMap.cs" />
     <Compile Include="EF\Mapping\SysRoleMap.cs" />
     <Compile Include="EF\Mapping\SysUserActionMap.cs" />
     <Compile Include="EF\Mapping\SysUserMap.cs" />

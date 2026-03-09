@@ -37,7 +37,7 @@ namespace Cappuccino.AutoJob
 
         public async Task Execute(IJobExecutionContext context)
         {
-            var jobId = context.JobDetail.JobDataMap.GetInt("JobId");
+            var jobId = context.JobDetail.JobDataMap.GetLong("JobId");
             // 获取数据库中的任务
             SysAutoJobEntity jobEntity = _jobService.GetList(x => x.Id == jobId).FirstOrDefault();
 
