@@ -92,6 +92,7 @@
                             { field: 'url', minWidth: 200, title: '请求地址' }, 
                             { field: 'code', title: '权限标识' },
                             { field: 'sortCode', title: '排序' },
+                            { title: 'ID', field: 'id', hide: true },
                             { title: '操作', templet: '#operationTpl', width: 150, align: 'center' }
                         ]
                     ],
@@ -141,6 +142,7 @@
                 if (obj.event === 'delete') {
                     window.delete(obj);
                 } else if (obj.event === 'edit') {
+                    console.log(obj);
                     window.edit(obj.data.id);
                 }
             })

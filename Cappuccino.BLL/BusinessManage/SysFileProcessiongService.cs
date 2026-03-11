@@ -116,7 +116,7 @@ namespace Cappuccino.BLL
                     string FilePath = aiResult.ImageType;
                     string AIRecognitionResult = aiResult.IdCardInfo.IdNumber;
 
-                    long Id = IdGeneratorHelper.Instance.GetId();
+                    long Id = IdGeneratorHelper.Instance.NextId();
 
                     // 保存文件信息到数据库
                     _fileDao.Insert(new SysFileEntity

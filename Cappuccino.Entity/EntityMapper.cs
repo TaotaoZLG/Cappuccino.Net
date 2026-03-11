@@ -183,5 +183,17 @@ namespace Cappuccino.Entity
             return Mapper.Map<SysConfigModel, SysConfigEntity>(model);
         }
         #endregion
+
+        #region SysTemplate
+        public static SysTemplateModel EntityMap(this SysTemplateEntity model)
+        {
+            return Mapper.Map<SysTemplateEntity, SysTemplateModel>(model);
+        }
+
+        public static SysTemplateEntity EntityMap(this SysTemplateModel model)
+        {
+            return Mapper.Map<SysTemplateModel, SysTemplateEntity>(model);
+        }
+        #endregion
     }
 }

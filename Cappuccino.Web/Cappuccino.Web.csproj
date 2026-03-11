@@ -16,7 +16,7 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <Use64BitIISExpress />
+    <Use64BitIISExpress>true</Use64BitIISExpress>
     <IISExpressSSLPort>44342</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -558,6 +558,7 @@
     <Content Include="Configs\database.config" />
     <Content Include="Resource\Upload\CompressTemp\f9fa3a77-b3dc-411d-a531-fe3bd3b86b2c.rar" />
     <Content Include="Areas\BusinessManage\Views\SysTemplate\Index.cshtml" />
+    <Content Include="Areas\BusinessManage\Views\SysTemplate\Create.cshtml" />
     <None Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Resource\Upload\ValidFiles\02a76d55-0529-4201-8abc-6d6bc445921d.png" />
     <Content Include="Resource\Upload\ValidFiles\02cfac80-ebe0-4353-9ad3-cdb35397874e.png" />

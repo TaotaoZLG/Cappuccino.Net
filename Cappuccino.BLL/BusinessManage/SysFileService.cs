@@ -23,14 +23,9 @@ namespace Cappuccino.BLL
         }
         #endregion
 
-        /// <summary>
-        /// 异步写入
-        /// </summary>
-        /// <param name="logOperate">操作日志实体</param>
-        /// <returns>影响的行数</returns>
         public async Task<int> SaveFileAsync(SysFileEntity entity)
         {
-            entity.Id = IdGeneratorHelper.Instance.GetId();
+            entity.Create();
             return await InsertAsync(entity);
         }
     }

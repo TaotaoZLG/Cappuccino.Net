@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Web;
 using System.Web.Mvc;
+using Cappuccino.Common.Helper;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Cappuccino.Web.Core.Json
 {
@@ -10,6 +12,8 @@ namespace Cappuccino.Web.Core.Json
     /// </summary>
     public class JsonNetResult : JsonResult
     {
+        public JsonSerializerSettings Settings { get; set; }
+
         public JsonNetResult()
         {
             Settings = new JsonSerializerSettings
@@ -19,11 +23,11 @@ namespace Cappuccino.Web.Core.Json
                 //日期格式化，默认的格式也不好看
                 DateFormatString = "yyyy-MM-dd HH:mm:ss",
                 //json中属性开头字母小写的驼峰命名
-                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                //添加Long转换器（解决前端JS精度丢失）
+                Converters = { new LongToStringConverter() }
             };
         }
-
-        public JsonSerializerSettings Settings { get; private set; }
 
         public override void ExecuteResult(ControllerContext context)
         {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
+using Cappuccino.Common.Helper;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
@@ -89,6 +90,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                     CreateUserId = UserManager.GetCurrentUserInfo().Id,
                     UpdateUserId = UserManager.GetCurrentUserInfo().Id
                 };
+                sysAction.Create();
 
                 if (viewModel.Type == ActionTypeEnum.Menu)
                 {

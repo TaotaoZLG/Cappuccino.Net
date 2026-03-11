@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessManage\SysTemplateDao.cs" />
     <Compile Include="BusinessManage\SysFileDao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BusinessManage\SysFileProcessiongDao.cs" />

@@ -52,6 +52,7 @@
     <Compile Include="BusinessManage\SysCaseInfoEntity.cs" />
     <Compile Include="BusinessManage\SysFileEntity.cs" />
     <Compile Include="BusinessManage\SysFileRecognitionEntity.cs" />
+    <Compile Include="BusinessManage\SysTemplateEntity.cs" />
     <Compile Include="EntityMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemManage\SysConfigEntity.cs" />

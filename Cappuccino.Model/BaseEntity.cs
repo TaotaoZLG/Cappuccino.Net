@@ -1,4 +1,5 @@
 ﻿using System;
+using Cappuccino.Common.Helper;
 
 namespace Cappuccino.Model
 {

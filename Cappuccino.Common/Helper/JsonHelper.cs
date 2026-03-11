@@ -150,6 +150,40 @@ namespace Cappuccino.Common.Helper
     }
 
     /// <summary>
+    /// 将Long类型序列化为字符串（解决前端JS精度丢失），反序列化时字符串转回Long
+    /// </summary>
+    public class LongToStringConverter : JsonConverter
+    {
+        // 匹配long/nullable long类型
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(long) || objectType == typeof(long?);
+        }
+
+        // 前端传字符串Id → 后端反序列化为long
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.Value == null) return null;
+            if (long.TryParse(reader.Value.ToString(), out var result))
+            {
+                return result;
+            }
+            return null;
+        }
+
+        // 后端序列化 → 将long转为字符串返回前端
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+            writer.WriteValue(value.ToString());
+        }
+    }
+
+    /// <summary>
     /// DateTime类型序列化的时候，转成指定的格式
     /// </summary>
     public class DateTimeJsonConverter : JsonConverter

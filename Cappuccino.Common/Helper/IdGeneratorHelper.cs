@@ -89,7 +89,7 @@ namespace Cappuccino.Common.Helper
         /// <summary>
         /// 生成下一个唯一ID
         /// </summary>
-        public long GetId()
+        public long NextId()
         {
             // 如果尚未显式配置，则自动标记为已初始化（使用默认值）
             if (!_initialized)

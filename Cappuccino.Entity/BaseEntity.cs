@@ -17,7 +17,7 @@ namespace Cappuccino.Entity
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [JsonConverter(typeof(StringJsonConverter))]
+        [JsonConverter(typeof(LongToStringConverter))]
         public virtual long Id { get; set; }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Cappuccino.Entity
         /// </summary>
         public virtual void CreateId()
         {
-            this.Id = IdGeneratorHelper.Instance.GetId();
+            this.Id = IdGeneratorHelper.Instance.NextId();
         }
     }
 
@@ -55,6 +55,20 @@ namespace Cappuccino.Entity
         /// </summary>
         [JsonConverter(typeof(DateTimeJsonConverter))]
         public DateTime? UpdateTime { get; set; }
+
+        public void Create()
+        {
+            base.CreateId();
+
+            if (this.CreateTime == null)
+            {
+                this.CreateTime = DateTime.Now;
+            }
+            if (this.UpdateTime == null)
+            {
+                this.UpdateTime = DateTime.Now;
+            }
+        }
     }
 
     /// <summary>
