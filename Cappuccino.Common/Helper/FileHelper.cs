@@ -13,11 +13,34 @@ namespace Cappuccino.Common.Helper
 {
     public class FileHelper
     {
+        /// <summary>
+        /// 判断目录是否存在，不存在则创建
+        /// </summary>
+        /// <param name="directory">目录路径</param>
         public static void CreateDirectory(string directory)
         {
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
+            }
+        }
+
+        /// <summary>
+        /// 判断目录是否存在，不存在则创建（支持文件路径，自动提取目录）
+        /// </summary>
+        /// <param name="directoryPath">目录路径（支持文件路径，自动提取目录）</param>
+        public static void EnsureDirectoryExists(string directoryPath)
+        {
+            if (string.IsNullOrEmpty(directoryPath)) return;
+
+            // 如果是文件路径，提取所在目录
+            string targetDir = Path.HasExtension(directoryPath)
+                ? Path.GetDirectoryName(directoryPath)
+                : directoryPath;
+
+            if (!Directory.Exists(targetDir))
+            {
+                Directory.CreateDirectory(targetDir);
             }
         }
 
@@ -76,6 +99,8 @@ namespace Cappuccino.Common.Helper
         {
             filePath = filePath.Replace("../", string.Empty);
             filePath = filePath.Replace("..", string.Empty);
+            filePath = filePath.Replace("~", string.Empty);
+            filePath = filePath.Replace("~/", string.Empty);
             filePath = filePath.TrimStart('/');
             return filePath;
         }

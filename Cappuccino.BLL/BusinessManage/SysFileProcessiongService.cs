@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Cappuccino.Common.Extensions;
@@ -12,14 +11,13 @@ using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
-using static Cappuccino.Common.Helper.AIRecognitionHelper;
 
 namespace Cappuccino.BLL
 {
     public class SysFileProcessiongService : BaseService<SysCaseInfoEntity>, ISysFileProcessiongService
     {
-        private ISysFileProcessiongDao _fileProcessiongDao;
-        private ISysFileDao _fileDao;
+        private readonly ISysFileProcessiongDao _fileProcessiongDao;
+        private readonly ISysFileDao _fileDao;
 
         #region 依赖注入
         public SysFileProcessiongService(ISysFileProcessiongDao fileProcessiongDao, ISysFileDao fileDao)
@@ -32,156 +30,109 @@ namespace Cappuccino.BLL
         #endregion
 
         /// <summary>
-        /// 批量处理压缩包（异步）- 仅返回进度，不推送SignalR
-        /// 执行完整流程：解压→过滤→AI识别→入库→清理
+        /// 处理压缩包图片（解压→归档→OCR→生成Excel→打包→清理）
         /// </summary>
-        /// <param name="file">上传的压缩包文件</param>
-        /// <param name="cancellationToken">取消令牌</param>
-        /// <param name="progress">进度回调（由Controller传入）</param>
-        /// <returns>处理结果</returns>
-        public async Task<string> ProcessCompressFileAsync(HttpPostedFileBase file, CancellationToken cancellationToken, IProgress<ProcessProgress> progress)
+        /// <param name="compressFilePath">已保存的压缩包物理路径</param>
+        /// <param name="extractRule">归档规则</param>
+        /// <param name="batchId">批次ID</param>
+        /// <param name="progressAction">进度回调</param>
+        /// <returns>导出ZIP路径</returns>
+        public async Task<string> ProcessCompressFileAsync(string compressFilePath, int extractRule, string batchId, Action<ProcessProgress> progressAction)
         {
-            // 1. 基础校验
-            var batchId = GuidHelper.GetGuid(true);
-            var supportCompressFormats = ConfigUtils.AppSetting.GetValue("CompressSupportFormats");
+            // 1. 从配置文件获取路径（保持为虚拟路径，不再这里转物理路径）
+            string tempRootPath = ConfigUtils.AppSetting.GetValue("TempRootPath");
+            string exportRootPath = ConfigUtils.AppSetting.GetValue("ExportRootPath");
+            string archiveRootPath = ConfigUtils.AppSetting.GetValue("ArchiveRootPath");
 
-            // 2. 定义路径
-            var CompressTempPath = ConfigUtils.AppSetting.GetValue("CompressTempPath");
-            var UnzipTempPath = ConfigUtils.AppSetting.GetValue("UnzipTempPath");
-            var ValidFilePath = ConfigUtils.AppSetting.GetValue("ValidFilePath");
-            var uploadTempDir = FileHelper.GetPhysicalPath(CompressTempPath);
-            var unzipTempDir = FileHelper.GetPhysicalPath(UnzipTempPath) + batchId + "\\";
-            var validImageDir = FileHelper.GetPhysicalPath(ValidFilePath);
+            // 重新定义用于 IO 操作的物理路径变量 (基于原代码逻辑补充)
+            string tempRootDir = Path.Combine(FileHelper.GetPhysicalPath(tempRootPath), batchId);
+            string unzipDir = Path.Combine(tempRootDir, "unzip");
+            string archiveDir = Path.Combine(FileHelper.GetPhysicalPath(archiveRootPath), batchId);
+            string exportRootDir_Physical = Path.Combine(FileHelper.GetPhysicalPath(exportRootPath), batchId); // 物理路径用于IO
 
-            // 3. 保存上传的压缩包
-            var fileName = file.FileName;
-            var fileExt = Path.GetExtension(fileName).TrimStart('.').ToLower();
-            var zipPath = Path.Combine(uploadTempDir, $"{batchId}.{fileExt}");
-            file.SaveAs(zipPath);
+            // 定义用于传递给新方法的虚拟路径
+            string exportRootDir_Virtual = Path.Combine(exportRootPath, batchId);
+            string finalZipFileName = string.Format("压缩包处理结果_{0}.zip", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+            string finalZipPath_Virtual = Path.Combine(exportRootPath, string.Format("final_{0}", finalZipFileName)); // 虚拟路径
+
+            // 统一创建所有批次目录 (使用物理路径)
+            FileHelper.EnsureDirectoryExists(tempRootDir);
+            FileHelper.EnsureDirectoryExists(unzipDir);
+            FileHelper.EnsureDirectoryExists(archiveDir);
+            FileHelper.EnsureDirectoryExists(exportRootDir_Physical);
 
             try
-            {               
-                // 4. 解压压缩包（异步）- 进度通过回调返回
-                progress.Report(new ProcessProgress
-                {
-                    BatchId = batchId,
-                    Type = "Unzip",
-                    Progress = 0,
-                    Message = "开始解压压缩包..."
-                });
-                await CompressHelper.UnzipFileAsync(zipPath, unzipTempDir, batchId, progress);
+            {
+                // 3. 解压压缩包 (compressFilePath 是物理路径，unzipDir 是物理路径)
+                List<string> unzipFiles = await CompressHelper.UnzipFileAsync(compressFilePath, unzipDir, batchId, progressAction).ConfigureAwait(false);
 
-                // 5. 过滤有效图片
-                progress.Report(new ProcessProgress
-                {
-                    BatchId = batchId,
-                    Type = "Filter",
-                    Progress = 0,
-                    Message = "开始过滤有效图片..."
-                });
-                var validImages = CompressHelper.FilterValidImages(unzipTempDir, batchId, progress);
+                // 4. 按规则归档文件 (unzipFiles 是物理路径列表，archiveDir 是物理路径)
+                FileArchiveRuleEnum rule = (FileArchiveRuleEnum)extractRule;
+                Dictionary<string, List<string>> archiveDict = await CompressHelper.ArchiveFilesAsync(unzipFiles, archiveDir, rule, batchId, progressAction).ConfigureAwait(false);
 
-                // 6. AI识别 + 入库 + 移动有效图片
-                progress.Report(new ProcessProgress
+                // 5. 过滤图片并OCR识别 (imagePaths 是物理路径)
+                Dictionary<string, Dictionary<string, string>> ocrResultDict = new Dictionary<string, Dictionary<string, string>>();
+                foreach (var folderItem in archiveDict)
                 {
-                    BatchId = batchId,
-                    Type = "Recognize",
-                    Progress = 0,
-                    Message = $"共识别到{validImages.Count}张有效图片..."
-                });
-                var total = validImages.Count;
-                var processed = 0;
-                foreach (var image in validImages)
-                {
-                    if (cancellationToken.IsCancellationRequested) break;
-                    processed++;
+                    string folderName = folderItem.Key;
+                    List<string> filePaths = folderItem.Value;
 
-                    // AI识别
-                    AIRecognitionHelper.AIRecognitionResult aiResult = await AIRecognitionHelper.RecognizeImageAsync(image, batchId, progress);
-                    if (!aiResult.Success)
+                    List<string> imageFiles = await CompressHelper.FilterImageFilesAsync(filePaths, batchId, progressAction).ConfigureAwait(false);
+                    if (imageFiles.Count == 0)
                     {
-                        progress.Report(new ProcessProgress
+                        progressAction.Invoke(new ProcessProgress
                         {
                             BatchId = batchId,
-                            Type = "Recognize",
-                            Progress = (int)((processed / (double)total) * 100),
-                            Message = $"识别失败：{image}，原因：{aiResult.Message}"
+                            Progress = 0,
+                            Type = "Filter",
+                            Message = $"文件夹{folderName}无有效图片，跳过OCR识别"
                         });
                         continue;
                     }
 
-                    // 移动有效图片
-                    var targetPath = CompressHelper.MoveValidImage(image, validImageDir);
-
-                    string FilePath = aiResult.ImageType;
-                    string AIRecognitionResult = aiResult.IdCardInfo.IdNumber;
-
-                    long Id = IdGeneratorHelper.Instance.NextId();
-
-                    // 保存文件信息到数据库
-                    _fileDao.Insert(new SysFileEntity
+                    Dictionary<string, string> ocrResults = new Dictionary<string, string>();
+                    foreach (var imagePath in imageFiles)
                     {
-                        Id = Id,
-                        ObjectId = Id,
-                        FileName = fileName,
-                        FilePath = zipPath,
-                        FileType = fileExt
-                    });
-
-                    // 识别结果入库
-                    Insert(new SysCaseInfoEntity
-                    {
-                        Id = Id,
-                        CustName = "Cappuccino客户",
-                        CustIDNumber= AIRecognitionResult,
-                        BatchId = batchId,
-                        Remark1 = AIRecognitionResult
-                    });
-
-                    // 反馈识别进度（核心：仅返回进度数据，不推送SignalR）
-                    progress.Report(new ProcessProgress
-                    {
-                        BatchId = batchId,
-                        Type = "Recognize",
-                        Progress = (int)((processed / (double)total) * 100),
-                        Message = $"已处理 {processed}/{total} 张图片，识别类型：{aiResult.ImageType}"
-                    });
+                        string ocrText = await AIRecognitionHelper.ImageOcrRecognizeAsync(imagePath, batchId, progressAction).ConfigureAwait(false);
+                        ocrResults.Add(imagePath, ocrText);
+                    }
+                    ocrResultDict.Add(folderName, ocrResults);
                 }
 
-                // 7. 清理临时文件
-                progress.Report(new ProcessProgress
-                {
-                    BatchId = batchId,
-                    Type = "Clean",
-                    Progress = 0,
-                    Message = "开始清理临时文件..."
-                });
-                CompressHelper.CleanTempFiles(unzipTempDir, batchId, progress);
-                File.Delete(zipPath); // 删除上传的压缩包
+                // 6. 生成Excel识别结果 (excelPath 需要是物理路径以便写入文件)
+                string excelFileName = string.Format("OCR识别结果_{0}.xlsx", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+                string excelPath_Physical = Path.Combine(exportRootDir_Physical, excelFileName);
+                await CompressHelper.GenerateOcrExcelAsync(ocrResultDict, excelPath_Physical, batchId, progressAction).ConfigureAwait(false);
 
-                // 处理完成
-                progress.Report(new ProcessProgress
+                // 7. 复制归档文件夹到导出目录 (使用物理路径)
+                foreach (var folderItem in archiveDict)
                 {
-                    BatchId = batchId,
-                    Type = "Finish",
-                    Progress = 100,
-                    Message = $"批量处理完成，共识别有效图片 {validImages.Count} 张"
-                });
+                    string sourceFolder = Path.Combine(archiveDir, folderItem.Key);
+                    string targetFolder = Path.Combine(exportRootDir_Physical, folderItem.Key);
+                    CompressHelper.DirectoryCopy(sourceFolder, targetFolder, true);
+                }
+
+                // 8. 【修改点】打包导出目录为最终ZIP
+                // 只传虚拟路径给 PackFolderToZipAsync
+                await CompressHelper.PackFolderToZipAsync(exportRootDir_Virtual, finalZipPath_Virtual, batchId, progressAction).ConfigureAwait(false);
+
+                // 9. 清理临时目录
+                await CompressHelper.CleanTempDirAsync(tempRootDir, batchId, progressAction).ConfigureAwait(false);
+
+                return finalZipPath_Virtual;
             }
             catch (Exception ex)
             {
-                // 异常处理
-                progress.Report(new ProcessProgress
+                progressAction.Invoke(new ProcessProgress
                 {
                     BatchId = batchId,
-                    Type = "Error",
                     Progress = 0,
-                    Message = $"批量处理失败：{ex.Message}"
+                    Type = "Error",
+                    Message = $"处理失败：{ex.Message}"
                 });
-
-                Log4netHelper.Error($"批量处理失败，BatchId={batchId}，错误信息：{ex}");
+                await CompressHelper.CleanTempDirAsync(tempRootDir, batchId, progressAction);
+                throw;
             }
-            return batchId;
         }
     }
 }

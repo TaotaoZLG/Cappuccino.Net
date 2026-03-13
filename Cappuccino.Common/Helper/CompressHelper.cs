@@ -1,219 +1,645 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Cappuccino.Common.Util;
-using HashLib;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using SharpCompress.Archives;
+using SharpCompress.Archives.Rar;
+using SharpCompress.Archives.SevenZip;
+using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
 
 namespace Cappuccino.Common.Helper
 {
-    /// <summary>
-    /// 压缩包解压+文件过滤工具类
-    /// 贴合项目现有工具类风格（如VerifyCodeUtils）
-    /// </summary>
     public static class CompressHelper
     {
         /// <summary>
-        /// 解压压缩包（异步）- 兼容多层文件夹，保留层级结构
+        /// 支持的压缩包格式
         /// </summary>
-        public static async Task UnzipFileAsync(string zipPath, string unzipDir, string batchId, IProgress<ProcessProgress> progress)
+        private static readonly List<string> SupportCompressExts = new List<string> { ".zip", ".rar", ".7z" };
+        /// <summary>
+        /// 支持的图片格式
+        /// </summary>
+        private static readonly List<string> SupportImageExts = new List<string> { ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff" };
+
+        /// <summary>
+        /// 解压压缩包（递归处理目录层级）
+        /// </summary>
+        /// <param name="compressFilePath">压缩包路径</param>
+        /// <param name="unzipDir">解压目录</param>
+        /// <param name="batchId">批次ID</param>
+        /// <param name="progressAction">进度回调</param>
+        /// <returns>解压后的所有文件路径</returns>
+        public static async Task<List<string>> UnzipFileAsync(string compressFilePath, string unzipDir, string batchId, Action<ProcessProgress> progressAction)
         {
-            if (!Directory.Exists(unzipDir)) Directory.CreateDirectory(unzipDir);
+            FileHelper.EnsureDirectoryExists(unzipDir);    
+
+            return await Task.Run(() =>
+            {
+                if (!File.Exists(compressFilePath))
+                {
+                    throw new FileNotFoundException("压缩包文件不存在", compressFilePath);
+                }
+                var fileExt = Path.GetExtension(compressFilePath).ToLower();
+                if (!SupportCompressExts.Contains(fileExt))
+                {
+                    throw new NotSupportedException($"不支持的压缩格式：{fileExt}，仅支持{string.Join(",", SupportCompressExts)}");
+                }
+
+                FileHelper.EnsureDirectoryExists(unzipDir);
+
+                progressAction.Invoke(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 10,
+                    Type = "Unzip",
+                    Message = $"开始解压压缩包：{Path.GetFileName(compressFilePath)}"
+                });
+
+                List<string> allFiles = new List<string>();
+                IArchive archive = null;
+                try
+                {
+                    // 兼容C#7.3 传统switch写法，不使用简写
+                    switch (fileExt)
+                    {
+                        case ".zip":
+                            archive = ZipArchive.Open(compressFilePath);
+                            break;
+                        case ".rar":
+                            archive = RarArchive.Open(compressFilePath);
+                            break;
+                        case ".7z":
+                            archive = SevenZipArchive.Open(compressFilePath);
+                            break;
+                        default:
+                            throw new InvalidOperationException("无法识别的压缩包格式");
+                    }
+
+                    if (archive == null)
+                    {
+                        throw new InvalidOperationException("无法识别的压缩包格式");
+                    }
+
+                    // 递归获取所有文件（含子目录）
+                    var entries = archive.Entries.Where(x => !x.IsDirectory).ToList();
+                    int total = entries.Count;
+                    int processed = 0;
+
+                    foreach (var entry in entries)
+                    {
+                        var entryFilePath = Path.Combine(unzipDir, entry.Key);
+                        // 统一创建子目录
+                        FileHelper.EnsureDirectoryExists(entryFilePath);
+
+                        // 解压文件
+                        entry.WriteToFile(entryFilePath, new ExtractionOptions
+                        {
+                            Overwrite = true,
+                            ExtractFullPath = true
+                        });
+                        allFiles.Add(entryFilePath);
+                        processed++;
+
+                        // 更新进度
+                        int progress = 10 + (int)((processed / (double)total) * 20);
+                        progressAction.Invoke(new ProcessProgress
+                        {
+                            BatchId = batchId,
+                            Progress = progress,
+                            Type = "Unzip",
+                            Message = $"已解压：{entry.Key}（{processed}/{total}）"
+                        });
+                    }
+
+                    progressAction.Invoke(new ProcessProgress
+                    {
+                        BatchId = batchId,
+                        Progress = 30,
+                        Type = "Unzip",
+                        Message = $"压缩包解压完成，共解压{total}个文件"
+                    });
+                    return allFiles;
+                }
+                finally
+                {
+                    archive?.Dispose();
+                }
+            });
+        }
+
+        /// <summary>
+        /// 根据归档规则归档文件（相同规则文件名的文件存放到同一个文件夹）
+        /// </summary>
+        /// <param name="filePaths">待归档的文件路径</param>
+        /// <param name="archiveRootDir">归档根目录</param>
+        /// <param name="rule">归档规则</param>
+        /// <param name="batchId">批次ID</param>
+        /// <param name="progressAction">进度回调</param>
+        /// <returns>归档后的目录字典（文件夹名→文件列表）</returns>
+        public static async Task<Dictionary<string, List<string>>> ArchiveFilesAsync(List<string> filePaths, string archiveRootDir, FileArchiveRuleEnum rule, string batchId, Action<ProcessProgress> progressAction)
+        {
+            // 统一创建目录
+            FileHelper.EnsureDirectoryExists(archiveRootDir);
+
+            return await Task.Run(() =>
+            {
+                progressAction.Invoke(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 35,
+                    Type = "Archive",
+                    Message = $"开始按规则归档文件，规则：{rule.ToString()}"
+                });
+
+                #region 需求1核心：先按规则分组，同组文件放入同一文件夹
+                // 1. 按归档规则分组，key=目标文件夹名，value=同组文件路径列表
+                Dictionary<string, List<string>> groupDict = new Dictionary<string, List<string>>();
+                foreach (var filePath in filePaths)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(filePath);
+                    string targetFolderName = GetTargetFolderName(fileName, rule);
+
+                    // 同规则文件名分到同一组
+                    if (!groupDict.ContainsKey(targetFolderName))
+                    {
+                        groupDict.Add(targetFolderName, new List<string>());
+                    }
+                    groupDict[targetFolderName].Add(filePath);
+                }
+
+                // 2. 处理重复文件夹名（整组加序号，而非单文件）
+                Dictionary<string, List<string>> archiveDict = new Dictionary<string, List<string>>();
+                foreach (var groupItem in groupDict)
+                {
+                    string targetFolderName = groupItem.Key;
+                    List<string> groupFiles = groupItem.Value;
+
+                    // 处理重名
+                    string finalFolderName = targetFolderName;
+                    int index = 1;
+                    while (Directory.Exists(Path.Combine(archiveRootDir, finalFolderName)))
+                    {
+                        finalFolderName = $"{targetFolderName}_{index}";
+                        index++;
+                    }
+
+                    // 创建归档文件夹
+                    string targetFolderPath = Path.Combine(archiveRootDir, finalFolderName);
+                    FileHelper.EnsureDirectoryExists(targetFolderPath);
+
+                    // 复制同组所有文件到该文件夹
+                    List<string> archivedFilePaths = new List<string>();
+                    foreach (var filePath in groupFiles)
+                    {
+                        string targetFilePath = Path.Combine(targetFolderPath, Path.GetFileName(filePath));
+                        File.Copy(filePath, targetFilePath, true);
+                        archivedFilePaths.Add(targetFilePath);
+                    }
+
+                    // 加入结果字典
+                    archiveDict.Add(finalFolderName, archivedFilePaths);
+                }
+                #endregion
+
+                progressAction.Invoke(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 45,
+                    Type = "Archive",
+                    Message = $"文件归档完成，共创建{archiveDict.Count}个文件夹"
+                });
+                return archiveDict;
+            });
+        }
+
+        /// <summary>
+        /// 根据规则获取目标文件夹名（保留原有自动降级规则）
+        /// </summary>
+        /// <param name="fileName">文件名（无扩展名）</param>
+        /// <param name="rule">归档规则</param>
+        /// <returns>目标文件夹名</returns>
+        private static string GetTargetFolderName(string fileName, FileArchiveRuleEnum rule)
+        {
+            string folderName = fileName;
+            // 兼容C#7.3 传统switch写法
+            switch (rule)
+            {
+                case FileArchiveRuleEnum.SystemDefault:
+                    // 自动降级：规则1→规则2→规则3
+                    folderName = GetUnderlineFirstSegment(fileName);
+                    if (string.IsNullOrEmpty(folderName) || folderName == fileName)
+                    {
+                        folderName = GetNameIdCardSegment(fileName);
+                    }
+                    if (string.IsNullOrEmpty(folderName) || folderName == fileName)
+                    {
+                        folderName = fileName;
+                    }
+                    break;
+                case FileArchiveRuleEnum.UnderlineFirstSegment:
+                    folderName = GetUnderlineFirstSegment(fileName);
+                    break;
+                case FileArchiveRuleEnum.NameIdCard:
+                    folderName = GetNameIdCardSegment(fileName);
+                    break;
+                case FileArchiveRuleEnum.OriginalFileName:
+                    folderName = fileName;
+                    break;
+                default:
+                    folderName = fileName;
+                    break;
+            }
+            // 过滤非法字符
+            folderName = SanitizeFolderName(folderName);
+            return folderName;
+        }
+
+        /// <summary>
+        /// 下划线分隔取首段
+        /// </summary>
+        private static string GetUnderlineFirstSegment(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return fileName;
+            }
+            var segments = fileName.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+            return segments.Length > 0 ? segments[0] : fileName;
+        }
+
+        /// <summary>
+        /// 提取姓名+身份证号/身份证号+姓名
+        /// </summary>
+        private static string GetNameIdCardSegment(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return fileName;
+            }
+            // 匹配身份证号（18位）
+            var idCardRegex = new Regex(@"\d{17}[\dXx]");
+            var idCardMatch = idCardRegex.Match(fileName);
+            if (idCardMatch.Success)
+            {
+                return idCardMatch.Value;
+            }
+            // 匹配姓名（中文）+身份证号 格式
+            var nameIdCardRegex = new Regex(@"([\u4e00-\u9fa5]+)[-_]?(\d{17}[\dXx])|(\d{17}[\dXx])[-_]?([\u4e00-\u9fa5]+)");
+            var nameIdCardMatch = nameIdCardRegex.Match(fileName);
+            if (nameIdCardMatch.Success)
+            {
+                return nameIdCardMatch.Value;
+            }
+            return fileName;
+        }
+
+        /// <summary>
+        /// 过滤文件夹名非法字符
+        /// </summary>
+        private static string SanitizeFolderName(string folderName)
+        {
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                folderName = folderName.Replace(c.ToString(), "_");
+            }
+            return folderName.Trim();
+        }
+
+        /// <summary>
+        /// 过滤有效图片文件
+        /// </summary>
+        /// <param name="filePaths">文件路径列表</param>
+        /// <param name="batchId">批次ID</param>
+        /// <param name="progressAction">进度回调</param>
+        /// <returns>有效图片文件路径</returns>
+        public static async Task<List<string>> FilterImageFilesAsync(List<string> filePaths, string batchId, Action<ProcessProgress> progressAction)
+        {
+            return await Task.Run(() =>
+            {
+                progressAction.Invoke(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 50,
+                    Type = "Filter",
+                    Message = "开始过滤有效图片文件"
+                });
+
+                List<string> imageFiles = new List<string>();
+                int total = filePaths.Count;
+                int processed = 0;
+
+                foreach (var filePath in filePaths)
+                {
+                    string fileExt = Path.GetExtension(filePath).ToLower();
+                    if (SupportImageExts.Contains(fileExt))
+                    {
+                        imageFiles.Add(filePath);
+                    }
+                    processed++;
+
+                    int progress = 50 + (int)((processed / (double)total) * 5);
+                    progressAction.Invoke(new ProcessProgress
+                    {
+                        BatchId = batchId,
+                        Progress = progress,
+                        Type = "Filter",
+                        Message = $"已过滤：{Path.GetFileName(filePath)}（有效图片：{imageFiles.Count}/{processed}）"
+                    });
+                }
+
+                progressAction.Invoke(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 55,
+                    Type = "Filter",
+                    Message = $"图片过滤完成，共筛选出{imageFiles.Count}个有效图片文件"
+                });
+                return imageFiles;
+            });
+        }
+
+        /// <summary>
+        /// 生成OCR识别结果Excel
+        /// </summary>
+        /// <param name="ocrResultDict">OCR结果字典（文件夹名→(图片路径,识别文本)）</param>
+        /// <param name="excelFilePath">Excel保存路径</param>
+        /// <param name="batchId">批次ID</param>
+        /// <param name="progressAction">进度回调</param>
+        public static async Task GenerateOcrExcelAsync(Dictionary<string, Dictionary<string, string>> ocrResultDict, string excelFilePath, string batchId, Action<ProcessProgress> progressAction)
+        {
+            // 修复bug：统一创建Excel所在目录，而非判断文件是否为目录
+            FileHelper.EnsureDirectoryExists(excelFilePath);
 
             await Task.Run(() =>
             {
-                using (var archive = ArchiveFactory.Open(zipPath))
+                progressAction.Invoke(new ProcessProgress
                 {
-                    // 统计所有非文件夹条目（包括子文件夹内的文件）
-                    var totalEntries = archive.Entries.Count(e => !e.IsDirectory);
-                    var processed = 0;
+                    BatchId = batchId,
+                    Progress = 60,
+                    Type = "Excel",
+                    Message = "开始生成OCR识别结果Excel文件"
+                });
 
-                    foreach (var entry in archive.Entries)
+                // 保存Excel文件
+                using (FileStream fs = new FileStream(excelFilePath, FileMode.Create, FileAccess.Write))
+                {
+                    // 创建Excel工作簿
+                    IWorkbook workbook = new XSSFWorkbook();
+                    ISheet sheet = workbook.CreateSheet("OCR识别结果");
+
+                    // 创建表头
+                    IRow headerRow = sheet.CreateRow(0);
+                    headerRow.CreateCell(0).SetCellValue("文件夹名称");
+                    headerRow.CreateCell(1).SetCellValue("图片文件名");
+                    headerRow.CreateCell(2).SetCellValue("识别文本内容");
+
+                    int rowIndex = 1;
+                    int total = ocrResultDict.Sum(x => x.Value.Count);
+                    int processed = 0;
+
+                    // 填充数据
+                    foreach (var folderItem in ocrResultDict)
                     {
-                        if (entry.IsDirectory) continue; // 跳过文件夹条目（SharpCompress会自动创建文件夹）
-                        try
+                        string folderName = folderItem.Key;
+                        foreach (var imageItem in folderItem.Value)
                         {
-                            // 关键：ExtractFullPath = true 保留压缩包内的完整路径（多层文件夹）
-                            entry.WriteToDirectory(unzipDir, new ExtractionOptions
-                            {
-                                ExtractFullPath = true, // 核心配置，保留层级
-                                Overwrite = true
-                            });
+                            string imageFileName = Path.GetFileName(imageItem.Key);
+                            string ocrText = imageItem.Value;
+
+                            IRow row = sheet.CreateRow(rowIndex);
+                            row.CreateCell(0).SetCellValue(folderName);
+                            row.CreateCell(1).SetCellValue(imageFileName);
+                            row.CreateCell(2).SetCellValue(ocrText);
+
+                            rowIndex++;
                             processed++;
-                            progress.Report(new ProcessProgress
+
+                            int progress = 60 + (int)((processed / (double)total) * 20);
+                            progressAction.Invoke(new ProcessProgress
                             {
                                 BatchId = batchId,
-                                Type = "Unzip",
-                                Progress = (int)((processed / (double)totalEntries) * 100),
-                                Message = $"正在解压：{entry.Key}" // entry.Key 是压缩包内的完整路径（含文件夹）
+                                Progress = progress,
+                                Type = "Excel",
+                                Message = $"已填充：{folderName}/{imageFileName}（{processed}/{total}）"
                             });
                         }
-                        catch (Exception ex)
+                    }
+
+                    // 自动调整列宽
+                    for (int i = 0; i < 3; i++)
+                    {
+                        sheet.AutoSizeColumn(i);
+                    }
+
+                    workbook.Write(fs);
+                }
+
+                progressAction.Invoke(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 80,
+                    Type = "Excel",
+                    Message = $"Excel文件生成完成，路径：{excelFilePath}"
+                });
+            });
+        }
+
+        /// <summary>
+        /// 打包文件夹为ZIP（归档文件夹+Excel统一打包）
+        /// </summary>
+        /// <param name="sourceDir">待打包目录（虚拟路径）</param>
+        /// <param name="outputZipPath">输出ZIP路径（虚拟路径）</param>
+        /// <param name="batchId">批次ID</param>
+        /// <param name="progressAction">进度回调</param>
+        public static async Task PackFolderToZipAsync(string sourceDir, string outputZipPath, string batchId, Action<ProcessProgress> progressAction)
+        {
+            // 【新增】将虚拟路径转换为物理路径
+            string sourceDirPhysical = FileHelper.GetPhysicalPath(sourceDir);
+            string outputZipPathPhysical = FileHelper.GetPhysicalPath(outputZipPath);
+
+            // 确保输出目录存在 (使用物理路径)
+            FileHelper.EnsureDirectoryExists(outputZipPathPhysical);
+
+            await Task.Run(() =>
+            {
+                progressAction.Invoke(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 85,
+                    Type = "Pack",
+                    Message = $"开始打包目录：{Path.GetFileName(sourceDir)}"
+                });
+
+                // 删除已存在的ZIP文件 (使用物理路径)
+                if (File.Exists(outputZipPathPhysical))
+                {
+                    File.Delete(outputZipPathPhysical);
+                }
+
+                // 检查源目录是否存在 (使用物理路径)
+                if (!Directory.Exists(sourceDirPhysical))
+                {
+                    throw new DirectoryNotFoundException($"源目录不存在：{sourceDirPhysical}");
+                }
+
+                // 打包目录
+                using (var archive = ZipArchive.Create())
+                {
+                    var allFiles = Directory.GetFiles(sourceDirPhysical, "*.*", SearchOption.AllDirectories);
+                    int total = allFiles.Length;
+                    int processed = 0;
+
+                    foreach (var file in allFiles)
+                    {
+                        // 计算相对路径 (使用物理路径进行截取)
+                        string relativePath = file.Substring(sourceDirPhysical.Length).TrimStart(Path.DirectorySeparatorChar);
+                        archive.AddEntry(relativePath, file);
+                        processed++;
+
+                        int progress = 85 + (int)((processed / (double)total) * 10);
+                        progressAction.Invoke(new ProcessProgress
                         {
-                            progress.Report(new ProcessProgress
-                            {
-                                BatchId = batchId,
-                                Type = "Unzip",
-                                Progress = 0,
-                                Message = $"解压失败 {entry.Key}：{ex.Message}"
-                            });
-                        }
+                            BatchId = batchId,
+                            Progress = progress,
+                            Type = "Pack",
+                            Message = $"已打包：{relativePath}（{processed}/{total}）"
+                        });
+                    }
+                    // 保存到物理路径
+                    archive.SaveTo(outputZipPathPhysical, CompressionType.Deflate);
+                }
+
+                progressAction.Invoke(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 95,
+                    Type = "Pack",
+                    Message = $"打包完成，文件路径：{outputZipPath}"
+                });
+            });
+        }
+
+        /// <summary>
+        /// 清理临时目录
+        /// </summary>
+        /// <param name="tempDir">临时目录</param>
+        /// <param name="batchId">批次ID</param>
+        /// <param name="progressAction">进度回调</param>
+        public static async Task CleanTempDirAsync(string tempDir, string batchId, Action<ProcessProgress> progressAction)
+        {
+            await Task.Run(() =>
+            {
+                if (Directory.Exists(tempDir))
+                {
+                    try
+                    {
+                        Directory.Delete(tempDir, true);
+                        progressAction.Invoke(new ProcessProgress
+                        {
+                            BatchId = batchId,
+                            Progress = 100,
+                            Type = "Finish",
+                            Message = $"临时目录已清理：{tempDir}"
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        progressAction.Invoke(new ProcessProgress
+                        {
+                            BatchId = batchId,
+                            Progress = 100,
+                            Type = "Error",
+                            Message = $"清理临时目录失败：{ex.Message}"
+                        });
                     }
                 }
             });
         }
 
         /// <summary>
-        /// 过滤有效图片（兼容多层文件夹，递归扫描所有子目录）
+        /// 递归复制目录
         /// </summary>
-        public static List<string> FilterValidImages(string dir, string batchId, IProgress<ProcessProgress> progress)
+        public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
         {
-            var supportFormats = ConfigUtils.AppSetting.GetValue("FileSupportFormats");
-            // 关键：SearchOption.AllDirectories 递归扫描所有子文件夹
-            var files = Directory.GetFiles(dir, "*.*", SearchOption.AllDirectories);
-            var validImages = new List<string>();
-            var fileHashes = new Dictionary<string, string>();
-            var total = files.Length;
-            var processed = 0;
-
-            foreach (var file in files)
+            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+            if (!dir.Exists)
             {
-                processed++;
-                try
+                throw new DirectoryNotFoundException("源目录不存在或无法访问: " + sourceDirName);
+            }
+
+            // 统一创建目标目录
+            FileHelper.EnsureDirectoryExists(destDirName);
+
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string tempPath = Path.Combine(destDirName, file.Name);
+                file.CopyTo(tempPath, true);
+            }
+
+            if (copySubDirs)
+            {
+                DirectoryInfo[] dirs = dir.GetDirectories();
+                foreach (DirectoryInfo subdir in dirs)
                 {
-                    // 0字节过滤
-                    var fileInfo = new FileInfo(file);
-                    if (fileInfo.Length == 0)
-                    {
-                        progress.Report(new ProcessProgress
-                        {
-                            BatchId = batchId,
-                            Type = "Filter",
-                            Progress = (int)((processed / (double)total) * 100),
-                            Message = $"过滤0字节文件：{file}"
-                        });
-                        File.Delete(file);
-                        continue;
-                    }
-
-                    // 格式过滤
-                    var ext = Path.GetExtension(file).TrimStart('.').ToLower();
-                    if (!supportFormats.Contains(ext))
-                    {
-                        progress.Report(new ProcessProgress
-                        {
-                            BatchId = batchId,
-                            Type = "Filter",
-                            Progress = (int)((processed / (double)total) * 100),
-                            Message = $"过滤非支持格式：{file}"
-                        });
-                        File.Delete(file);
-                        continue;
-                    }
-
-                    // 损坏图片过滤
-                    using (var img = Image.FromFile(file)) { }
-
-                    // 重复文件过滤（MD5）
-                    var md5 = GetFileMD5(file);
-                    if (fileHashes.ContainsKey(md5))
-                    {
-                        progress.Report(new ProcessProgress
-                        {
-                            BatchId = batchId,
-                            Type = "Filter",
-                            Progress = (int)((processed / (double)total) * 100),
-                            Message = $"过滤重复文件：{file}"
-                        });
-                        File.Delete(file);
-                        continue;
-                    }
-                    fileHashes.Add(md5, file);
-                    validImages.Add(file);
-
-                    progress.Report(new ProcessProgress
-                    {
-                        BatchId = batchId,
-                        Type = "Filter",
-                        Progress = (int)((processed / (double)total) * 100),
-                        Message = $"有效图片：{file}"
-                    });
-                }
-                catch (Exception ex)
-                {
-                    progress.Report(new ProcessProgress
-                    {
-                        BatchId = batchId,
-                        Type = "Filter",
-                        Progress = (int)((processed / (double)total) * 100),
-                        Message = $"过滤损坏文件：{file}，原因：{ex.Message}"
-                    });
-                    File.Delete(file);
+                    string tempPath = Path.Combine(destDirName, subdir.Name);
+                    DirectoryCopy(subdir.FullName, tempPath, copySubDirs);
                 }
             }
-            return validImages;
-        }
-
-        private static string GetFileMD5(string filePath)
-        {
-            using (var md5 = MD5.Create())
-            {
-                using (var stream = File.OpenRead(filePath))
-                {
-                    var hash = md5.ComputeHash(stream);
-                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-                }
-            }
-        }
-
-        public static void CleanTempFiles(string dir, string batchId, IProgress<ProcessProgress> progress)
-        {
-            try
-            {
-                if (Directory.Exists(dir))
-                {
-                    Directory.Delete(dir, true); // true 表示递归删除所有子文件夹和文件
-                    progress.Report(new ProcessProgress
-                    {
-                        BatchId = batchId,
-                        Type = "Clean",
-                        Progress = 100,
-                        Message = $"清理临时目录完成：{dir}"
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                progress.Report(new ProcessProgress
-                {
-                    BatchId = batchId,
-                    Type = "Clean",
-                    Progress = 0,
-                    Message = $"清理临时目录失败：{ex.Message}"
-                });
-            }
-        }
-
-        public static string MoveValidImage(string sourceFile, string targetDir)
-        {
-            if (!Directory.Exists(targetDir)) Directory.CreateDirectory(targetDir);
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(sourceFile)}";
-            var targetPath = Path.Combine(targetDir, fileName);
-            File.Move(sourceFile, targetPath);
-            return targetPath;
         }
     }
 
+    /// <summary>
+    /// 处理进度模型
+    /// </summary>
     public class ProcessProgress
     {
+        /// <summary>
+        /// 批次ID
+        /// </summary>
         public string BatchId { get; set; }
-        public string Type { get; set; }
+
+        /// <summary>
+        /// 进度百分比（0-100）
+        /// </summary>
         public int Progress { get; set; }
+
+        /// <summary>
+        /// 进度类型
+        /// </summary>
+        public string Type { get; set; }
+
+        /// <summary>
+        /// 进度消息
+        /// </summary>
         public string Message { get; set; }
+    }
+
+
+    /// <summary>
+    /// 文件归档规则枚举
+    /// </summary>
+    public enum FileArchiveRuleEnum
+    {
+        /// <summary>
+        /// 系统默认（自动降级规则1-3）
+        /// </summary>
+        SystemDefault = 0,
+        /// <summary>
+        /// 下划线分隔取首段
+        /// </summary>
+        UnderlineFirstSegment = 1,
+        /// <summary>
+        /// 姓名+身份证号/身份证号+姓名
+        /// </summary>
+        NameIdCard = 2,
+        /// <summary>
+        /// 源文件名兜底
+        /// </summary>
+        OriginalFileName = 3
     }
 }

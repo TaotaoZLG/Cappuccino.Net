@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Cappuccino.BLL;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Helper;
 using Cappuccino.Common.Util;
@@ -17,7 +14,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
 {
     public class SysFileProcessiongController : BaseController
     {
-        private ISysFileProcessiongService _fileProcessService;
+        private readonly ISysFileProcessiongService _fileProcessService;
 
         public SysFileProcessiongController(ISysFileProcessiongService fileProcessService)
         {
@@ -36,66 +33,84 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
 
         #region 提交数据
         /// <summary>
-        /// 上传并处理压缩包（异步）- 统一处理进度推送
+        /// 上传并处理压缩包
         /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult> UploadAndProcess()
         {
+            string batchId = GuidHelper.GetGuid(true);
             try
             {
-                var file = Request.Files["compressFile"];
-                // 基础校验
+                // 1. 获取上传文件
+                HttpPostedFileBase file = Request.Files["compressFile"];
                 if (file == null || file.ContentLength == 0)
                 {
-                    return WriteError("请选择压缩包文件");
+                    return WriteError("请选择要上传的压缩包文件");
                 }
 
-                // 文件大小校验
-                var maxFileSize = ConfigUtils.AppSetting.GetValue("UploadMaxFileSize").ParseToInt();
-                if (file.ContentLength > maxFileSize)
+                // 2. 新增：文件格式校验（修复前端「不支持该文件类型」报错）
+                string fileName = file.FileName;
+                string fileExt = Path.GetExtension(fileName).TrimStart('.').ToLower();
+                string supportFormats = ConfigUtils.AppSetting.GetValue("CompressSupportFormats");
+                var supportExtList = supportFormats.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim().ToLower()).ToList();
+                if (!supportExtList.Contains(fileExt))
                 {
-                    return WriteError($"文件大小超过限制（{maxFileSize / 1024 / 1024}MB）");
+                    return WriteError($"当前不支持该文件类型，请尝试其他文件。支持格式：{string.Join("、", supportExtList)}");
                 }
 
-                // 格式校验
-                var supportCompressFormats = ConfigUtils.AppSetting.GetValue("CompressSupportFormats");
-                var fileExt = Path.GetExtension(file.FileName).TrimStart('.').ToLower();
-                if (!supportCompressFormats.Contains(fileExt))
+                // 3. 新增：文件大小校验
+                long maxSize = ConfigUtils.AppSetting.GetValue("UploadMaxFileSize").ParseToLong();
+                if (file.ContentLength > maxSize)
                 {
-                    return WriteError($"不支持的压缩包格式！仅支持：{string.Join(",", supportCompressFormats)}");
+                    return WriteError($"文件大小超出限制，最大支持{maxSize / 1024 / 1024}MB");
                 }
 
-                // 1. 创建CancellationToken（支持取消）
-                var cts = new CancellationTokenSource();
-                var cancellationToken = cts.Token;
+                // 4. 修复：同步保存文件到临时目录，避免异步线程中HttpContext释放导致文件对象失效
+                string tempRootVirtualPath = ConfigUtils.AppSetting.GetValue("TempRootPath");
+                string fileVirtualPath = Path.Combine(tempRootVirtualPath, batchId, fileName);
+                string tempCompressPath = FileHelper.GetPhysicalPath(fileVirtualPath);
+                FileHelper.EnsureDirectoryExists(tempCompressPath);
+                file.SaveAs(tempCompressPath); // 同步保存，确保文件内容完整写入
 
-                // 2. 定义进度回调（核心：Controller层统一推送SignalR）
-                var progress = new Progress<ProcessProgress>(p =>
+                // 5. 获取归档规则
+                if (!int.TryParse(Request.Form["extractRule"], out int extractRule))
                 {
-                    // 1. 保存进度日志（可选，如需持久化）
-                    // _fileProcessLogDao.Add(...) 
+                    extractRule = (int)FileArchiveRuleEnum.SystemDefault;
+                }
 
-                    // 2. 推送进度到前端（SignalR）- 核心迁移点
-                    ProcessProgressHub.SendProgress(p);
+                // 6. 处理进度回调
+                Action<ProcessProgress> progressAction = (progress) =>
+                {
+                    ProcessProgressHub.SendProgress(progress);
+                };
+
+                // 7. 直接await调用业务层，移除无效的Task.Run嵌套，避免线程池浪费
+                string finalZipPath = await _fileProcessService.ProcessCompressFileAsync(tempCompressPath, extractRule, batchId, progressAction).ConfigureAwait(false);
+
+                // 8. 推送完成消息
+                ProcessProgressHub.SendProgress(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 100,
+                    Type = "Finish",
+                    Message = $"处理完成，可下载文件：{finalZipPath}"
                 });
 
-                // 3. 调用BLL层业务逻辑（仅传文件、取消令牌、进度回调）
-                var batchId = await _fileProcessService.ProcessCompressFileAsync(file, cancellationToken, progress);
-
-                // 4. 返回批次ID给前端
-                return WriteSuccess("任务处理成功", batchId);
+                // 9. 返回批次ID
+                return WriteSuccess("任务处理成功", new { data = finalZipPath, BatchId = batchId });
             }
             catch (Exception ex)
             {
                 // 异常进度推送
                 ProcessProgressHub.SendProgress(new ProcessProgress
                 {
-                    BatchId = Guid.NewGuid().ToString(),
+                    BatchId = batchId,
                     Type = "Error",
                     Progress = 0,
-                    Message = $"任务启动失败：{ex.Message}"
+                    Message = $"处理失败：{ex.Message}"
                 });
-                return WriteError("任务启动失败：" + ex.Message);
+                return WriteError("处理失败：" + ex.Message);
             }
         }
         #endregion

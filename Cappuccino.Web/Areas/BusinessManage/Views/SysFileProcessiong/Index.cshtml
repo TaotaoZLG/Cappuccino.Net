@@ -5,8 +5,13 @@
 
 @section style{
     <style>
-        /* 保留你所有原有样式，无需修改 */
-        .process-header {
+
+        .layui-btn {
+            display: inline-block;
+            height: 36px;
+            line-height: 36px;
+        }
+            .process-header {
             padding-bottom: 15px;
             border-bottom: 1px solid #e6e6e6;
             margin-bottom: 20px;
@@ -23,7 +28,6 @@
             padding: 20px;
             border: 1px solid #e6e6e6;
             border-radius: 4px;
-            background-color: #fafafa;
             height: 700px;
             box-sizing: border-box;
             display: flex;
@@ -31,47 +35,59 @@
             justify-content: flex-start;
         }
 
-        .upload-drag-area {
-            width: 100%;
-            height: 200px;
-            border: 2px dashed #1E9FFF;
-            border-radius: 6px;
-            background-color: #f8f9fa;
+        
+        /* 文件选择区域样式 - 表单格式 */
+       
+
+        .upload-input-group {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 15px;
+            gap: 10px;
         }
 
-            .upload-drag-area:hover {
-                background-color: #e8f4fd;
-            }
-
-            .upload-drag-area.over {
-                border-color: #52C41A;
-                background-color: #f0f9eb;
-            }
-
-        .upload-drag-icon {
-            font-size: 40px;
-            color: #1E9FFF;
-            margin-bottom: 10px;
-        }
-
-        .upload-drag-text {
-            font-size: 14px;
+        .upload-file-input {
+            flex: 1;
+            height: 38px;
+            line-height: 38px;
+            padding: 0 12px;
+            border: 1px solid #d2d2d2;
+            border-radius: 4px;
+            background-color: #fff;
             color: #666;
-            text-align: center;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .upload-drag-tip {
+            .upload-file-input:disabled {
+                background-color: #f2f2f2;
+                cursor: not-allowed;
+            }
+
+            .upload-file-input:focus {
+                border-color: #1E9FFF;
+                outline: none;
+            }
+
+        .upload-btn-group {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .upload-tip-info {
             font-size: 12px;
             color: #999;
             margin-top: 8px;
+            line-height: 1.5;
+            padding-left: 110px;
         }
+
+            .upload-tip-info i {
+                margin-right: 5px;
+                color: #1E9FFF;
+            }
 
         .result-card {
             padding: 20px;
@@ -156,7 +172,7 @@
         }
 
         .upload-tip-item {
-            margin: 2px 0;
+            margin: 2px 35px;
         }
 
         .upload-tip-success {
@@ -196,16 +212,47 @@
 
         <div class="layui-row layui-col-space20" style="height: 730px;">
             <div class="layui-col-md6">
-                <div class="upload-card">
+                <div class="layui-form upload-card">
                     <h4 style="margin:0 0 15px 0;color:#333;">📤 压缩包上传</h4>
-                    <div class="layui-upload">
-                        <div class="upload-drag-area" id="uploadDragArea">
-                            <i class="layui-icon upload-drag-icon">&#xe67c;</i>
-                            <div class="upload-drag-text">点击选择压缩包 或 拖拽文件到此处</div>
-                            <div class="upload-drag-tip">支持格式：ZIP/RAR/7Z | 最大大小：100MB</div>
-                        </div>
 
-                        <div class="upload-file-list" style="margin-top:20px;display:none;">
+                    <div class="archive-rule-box">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">归档规则</label>
+                            <div class="layui-input-block">
+                                <select name="extractRule" id="extractRule" lay-verify="required">
+                                    <option value="0">0. 系统默认（自动降级规则1-3）</option>
+                                    <option value="1">1. 下划线分隔取首段</option>
+                                    <option value="2">2. 姓名 + 身份证号/身份证号 + 姓名</option>
+                                    <option value="3">3. 源文件名兜底</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="layui-upload">
+                        <div class="file-select-box">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">选择文件</label>
+                                <div class="layui-input-block">
+                                    <div class="upload-input-group">
+                                        <input type="text" class="layui-input" id="fileNameInput" placeholder="请选择压缩包文件" readonly />
+
+                                        <button type="button" class="layui-btn layui-btn-primary" id="chooseFileBtn">
+                                            <i class="layui-icon">&#xe608;</i> 浏览
+                                        </button>
+
+                                        <button type="button" class="layui-btn layui-btn-normal" id="uploadFileBtn">
+                                            <i class="layui-icon">&#xe67c;</i> 上传并处理
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="upload-tip-info">
+                                <i class="layui-icon layui-icon-tips"></i> 支持格式：ZIP/RAR/7Z | 最大大小：100MB
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="upload-file-list" style="margin:20px 35px;display:none;">
                             <label style="font-size:14px; color:#333; font-weight:bold">已选择文件：</label>
                             <ul id="fileList" class="layui-ul file-list-inline"></ul>
                         </div>
@@ -230,7 +277,7 @@
                         </div>
                     </div>
                     <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" id="clearLogBtn" style="margin-top:10px;display:none;" onclick="clearLog()">
-                        <i class="layui-icon">&#xe640;</i>清空日志
+                        <i class="layui-icon">&#xe640;</i> 清空日志
                     </button>
                 </div>
             </div>
@@ -242,66 +289,58 @@
     <script src="~/Content/admin/js/signalr/jquery.signalR-2.4.3.min.js"></script>
     <script src="/signalr/hubs"></script>
     <script>
-        layui.use(['upload', 'layer', 'element'], function () {
+        layui.use(['upload', 'layer', 'element', 'form'], function () {
             var upload = layui.upload;
             var layer = layui.layer;
             var element = layui.element;
+            var form = layui.form;
 
             // 全局变量
             var currentBatchId = "";
             var isHubConnected = false;
             var hubStartPromise = null;
-            var tipIdCounter = 0; // 唯一ID计数器，替代字符匹配
+            var tipIdCounter = 0;
+            var selectedFile = null;
 
-            // ========== 核心修复：重写showUploadTip，移除contains选择器 ==========
+            // ========== showUploadTip 函数 ==========
             function showUploadTip(msg, isSuccess) {
                 var $tip = $("#uploadTip");
                 var time = new Date().toLocaleTimeString();
                 var tipClass = isSuccess ? "upload-tip-success" : "upload-tip-error";
 
-                // 1. 生成唯一ID（数字递增，避免特殊字符问题）
                 var tipUniqueId = "tip_" + (++tipIdCounter);
-                // 2. 生成提示项，添加data-id属性做唯一标识
                 var tipItem = `<div class="upload-tip-item ${tipClass}" data-id="${tipUniqueId}">[${time}] ${msg}</div>`;
 
-                // 3. 去重逻辑：基于内容的哈希（避免特殊字符）
-                // 生成内容哈希值，替代contains选择器
-                var msgHash = md5(msg + time); // 简单哈希，或用JSON.stringify
-                // 检查是否已存在相同哈希的提示
+                var msgHash = md5(msg + time);
                 var isDuplicate = $tip.find(`.upload-tip-item[data-hash="${msgHash}"]`).length > 0;
                 if (isDuplicate) return;
 
-                // 4. 添加哈希属性，用于去重
                 $(tipItem).attr("data-hash", msgHash);
-                // 5. 累加提示
                 $tip.append(tipItem);
                 $tip.scrollTop($tip[0].scrollHeight);
             }
 
-            // 简化版哈希函数（无需引入MD5库，适配所有场景）
             function md5(str) {
                 var hash = 0;
                 if (str.length === 0) return hash.toString();
                 for (var i = 0; i < str.length; i++) {
                     var char = str.charCodeAt(i);
                     hash = ((hash << 5) - hash) + char;
-                    hash = hash & hash; // 转换为32位整数
+                    hash = hash & hash;
                 }
-                return hash.toString(36); // 转为字符串，避免数字过长
+                return hash.toString(36);
             }
 
             function clearUploadTip() {
                 $("#uploadTip").empty().scrollTop(0);
-                tipIdCounter = 0; // 重置计数器
+                tipIdCounter = 0;
             }
 
-            // SignalR回调注册（先注册后连接）
+            // ========== SignalR 回调注册 ==========
             var progressHub = $.connection.processProgressHub;
             progressHub.client.receiveProgress = function (progress) {
-                //console.log("收到SignalR推送：", progress);
-
                 if (currentBatchId && progress.BatchId !== currentBatchId) {
-                    console.warn("BatchId不匹配：前端=", currentBatchId, "后端=", progress.BatchId);
+                    console.warn("BatchId 不匹配：前端=", currentBatchId, "后端=", progress.BatchId);
                 }
 
                 $(".progress-box").show();
@@ -326,61 +365,71 @@
                 $("#progressLog").append(logHtml);
                 $("#progressLog").scrollTop($("#progressLog")[0].scrollHeight);
 
-                if (progress.Type === "Finish") {
-                    showUploadTip(progress.Message, true);
-                } else if (progress.Type === "Error") {
-                    showUploadTip(progress.Message, false);
-                }
+                //if (progress.Type === "Finish") {
+                //    showUploadTip(progress.Message, true);
+                //} else if (progress.Type === "Error") {
+                //    showUploadTip(progress.Message, false);
+                //}
             };
 
-            // SignalR初始化
+            // ========== SignalR 初始化 ==========
             function initSignalR() {
                 if (hubStartPromise) return hubStartPromise;
-
-                //$.connection.hub.url = "/signalr";
-                //$.connection.hub.logging = true;
-                //$.connection.hub.connectionTimeout = 10000;
-                //$.connection.hub.disconnected(function () {
-                //    showUploadTip("SignalR连接断开，正在重连...", false);
-                //    setTimeout(function () {
-                //        hubStartPromise = null;
-                //        initSignalR();
-                //    }, 3000);
-                //});
 
                 hubStartPromise = $.connection.hub.start()
                     .done(function () {
                         isHubConnected = true;
-                        showUploadTip("SignalR连接成功", true);
-                        console.log("SignalR连接成功，ID：", $.connection.hub.id);
+                        showUploadTip("SignalR 连接成功", true);
+                        console.log("SignalR 连接成功，ID：", $.connection.hub.id);
                     })
                     .fail(function (err) {
                         isHubConnected = false;
-                        showUploadTip("❌SignalR连接失败：" + err.message, false);
-                        $(".empty-tip").html(`<div class="log-error">SignalR连接失败：${err.message}</div>`);
-                        console.error("SignalR连接失败：", err);
+                        showUploadTip("❌SignalR 连接失败：" + err.message, false);
+                        $(".empty-tip").html(`<div class="log-error">SignalR 连接失败：${err.message}</div>`);
+                        console.error("SignalR 连接失败：", err);
                     });
                 return hubStartPromise;
             }
 
-            // 页面加载初始化SignalR
+            // 页面加载初始化 SignalR
             initSignalR();
 
-            // 上传组件
+            // ========== 上传组件配置（手动上传模式）==========
             var uploadInst = upload.render({
-                elem: '#uploadDragArea',
+                elem: '#chooseFileBtn',
                 url: '/SysFileProcessiong/UploadAndProcess',
                 accept: 'file',
                 field: 'compressFile',
                 exts: 'zip|rar|7z',
                 size: 102400,
-                auto: true,
+                auto: false,
                 multiple: false,
+                data: {
+                    extractRule: function () {
+                        return $('#extractRule').val();
+                    }
+                },
+                choose: function (obj) {
+                    obj.preview(function (index, file, result) {
+                        selectedFile = file;
+                        $("#fileNameInput").val(file.name);
+                        $(".upload-file-list").show();
+                        var fileSize = (file.size / 1024 / 1024).toFixed(2);
+                        $("#fileList").empty().append(`<li class="layui-li">${file.name}（${fileSize}MB）</li>`);
+                        showUploadTip("文件已选择：" + file.name, true);
+                    });
+                },
                 before: function (obj) {
+                    var extractRule = $('#extractRule').val();
+                    if (!extractRule) {
+                        layer.msg("请选择归档规则", { icon: 5 });
+                        return false;
+                    }
+
                     if (!isHubConnected) {
-                        layer.msg("SignalR未连接，请稍候重试", { icon: 2 });
+                        layer.msg("SignalR 未连接，请稍候重试", { icon: 2 });
                         initSignalR().then(function () {
-                            showUploadTip("SignalR重连成功，可继续上传", true);
+                            showUploadTip("SignalR 重连成功，可继续上传", true);
                         });
                         return false;
                     }
@@ -394,47 +443,53 @@
                     $(".progress-box").hide();
 
                     layer.load(2, { shade: [0.3, '#000'] });
-
-                    obj.preview(function (index, file, result) {
-                        $(".upload-file-list").show();
-                        var fileSize = (file.size / 1024 / 1024).toFixed(2);
-                        $("#fileList").append(`<li class="layui-li">${file.name}（${fileSize}MB）</li>`);
-                    });
                 },
                 done: function (res) {
                     layer.closeAll('loading');
-                    console.log("上传返回：", res);
                     if (res.status === 0) {
-                        currentBatchId = res.data;
+                        currentBatchId = res.data.batchId;
+
+                        window.location.href = "@Url.Content("~/File/DownloadFile?filePath=")" + res.data.data + "&delete=0";
                         $(".progress-box").show();
                         $("#clearLogBtn").show();
+                        showUploadTip(res.msg, true);
                     } else {
                         showUploadTip(res.msg, false);
                     }
+                    selectedFile = null;
+                    $("#fileNameInput").val("");
                 },
                 error: function () {
                     layer.closeAll('loading');
                     showUploadTip("上传失败，请检查网络或文件大小", false);
+                    selectedFile = null;
+                    $("#fileNameInput").val("");
                 }
             });
 
-            // 拖拽事件
-            var dragArea = document.getElementById('uploadDragArea');
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dragArea.addEventListener(eventName, preventDefaults, false);
-                document.body.addEventListener(eventName, preventDefaults, false);
-            });
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dragArea.addEventListener(eventName, highlight, false);
-            });
-            ['dragleave', 'drop'].forEach(eventName => {
-                dragArea.addEventListener(eventName, unhighlight, false);
-            });
-            function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
-            function highlight() { dragArea.classList.add('over'); }
-            function unhighlight() { dragArea.classList.remove('over'); }
+            // ========== 手动上传按钮点击事件 ==========
+            $("#uploadFileBtn").on("click", function () {
+                if (!selectedFile) {
+                    layer.msg("请先选择文件", { icon: 5 });
+                    return;
+                }
 
-            // 清空日志
+                var extractRule = $('#extractRule').val();
+                if (!extractRule) {
+                    layer.msg("请选择归档规则", { icon: 5 });
+                    return;
+                }
+
+                if (!isHubConnected) {
+                    layer.msg("SignalR 未连接，请稍候重试", { icon: 2 });
+                    initSignalR();
+                    return;
+                }
+
+                uploadInst.upload();
+            });
+
+            // ========== 清空日志 ==========
             window.clearLog = function () {
                 $("#progressLog").html('<div class="empty-tip"><i class="layui-icon layui-icon-file" style="font-size: 30px; color: #ccc; display: block; margin-bottom: 10px;"></i>日志已清空，等待新任务...</div>');
                 $("#progressBar").css("width", "0%").text("0%");
@@ -443,6 +498,8 @@
                 $(".upload-file-list").hide();
                 $(".progress-box").hide();
                 currentBatchId = "";
+                selectedFile = null;
+                $("#fileNameInput").val("");
             };
         });
     </script>

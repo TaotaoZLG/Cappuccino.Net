@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,21 +10,34 @@ using Newtonsoft.Json;
 namespace Cappuccino.Common.Helper
 {
     /// <summary>
-    /// AI识别工具类（对接本地OwenVL8B）
+    /// AI识别工具类（对接千问AI OCR接口）
     /// </summary>
     public static class AIRecognitionHelper
     {
+        #region 修复：静态HttpClient单例，避免Socket耗尽
+        private static readonly HttpClient _httpClient;
+        static AIRecognitionHelper()
+        {
+            string timeoutStr = ConfigUtils.AppSetting.GetValue("AITimeout");
+            int timeout = timeoutStr.ParseToInt() > 0 ? timeoutStr.ParseToInt() : 30000;
+            _httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromMilliseconds(timeout)
+            };
+        }
+        #endregion
+
         /// <summary>
         /// 身份证识别结果实体
         /// </summary>
         public class IdCardInfo
         {
-            public string Name { get; set; } // 姓名
-            public string IdNumber { get; set; } // 身份证号
-            public string Nation { get; set; } // 民族
-            public string Address { get; set; } // 地址
-            public string BirthDate { get; set; } // 出生日期
-            public string Gender { get; set; } // 性别
+            public string Name { get; set; }
+            public string IdNumber { get; set; }
+            public string Nation { get; set; }
+            public string Address { get; set; }
+            public string BirthDate { get; set; }
+            public string Gender { get; set; }
         }
 
         /// <summary>
@@ -32,95 +45,109 @@ namespace Cappuccino.Common.Helper
         /// </summary>
         public class AIRecognitionResult
         {
-            public string ImagePath { get; set; } // 图片路径
-            public string ImageType { get; set; } // 图片类型（身份证正/反、协议等）
-            public IdCardInfo IdCardInfo { get; set; } // 身份证信息（仅图片类型为身份证时有效）
+            public string ImagePath { get; set; }
+            public string ImageType { get; set; }
+            public IdCardInfo IdCardInfo { get; set; }
             public bool Success { get; set; }
             public string Message { get; set; }
         }
 
         /// <summary>
-        /// 调用OwenVL8B识别图片
+        /// 图片OCR文本识别（对接千问AI）
         /// </summary>
-        /// <param name="imagePaths">有效图片路径列表</param>
-        /// <returns>识别结果列表</returns>
-        public static List<AIRecognitionResult> RecognizeByOwenVL8B(List<string> imagePaths)
+        /// <param name="imagePath">图片路径</param>
+        /// <param name="batchId">批次ID</param>
+        /// <param name="progressAction">进度回调</param>
+        /// <returns>识别结果</returns>
+        public static async Task<string> ImageOcrRecognizeAsync(string imagePath, string batchId, Action<ProcessProgress> progressAction)
         {
-            var results = new List<AIRecognitionResult>();
-            foreach (var imagePath in imagePaths)
+            if (!File.Exists(imagePath))
             {
-                var result = new AIRecognitionResult { ImagePath = imagePath };
-                try
+                string errorMsg = $"图片文件不存在：{imagePath}";
+                progressAction.Invoke(new ProcessProgress
                 {
-                    var endpoint = ConfigUtils.AppSetting.GetValue("AIService");
-                    var timeout = ConfigUtils.AppSetting.GetValue("AITimeout").ParseToInt();
-                    var client = new HttpClient { Timeout = TimeSpan.FromMilliseconds(timeout) };
-
-                    // ========== 核心：对接本地OwenVL8B ==========
-                    // 1. 若OwenVL8B提供DLL：引用DLL后调用接口
-                    // var owenVL8B = new OwenVL8B.SDK();
-                    // var recognizeResult = owenVL8B.RecognizeImage(imagePath);
-
-                    // 2. 若OwenVL8B提供HTTP接口：通过HttpClient调用
-                    // var client = new HttpClient();
-                    // var postData = new { imagePath = imagePath };
-                    // var response = client.PostAsync("http://本地OwenVL8B地址/recognize", new StringContent(JsonConvert.SerializeObject(postData), Encoding.UTF8, "application/json")).Result;
-                    // var recognizeResult = JsonConvert.DeserializeObject<OwenVL8BResult>(response.Content.ReadAsStringAsync().Result);
-
-                    // 模拟识别结果（需替换为真实调用逻辑）
-                    if (imagePath.Contains("idcard_front"))
-                    {
-                        result.ImageType = "身份证正面";
-                        result.IdCardInfo = new IdCardInfo
-                        {
-                            Name = "张三",
-                            IdNumber = "110101199001011234",
-                            Nation = "汉",
-                            Address = "北京市朝阳区XX路XX号",
-                            BirthDate = "1990-01-01",
-                            Gender = "男"
-                        };
-                    }
-                    else if (imagePath.Contains("idcard_back"))
-                    {
-                        result.ImageType = "身份证反面";
-                    }
-                    else if (imagePath.Contains("agreement"))
-                    {
-                        result.ImageType = "协议";
-                    }
-                    else
-                    {
-                        result.ImageType = "未知";
-                    }
-                    result.Success = true;
-                }
-                catch (Exception ex)
-                {
-                    result.Success = false;
-                    result.Message = ex.Message;
-                }
-                results.Add(result);
+                    BatchId = batchId,
+                    Progress = 0,
+                    Type = "Error",
+                    Message = errorMsg
+                });
+                return errorMsg;
             }
-            return results;
-        }
 
-        /// <summary>
-        /// 调用本地OwenVL8B识别图片
-        /// </summary>
-        public static async Task<AIRecognitionResult> RecognizeImageAsync(string imagePath, string batchId, IProgress<ProcessProgress> progress)
-        {
-            var endpoint = ConfigUtils.AppSetting.GetValue("AIService");
-            var timeout = ConfigUtils.AppSetting.GetValue("AITimeout").ParseToInt();
-            var client = new HttpClient { Timeout = TimeSpan.FromMilliseconds(timeout) };
+            progressAction.Invoke(new ProcessProgress
+            {
+                BatchId = batchId,
+                Progress = 0,
+                Type = "Recognize",
+                Message = $"开始识别图片：{Path.GetFileName(imagePath)}"
+            });
 
             try
             {
-                // 构造请求（根据OwenVL8B实际接口调整）
-                var requestModel = new { ImagePath = imagePath };
-                var json = JsonConvert.SerializeObject(requestModel);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                // 读取图片文件为Base64
+                byte[] imageBytes = File.ReadAllBytes(imagePath);
+                string imageBase64 = Convert.ToBase64String(imageBytes);
 
+                // 构建请求参数
+                var requestModel = new
+                {
+                    image = imageBase64,
+                    type = "ocr"
+                };
+                string jsonContent = JsonConvert.SerializeObject(requestModel);
+                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                // 调用千问AI API（使用静态HttpClient）
+                string endpoint = ConfigUtils.AppSetting.GetValue("AIService");
+                HttpResponseMessage response = await _httpClient.PostAsync(endpoint, content);
+                response.EnsureSuccessStatusCode();
+                string responseContent = await response.Content.ReadAsStringAsync();
+                dynamic result = JsonConvert.DeserializeObject(responseContent);
+
+                // 解析识别结果
+                string ocrText = result.data?.text ?? "";
+                if (string.IsNullOrEmpty(ocrText))
+                {
+                    ocrText = "未识别到文本";
+                }
+
+                progressAction.Invoke(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 100,
+                    Type = "Recognize",
+                    Message = $"图片识别完成：{Path.GetFileName(imagePath)}"
+                });
+
+                return ocrText;
+            }
+            catch (Exception ex)
+            {
+                string errorMsg = $"图片识别失败：{Path.GetFileName(imagePath)}，错误：{ex.Message}";
+                progressAction.Invoke(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 0,
+                    Type = "Error",
+                    Message = errorMsg
+                });
+                return errorMsg;
+            }
+        }
+
+        /// <summary>
+        /// 结构化图片识别（身份证等）
+        /// </summary>
+        public static async Task<AIRecognitionResult> RecognizeImageAsync(string imagePath, string batchId, IProgress<ProcessProgress> progress)
+        {
+            if (!File.Exists(imagePath))
+            {
+                return new AIRecognitionResult { Success = false, Message = "图片文件不存在", ImagePath = imagePath };
+            }
+
+            try
+            {
+                var endpoint = ConfigUtils.AppSetting.GetValue("AIService");
                 progress.Report(new ProcessProgress
                 {
                     BatchId = batchId,
@@ -129,25 +156,16 @@ namespace Cappuccino.Common.Helper
                     Message = $"开始识别图片：{imagePath}"
                 });
 
-                //var response = await client.PostAsync(endpoint, content);
-                //response.EnsureSuccessStatusCode();
-                //var responseStr = await response.Content.ReadAsStringAsync();
-                //var result = JsonConvert.DeserializeObject<AIRecognitionResult>(responseStr);
+                // 构造请求
+                var requestModel = new { ImagePath = imagePath };
+                var json = JsonConvert.SerializeObject(requestModel);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var result = new AIRecognitionResult { 
-                    Success = true,
-                    Message = "识别成功（模拟结果）",
-                    ImageType = "身份证正面",
-                    IdCardInfo = new IdCardInfo
-                    {
-                        Name = "张三",
-                        IdNumber = "110101199001011234",
-                        Nation = "汉",
-                        Address = "北京市朝阳区XX路XX号",
-                        BirthDate = "1990-01-01",
-                        Gender = "男"
-                    }
-                };
+                // 调用接口
+                var response = await _httpClient.PostAsync(endpoint, content);
+                response.EnsureSuccessStatusCode();
+                var responseStr = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<AIRecognitionResult>(responseStr);
 
                 progress.Report(new ProcessProgress
                 {
@@ -156,6 +174,7 @@ namespace Cappuccino.Common.Helper
                     Progress = 100,
                     Message = $"识别完成：{imagePath}，类型：{result.ImageType}"
                 });
+
                 return result;
             }
             catch (Exception ex)
@@ -167,7 +186,7 @@ namespace Cappuccino.Common.Helper
                     Progress = 0,
                     Message = $"识别失败：{imagePath}，原因：{ex.Message}"
                 });
-                return new AIRecognitionResult { Success = false, Message = ex.Message };
+                return new AIRecognitionResult { Success = false, Message = ex.Message, ImagePath = imagePath };
             }
         }
     }

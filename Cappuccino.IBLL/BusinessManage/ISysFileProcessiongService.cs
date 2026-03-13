@@ -11,6 +11,6 @@ namespace Cappuccino.IBLL
 {
     public interface ISysFileProcessiongService : IBaseService<SysCaseInfoEntity>
     {
-        Task<string> ProcessCompressFileAsync(HttpPostedFileBase file, CancellationToken cancellationToken, IProgress<ProcessProgress> progress);
+        Task<string> ProcessCompressFileAsync(string compressFilePath, int extractRule, string batchId, Action<ProcessProgress> progressAction);
     }
 }
