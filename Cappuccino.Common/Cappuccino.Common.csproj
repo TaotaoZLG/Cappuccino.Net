@@ -166,7 +166,9 @@
     <Compile Include="Enum\OperateType.cs" />
     <Compile Include="Enum\EnabledMarkEnum.cs" />
     <Compile Include="Enum\PositionEnum.cs" />
+    <Compile Include="Enum\UploadFileType.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Extensions\Extension.Enum.cs" />
     <Compile Include="Extensions\Extensions.Convert.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helper\AIRecognitionHelper.cs" />

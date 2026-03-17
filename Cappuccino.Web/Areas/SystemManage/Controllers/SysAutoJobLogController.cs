@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Entity;
-using Cappuccino.IBLL.System;
+using Cappuccino.IBLL;
 using Cappuccino.Model;
 using Cappuccino.Web.Core;
 using Cappuccino.Web.Models;

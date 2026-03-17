@@ -5,7 +5,7 @@ using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
 
-namespace Cappuccino.BLL.System
+namespace Cappuccino.BLL
 {
     public class SysLogOperateService : BaseService<SysLogOperateEntity>, ISysLogOperateService
     {

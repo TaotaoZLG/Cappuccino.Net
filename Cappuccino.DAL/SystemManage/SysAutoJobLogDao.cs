@@ -1,8 +1,8 @@
 ﻿using Cappuccino.DataAccess;
 using Cappuccino.Entity;
-using Cappuccino.IDAL.System;
+using Cappuccino.IDAL;
 
-namespace Cappuccino.DAL.System
+namespace Cappuccino.DAL
 {
     public class SysAutoJobLogDao : BaseDao<SysAutoJobLogEntity>, ISysAutoJobLogDao
     {

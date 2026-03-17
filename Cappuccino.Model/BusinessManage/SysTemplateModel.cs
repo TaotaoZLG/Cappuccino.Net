@@ -32,6 +32,11 @@ namespace Cappuccino.Model
         public int TemplateStatus { get; set; }
 
         /// <summary>
+        /// 模板文件存储路径（相对路径）
+        /// </summary>
+        public string TemplateFilePath { get; set; }
+
+        /// <summary>
         /// 排序
         /// </summary>
         public int? SortCode { get; set; }

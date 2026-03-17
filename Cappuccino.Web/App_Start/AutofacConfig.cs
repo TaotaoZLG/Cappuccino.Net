@@ -3,11 +3,10 @@ using System.Web.Mvc;
 using Autofac;
 using Autofac.Integration.Mvc;
 using Cappuccino.AutoJob;
-using Cappuccino.BLL.System;
+using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.IBLL;
-using Cappuccino.IBLL.System;
 
 namespace Cappuccino.Web
 {

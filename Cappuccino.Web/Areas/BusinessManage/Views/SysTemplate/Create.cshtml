@@ -8,36 +8,33 @@
         <div class="main-container">
             <div class="main-container">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">参数名称</label>
+                    <label class="layui-form-label">模板名称</label>
                     <div class="layui-input-block">
-                        <input type="text" name="configName" lay-verify="required" lay-reqtext="请输入参数名称" placeholder="请输入参数名称" class="layui-input">
+                        <input type="text" name="templateName" lay-verify="required" lay-reqtext="请输入模板名称" placeholder="请输入模板名称" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">参数键名</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="configKeys" lay-verify="required" lay-reqtext="请输入参数键名" placeholder="请输入参数键名（英文标识）" class="layui-input">
+                    <label class="layui-form-label">选择文件</label>
+                    <div class="layui-input-block" style="display: flex; align-items: center;">
+                        <input type="text" class="layui-input" id="fileNameInput" placeholder="请选择文件" readonly
+                               style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;" />
+                        <button type="button" class="layui-btn layui-btn-normal" id="chooseFileBtn"
+                                style="border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px;">
+                            <i class="layui-icon">&#xe621;</i> 浏览...
+                        </button>
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">参数值</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="configValue" placeholder="请输入参数值" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">参数类型</label>
-                    <div class="layui-input-block">
-                        <select name="Type" lay-verify="required" lay-reqtext="请选择参数类型">
-                            <option value="2" @(Model?.configType == 2 ? "selected" : "")>自定义</option>
-                            <option value="1" @(Model?.configType == 1 ? "selected" : "")>系统内置（不可删除）</option>
-                        </select>
-                    </div>
-                </div>
+                @Html.EnabledMarkRadioHtml("templateStatus", 1)
                 <div class="layui-form-item">
                     <label class="layui-form-label">备注</label>
                     <div class="layui-input-block">
                         <textarea name="Remark" placeholder="请输入备注信息" class="layui-textarea" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">排序码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
                     </div>
                 </div>
             </div>
@@ -58,24 +55,48 @@
 </form>
 @section Scripts {
     <script>
-        layui.use(['form', 'jquery', 'common', 'laydate'], function () {
+        layui.use(['form', 'jquery', 'common', 'upload'], function () {
             let form = layui.form;
             let $ = layui.jquery;
             let common = layui.common;
-            var laydate = layui.laydate;
+            let upload = layui.upload;
 
-            // 日期时间选择器
-            laydate.render({
-                elem: '#startTime',
-                type: 'datetime'
-            });
-            laydate.render({
-                elem: '#endTime',
-                type: 'datetime'
+            var filePath = null;
+
+            upload.render({
+                elem: '#chooseFileBtn',
+                url: '/File/UploadFile' + '?fileModule=@Convert.ToInt32(Cappuccino.Common.Enum.UploadFileType.Import)',
+                accept: 'file',
+                //field: 'templateFile',
+                exts: 'doc|docx',
+                size: 102400,
+                auto: true,
+                multiple: false,
+                choose: function (obj) {
+                    obj.preview(function (index, file, result) {
+                        $("#fileNameInput").val(file.name);
+                    });
+                },
+                done: function (response) {
+                    //console.log(response);
+                    if (response.status == 1) {
+                        filePath = response.data;
+                    }
+                    else {
+                        ys.msgError(response.message)
+                    }
+                }
             });
 
             form.on("submit(create)", function (data) {
-                common.ajax("/SystemManage/SysConfig/Create", "post", data.field, true, true).done(function (response) {
+                if (!filePath) {
+                    ys.alertError('文件未上传或者上传失败');
+                    return;
+                }
+
+                data.field.templateFilePath = filePath;
+
+                common.ajax("/BusinessManage/SysTemplate/Create", "post", data.field, true, true).done(function (response) {
                     layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
                         parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
                         parent.layui.table.reload("tableId");
@@ -84,6 +105,16 @@
                     console.log(error)
                 });
                 return false;
+            });
+
+            common.ajax("/BusinessManage/SysTemplate/GetMaxSortCode", "get").done(function (response) {
+                if (response.status === 0) {
+                    form.val("formCreate", {
+                        "sortCode": response.data
+                    });
+                }
+            }).fail(function (error) {
+                console.log(error)
             });
         });
     </script>

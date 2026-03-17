@@ -7,12 +7,13 @@ using Cappuccino.Common.Log;
 using Cappuccino.Common.Net;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
+using Cappuccino.Model;
 using Cappuccino.Web.Core;
 
 namespace Cappuccino.Web.Attributes
 {
     /// <summary>
-    /// MVC操作日志AOP特性（合并标记与拦截逻辑）
+    /// MVC操作日志AOP特性（合并标记与拦截逻辑,自动区分新增/编辑）
     /// 用法：在需要记录日志的Action上添加 [LogOperate] 并配置参数
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
@@ -64,6 +65,34 @@ namespace Cappuccino.Web.Attributes
                 // 构建日志实体
                 SysLogOperateEntity logOperateEntity = new SysLogOperateEntity();
 
+                string ip = NetHelper.GetIp;
+                long id = 0;
+                int businesstype = attribute.BusinessType;
+                string title = attribute.Title;
+
+                // 1. 先判断：当前Action方法名 是否为 固定的 SaveForm
+                string actionName = context.ActionDescriptor.ActionName;
+                if (actionName.Equals("SaveForm", StringComparison.OrdinalIgnoreCase))
+                {
+                    // 从表单获取 Id
+                    if (!string.IsNullOrEmpty(request.Form["Id"]))
+                    {
+                        long.TryParse(request.Form["Id"], out id);
+                    }
+
+                    // 4. 只根据 Id 判断：0=新增，非0=编辑
+                    if (id == 0)
+                    {
+                        title = "新增";
+                        businesstype = 0; // 新增
+                    }
+                    else
+                    {
+                        title = "编辑";
+                        businesstype = 1; // 编辑
+                    }
+                }
+
                 // 处理异常场景（优先返回异常信息）
                 var stringBuilder = new StringBuilder();
                 if (context.Exception != null)
@@ -86,9 +115,9 @@ namespace Cappuccino.Web.Attributes
                 }
 
                 // 基础配置信息
-                logOperateEntity.Title = attribute.Title;
+                logOperateEntity.Title = title;
                 logOperateEntity.Description = attribute.Description;
-                logOperateEntity.BusinessType = attribute.BusinessType;
+                logOperateEntity.BusinessType = businesstype;
 
                 // 请求信息
                 logOperateEntity.RequestMethod = request.HttpMethod;
@@ -101,8 +130,8 @@ namespace Cappuccino.Web.Attributes
                 logOperateEntity.RequestResult = stringBuilder.ToString();
 
                 // 环境信息
-                logOperateEntity.IPAddress = NetHelper.GetIp;
-                logOperateEntity.IPAddressName = NetHelper.GetIpLocation(NetHelper.GetIp);
+                logOperateEntity.IPAddress = ip;
+                logOperateEntity.IPAddressName = NetHelper.GetIpLocation(ip);
                 logOperateEntity.OperateName = user?.UserName ?? loginName;
                 logOperateEntity.SystemOs = NetHelper.GetSystemOs(request.UserAgent);
                 logOperateEntity.Browser = NetHelper.GetBrowser(request.UserAgent);

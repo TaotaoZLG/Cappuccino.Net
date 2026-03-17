@@ -8,21 +8,9 @@
         <form class="layui-form" action="">
             <div class="layui-form-item">
                 <div class="layui-form-item layui-inline">
-                    <label class="layui-form-label">账户</label>
+                    <label class="layui-form-label">模板名称</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="account" placeholder="请输入账户" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item layui-inline">
-                    <label class="layui-form-label">姓名</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="realName" placeholder="请输入姓名" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item layui-inline">
-                    <label class="layui-form-label">日期范围</label>
-                    <div class="layui-input-inline">
-                        <input class="layui-input time-input" placeholder="日期范围" autocomplete="off" data-range="~" name="startEndDate" id="startEndDate" >
+                        <input type="text" name="templateName" placeholder="请输入模板名称" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-inline">
@@ -46,10 +34,11 @@
     </script>
 
     <script>
-        layui.use(['table', 'form', 'laydate'], function () {
+        layui.use(['table', 'form', 'laydate', 'common'], function () {
             let table = layui.table;
             let form = layui.form;
             let laydate = layui.laydate;
+            let common = layui.common;
 
             let MODULE_PATH = "/BusinessManage/SysTemplate/";
 
@@ -63,24 +52,36 @@
                         { type: 'checkbox' },
                         { title: 'ID', field: 'id', hide: true },
                         { title: '模板名称', field: 'templateName', },
-                        { title: '模板内容', field: 'templateContent', },
+                        //{ title: '模板内容', field: 'templateContent', },
                         { title: '模板类型', field: 'templateType', },
-                        { title: '模板状态', field: 'templateStatus', },
+                        {
+                            title: '模板状态', field: 'templateStatus', templet: function (d) {
+                                return top.getDataDictValue("sys_enable_status", d.templateStatus);
+                            }
+                        },
                         { title: '排序', field: 'sortCode', },
                         { title: '备注', field: 'remark', },
                     ]
                 ],
                 skin: 'line',
                 toolbar: '#toolbarTpl',
-                defaultToolbar: [{
-                    layEvent: 'refresh',
-                    icon: 'layui-icon-refresh',
-                }, 'filter', 'print', 'exports']
+                defaultToolbar: []
+            });
+
+            table.on('tool(tableFilter)', function (obj) {
+                let data = obj.data;
+                if (obj.event === 'edit') {
+                    window.edit(data.id);
+                }
             });
 
             table.on('toolbar(tableFilter)', function (obj) {
                 if (obj.event === 'refresh') {
                     window.refresh();
+                } else if (obj.event === 'create') {
+                    window.create();
+                } else if (obj.event === 'batchDel') {
+                    window.batchDel(obj);
                 }
             });
 
@@ -91,6 +92,34 @@
 
             window.refresh = function () {
                 table.reload('tableId');
+            }
+
+            window.create = function () {
+                layer.open({
+                    type: 2,
+                    title: '新增',
+                    shade: 0.1,
+                    area: ['750px', '650px'],
+                    content: MODULE_PATH + 'Create'
+                });
+            }
+
+            window.batchDel = function (obj) {
+                let selectRow = table.checkStatus(obj.config.id).data;
+                if (selectRow.length === 0) {
+                    ys.msgWarning("未选中数据");
+                    return false;
+                }
+                let ids = ys.getIds(selectRow);
+                layer.confirm('确定要删除选中的业务模板吗', { icon: 3, title: '提示' }, function (index) {
+                    common.ajax(MODULE_PATH + "batchDel", "post", { idsStr: ids }, true, true).done(function (response) {
+                        layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
+                            table.reload('tableId');
+                        });
+                    }).fail(function (error) {
+                        console.log(error)
+                    });
+                });
             }
         })
     </script>

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Cappuccino.Entity;
-using Cappuccino.IBLL.System;
-using Cappuccino.IDAL.System;
+using Cappuccino.IBLL;
+using Cappuccino.IDAL;
 using Cappuccino.Web.Core;
 
-namespace Cappuccino.BLL.System
+namespace Cappuccino.BLL
 {
     public class SysAutoJobLogService : BaseService<SysAutoJobLogEntity>, ISysAutoJobLogService
     {

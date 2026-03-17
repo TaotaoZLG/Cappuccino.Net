@@ -21,7 +21,7 @@
                 width: '800px',
                 height: "750px",
                 content: '',
-                maxmin: true,
+                maxmin: false,
                 shade: 0.4,
                 btn: null,
                 callback: null,
@@ -401,7 +401,7 @@
                 type: "post",
                 data: postData,
                 success: function (obj) {
-                    if (obj.status == 0) {
+                    if (obj.status == 1) {
                         window.location.href = "/File/DownloadFile?filePath=" + obj.data + "&delete=1";
                     }
                     else {

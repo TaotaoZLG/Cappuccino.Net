@@ -6,10 +6,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Cappuccino.Entity
 {
-    [Table("SysTemplate", Schema = "dbo")]
+    [Table("SysTemplate")]
     public class SysTemplateEntity : BaseEntity
     {
         /// <summary>
@@ -31,6 +32,11 @@ namespace Cappuccino.Entity
         /// 模板状态：0-禁用，1-启用
         /// </summary>
         public int TemplateStatus { get; set; }
+
+        /// <summary>
+        /// 模板文件存储路径（相对路径）
+        /// </summary>
+        public string TemplateFilePath { get; set; }
 
         /// <summary>
         /// 排序

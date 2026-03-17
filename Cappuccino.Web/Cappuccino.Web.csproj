@@ -16,7 +16,8 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <Use64BitIISExpress>true</Use64BitIISExpress>
+    <Use64BitIISExpress>
+    </Use64BitIISExpress>
     <IISExpressSSLPort>44342</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -559,6 +560,7 @@
     <Content Include="Resource\Upload\CompressTemp\f9fa3a77-b3dc-411d-a531-fe3bd3b86b2c.rar" />
     <Content Include="Areas\BusinessManage\Views\SysTemplate\Index.cshtml" />
     <Content Include="Areas\BusinessManage\Views\SysTemplate\Create.cshtml" />
+    <Content Include="Areas\BusinessManage\Views\SysCaseInfo\UploadFile.cshtml" />
     <None Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Resource\Upload\ValidFiles\02a76d55-0529-4201-8abc-6d6bc445921d.png" />
     <Content Include="Resource\Upload\ValidFiles\02cfac80-ebe0-4353-9ad3-cdb35397874e.png" />
@@ -624,6 +626,8 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\Console2.cshtml" />
+    <Content Include="Views\File\UploadFile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

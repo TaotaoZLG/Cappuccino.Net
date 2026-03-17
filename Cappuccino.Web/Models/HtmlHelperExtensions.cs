@@ -84,6 +84,26 @@ namespace Cappuccino.Web
                                         </div>
                                     </div>", enabled, disabled, keyName));
         }
+
+        /// <summary>
+        /// 上传文件组件（包含文本框和浏览按钮，支持显示选择的文件名）
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <returns></returns>
+        public static HtmlString UploadFilesHtml(this HtmlHelper helper)
+        {
+            return new HtmlString(string.Format(@"<div class='layui-form-item'>
+                    <label class='layui-form-label'>选择文件</label>
+                    <div class='layui-input-block' style='display: flex; align-items: center;'>
+                        <input type='text' class='layui-input' id='fileNameInput' placeholder='请选择文件' readonly
+                               style='border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;' />
+                        <button type='button' class='layui-btn layui-btn-normal' id='chooseFileBtn'
+                                style='border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px;'>
+                            <i class='layui-icon'>&#xe621;</i> 浏览...
+                        </button>
+                    </div>
+                </div>"));
+        }
     }
 
     public static class HtmlHelperEnumExtensions

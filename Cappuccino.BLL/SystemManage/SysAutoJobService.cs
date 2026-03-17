@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Cappuccino.AutoJob;
 using Cappuccino.Common.Log;
 using Cappuccino.Entity;
-using Cappuccino.IBLL.System;
-using Cappuccino.IDAL.System;
+using Cappuccino.IBLL;
+using Cappuccino.IDAL;
 
-namespace Cappuccino.BLL.System
+namespace Cappuccino.BLL
 {
     public class SysAutoJobService : BaseService<SysAutoJobEntity>, ISysAutoJobService
     {

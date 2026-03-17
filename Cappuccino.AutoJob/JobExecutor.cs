@@ -6,7 +6,7 @@ using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.Common.Log;
 using Cappuccino.Entity;
-using Cappuccino.IBLL.System;
+using Cappuccino.IBLL;
 using Quartz;
 using IContainer = Autofac.IContainer;
 

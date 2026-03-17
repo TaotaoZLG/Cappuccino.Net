@@ -6,7 +6,13 @@ namespace Cappuccino.Web.Core
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class CheckPermission : Attribute
     {
+        public CheckPermission() { }
+
+        /// <summary>
+        /// 权限字符串，例如 organization:user:view
+        /// </summary>
         public string Permission { get; set; }
+
         public CheckPermission(string permission)
         {
             this.Permission = permission;

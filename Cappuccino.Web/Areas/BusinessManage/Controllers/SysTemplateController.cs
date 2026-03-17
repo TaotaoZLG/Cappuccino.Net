@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -51,6 +52,11 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
                     return WriteError("实体验证失败");
                 }
 
+                if (string.IsNullOrWhiteSpace(viewModel.TemplateFilePath))
+                {
+                    return WriteError("文件未上传或者上传失败");
+                }
+
                 SysTemplateEntity entity = viewModel.EntityMap();
                 entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
@@ -83,14 +89,13 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
         }
 
         [HttpPost, CheckPermission("business.template.batchDel")]
-        [LogOperate(Title = "批量删除用户", BusinessType = (int)OperateType.Delete)]
+        [LogOperate(Title = "批量删除业务模板", BusinessType = (int)OperateType.Delete)]
         public ActionResult BatchDel(string idsStr)
         {
             try
             {
-                var idsArray = idsStr.Substring(0, idsStr.Length).Split(',');
-                long[] ids = Array.ConvertAll<string, long>(idsArray, long.Parse);
-                var result = _sysTemplateService.DeleteBy(x => ids.Contains(x.Id)) > 0 ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
+                var idsArray = idsStr.Split(',').Select(x => long.Parse(x)).ToArray();
+                var result = _sysTemplateService.DeleteBy(x => idsArray.Contains(x.Id)) > 0 ? WriteSuccess("数据删除成功") : WriteError("数据删除失败");
                 return result;
             }
             catch (Exception ex)
@@ -109,8 +114,8 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
             {
                 queries.Add(new Query { Name = "TemplateName", Operator = Query.Operators.Contains, Value = viewModel.TemplateName });
             }
-           
-            var list = _sysTemplateService.GetListByPage(queries.AsExpression<SysTemplateEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount,includes: t => t.CreateUserId).Select(x => new
+
+            var list = _sysTemplateService.GetListByPage(queries.AsExpression<SysTemplateEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount, includes: t => t.CreateUserId).Select(x => new
             {
                 x.Id,
                 x.TemplateName,
@@ -118,8 +123,9 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
                 x.TemplateType,
                 x.TemplateStatus,
                 x.SortCode,
+                x.Remark,
                 x.CreateTime,
-                CreateUserId = x.SysUser.Id
+                CreateUserName = x.SysUser.UserName
 
             }).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);

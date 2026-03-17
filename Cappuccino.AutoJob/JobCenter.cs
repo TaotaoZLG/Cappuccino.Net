@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cappuccino.Common.Log;
 using Cappuccino.Entity;
-using Cappuccino.IBLL.System;
+using Cappuccino.IBLL;
 
 namespace Cappuccino.AutoJob
 {

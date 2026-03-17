@@ -93,7 +93,7 @@
       <Name>Cappuccino.Entity</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cappuccino.IDAL\Cappuccino.IDAL.csproj">
-      <Project>{94c73821-31d6-4f89-887a-ffc96ffab5d7}</Project>
+      <Project>{94C73821-31D6-4F89-887A-FFC96FFAB5D7}</Project>
       <Name>Cappuccino.IDAL</Name>
     </ProjectReference>
   </ItemGroup>

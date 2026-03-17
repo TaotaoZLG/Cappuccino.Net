@@ -1,18 +1,240 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
 using System.Web.Hosting;
+using System.Web.Mvc;
+using Cappuccino.Common.Enum;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Log;
 using Cappuccino.Common.Util;
 using log4net;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Cappuccino.Common.Helper
 {
     public class FileHelper
     {
+        #region 上传单个文件
+        /// <summary>
+        /// 上传单个文件
+        /// </summary>
+        /// <param name="fileModule">上传模块标识</param>
+        /// <param name="file">待上传的文件通过HttpPostedFileBase接收</param>
+        /// <returns></returns>
+        public async static Task<TData<string>> UploadFile(int fileModule, HttpPostedFileBase file)
+        {
+            string dirModule = string.Empty;
+            TData<string> obj = new TData<string>();
+
+            // 1. 校验文件是否存在
+            if (file == null || file.ContentLength <= 0)
+            {
+                obj.Message = "请先选择文件！";
+                return obj;
+            }
+
+            // 2. 按模块校验文件类型/大小
+            TData objCheck = null;
+            string fileExtension = Path.GetExtension(file.FileName);
+            switch (fileModule)
+            {
+                case (int)UploadFileType.Portrait:
+                    objCheck = CheckFileExtension(fileExtension, ".jpg|.jpeg|.gif|.png");
+                    if (objCheck.Status != 1)
+                    {
+                        obj.Message = objCheck.Message;
+                        return obj;
+                    }
+                    dirModule = UploadFileType.Portrait.ToString();
+                    break;
+
+                case (int)UploadFileType.News:
+                    // 校验文件大小（5MB）
+                    if (file.ContentLength > 5 * 1024 * 1024)
+                    {
+                        obj.Message = "文件最大限制为 5MB";
+                        return obj;
+                    }
+                    objCheck = CheckFileExtension(fileExtension, ".jpg|.jpeg|.gif|.png");
+                    if (objCheck.Status != 1)
+                    {
+                        obj.Message = objCheck.Message;
+                        return obj;
+                    }
+                    dirModule = UploadFileType.News.ToString();
+                    break;
+
+                case (int)UploadFileType.Import:
+                    objCheck = CheckFileExtension(fileExtension, ".xls|.xlsx|.doc|.docx");
+                    if (objCheck.Status != 1)
+                    {
+                        obj.Message = objCheck.Message;
+                        return obj;
+                    }
+                    dirModule = UploadFileType.Import.ToString();
+                    break;
+
+                default:
+                    obj.Message = "请指定上传到的模块";
+                    return obj;
+            }
+
+            // 3. 生成新文件名和存储目录
+            // 兜底文件扩展名（默认.png）
+            string finalFileExtension = TextHelper.GetCustomValue(fileExtension, ".png");
+            // 生成唯一文件名（GUID）
+            string newFileName = GuidHelper.GetGuid(true) + finalFileExtension;
+            // 构建相对目录（按模块+日期分目录）
+            string relativeDir = $"Resource{Path.DirectorySeparatorChar}{dirModule}{Path.DirectorySeparatorChar}" +
+                                 $"{DateTime.Now.ToString("yyyy-MM-dd").Replace('-', Path.DirectorySeparatorChar)}{Path.DirectorySeparatorChar}";
+
+            // 4. 构建绝对路径
+            string absoluteDir = HostingEnvironment.MapPath("~/" + relativeDir.Replace(Path.DirectorySeparatorChar, '/'));
+            string absoluteFileName = Path.Combine(absoluteDir, newFileName);
+
+            // 5. 确保目录存在
+            if (!Directory.Exists(absoluteDir))
+            {
+                Directory.CreateDirectory(absoluteDir);
+            }
+
+            // 6. 保存文件（异步方式）
+            try
+            {
+                using (FileStream fs = File.Create(absoluteFileName))
+                {
+                    // 从HttpPostedFileBase的InputStream异步复制到文件流
+                    await file.InputStream.CopyToAsync(fs);
+                    fs.Flush();
+                }
+
+                // 7. 组装返回结果
+                // 转换目录为HTTP可访问格式（替换分隔符）
+                string httpDir = ConvertDirectoryToHttp(relativeDir);
+                obj.Data = $"{Path.AltDirectorySeparatorChar}{httpDir}{newFileName}";
+                // 原文件名（无扩展名）
+                obj.Message = Path.GetFileNameWithoutExtension(TextHelper.GetCustomValue(file.FileName, newFileName));
+                // 文件大小（KB）
+                obj.Description = (file.ContentLength / 1024).ToString();
+                obj.Status = 1; // 上传成功标识
+            }
+            catch (Exception ex)
+            {
+                obj.Message = ex.Message;
+            }
+
+            return obj;
+        }
+        #endregion
+
+        /// <summary>
+        /// 批量上传文件（仅处理第一个文件，适配某些前端组件批量上传但后端只需单个文件的情况）
+        /// </summary>
+        /// <param name="fileModule"></param>
+        /// <param name="files"></param>
+        /// <returns></returns>
+        public async static Task<TData<string>> UploadFile(int fileModule, IEnumerable<HttpPostedFileBase> files)
+        {
+            if (files == null || !files.Any())
+            {
+                TData<string> obj = new TData<string>();
+                obj.Message = "请先选择文件！";
+                return obj;
+            }
+            if (files.Count() > 1)
+            {
+                TData<string> obj = new TData<string>();
+                obj.Message = "一次只能上传一个文件！";
+                return obj;
+            }
+            return await UploadFile(fileModule, files.First());
+        }
+
+        #region 删除单个文件
+        /// <summary>
+        /// 删除单个文件
+        /// </summary>
+        /// <param name="fileModule"></param>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public static TData<string> DeleteFile(int fileModule, string filePath)
+        {
+            TData<string> obj = new TData<string>();
+            string dirModule = fileModule.GetDescriptionByEnum<UploadFileType>();
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                obj.Message = "请先选择文件！";
+                return obj;
+            }
+
+            filePath = FilterFilePath(filePath);
+            //filePath = "Resource" + Path.DirectorySeparatorChar + dirModule + Path.DirectorySeparatorChar + filePath;
+            string absoluteDir = Path.Combine(HostingEnvironment.MapPath(filePath));
+            try
+            {
+                if (File.Exists(absoluteDir))
+                {
+                    File.Delete(absoluteDir);
+                }
+                else
+                {
+                    obj.Message = "文件不存在";
+                }
+                obj.Status = 1;
+            }
+            catch (Exception ex)
+            {
+                obj.Message = ex.Message;
+            }
+            return obj;
+        }
+        #endregion
+
+        #region 下载文件
+        /// <summary>
+        /// 下载文件
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="delete"></param>
+        /// <returns></returns>
+        public static TData<FileContentResult> DownloadFile(string filePath, int delete)
+        {
+            filePath = FilterFilePath(filePath);
+            if (!filePath.StartsWith("Resource", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception("非法访问");
+            }
+            TData<FileContentResult> obj = new TData<FileContentResult>();
+            string rootPath = HttpContext.Current != null ? HostingEnvironment.MapPath("~") : AppDomain.CurrentDomain.BaseDirectory;
+            // 安全拼接路径（避免重复分隔符）
+            string absoluteFilePath = Path.Combine(rootPath, filePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar));
+            byte[] fileBytes = File.ReadAllBytes(absoluteFilePath);
+            if (delete == 1)
+            {
+                File.Delete(absoluteFilePath);
+            }
+            // md5 值
+            string fileNamePrefix = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+            string title = fileNameWithoutExtension;
+            if (fileNameWithoutExtension.Contains("_"))
+            {
+                title = fileNameWithoutExtension.Split('_')[1].Trim();
+            }
+            string fileExtensionName = Path.GetExtension(filePath);
+            obj.Data = new FileContentResult(fileBytes, "application/octet-stream")
+            {
+                FileDownloadName = string.Format("{0}_{1}{2}", fileNamePrefix, title, fileExtensionName)
+            };
+            obj.Status = 1;
+            return obj;
+        }
+        #endregion 
+
+
         /// <summary>
         /// 判断目录是否存在，不存在则创建
         /// </summary>
@@ -112,46 +334,5 @@ namespace Cappuccino.Common.Helper
         {
             return HostingEnvironment.MapPath(virtualPath);
         }
-
-        #region 下载文件
-        /// <summary>
-        /// 下载文件
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="delete"></param>
-        /// <returns></returns>
-        public static TData<FileContentResult> DownloadFile(string filePath, int delete)
-        {
-            filePath = FilterFilePath(filePath);
-            if (!filePath.StartsWith("Resource", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new Exception("非法访问");
-            }
-            TData<FileContentResult> obj = new TData<FileContentResult>();
-            string rootPath = HttpContext.Current != null ? HostingEnvironment.MapPath("~") : AppDomain.CurrentDomain.BaseDirectory;
-            // 安全拼接路径（避免重复分隔符）
-            string absoluteFilePath = Path.Combine(rootPath, filePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar));
-            byte[] fileBytes = File.ReadAllBytes(absoluteFilePath);
-            if (delete == 1)
-            {
-                File.Delete(absoluteFilePath);
-            }
-            // md5 值
-            string fileNamePrefix = DateTime.Now.ToString("yyyyMMddHHmmss");
-            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
-            string title = fileNameWithoutExtension;
-            if (fileNameWithoutExtension.Contains("_"))
-            {
-                title = fileNameWithoutExtension.Split('_')[1].Trim();
-            }
-            string fileExtensionName = Path.GetExtension(filePath);
-            obj.Data = new FileContentResult(fileBytes, "application/octet-stream")
-            {
-                FileDownloadName = string.Format("{0}_{1}{2}", fileNamePrefix, title, fileExtensionName)
-            };
-            obj.Status = 1;
-            return obj;
-        }
-        #endregion 
     }
 }

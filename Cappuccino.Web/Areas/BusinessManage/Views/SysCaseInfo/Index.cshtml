@@ -98,10 +98,7 @@
                 ],
                 skin: 'line',
                 toolbar: '#toolbarTpl',
-                defaultToolbar: [{
-                    layEvent: 'refresh',
-                    icon: 'layui-icon-refresh',
-                }, 'filter', 'print', 'exports']
+                defaultToolbar: []
             });
 
             table.on('toolbar(tableFilter)', function (obj) {
@@ -109,18 +106,12 @@
                     window.refresh();
                 }
                 else if (obj.event === 'uploadfile') {
-                    var formdata = new FormData();
-                    //formdata.append("fileList", img, imgFileName);
-                    ys.ajaxUploadFile({
-                        url: '',
-                        data: formdata,
-                        success: function (obj) {
-                            if (obj.Code == 1) {
-
-                            }
-                            else {
-                                ys.msgError(obj.Message);
-                            }
+                    ys.openDialog({
+                        title: "上传文件",
+                        content: '@Url.Content("~/File/UploadFile")',
+                        height: "280px",
+                        callback: function (index, layero) {
+                            
                         }
                     });
                 }

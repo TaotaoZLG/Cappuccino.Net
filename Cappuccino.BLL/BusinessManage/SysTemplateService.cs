@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Hosting;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Helper;
+using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
+using Cappuccino.Model;
+using Cappuccino.Web.Core;
 
 namespace Cappuccino.BLL
 {
@@ -34,6 +40,6 @@ namespace Cappuccino.BLL
             int maxSortCode = result.ParseToInt();
             maxSortCode++;
             return maxSortCode;
-        }
+        }    
     }
 }

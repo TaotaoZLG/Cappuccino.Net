@@ -23,6 +23,7 @@ namespace Cappuccino.Entity
             Mapper.CreateMap<SysAutoJobEntity, SysAutoJobModel>();
             Mapper.CreateMap<SysNoticeEntity, SysNoticeModel>();
             Mapper.CreateMap<SysConfigEntity, SysConfigModel>();
+            Mapper.CreateMap<SysTemplateEntity, SysTemplateModel>();
 
             //2.将Model和Entity中的所有实体类在AutoMapper内部建立一个关联
             Mapper.CreateMap<SysUserModel, SysUserEntity>();
@@ -37,6 +38,7 @@ namespace Cappuccino.Entity
             Mapper.CreateMap<SysAutoJobModel, SysAutoJobEntity>();
             Mapper.CreateMap<SysNoticeModel, SysNoticeEntity>();
             Mapper.CreateMap<SysConfigModel, SysConfigEntity>();
+            Mapper.CreateMap<SysTemplateModel, SysTemplateEntity>();
         }
 
         #region SysUser

@@ -4,7 +4,7 @@ using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
 using Cappuccino.Entity;
-using Cappuccino.IBLL.System;
+using Cappuccino.IBLL;
 using Cappuccino.Model;
 using Cappuccino.Web.Attributes;
 using Cappuccino.Web.Core;

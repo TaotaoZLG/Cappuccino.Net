@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Cappuccino.Entity;
 
-namespace Cappuccino.IBLL.System
+namespace Cappuccino.IBLL
 {
     public interface ISysAutoJobService : IBaseService<SysAutoJobEntity>
     {

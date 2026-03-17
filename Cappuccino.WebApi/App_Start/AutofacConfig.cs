@@ -2,7 +2,7 @@
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
-using Cappuccino.BLL.System;
+using Cappuccino.BLL;
 using Cappuccino.IBLL;
 
 namespace Cappuccino.WebApi

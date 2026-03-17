@@ -1,0 +1,68 @@
+﻿
+@{
+    ViewBag.Title = "上传文件";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+@section style {
+    <style>
+        .upload-tip-info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+            line-height: 1.5;
+            padding-left: 110px;
+        }
+
+            .upload-tip-info i {
+                margin-right: 5px;
+                color: #1E9FFF;
+            }
+    </style>
+}
+<form class="layui-form">
+    <div class="mainBox">
+        <div class="main-container">
+            <div class="main-container">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">选择文件</label>
+                    <div class="layui-input-block" style="display: flex; align-items: center;">
+                        <input type="text" class="layui-input" id="fileNameInput" placeholder="请选择文件" readonly
+                               style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;" />
+                        <button type="button" class="layui-btn layui-btn-normal" id="chooseFileBtn"
+                                style="border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px;">
+                            <i class="layui-icon">&#xe621;</i> 浏览...
+                        </button>
+                    </div>
+                </div>
+                <div class="upload-tip-info">
+                    <i class="layui-icon layui-icon-tips"></i> 支持格式：ZIP/RAR/7Z | 最大大小：100MB
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button type="submit" class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="" lay-filter="create">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        layui.use(['common', 'upload'], function () {
+            var $ = layui.jquery;
+            var common = layui.common;
+            var upload = layui.upload;
+
+
+        });
+    </script>
+}

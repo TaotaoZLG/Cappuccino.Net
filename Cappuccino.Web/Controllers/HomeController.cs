@@ -2,6 +2,7 @@
 using System.IO;
 using System.Web.Mvc;
 using Cappuccino.Common.Extensions;
+using Cappuccino.Common.Util;
 using Cappuccino.IBLL;
 using Cappuccino.Web.Core;
 using Cappuccino.Web.Models;
@@ -29,6 +30,11 @@ namespace Cappuccino.Web.Controllers
         {
             return View();
         }
+
+        public ActionResult Console2()
+        {
+            return View();
+        }
         #endregion
 
         #region 提交数据
@@ -38,7 +44,7 @@ namespace Cappuccino.Web.Controllers
             return WriteSuccess(SuccessText, menu);
         }
 
-        public ActionResult ExportFile()
+        public ActionResult ExportFile(string subPath)
         {
             UploadFile uploadFile = new UploadFile();
             try
@@ -53,7 +59,9 @@ namespace Cappuccino.Web.Controllers
                     return Json(uploadFile, JsonRequestBehavior.AllowGet);
                 }
                 //定义本地路径位置
-                string localPath = Server.MapPath("~/Resource/Upload");
+                string virDirectory = ConfigUtils.AppSetting.GetValue("VirtualDirectory");
+                string fullPath = Path.Combine(virDirectory, "Upload", subPath);
+                string localPath = Server.MapPath(fullPath);
                 string filePathName = string.Empty; //最终文件名
                 filePathName = DateTimeExtensions.CreateNo() + "." + filecombin[1];
                 //Upload不存在则创建文件夹
@@ -63,7 +71,7 @@ namespace Cappuccino.Web.Controllers
                 }
                 file.SaveAs(Path.Combine(localPath, filePathName));  //保存图片
                 uploadFile.Status = 0;
-                uploadFile.Src = Path.Combine("/Resource/Upload/", filePathName);
+                uploadFile.Src = Path.Combine(fullPath, filePathName);
                 uploadFile.Message = "上传成功";
                 return Json(uploadFile, JsonRequestBehavior.AllowGet);
             }
