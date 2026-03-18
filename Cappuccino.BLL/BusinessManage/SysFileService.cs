@@ -10,9 +10,9 @@ using Cappuccino.IDAL;
 
 namespace Cappuccino.BLL
 {
-    public class SysFileService : BaseService<SysFileEntity> , ISysFileService
+    public class SysFileService : BaseService<SysFileEntity>, ISysFileService
     {
-    private ISysFileDao _fileDao;
+        private ISysFileDao _fileDao;
 
         #region 依赖注入
         public SysFileService(ISysFileDao fileDao)

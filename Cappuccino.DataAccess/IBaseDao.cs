@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace Cappuccino.IDAL
+namespace Cappuccino.DataAccess
 {
     /// <summary>
     /// 数据访问接口基类

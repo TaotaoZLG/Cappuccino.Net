@@ -36,7 +36,7 @@
                 <li class="layui-nav-item">
                     <!-- 头 像 -->
                     <a href="javascript:;">
-                        <img src="@UserManager.GetCurrentUserInfo().HeadIcon" class="layui-nav-img" id="userPortrait">
+                        <img src="@UserManager.GetCurrentUserInfo().HeadIcon" class="layui-nav-img" id="userPortrait" onerror="this.src=&#39;/Content/images/timg.jpg&#39;">
                         @UserManager.GetCurrentUserInfo().NickName
                     </a>
                     <!-- 功 能 菜 单 -->

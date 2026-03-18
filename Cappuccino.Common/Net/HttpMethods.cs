@@ -429,7 +429,7 @@ namespace Cappuccino.Common.Net
             }
             catch (Exception ex)
             {
-                //logger.Error("Error uploading file", ex);
+                //Log4netHelper.Error("Error uploading file", ex);
                 if (wresp != null)
                 {
                     wresp.Close();
@@ -495,7 +495,7 @@ namespace Cappuccino.Common.Net
             }
             catch (Exception ex)
             {
-                //logger.Error("Error uploading file", ex);
+                //Log4netHelper.Error("Error uploading file", ex);
                 if (wresp != null)
                 {
                     wresp.Close();

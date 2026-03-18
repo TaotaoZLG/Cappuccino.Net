@@ -34,10 +34,10 @@
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.2.0.123\lib\net461\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework">
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.SqlServer">
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -69,16 +69,13 @@
       <DependentUpon>202010210615300_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="EF\Migrations\Configuration.cs" />
+    <Compile Include="IBaseDao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="EF\Migrations\202010210615300_InitialCreate.resx">
       <DependentUpon>202010210615300_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
@@ -92,11 +89,10 @@
       <Project>{93fe2ce0-1a84-4138-b18f-d984ae0f4d81}</Project>
       <Name>Cappuccino.Entity</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cappuccino.IDAL\Cappuccino.IDAL.csproj">
-      <Project>{94C73821-31D6-4F89-887A-FFC96FFAB5D7}</Project>
-      <Name>Cappuccino.IDAL</Name>
-    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

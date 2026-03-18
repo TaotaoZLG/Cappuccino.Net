@@ -81,7 +81,7 @@
       <Name>Cappuccino.IBLL</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cappuccino.IDAL\Cappuccino.IDAL.csproj">
-      <Project>{94C73821-31D6-4F89-887A-FFC96FFAB5D7}</Project>
+      <Project>{94c73821-31d6-4f89-887a-ffc96ffab5d7}</Project>
       <Name>Cappuccino.IDAL</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Model.csproj">
@@ -93,9 +93,5 @@
       <Name>Cappuccino.Web.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

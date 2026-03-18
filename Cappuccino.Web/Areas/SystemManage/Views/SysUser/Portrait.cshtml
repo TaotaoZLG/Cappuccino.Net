@@ -1,4 +1,5 @@
 ﻿@using Cappuccino.Web.Core
+@using Cappuccino.Common.Enum
 @{
     ViewBag.Title = "Portrait";
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
@@ -132,15 +133,16 @@
                     formData.append('file', blob, fileName);
 
                     $.ajax({
-                        url: '/Home/ExportFile',
+                        url: '/File/UploadFile' + '?fileModule=@(Convert.ToInt32(UploadFileType.Portrait))',
                         type: 'POST',
                         data: formData,
                         processData: false,
                         contentType: false,
                         dataType: 'json',
                         success: function (response) {
-                            if (response.status === 0) {
-                                var imageUrl = response.src;
+                            console.log(response);
+                            if (response.status === 1) {
+                                var imageUrl = response.data;
 
                                 common.ajax("/SystemManage/SysUser/UploadPortrait", "post", {
                                     id: @UserManager.GetCurrentUserInfo().Id,

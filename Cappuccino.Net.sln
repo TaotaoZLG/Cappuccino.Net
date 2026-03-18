@@ -8,8 +8,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.IDAL", "Cappuccino.IDAL\Cappuccino.IDAL.csproj", "{94C73821-31D6-4F89-887A-FFC96FFAB5D7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.DAL", "Cappuccino.DAL\Cappuccino.DAL.csproj", "{F122A9BC-F278-408F-B1DB-E0BF92923C56}"
+	ProjectSection(ProjectDependencies) = postProject
+		{471E7F22-FDC4-4F8C-B985-3336D4B14E0B} = {471E7F22-FDC4-4F8C-B985-3336D4B14E0B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.IBLL", "Cappuccino.IBLL\Cappuccino.IBLL.csproj", "{2D44CCE2-A040-4A43-9AD3-6B4CAB0FE740}"
+	ProjectSection(ProjectDependencies) = postProject
+		{94C73821-31D6-4F89-887A-FFC96FFAB5D7} = {94C73821-31D6-4F89-887A-FFC96FFAB5D7}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cappuccino.BLL", "Cappuccino.BLL\Cappuccino.BLL.csproj", "{B870B085-52FE-4C4F-A775-E38D05A56B5D}"
 EndProject

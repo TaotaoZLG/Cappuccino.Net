@@ -1,4 +1,5 @@
-﻿
+﻿@using Cappuccino.Common.Enum
+
 @{
     ViewBag.Title = "Create";
     Layout = "~/Views/Shared/_LayoutForm.cshtml";
@@ -65,7 +66,7 @@
 
             upload.render({
                 elem: '#chooseFileBtn',
-                url: '/File/UploadFile' + '?fileModule=@Convert.ToInt32(Cappuccino.Common.Enum.UploadFileType.Import)',
+                url: '/File/UploadFile' + '?fileModule=@Convert.ToInt32(UploadFileType.Import)',
                 accept: 'file',
                 //field: 'templateFile',
                 exts: 'doc|docx',
