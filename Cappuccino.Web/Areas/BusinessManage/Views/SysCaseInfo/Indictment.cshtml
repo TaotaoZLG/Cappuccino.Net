@@ -1,0 +1,74 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+<form class="layui-form" lay-filter="formCreate">
+    <div class="mainBox">
+        <div class="main-container">
+            <div class="main-container">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">诉状模板</label>
+                    <div class="layui-input-block">
+                        <select name="templateName" id="templateName" lay-verify="required" lay-reqtext="请选择诉状模板"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button type="submit" class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="" lay-filter="create">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+@section Scripts {
+    <script>
+        layui.use(['form', 'jquery', 'common'], function () {
+            let form = layui.form;
+            let $ = layui.jquery;
+            let common = layui.common;
+
+            form.on("submit(create)", function (data) {
+                var checkStatus = parent.layui.table.checkStatus('tableId');
+                var selectRow = checkStatus.data;
+                var searchField = parent.layui.form.val('formIndex'); 
+                var msg = "确定要根据搜索条件生成诉状吗？";
+                var postData = { viewModel: searchField, templateId: data.field.templateName };
+                if (ys.checkRowData(selectRow)) {
+                    msg = "确定要将选中的生成诉状吗？"
+                    var ids = ys.getIds(selectRow);
+                    postData.idsStr = ids;
+                }
+                console.log(postData);
+                ys.confirm(msg, function () {
+                    var url = "/BusinessManage/SysCaseInfo/IndictmentJson";
+                    ys.exportExcel(url, postData);
+                });
+                return false;
+            });
+
+            common.ajax("/BusinessManage/SysTemplate/GetTemplate", "get").done(function (response) {
+                if (response.status === 0) {
+                    var m = '#templateName';
+                    $(m).empty();
+                    $(m).append("<option value=\"\"></option>");
+                    $.each(response.data, function (i, n) {
+                        $(m).append("<option value=\"" + n.id + "\">" + n.name + "</option>");
+                    });
+
+                    form.render("select");
+                }
+            }).fail(function (error) {
+                console.log(error)
+            });
+        });
+    </script>
+}

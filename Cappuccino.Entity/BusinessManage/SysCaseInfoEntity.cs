@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -15,46 +16,55 @@ namespace Cappuccino.Entity
         /// 客户编号
         /// </summary>
         /// <returns></returns>
+        [DisplayName("客户编号")]
         public string CustomerId { get; set; }
         /// <summary>
         /// 客户姓名
         /// </summary>
         /// <returns></returns>
+        [DisplayName("客户姓名")]
         public string CustName { get; set; }
         /// <summary>
         /// 客户身份证号
         /// </summary>
         /// <returns></returns>
+        [DisplayName("客户身份证号")]
         public string CustIDNumber { get; set; }
         /// <summary>
         /// 客户银行卡号
         /// </summary>
         /// <returns></returns>
+        [DisplayName("客户银行卡号")]
         public string CustCardNo { get; set; }
         /// <summary>
         /// 客户贷款账号
         /// </summary>
         /// <returns></returns>
+        [DisplayName("客户贷款账号")]
         public string CustLoanAccountNo { get; set; }
         /// <summary>
         /// 客户贷款城市
         /// </summary>
         /// <returns></returns>
+        [DisplayName("客户贷款城市")]
         public string CustLoanCity { get; set; }
         /// <summary>
         /// 客户邮箱
         /// </summary>
         /// <returns></returns>
+        [DisplayName("客户邮箱")]
         public string CustEmail { get; set; }
         /// <summary>
         /// 案件编号（格式：机构代码+日期+序列号）
         /// </summary>
         /// <returns></returns>
+        [DisplayName("案件编号")]
         public string CaseNo { get; set; }
         /// <summary>
         /// 案件合同编号
         /// </summary>
         /// <returns></returns>
+        [DisplayName("案件合同编号")]
         public string CaseContractNo { get; set; }
         /// <summary>
         /// 案件状态（1-待分配，2-调解中，3-已结案）
@@ -65,6 +75,7 @@ namespace Cappuccino.Entity
         /// 案件状态变更时间
         /// </summary>
         /// <returns></returns>
+        [DisplayName("案件状态变更时间")]
         public DateTime? CaseStatusChangeTime { get; set; }
         /// <summary>
         /// 案件类型Id（关联SysCaseType表Id）
@@ -75,31 +86,37 @@ namespace Cappuccino.Entity
         /// 案件欠款金额
         /// </summary>
         /// <returns></returns>
+        [DisplayName("案件欠款金额")]
         public decimal? CaseDebtAmount { get; set; }
         /// <summary>
         /// 案件本金
         /// </summary>
         /// <returns></returns>
+        [DisplayName("案件本金")]
         public decimal? CaseCapital { get; set; }
         /// <summary>
         /// 案件利息
         /// </summary>
         /// <returns></returns>
+        [DisplayName("案件利息")]
         public decimal? CaseInterest { get; set; }
         /// <summary>
         /// 案件手别
         /// </summary>
         /// <returns></returns>
+        [DisplayName("案件手别")]
         public byte? CaseLevel { get; set; }
         /// <summary>
         /// 案件详情（案由）
         /// </summary>
         /// <returns></returns>
+        [DisplayName("案件详情")]
         public string CaseDetails { get; set; }
         /// <summary>
-        /// 调解案号（调解书字号）
+        /// 调解案号
         /// </summary>
         /// <returns></returns>
+        [DisplayName("调解案号")]
         public string CaseMediationWmn { get; set; }
         /// <summary>
         /// 逾期金额

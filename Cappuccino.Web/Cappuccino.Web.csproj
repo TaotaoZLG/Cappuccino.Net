@@ -574,6 +574,7 @@
     <Content Include="Areas\BusinessManage\Views\SysTemplate\Index.cshtml" />
     <Content Include="Areas\BusinessManage\Views\SysTemplate\Create.cshtml" />
     <Content Include="Areas\BusinessManage\Views\SysCaseInfo\UploadFile.cshtml" />
+    <Content Include="Areas\BusinessManage\Views\SysCaseInfo\Indictment.cshtml" />
     <None Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />
@@ -595,7 +596,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Resource\Upload\" />
+    <Folder Include="Resource\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Configs\system.config">

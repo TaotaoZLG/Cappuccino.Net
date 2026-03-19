@@ -16,9 +16,9 @@ using Cappuccino.Model;
 
 namespace Cappuccino.BLL
 {
-    public class SysTemplateService : BaseService<SysTemplateEntity> , ISysTemplateService
+    public class SysTemplateService : BaseService<SysTemplateEntity>, ISysTemplateService
     {
-    private ISysTemplateDao _templateDao;
+        private ISysTemplateDao _templateDao;
 
         #region 依赖注入
         public SysTemplateService(ISysTemplateDao templateDao)
@@ -39,6 +39,11 @@ namespace Cappuccino.BLL
             int maxSortCode = result.ParseToInt();
             maxSortCode++;
             return maxSortCode;
-        }    
+        }
+
+        public SysTemplateEntity GetByIdAsync(long templateId)
+        {
+            return _templateDao.GetList(x => x.Id == templateId).FirstOrDefault();
+        }
     }
 }

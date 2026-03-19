@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml.Linq;
 using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
@@ -25,6 +26,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
             _sysTemplateService = sysTemplateService;
             this.AddDisposableObject(_sysTemplateService);
         }
+
         #region 视图
         [CheckPermission("business.template.list")]
         public override ActionResult Index()
@@ -136,6 +138,26 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
             int maxSortCode = _sysTemplateService.GetMaxSortCode();
             var result = new { Status = 0, Message = "查询成功", Data = maxSortCode };
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetTemplate()
+        {
+            var template = _sysTemplateService.GetList(x => true).Select(x => new { x.Id, Name = x.TemplateName }).ToList();
+            if (template == null)
+            {
+                return Json(new { Status = 1, Message = "模板不存在", Data = "" }, JsonRequestBehavior.AllowGet);
+            }
+            var result = new { Status = 0, Message = "查询成功", Data = template };
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+        public SelectList TemplateSelectList
+        {
+            get
+            {
+                return new SelectList(_sysTemplateService.GetList(x => true).Select(x => new { x.Id, x.TemplateName }), "Id", "Name");
+            }
         }
         #endregion
     }

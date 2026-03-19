@@ -16,5 +16,12 @@ namespace Cappuccino.IBLL
         /// </summary>
         /// <returns></returns>
         int GetMaxSortCode();
+
+        /// <summary>
+        /// 获取模板内容
+        /// </summary>
+        /// <param name="templateId"></param>
+        /// <returns></returns>
+        SysTemplateEntity GetByIdAsync(long templateId);
     }
 }

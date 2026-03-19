@@ -186,6 +186,7 @@
     <Compile Include="Helper\StartEndDateHelper.cs" />
     <Compile Include="Helper\TextHelper.cs" />
     <Compile Include="Helper\ValidatorHelper.cs" />
+    <Compile Include="Helper\ZipHelper.cs" />
     <Compile Include="KeyManager.cs" />
     <Compile Include="Log\Log4netHelper.cs" />
     <Compile Include="Net\HttpMethods.cs" />

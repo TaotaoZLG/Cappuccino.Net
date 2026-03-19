@@ -5,24 +5,18 @@
 }
 <div class="layui-card">
     <div class="layui-card-body">
-        <form class="layui-form" action="">
+        <form class="layui-form" action="" lay-filter="formIndex">
             <div class="layui-form-item">
                 <div class="layui-form-item layui-inline">
-                    <label class="layui-form-label">账户</label>
+                    <label class="layui-form-label">客户姓名</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="account" placeholder="请输入账户" class="layui-input">
+                        <input type="text" name="custName" placeholder="请输入客户姓名" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-inline">
-                    <label class="layui-form-label">姓名</label>
+                    <label class="layui-form-label">身份证号</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="realName" placeholder="请输入姓名" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item layui-inline">
-                    <label class="layui-form-label">日期范围</label>
-                    <div class="layui-input-inline">
-                        <input class="layui-input time-input" placeholder="日期范围" autocomplete="off" data-range="~" name="startEndDate" id="startEndDate" >
+                        <input type="text" name="custIDNumber" placeholder="请输入身份证号" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-inline">
@@ -111,12 +105,24 @@
                         content: '@Url.Content("~/File/UploadFile")',
                         height: "280px",
                         callback: function (index, layero) {
-                            
+
                         }
                     });
                 }
                 else if (obj.event === 'downloadfile') {
 
+                }
+                else if (obj.event === 'indictment') {       
+                    layer.open({
+                        type: 2,
+                        title: '诉状生成',
+                        shade: 0.1,
+                        area: ['800px', '650px'],
+                        content: '/BusinessManage/SysCaseInfo/Indictment',
+                        cancel: function (index, layero) {
+                            
+                        }
+                    });
                 }
             });
 

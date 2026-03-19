@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessManage\ISysFileProcessiongService.cs" />
+    <Compile Include="BusinessManage\ISysCaseInfoService.cs" />
     <Compile Include="BusinessManage\ISysTemplateService.cs" />
     <Compile Include="BusinessManage\ISysFileService.cs" />
     <Compile Include="IBaseService.cs" />
