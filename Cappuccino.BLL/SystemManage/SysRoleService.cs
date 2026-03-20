@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cappuccino.Common.Extensions;
+using Cappuccino.Common.Helper;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
@@ -71,6 +72,7 @@ namespace Cappuccino.BLL
                 {
                     SysDataAuthorizeEntity authorizeEntity = new SysDataAuthorizeEntity
                     {
+                        Id = IdGeneratorHelper.Instance.NextId(),
                         DataId = dp.NodeId.ParseToLong(),
                         AuthorizeId = roleId,
                         AuthorizeType = 1, // 1表示角色
@@ -115,6 +117,7 @@ namespace Cappuccino.BLL
                 {
                     SysDataAuthorizeEntity authorizeEntity = new SysDataAuthorizeEntity
                     {
+                        Id = IdGeneratorHelper.Instance.NextId(),
                         DataId = dp.NodeId.ParseToInt(),
                         AuthorizeId = roleId,
                         AuthorizeType = 1, // 1表示角色

@@ -395,13 +395,12 @@
         },
         // 导出数据
         exportExcel: function (url, postData) {
-            console.log(url);
             ys.ajax({
                 url: url,
                 type: "post",
                 data: postData,
                 success: function (obj) {
-                    if (obj.status == 1) {
+                    if (obj.status === 1) {
                         window.location.href = "/File/DownloadFile?filePath=" + obj.data + "&delete=1";
                     }
                     else {

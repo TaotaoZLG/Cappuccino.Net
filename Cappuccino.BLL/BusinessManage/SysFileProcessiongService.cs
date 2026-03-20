@@ -11,6 +11,7 @@ using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
+using static Cappuccino.Common.Helper.AIRecognitionHelper;
 
 namespace Cappuccino.BLL
 {
@@ -95,6 +96,18 @@ namespace Cappuccino.BLL
                     {
                         string ocrText = await AIRecognitionHelper.ImageOcrRecognizeAsync(imagePath, batchId, progressAction).ConfigureAwait(false);
                         ocrResults.Add(imagePath, ocrText);
+
+                        long Id = IdGeneratorHelper.Instance.NextId();
+                       
+                        // 识别结果入库
+                        Insert(new SysCaseInfoEntity
+                        {
+                            Id = Id,
+                            CustName = "Cappuccino客户",
+                            CustIDNumber = "",
+                            BatchId = batchId,
+                            Remark1 = "测试"
+                        });
                     }
                     ocrResultDict.Add(folderName, ocrResults);
                 }

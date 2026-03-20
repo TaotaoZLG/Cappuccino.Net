@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
+using Cappuccino.Common.Helper;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
@@ -63,6 +64,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                     return WriteError("实体验证失败");
                 }
                 SysRoleEntity entity = viewModel.EntityMap();
+                entity.Id = IdGeneratorHelper.Instance.NextId();
                 entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.CreateTime = DateTime.Now;

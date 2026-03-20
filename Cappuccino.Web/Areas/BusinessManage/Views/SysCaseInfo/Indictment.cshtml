@@ -47,7 +47,6 @@
                     var ids = ys.getIds(selectRow);
                     postData.idsStr = ids;
                 }
-                console.log(postData);
                 ys.confirm(msg, function () {
                     var url = "/BusinessManage/SysCaseInfo/IndictmentJson";
                     ys.exportExcel(url, postData);
@@ -56,16 +55,14 @@
             });
 
             common.ajax("/BusinessManage/SysTemplate/GetTemplate", "get").done(function (response) {
-                if (response.status === 0) {
-                    var m = '#templateName';
-                    $(m).empty();
-                    $(m).append("<option value=\"\"></option>");
-                    $.each(response.data, function (i, n) {
-                        $(m).append("<option value=\"" + n.id + "\">" + n.name + "</option>");
-                    });
+                var m = '#templateName';
+                $(m).empty();
+                $(m).append("<option value=\"\"></option>");
+                $.each(response.data, function (i, n) {
+                    $(m).append("<option value=\"" + n.id + "\">" + n.name + "</option>");
+                });
 
-                    form.render("select");
-                }
+                form.render("select");
             }).fail(function (error) {
                 console.log(error)
             });

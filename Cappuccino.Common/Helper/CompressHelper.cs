@@ -436,6 +436,7 @@ namespace Cappuccino.Common.Helper
                     }
 
                     workbook.Write(fs);
+                    workbook.Close();
                 }
 
                 progressAction.Invoke(new ProcessProgress

@@ -54,19 +54,19 @@ namespace Cappuccino.Web.Core
         }
 
         #region 封装ajax请求的返回方法
-        protected ActionResult WriteSuccess(string msg = SuccessText)
+        protected ActionResult WriteSuccess(string message = SuccessText)
         {
-            return Json(new { Status = (int)AjaxStateEnum.Sucess, Msg = msg }, JsonRequestBehavior.AllowGet);
+            return Json(new { Status = (int)AjaxStateEnum.Sucess, Message = message }, JsonRequestBehavior.AllowGet);
         }
 
-        protected ActionResult WriteSuccess(string msg, object obj)
+        protected ActionResult WriteSuccess(string message, object obj)
         {
-            return Json(new { Status = (int)AjaxStateEnum.Sucess, Msg = msg, Data = obj }, JsonRequestBehavior.AllowGet);
+            return Json(new { Status = (int)AjaxStateEnum.Sucess, Message = message, Data = obj }, JsonRequestBehavior.AllowGet);
         }
 
-        protected ActionResult WriteError(string msg = ErrorText)
+        protected ActionResult WriteError(string message = ErrorText)
         {
-            return Json(new { Status = (int)AjaxStateEnum.Error, Msg = msg }, JsonRequestBehavior.AllowGet);
+            return Json(new { Status = (int)AjaxStateEnum.Error, Message = message }, JsonRequestBehavior.AllowGet);
         }
 
         protected ActionResult WriteError(Exception ex)
@@ -79,7 +79,7 @@ namespace Cappuccino.Web.Core
                 innerEx = innerEx.InnerException;
             }
 
-            return Json(new { Status = (int)AjaxStateEnum.Error, Msg = innerEx.Message }, JsonRequestBehavior.AllowGet);
+            return Json(new { Status = (int)AjaxStateEnum.Error, Message = innerEx.Message }, JsonRequestBehavior.AllowGet);
         }
         #endregion
     }

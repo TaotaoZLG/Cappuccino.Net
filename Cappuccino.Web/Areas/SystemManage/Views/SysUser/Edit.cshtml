@@ -142,7 +142,7 @@
                 size: '@ViewBag.UploadFileSize',
                 exts: '@ViewBag.UploadFileType',
                 done: function (response) {
-                    if (response.status == 0) {
+                    if (response.status == 1) {
                         $("#HeadShot").val(response.src);
                         $("#imgHeadShot").attr("src", response.src);
                         $("#imgHeadShot").attr("layer-src", response.src)
@@ -157,7 +157,7 @@
             form.on("submit(edit)", function (data) {
                 data.field.departmentId = ys.filterNullField(data.field.departmentId);
                 common.ajax("/SystemManage/SysUser/Edit", "post", data.field, true, true).done(function (response) {
-                    layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
+                    layer.msg(response.message, { icon: 1, time: 1000 }, function () {
                         parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
                         parent.layui.table.reload("tableId");
                     });

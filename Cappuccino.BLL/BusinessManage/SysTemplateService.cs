@@ -41,7 +41,7 @@ namespace Cappuccino.BLL
             return maxSortCode;
         }
 
-        public SysTemplateEntity GetByIdAsync(long templateId)
+        public SysTemplateEntity GetTemplateById(long templateId)
         {
             return _templateDao.GetList(x => x.Id == templateId).FirstOrDefault();
         }

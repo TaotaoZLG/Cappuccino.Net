@@ -73,15 +73,13 @@
             var data = obj.data;
             if (obj.event === 'remove') {
                 layer.confirm('确定要清除【' + data.cacheKey + '】缓存吗？', { icon: 3, title: '提示' }, function (index) {
-                    $.post('@Url.Action("RemoveCache")', { cacheKey: data.cacheKey }, function (response) {
-                        if (response.status == 0) {
-                            layer.msg(response.msg, { icon: 1 });
-                            cacheTable.reload(); // 刷新表格
-                        } else {
-                            layer.msg(response.msg, { icon: 5 });
-                        }
+                    common.ajax('@Url.Action("RemoveCache")', "post", { cacheKey: data.cacheKey }, true, true).done(function (response) {
+                        layer.msg(response.message, { icon: 1, time: 1000 }, function () {
+                            table.reload('tableId');
+                        });
+                    }).fail(function (error) {
+                        console.log(error)
                     });
-                    layer.close(index);
                 });
             }
         });

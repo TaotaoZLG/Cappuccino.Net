@@ -70,28 +70,28 @@ namespace Cappuccino.Web.Attributes
                 int businesstype = attribute.BusinessType;
                 string title = attribute.Title;
 
-                // 1. 先判断：当前Action方法名 是否为 固定的 SaveForm
-                string actionName = context.ActionDescriptor.ActionName;
-                if (actionName.Equals("SaveForm", StringComparison.OrdinalIgnoreCase))
-                {
-                    // 从表单获取 Id
-                    if (!string.IsNullOrEmpty(request.Form["Id"]))
-                    {
-                        long.TryParse(request.Form["Id"], out id);
-                    }
+                // 先判断：当前Action方法名 是否为 固定的 SaveForm
+                //string actionName = context.ActionDescriptor.ActionName;
+                //if (actionName.Equals("SaveForm", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    // 从表单获取 Id
+                //    if (!string.IsNullOrEmpty(request.Form["Id"]))
+                //    {
+                //        long.TryParse(request.Form["Id"], out id);
+                //    }
 
-                    // 4. 只根据 Id 判断：0=新增，非0=编辑
-                    if (id == 0)
-                    {
-                        title = "新增";
-                        businesstype = 0; // 新增
-                    }
-                    else
-                    {
-                        title = "编辑";
-                        businesstype = 1; // 编辑
-                    }
-                }
+                //    // 4. 只根据 Id 判断：0=新增，非0=编辑
+                //    if (id == 0)
+                //    {
+                //        title = "新增";
+                //        businesstype = 0; // 新增
+                //    }
+                //    else
+                //    {
+                //        title = "编辑";
+                //        businesstype = 1; // 编辑
+                //    }
+                //}
 
                 // 处理异常场景（优先返回异常信息）
                 var stringBuilder = new StringBuilder();

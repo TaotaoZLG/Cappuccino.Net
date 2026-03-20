@@ -12,12 +12,12 @@ namespace Cappuccino.IBLL
     public interface ISysCaseInfoService : IBaseService<SysCaseInfoEntity>
     {
         /// <summary>
-        /// 生成诉状
+        /// 批量生成案件Word文档并打包Zip（返回Zip虚拟路径）
+        /// 按批次隔离临时文件、自动清理临时文件
         /// </summary>
-        /// <param name="viewModel">查询条件视图模型</param>
-        /// <param name="idsStr">选中行ID字符串（逗号分隔）</param>
+        /// <param name="caseInfoList">案件列表</param>
         /// <param name="templateId">模板ID</param>
-        /// <returns>ZIP文件内存流</returns>
-        Task<TData> IndictmentAsync(List<SysCaseInfoEntity> caseInfoList, string idsStr, long templateId);
+        /// <returns></returns>
+        Task<TData> IndictmentAsync(List<SysCaseInfoEntity> caseInfoList, long templateId);
     }
 }

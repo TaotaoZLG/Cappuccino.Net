@@ -444,17 +444,19 @@
 
                     layer.load(2, { shade: [0.3, '#000'] });
                 },
-                done: function (res) {
+                done: function (response) {
                     layer.closeAll('loading');
-                    if (res.status === 0) {
-                        currentBatchId = res.data.batchId;
+                    if (response.status === 1) {
+                        currentBatchId = response.data.batchId;
+                        var data = response.data.data;
+                        var message = response.message;
 
-                        window.location.href = "@Url.Content("~/File/DownloadFile?filePath=")" + res.data.data + "&delete=0";
+                        window.location.href = "@Url.Content("~/File/DownloadFile?filePath=")" + data + "&delete=0";
                         $(".progress-box").show();
                         $("#clearLogBtn").show();
-                        showUploadTip(res.msg, true);
+                        showUploadTip(message, true);
                     } else {
-                        showUploadTip(res.msg, false);
+                        showUploadTip(message, false);
                     }
                     selectedFile = null;
                     $("#fileNameInput").val("");

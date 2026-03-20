@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
 using Cappuccino.Common;
 using Cappuccino.Common.Helper;
+using Cappuccino.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

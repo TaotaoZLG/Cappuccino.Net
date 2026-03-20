@@ -70,7 +70,7 @@ namespace Cappuccino.Web.Controllers
                     Directory.CreateDirectory(localPath);
                 }
                 file.SaveAs(Path.Combine(localPath, filePathName));  //保存图片
-                uploadFile.Status = 0;
+                uploadFile.Status = 1;
                 uploadFile.Src = Path.Combine(fullPath, filePathName);
                 uploadFile.Message = "上传成功";
                 return Json(uploadFile, JsonRequestBehavior.AllowGet);

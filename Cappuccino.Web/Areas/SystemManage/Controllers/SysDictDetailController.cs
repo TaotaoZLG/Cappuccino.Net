@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
+using Cappuccino.Common.Helper;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
@@ -53,6 +54,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                     return WriteError("实体验证失败");
                 }
                 SysDictDetailEntity entity = viewModel.EntityMap();
+                entity.Id = IdGeneratorHelper.Instance.NextId();
                 entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.CreateTime = DateTime.Now;
@@ -144,11 +146,10 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetMaxSortCode(long dictId)
+        public ActionResult GetMaxSortCode(long dictId)
         {
             int maxSortCode = _sysDictDetailService.GetMaxSortCode(dictId);
-            var result = new { Status = 0, Message = "查询成功", Data = maxSortCode };
-            return Json(result, JsonRequestBehavior.AllowGet);
+            return WriteSuccess("查询成功", maxSortCode);
         }
         #endregion
     }

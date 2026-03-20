@@ -129,8 +129,9 @@ namespace Cappuccino.Common.Helper
         }
         #endregion
 
+        #region 批量上传文件
         /// <summary>
-        /// 批量上传文件（仅处理第一个文件，适配某些前端组件批量上传但后端只需单个文件的情况）
+        /// 批量上传文件
         /// </summary>
         /// <param name="fileModule"></param>
         /// <param name="files"></param>
@@ -143,14 +144,9 @@ namespace Cappuccino.Common.Helper
                 obj.Message = "请先选择文件！";
                 return obj;
             }
-            if (files.Count() > 1)
-            {
-                TData<string> obj = new TData<string>();
-                obj.Message = "一次只能上传一个文件！";
-                return obj;
-            }
-            return await UploadFile(fileModule, files.First());
+            return await UploadFile(fileModule, files);
         }
+        #endregion
 
         #region 删除单个文件
         /// <summary>
@@ -233,7 +229,6 @@ namespace Cappuccino.Common.Helper
             return obj;
         }
         #endregion 
-
 
         /// <summary>
         /// 判断目录是否存在，不存在则创建

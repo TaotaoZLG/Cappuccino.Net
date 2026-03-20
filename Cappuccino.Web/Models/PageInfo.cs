@@ -13,12 +13,12 @@
         public int Limit { get; set; } = 10;
 
         /// <summary>
-        /// 排序字段
+        /// 排序字段（默认CreateTime）
         /// </summary>
         public string Field { get; set; } = "CreateTime";
 
         /// <summary>
-        /// 排序方式
+        /// 排序方式（ASC/DESC）
         /// </summary>
         public string Order { get; set; } = "DESC";
     }

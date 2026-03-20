@@ -56,7 +56,6 @@ namespace Cappuccino.AutoJob.Job
             catch (Exception ex)
             {
                 Log4netHelper.Error("数据库备份任务执行异常", ex);
-                throw;
             }
             return obj;
         }

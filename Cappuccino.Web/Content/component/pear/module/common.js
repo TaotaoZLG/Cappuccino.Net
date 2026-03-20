@@ -34,15 +34,15 @@
                     }
                 },
                 success: function (response) {
-                    if (response.status == "0") {
+                    if (response.status == "1") {
                         // 业务正常
                         deferred.resolve(response)
                     } else if (response.status == "2") {
-                        popup.warming(response.msg, function () { window.top.location ="/Account/Login" })
+                        popup.warming(response.message, function () { window.top.location ="/Account/Login" })
                     } else {
                         // 业务异常
-                        popup.warming(response.msg)
-                        deferred.reject("common.ajax warn: " + response.msg);
+                        popup.warming(response.message)
+                        deferred.reject("common.ajax warn: " + response.message);
                     }
                 },
                 complete: function () {

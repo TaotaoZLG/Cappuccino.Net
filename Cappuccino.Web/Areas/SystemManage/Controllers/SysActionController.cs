@@ -80,6 +80,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
                 SysActionEntity sysAction = new SysActionEntity
                 {
+                    Id = IdGeneratorHelper.Instance.NextId(),
                     Name = viewModel.Name,
                     ParentId = viewModel.ParentId,
                     Code = viewModel.Code,

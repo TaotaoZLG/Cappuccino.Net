@@ -22,6 +22,6 @@ namespace Cappuccino.IBLL
         /// </summary>
         /// <param name="templateId"></param>
         /// <returns></returns>
-        SysTemplateEntity GetByIdAsync(long templateId);
+        SysTemplateEntity GetTemplateById(long templateId);
     }
 }

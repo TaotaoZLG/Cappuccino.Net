@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cappuccino.Common.Helper;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
@@ -62,6 +63,7 @@ namespace Cappuccino.BLL
             foreach (var item in userActions)
             {
                 SysUserActionEntity userAction = new SysUserActionEntity();
+                userAction.Id = IdGeneratorHelper.Instance.NextId();
                 userAction.UserId = userId;
                 userAction.ActionId = item.Id;
                 if (item.Status == 1)

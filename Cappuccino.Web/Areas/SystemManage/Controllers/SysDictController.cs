@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
+using Cappuccino.Common.Helper;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
@@ -61,6 +62,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                     return WriteError("实体验证失败");
                 }
                 SysDictEntity entity = viewModel.EntityMap();
+                entity.Id = IdGeneratorHelper.Instance.NextId();
                 entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.CreateTime = DateTime.Now;
@@ -149,7 +151,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         }
 
         [HttpGet, CheckPermission("system.dict.list")]
-        public JsonResult GetDataDictList()
+        public ActionResult GetDataDictList()
         {
             // 获取所有字典类型
             List<SysDictEntity> dictList = _sysDictService.GetList(x => true).ToList();
@@ -170,14 +172,13 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                     .ToList()
             }).ToDictionary(x => x.TypeCode);
 
-            return Json(new { Status = 0, Data = result, Message = "查询成功" }, JsonRequestBehavior.AllowGet);
+            return WriteSuccess("查询成功", result);
         }
 
-        public JsonResult GetMaxSortCode()
+        public ActionResult GetMaxSortCode()
         {
             int maxSortCode = _sysDictService.GetMaxSortCode();
-            var result = new { Status = 0, Message = "查询成功", Data = maxSortCode };
-            return Json(result, JsonRequestBehavior.AllowGet);
+            return WriteSuccess("查询成功", maxSortCode);
         }
         #endregion
     }

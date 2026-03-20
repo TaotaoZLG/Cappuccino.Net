@@ -36,7 +36,7 @@ namespace Cappuccino.BLL
             DtreeData node = new DtreeData
             {
                 Title = "部门管理",
-                Id = null,
+                Id = "0",
                 //定义树节点的子节点
                 Children = new List<DtreeData>()
             };

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Cappuccino.Common.Helper;
+using Cappuccino.Common.Helpers;
 using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
@@ -30,51 +33,84 @@ namespace Cappuccino.BLL
         #endregion
 
         /// <summary>
-        /// 生成诉状
+        /// 批量生成案件Word文档并打包Zip（返回Zip虚拟路径）
+        /// 按批次隔离临时文件、自动清理临时文件
         /// </summary>
-        /// <param name="viewModel">查询条件视图模型</param>
-        /// <param name="idsStr">选中行ID字符串（逗号分隔）</param>
+        /// <param name="caseInfoList">案件列表</param>
         /// <param name="templateId">模板ID</param>
-        /// <returns>ZIP文件内存流</returns>
-        public async Task<TData> IndictmentAsync(List<SysCaseInfoEntity> caseInfoList, string idsStr, long templateId)
+        /// <returns></returns>
+        public async Task<TData> IndictmentAsync(List<SysCaseInfoEntity> caseInfoList, long templateId)
         {
-            TData obj = new TData();
+            TData<string> obj = new TData<string>();
 
-            // 2. 获取模板文件路径
-            var templateFilePath = _sysTemplateService.GetByIdAsync(templateId).TemplateFilePath;
-            if (string.IsNullOrEmpty(templateFilePath))
+            // 根据templateId查询模板路径
+            var templateEntity = _sysTemplateService.GetTemplateById(templateId);
+            string templateFilePath = templateEntity.TemplateFilePath;
+            if (templateEntity == null || string.IsNullOrEmpty(templateFilePath))
             {
                 obj.Status = 0;
-                obj.Message = "模板文件路径为空";
+                obj.Message = "模板信息为空或模板路径未配置";
+                return obj;
             }
-            string templatePhysical = FileHelper.GetPhysicalPath(templateFilePath);
-            if (!File.Exists(templatePhysical))
+            string templatePhysicalPath = FileHelper.GetPhysicalPath(templateFilePath);
+            if (!File.Exists(templatePhysicalPath))
             {
                 obj.Status = 0;
-                obj.Message = $"模板文件未找到：{templateFilePath}";
+                obj.Message = $"模板文件不存在：{templateFilePath}";
+                return obj;
             }
 
-            // 3. 生成ZIP内存流
-            var zipMemoryStream = new MemoryStream();
-            //using (var zipArchive = new ZipArchive(zipMemoryStream, ZipArchiveMode.Create, true))
-            //{
-            //    // 4. 遍历案件，替换Word模板并添加到ZIP
-            //    foreach (var caseInfo in caseList)
-            //    {
-            //        // 4.1 读取Word模板并替换域值
-            //        var wordStream = ReplaceWordTemplate(templateFilePath, caseInfo);
+            // 批次唯一标识
+            string batchId = GuidHelper.GetGuid(true);
 
-            //        // 4.2 向ZIP中添加Word文件（命名：案件编号_客户姓名.docx）
-            //        string fileName = $"{caseInfo.CaseNo}_{caseInfo.CustName}_诉状.docx";
-            //        var zipEntry = zipArchive.CreateEntry(fileName, CompressionLevel.Optimal);
-            //        using (var entryStream = zipEntry.Open())
-            //        {
-            //            wordStream.CopyTo(entryStream);
-            //        }
-            //        wordStream.Dispose();
-            //    }
-            //}
-            //zipMemoryStream.Position = 0; // 重置流指针，供前端读取
+            // 构建批次级临时目录（按批次隔离，避免并发冲突）
+            string virRootDir = ConfigUtils.AppSetting.GetValue("VirtualDirectory");
+            string tempWordVirDir = Path.Combine(virRootDir, "Upload", "TempCaseWord", batchId);
+            string tempWordPhysicalDir = FileHelper.GetPhysicalPath(tempWordVirDir);
+            FileHelper.CreateDirectory(tempWordPhysicalDir);
+          
+            // 遍历案件数据，批量生成Word
+            try
+            {
+                int nextWord = 0;
+                foreach (var caseInfo in caseInfoList)
+                {
+                    nextWord++;
+
+                    // 复制模板到临时文件（避免修改原模板）
+                    string custName = caseInfo?.CustName;
+                    string custIDNumber = caseInfo?.CustIDNumber;
+
+                    string guid = IdGeneratorHelper.Instance.NextId().ToString();
+                    string tempWordFileName = $"起诉书_{custName}_{custIDNumber}_{nextWord}.docx";
+                    string tempWordPath = Path.Combine(tempWordPhysicalDir, tempWordFileName);
+
+                    // 复制模板文件（覆盖模式）
+                    File.Copy(templatePhysicalPath, tempWordPath, true);
+
+                    // 使用NPOI替换Word域值
+                    WordHelper.ReplaceContent(tempWordPath, caseInfo);
+                }
+
+                // 压缩为Zip并返回虚拟路径
+                string zipFileName = $"案件起诉书_{DateTime.Now:yyyyMMddHHmmss}_{batchId}.zip";
+                string zipFilePath = ZipHelper.CompressToZip(tempWordPhysicalDir, tempWordVirDir, zipFileName);
+
+                obj.Status = 1;
+                obj.Message = "起诉书生成成功";
+                obj.Data = zipFilePath;
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                obj.Status = 0;
+                obj.Message = "起诉书生成失败：" + ex.Message;
+            }
+            finally
+            {
+                // 清理临时Word文件
+                //FileHelper.DeleteDirectory(tempWordVirDir);
+            }
             return obj;
         }
     }

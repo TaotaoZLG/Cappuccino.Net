@@ -67,7 +67,7 @@
 
     <!-- 行工具栏模板 -->
     <script type="text/html" id="operationTpl">
-        {{# if(d.id === 1){ }}
+        {{# if(d.id === "1"){ }}
         @Html.RightToolBarHtml(ViewData["RightButtonList"], "edit", "delete", "assign")
         {{# } else { }}
         @Html.RightToolBarHtml(ViewData["RightButtonList"])
@@ -186,7 +186,7 @@
             form.on('switch(userStatus)', function (obj) {
                 layer.confirm('确定更改状态', { icon: 3, title: '提示' }, function (index) {
                     common.ajax(MODULE_PATH + "UpdateUserStatus", "post", { id: parseInt(obj.value), userStatus: obj.elem.checked * 1 }, true, true).done(function (response) {
-                        layer.msg(response.msg, { icon: 1 });
+                        layer.msg(response.message, { icon: 1 });
                     }).fail(function (error) {
                         $(obj.elem).prop('checked', !obj.elem.checked);
                         form.render('checkbox');
@@ -219,7 +219,7 @@
                     area: ['800px', '600px'],
                     content: MODULE_PATH + 'Assign/' + id,
                     cancel: function (index, layero) {
-                        table.reload('tableId');
+                        //table.reload('tableId');
                     }
                 });
             }
@@ -241,7 +241,7 @@
             window.delete = function (id) {
                 layer.confirm('确定要删除该用户', { icon: 3, title: '提示' }, function (index) {
                     common.ajax(MODULE_PATH + "Delete", "post", { id: id }, true, true).done(function (response) {
-                        layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
+                        layer.msg(response.message, { icon: 1, time: 1000 }, function () {
                             table.reload('tableId');
                         });
                     }).fail(function (error) {
@@ -263,7 +263,7 @@
                 ids = ids.substr(0, ids.length - 1);
                 layer.confirm('确定要删除这些用户', { icon: 3, title: '提示' }, function (index) {
                     common.ajax(MODULE_PATH + "batchDel", "post", { idsStr: ids }, true, true).done(function (response) {
-                        layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
+                        layer.msg(response.message, { icon: 1, time: 1000 }, function () {
                             table.reload('tableId');
                         });
                     }).fail(function (error) {
@@ -275,7 +275,7 @@
             window.initPwd = function (id) {
                 layer.confirm('确定要重置该用户密码？', { icon: 3, title: '提示' }, function (index) {
                     common.ajax(MODULE_PATH + "InitPwd", "post", { id: id }, true, true).done(function (response) {
-                        layer.msg(response.msg, { icon: 1, time: 1000 }, function () {
+                        layer.msg(response.message, { icon: 1, time: 1000 }, function () {
                             //table.reload('tableId');
                         });
                     }).fail(function (error) {

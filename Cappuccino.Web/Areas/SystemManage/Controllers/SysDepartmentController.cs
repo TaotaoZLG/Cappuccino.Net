@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
+using Cappuccino.Common.Helper;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
@@ -66,6 +67,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
                 SysDepartmentEntity entity = new SysDepartmentEntity
                 {
+                    Id = IdGeneratorHelper.Instance.NextId(),
                     Name = model.Name,
                     ParentId = model.ParentId,
                     SortCode = model.SortCode,
@@ -145,19 +147,18 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpGet]
-        public JsonResult GetMaxSortCode()
-        {
-            int maxSortCode = _sysDepartmentService.GetMaxSortCode();
-            var result = new { Status = 0, Message = "查询成功", Data = maxSortCode };
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
         public JsonResult GetDepartmentDtree(long id)
         {
             var data = _sysDepartmentService.GetDepartmentDtree(id);
             var result = new DtreeModel { Data = data, Status = new DtreeStatus() };
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetMaxSortCode()
+        {
+            int maxSortCode = _sysDepartmentService.GetMaxSortCode();
+            return WriteSuccess("查询成功", maxSortCode);
         }
         #endregion
     }

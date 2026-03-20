@@ -92,15 +92,14 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
 
                 var caseInfoList = _sysCaseInfoService.GetList(queries.AsExpression<SysCaseInfoEntity>()).ToList();
 
-                var data = await _sysCaseInfoService.IndictmentAsync(caseInfoList, idsStr, templateId.ParseToLong()).ConfigureAwait(false);
+                var data = await _sysCaseInfoService.IndictmentAsync(caseInfoList, templateId).ConfigureAwait(false);
 
-                return WriteSuccess("起诉书生成成功", data);
+                return Json(data);
             }
             catch (Exception ex)
             {
                 return WriteError("起诉书生成失败：" + ex.Message);
             }
-
         }
         #endregion
 

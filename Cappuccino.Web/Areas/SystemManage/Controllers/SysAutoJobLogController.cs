@@ -31,8 +31,6 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             {
                 queries.Add(new Query { Name = "JobName", Operator = Query.Operators.Equal, Value = viewModel.JobName });
             }
-            ;
-
             var list = _sysAutoJobLogService.GetListByPage(
                 queries.AsExpression<SysAutoJobLogEntity>(),
                 pageInfo.Field,

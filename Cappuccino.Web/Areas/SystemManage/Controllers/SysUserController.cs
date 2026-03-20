@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Web.Mvc;
 using Cappuccino.Common;
 using Cappuccino.Common.Enum;
+using Cappuccino.Common.Helper;
 using Cappuccino.Common.Util;
 using Cappuccino.DataAccess;
 using Cappuccino.Entity;
@@ -103,6 +104,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                 string salt = VerifyCodeUtils.CreateVerifyCode(5);
                 string passwordHash = Md5Utils.EncryptTo32(salt + ConfigUtils.AppSetting.GetValue("InitUserPwd"));
                 SysUserEntity entity = viewModel.EntityMap();
+                entity.Id = IdGeneratorHelper.Instance.NextId();
                 entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
                 entity.CreateTime = DateTime.Now;

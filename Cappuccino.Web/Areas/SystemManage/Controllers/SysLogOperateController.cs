@@ -8,6 +8,7 @@ using Cappuccino.Common;
 using Cappuccino.Common.Enum;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Helper;
+using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Model;
@@ -50,6 +51,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         [LogOperate(Title = "导出操作日志", BusinessType = (int)OperateType.Export)]
         public ActionResult ExportLogOperate(SysLogOperateModel viewModel, string idsStr)
         {
+
             try
             {
                 var queries = BuildUserQueries(viewModel);
