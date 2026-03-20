@@ -9,22 +9,20 @@
 <form class="layui-form" lay-filter="formCreate">
     <div class="mainBox">
         <div class="main-container">
-            <div class="main-container">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">权限类型</label>
-                    <div class="layui-input-block">
-                        @Html.EnumDropDownListFor(model => model.Type, ActionTypeEnum.Directory, new Dictionary<string, object> { { "lay-filter", "type" } })
-                    </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">权限类型</label>
+                <div class="layui-input-block">
+                    @Html.EnumDropDownListFor(model => model.Type, ActionTypeEnum.Directory, new Dictionary<string, object> { { "lay-filter", "type" } })
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">上级菜单</label>
-                    <div class="layui-input-block">
-                        <ul id="parentIdSelect" class="dtree" data-id="0"></ul>
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">上级菜单</label>
+                <div class="layui-input-block">
+                    <ul id="parentIdSelect" class="dtree" data-id="0"></ul>
                 </div>
-                <div id="actionPartial">
-                    @Html.Partial("_ActionMenuPartial")
-                </div>
+            </div>
+            <div id="actionPartial">
+                @Html.Partial("_ActionMenuPartial")
             </div>
         </div>
     </div>

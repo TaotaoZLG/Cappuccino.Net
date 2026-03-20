@@ -19,6 +19,11 @@
         /// 扩展Message
         /// </summary>
         public string Description { get; set; }
+
+        public bool ShouldSerializeDescription()
+        {
+            return !string.IsNullOrEmpty(Description);
+        }
     }
 
     public class TData<T> : TData

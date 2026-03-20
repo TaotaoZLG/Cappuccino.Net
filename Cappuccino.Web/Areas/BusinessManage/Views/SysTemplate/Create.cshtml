@@ -7,36 +7,34 @@
 <form class="layui-form" lay-filter="formCreate">
     <div class="mainBox">
         <div class="main-container">
-            <div class="main-container">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">模板名称</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="templateName" lay-verify="required" lay-reqtext="请输入模板名称" placeholder="请输入模板名称" class="layui-input">
-                    </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">模板名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="templateName" lay-verify="required" lay-reqtext="请输入模板名称" placeholder="请输入模板名称" class="layui-input">
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">选择文件</label>
-                    <div class="layui-input-block" style="display: flex; align-items: center;">
-                        <input type="text" class="layui-input" id="fileNameInput" placeholder="请选择文件" readonly
-                               style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;" />
-                        <button type="button" class="layui-btn layui-btn-normal" id="chooseFileBtn"
-                                style="border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px;">
-                            <i class="layui-icon">&#xe621;</i> 浏览...
-                        </button>
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">选择文件</label>
+                <div class="layui-input-block" style="display: flex; align-items: center;">
+                    <input type="text" class="layui-input" id="fileNameInput" placeholder="请选择文件" readonly
+                           style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;" />
+                    <button type="button" class="layui-btn layui-btn-normal" id="chooseFileBtn"
+                            style="border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px;">
+                        <i class="layui-icon">&#xe621;</i> 浏览...
+                    </button>
                 </div>
-                @Html.EnabledMarkRadioHtml("templateStatus", 1)
-                <div class="layui-form-item">
-                    <label class="layui-form-label">备注</label>
-                    <div class="layui-input-block">
-                        <textarea name="Remark" placeholder="请输入备注信息" class="layui-textarea" rows="3"></textarea>
-                    </div>
+            </div>
+            @Html.EnabledMarkRadioHtml("templateStatus", 1)
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <textarea name="Remark" placeholder="请输入备注信息" class="layui-textarea" rows="3"></textarea>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">排序码</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序码</label>
+                <div class="layui-input-block">
+                    <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
                 </div>
             </div>
         </div>

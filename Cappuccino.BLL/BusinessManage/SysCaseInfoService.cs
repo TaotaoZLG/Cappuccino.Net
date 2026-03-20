@@ -39,7 +39,7 @@ namespace Cappuccino.BLL
         /// <param name="caseInfoList">案件列表</param>
         /// <param name="templateId">模板ID</param>
         /// <returns></returns>
-        public async Task<TData> IndictmentAsync(List<SysCaseInfoEntity> caseInfoList, long templateId)
+        public async Task<TData<string>> IndictmentAsync(List<SysCaseInfoEntity> caseInfoList, long templateId)
         {
             TData<string> obj = new TData<string>();
 

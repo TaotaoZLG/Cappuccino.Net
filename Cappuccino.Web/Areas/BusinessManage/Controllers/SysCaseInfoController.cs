@@ -56,15 +56,6 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
             try
             {
                 var file = Request.Files["fileList"];
-                
-
-                // 文件大小校验
-                var maxFileSize = ConfigUtils.AppSetting.GetValue("UploadMaxFileSize").ParseToInt();
-                if (file.ContentLength > maxFileSize)
-                {
-                    return WriteError($"文件大小超过限制（{maxFileSize / 1024 / 1024}MB）");
-                }
-
 
                 return WriteSuccess("任务处理成功");
             }
@@ -93,7 +84,6 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
                 var caseInfoList = _sysCaseInfoService.GetList(queries.AsExpression<SysCaseInfoEntity>()).ToList();
 
                 var data = await _sysCaseInfoService.IndictmentAsync(caseInfoList, templateId).ConfigureAwait(false);
-
                 return Json(data);
             }
             catch (Exception ex)

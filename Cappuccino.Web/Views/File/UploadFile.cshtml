@@ -1,7 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "上传文件";
-    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
 }
 
 @section style {
@@ -23,21 +23,19 @@
 <form class="layui-form">
     <div class="mainBox">
         <div class="main-container">
-            <div class="main-container">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">选择文件</label>
-                    <div class="layui-input-block" style="display: flex; align-items: center;">
-                        <input type="text" class="layui-input" id="fileNameInput" placeholder="请选择文件" readonly
-                               style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;" />
-                        <button type="button" class="layui-btn layui-btn-normal" id="chooseFileBtn"
-                                style="border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px;">
-                            <i class="layui-icon">&#xe621;</i> 浏览...
-                        </button>
-                    </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">选择文件</label>
+                <div class="layui-input-block" style="display: flex; align-items: center;">
+                    <input type="text" class="layui-input" id="fileNameInput" placeholder="请选择文件" readonly
+                           style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;" />
+                    <button type="button" class="layui-btn layui-btn-normal" id="chooseFileBtn"
+                            style="border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px;">
+                        <i class="layui-icon">&#xe621;</i> 浏览...
+                    </button>
                 </div>
-                <div class="upload-tip-info">
-                    <i class="layui-icon layui-icon-tips"></i> 支持格式：ZIP/RAR/7Z | 最大大小：100MB
-                </div>
+            </div>
+            <div class="upload-tip-info">
+                <i class="layui-icon layui-icon-tips"></i> 支持格式：ZIP/RAR/7Z | 最大大小：100MB
             </div>
         </div>
     </div>

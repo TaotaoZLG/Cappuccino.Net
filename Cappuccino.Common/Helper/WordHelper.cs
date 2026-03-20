@@ -26,7 +26,7 @@ namespace Cappuccino.Common.Helpers
             // 构建映射字典
             var keyValues = BuildPlaceholderMap(entity, dateFormat);
 
-            using (var fs = new FileStream(wordFilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+            using (var fs = new FileStream(wordFilePath, FileMode.Open, FileAccess.ReadWrite))
             {
                 XWPFDocument doc = new XWPFDocument(fs);
                 // 替换正文段落
@@ -37,16 +37,10 @@ namespace Cappuccino.Common.Helpers
                 ReplaceHeadersFooters(doc, keyValues);
 
                 // 保存覆盖原文件
-                // 1. 将流指针移回开头
-                fs.Seek(0, SeekOrigin.Begin);
-                // 2. 截断流（清空旧内容），防止新内容比旧内容短时残留垃圾数据
-                fs.SetLength(0);
-
-                // 3. 直接写入当前流
-                doc.Write(fs);
-
-                // 4. 强制刷新缓冲区
-                fs.Flush();
+                using (var outputFs = new FileStream(wordFilePath, FileMode.Create, FileAccess.Write))
+                {
+                    doc.Write(outputFs);
+                }
             }
         }
 

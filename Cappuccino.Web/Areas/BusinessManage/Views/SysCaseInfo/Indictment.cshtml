@@ -6,12 +6,10 @@
 <form class="layui-form" lay-filter="formCreate">
     <div class="mainBox">
         <div class="main-container">
-            <div class="main-container">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">诉状模板</label>
-                    <div class="layui-input-block">
-                        <select name="templateName" id="templateName" lay-verify="required" lay-reqtext="请选择诉状模板"></select>
-                    </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">诉状模板</label>
+                <div class="layui-input-block">
+                    <select name="templateName" id="templateName" lay-verify="required" lay-reqtext="请选择诉状模板"></select>
                 </div>
             </div>
         </div>
@@ -39,7 +37,7 @@
             form.on("submit(create)", function (data) {
                 var checkStatus = parent.layui.table.checkStatus('tableId');
                 var selectRow = checkStatus.data;
-                var searchField = parent.layui.form.val('formIndex'); 
+                var searchField = parent.layui.form.val('formIndex');
                 var msg = "确定要根据搜索条件生成诉状吗？";
                 var postData = { viewModel: searchField, templateId: data.field.templateName };
                 if (ys.checkRowData(selectRow)) {

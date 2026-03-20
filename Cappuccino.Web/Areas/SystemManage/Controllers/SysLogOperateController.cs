@@ -51,7 +51,6 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         [LogOperate(Title = "导出操作日志", BusinessType = (int)OperateType.Export)]
         public ActionResult ExportLogOperate(SysLogOperateModel viewModel, string idsStr)
         {
-
             try
             {
                 var queries = BuildUserQueries(viewModel);

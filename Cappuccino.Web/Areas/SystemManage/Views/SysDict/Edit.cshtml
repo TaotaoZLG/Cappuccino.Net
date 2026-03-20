@@ -7,24 +7,22 @@
     @Html.HiddenFor(x => x.Id)
     <div class="mainBox">
         <div class="main-container">
-            <div class="main-container">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">字典名称</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入字典名称" class="layui-input" value="@Model.Name">
-                    </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">字典名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入字典名称" class="layui-input" value="@Model.Name">
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">字典编码</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入字典编码" class="layui-input" value="@Model.Code">
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">字典编码</label>
+                <div class="layui-input-block">
+                    <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入字典编码" class="layui-input" value="@Model.Code">
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">排序码</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序码</label>
+                <div class="layui-input-block">
+                    <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
                 </div>
             </div>
         </div>

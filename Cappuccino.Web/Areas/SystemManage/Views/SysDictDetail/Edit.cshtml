@@ -8,37 +8,35 @@
     @Html.HiddenFor(x => x.DictId)
     <div class="mainBox">
         <div class="main-container">
-            <div class="main-container">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">字典键</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入标签" class="layui-input" value="@Model.Name">
-                    </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">字典键</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入标签" class="layui-input" value="@Model.Name">
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">字典值</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入对应值" class="layui-input" value="@Model.Code">
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">字典值</label>
+                <div class="layui-input-block">
+                    <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入对应值" class="layui-input" value="@Model.Code">
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">显示样式</label>
-                    <div class="layui-input-block">
-                        <select name="listClass">
-                            <option value="">请选择显示样式</option>
-                            <option value="primary">主要</option>
-                            <option value="info">成功</option>
-                            <option value="danger">危险</option>
-                            <option value="warm">警告</option>
-                            <option value="normal">信息</option>
-                        </select>
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">显示样式</label>
+                <div class="layui-input-block">
+                    <select name="listClass">
+                        <option value="">请选择显示样式</option>
+                        <option value="primary">主要</option>
+                        <option value="info">成功</option>
+                        <option value="danger">危险</option>
+                        <option value="warm">警告</option>
+                        <option value="normal">信息</option>
+                    </select>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">排序码</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2" value="@Model.SortCode">
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序码</label>
+                <div class="layui-input-block">
+                    <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2" value="@Model.SortCode">
                 </div>
             </div>
         </div>

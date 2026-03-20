@@ -7,25 +7,23 @@
     @Html.HiddenFor(x => x.Id)
     <div class="mainBox">
         <div class="main-container">
-            <div class="main-container">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">角色名</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入角色名" class="layui-input" value="@Model.Name">
-                    </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">角色名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入角色名" class="layui-input" value="@Model.Name">
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">角色编码</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入编码" class="layui-input" value="@Model.Code">
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">角色编码</label>
+                <div class="layui-input-block">
+                    <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入编码" class="layui-input" value="@Model.Code">
                 </div>
-                @Html.EnabledMarkRadioHtml()
-                <div class="layui-form-item">
-                    <label class="layui-form-label">备注</label>
-                    <div class="layui-input-block">
-                        <textarea name="remark" required lay-verify="required" placeholder="请输入" class="layui-textarea">@Model.Remark</textarea>
-                    </div>
+            </div>
+            @Html.EnabledMarkRadioHtml()
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <textarea name="remark" required lay-verify="required" placeholder="请输入" class="layui-textarea">@Model.Remark</textarea>
                 </div>
             </div>
         </div>

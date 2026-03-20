@@ -24,57 +24,55 @@
 <form class="layui-form" lay-filter="formCreate">
     <div class="mainBox">
         <div class="main-container">
-            <div class="main-container">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">账号</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="userName" lay-verify="required" lay-reqtext="请输入账号" autocomplete="off" placeholder="请输入账号" class="layui-input">
+            <div class="layui-form-item">
+                <label class="layui-form-label">账号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="userName" lay-verify="required" lay-reqtext="请输入账号" autocomplete="off" placeholder="请输入账号" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">昵称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="nickName" lay-verify="required" autocomplete="off" placeholder="请输入昵称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">部门</label>
+                <div class="layui-input-block">
+                    <ul name="organizationTree" id="organizationTree" class="dtree" data-id="0"></ul>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">头像</label>
+                <div class="layui-input-inline">
+                    <input name="HeadIcon" readonly id="HeadShot" placeholder="图片地址" value="~/Content/images/timg.jpg" class="layui-input">
+                </div>
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary" id="btnUpload">
+                        <i class="layui-icon">&#xe67c;</i>上传图片
+                    </button>
+                    <div id="layer-photos-demo" class="fr">
+                        <img class="img-headshot" id="imgHeadShot" layer-pid="HeadShot" layer-src="~/Content/images/timg.jpg" src="~/Content/images/timg.jpg" alt="头像预览">
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">昵称</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="nickName" lay-verify="required" autocomplete="off" placeholder="请输入昵称" class="layui-input">
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">手机号码</label>
+                <div class="layui-input-block">
+                    <input type="text" @*lay-verify="myPhone"*@ name="mobilePhone" autocomplete="off" placeholder="请输入号码" class="layui-input">
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">部门</label>
-                    <div class="layui-input-block">
-                        <ul name="organizationTree" id="organizationTree"  class="dtree" data-id="0"></ul>
-                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮箱</label>
+                <div class="layui-input-block">
+                    <input type="text" @*lay-verify="required|email"*@ name="email" autocomplete="off" placeholder="请输入邮箱" class="layui-input">
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">头像</label>
-                    <div class="layui-input-inline">
-                        <input name="HeadIcon" readonly id="HeadShot" placeholder="图片地址" value="~/Content/images/timg.jpg" class="layui-input">
-                    </div>
-                    <div class="layui-input-inline layui-btn-container" style="width: auto;">
-                        <button type="button" class="layui-btn layui-btn-primary" id="btnUpload">
-                            <i class="layui-icon">&#xe67c;</i>上传图片
-                        </button>
-                        <div id="layer-photos-demo" class="fr">
-                            <img class="img-headshot" id="imgHeadShot" layer-pid="HeadShot" layer-src="~/Content/images/timg.jpg" src="~/Content/images/timg.jpg" alt="头像预览">
-                        </div>
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">手机号码</label>
-                    <div class="layui-input-block">
-                        <input type="text" @*lay-verify="myPhone"*@ name="mobilePhone" autocomplete="off" placeholder="请输入号码" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">邮箱</label>
-                    <div class="layui-input-block">
-                        <input type="text" @*lay-verify="required|email"*@ name="email" autocomplete="off" placeholder="请输入邮箱" class="layui-input">
-                    </div>
-                </div>
-                @Html.EnabledMarkRadioHtml("userStatus")
-                <div class="layui-form-item">
-                    <label class="layui-form-label">角色</label>
-                    <div class="layui-input-block">
-                        @Html.DropDownList("RoleIds", (IEnumerable<SelectListItem>)ViewBag.RoleSelectList, "请选择角色", new Dictionary<string, object> { { "xm-select", "RoleIds" }, { "xm-select-skin", "default" } })
-                    </div>
+            </div>
+            @Html.EnabledMarkRadioHtml("userStatus")
+            <div class="layui-form-item">
+                <label class="layui-form-label">角色</label>
+                <div class="layui-input-block">
+                    @Html.DropDownList("RoleIds", (IEnumerable<SelectListItem>)ViewBag.RoleSelectList, "请选择角色", new Dictionary<string, object> { { "xm-select", "RoleIds" }, { "xm-select-skin", "default" } })
                 </div>
             </div>
         </div>

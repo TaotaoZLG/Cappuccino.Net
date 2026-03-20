@@ -18,6 +18,6 @@ namespace Cappuccino.IBLL
         /// <param name="caseInfoList">案件列表</param>
         /// <param name="templateId">模板ID</param>
         /// <returns></returns>
-        Task<TData> IndictmentAsync(List<SysCaseInfoEntity> caseInfoList, long templateId);
+        Task<TData<string>> IndictmentAsync(List<SysCaseInfoEntity> caseInfoList, long templateId);
     }
 }
