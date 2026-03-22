@@ -81,7 +81,6 @@ namespace Cappuccino.BLL
                     string custName = caseInfo?.CustName;
                     string custIDNumber = caseInfo?.CustIDNumber;
 
-                    string guid = IdGeneratorHelper.Instance.NextId().ToString();
                     string tempWordFileName = $"起诉书_{custName}_{custIDNumber}_{nextWord}.docx";
                     string tempWordPath = Path.Combine(tempWordPhysicalDir, tempWordFileName);
 

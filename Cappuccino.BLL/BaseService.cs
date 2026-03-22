@@ -123,12 +123,12 @@ namespace Cappuccino.BLL
 
         public async Task<int> InsertAsync(T entity)
         {
-            return await CurrentDao.AddAsync(entity);
+            return await CurrentDao.InsertAsync(entity);
         }
 
         public async Task<int> InsertAsync(params T[] entities)
         {
-            return await CurrentDao.AddListAsync(entities);
+            return await CurrentDao.InsertListAsync(entities);
         }
 
         public async Task<int> DeleteAsync(T entity)

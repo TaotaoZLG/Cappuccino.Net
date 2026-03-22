@@ -63,7 +63,7 @@ namespace Cappuccino.BLL
                     return obj;
                 }
 
-                // 3. 文件大小校验
+                // 文件大小校验
                 long maxSize = ConfigUtils.AppSetting.GetValue("UploadMaxFileSize").ParseToLong();
                 if (file.ContentLength > maxSize)
                 {
@@ -72,18 +72,18 @@ namespace Cappuccino.BLL
                     return obj;
                 }
 
-                // 1. 从配置文件获取路径
+                // 从配置文件获取路径
                 string tempRootPath = ConfigUtils.AppSetting.GetValue("TempRootPath");
                 string exportRootPath = ConfigUtils.AppSetting.GetValue("ExportRootPath");
                 string archiveRootPath = ConfigUtils.AppSetting.GetValue("ArchiveRootPath");
 
-                // 2. 保存上传文件
+                // 保存上传文件
                 string fileVirtualPath = Path.Combine(tempRootPath, batchId, fileName);
                 string tempCompressPath = FileHelper.GetPhysicalPath(fileVirtualPath);
                 FileHelper.EnsureDirectoryExists(Path.GetDirectoryName(tempCompressPath));
                 file.SaveAs(tempCompressPath); // 同步保存，确保文件内容完整写入
 
-                // 3. 定义用于 IO 操作的物理路径变量
+                // 定义用于 IO 操作的物理路径变量
                 string tempRootDir = Path.Combine(FileHelper.GetPhysicalPath(tempRootPath), batchId);
                 string unzipDir = Path.Combine(tempRootDir, "unzip");
                 string archiveDir = Path.Combine(FileHelper.GetPhysicalPath(archiveRootPath), batchId);
@@ -94,20 +94,22 @@ namespace Cappuccino.BLL
                 string finalZipFileName = string.Format("压缩包处理结果_{0}.zip", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
                 string finalZipPath_Virtual = Path.Combine(exportRootPath, string.Format("final_{0}", finalZipFileName));
 
-                // 4. 统一创建所有批次目录
+                // 统一创建所有批次目录
                 FileHelper.EnsureDirectoryExists(tempRootDir);
                 FileHelper.EnsureDirectoryExists(unzipDir);
                 FileHelper.EnsureDirectoryExists(archiveDir);
                 FileHelper.EnsureDirectoryExists(exportRootDir_Physical);
 
-                // 5. 解压压缩包
+                // 解压压缩包
                 List<string> unzipFiles = await CompressHelper.UnzipFileAsync(tempCompressPath, unzipDir, batchId, progressAction).ConfigureAwait(false);
 
-                // 6. 按规则归档文件
+                // 按规则归档文件
                 FileArchiveRuleEnum rule = (FileArchiveRuleEnum)extractRule;
                 Dictionary<string, List<string>> archiveDict = await CompressHelper.ArchiveFilesAsync(unzipFiles, archiveDir, rule, batchId, progressAction).ConfigureAwait(false);
 
-                // 7. 过滤图片并OCR识别
+                List<SysCaseInfoEntity> caseInfoList = new List<SysCaseInfoEntity>();
+
+                // 过滤图片并OCR识别
                 Dictionary<string, Dictionary<string, string>> ocrResultDict = new Dictionary<string, Dictionary<string, string>>();
                 foreach (var folderItem in archiveDict)
                 {
@@ -136,24 +138,30 @@ namespace Cappuccino.BLL
                         long Id = IdGeneratorHelper.Instance.NextId();
 
                         // 识别结果入库
-                        Insert(new SysCaseInfoEntity
+                        caseInfoList.Add(new SysCaseInfoEntity
                         {
                             Id = Id,
                             CustName = "Cappuccino客户",
                             CustIDNumber = "",
                             BatchId = batchId,
-                            Remark1 = "测试"
+                            Remark1 = ocrText
                         });
                     }
                     ocrResultDict.Add(folderName, ocrResults);
                 }
 
-                // 8. 生成Excel识别结果
+                // 批量插入到案件信息数据表
+                if (caseInfoList.Count() > 0)
+                {
+                    await _fileProcessiongDao.InsertAsync(caseInfoList).ConfigureAwait(false);
+                }
+
+                // 生成Excel识别结果
                 string excelFileName = string.Format("OCR识别结果_{0}.xlsx", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
                 string excelPath_Physical = Path.Combine(exportRootDir_Physical, excelFileName);
                 await CompressHelper.GenerateOcrExcelAsync(ocrResultDict, excelPath_Physical, batchId, progressAction).ConfigureAwait(false);
 
-                // 9. 复制归档文件夹到导出目录
+                // 复制归档文件夹到导出目录
                 foreach (var folderItem in archiveDict)
                 {
                     string sourceFolder = Path.Combine(archiveDir, folderItem.Key);
@@ -161,10 +169,10 @@ namespace Cappuccino.BLL
                     CompressHelper.DirectoryCopy(sourceFolder, targetFolder, true);
                 }
 
-                // 10. 打包导出目录为最终ZIP
+                // 打包导出目录为最终ZIP
                 await CompressHelper.PackFolderToZipAsync(exportRootDir_Virtual, finalZipPath_Virtual, batchId, progressAction).ConfigureAwait(false);
 
-                // 11. 清理临时目录
+                // 清理临时目录
                 await CompressHelper.CleanTempDirAsync(tempRootDir, batchId, progressAction).ConfigureAwait(false);
 
                 obj.Status = 1;

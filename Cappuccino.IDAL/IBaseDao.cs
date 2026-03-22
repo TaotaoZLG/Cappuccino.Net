@@ -85,6 +85,8 @@ namespace Cappuccino.IDAL
         /// <param name="entities">数据集</param>
         int Insert(IEnumerable<T> entities);
 
+        int Insert(IEnumerable<T> entities, int batchSize = 500);
+
         /// <summary>
         /// 插入单个实体并返回ID
         /// </summary>
@@ -186,8 +188,10 @@ namespace Cappuccino.IDAL
         Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda);
         Task<(IQueryable<T>, int)> GetListByPageAsync<S>(Expression<Func<T, bool>> whereLambada, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, bool isAsc);
         Task<int> GetRecordCountAsync(Expression<Func<T, bool>> predicate);
-        Task<int> AddAsync(T entity);
-        Task<int> AddListAsync(params T[] entities);
+        Task<int> InsertAsync(T entity);
+        Task<int> InsertAsync(IEnumerable<T> entities);
+        Task<int> InsertAsync(IEnumerable<T> entities, int batchSize = 500);
+        Task<int> InsertListAsync(params T[] entities);
         Task<int> DeleteAsync(T entity);
         Task<int> DeleteByAsync(Expression<Func<T, bool>> whereLambda);
         Task<bool> UpdateAsync(T entity);

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Transactions;
 using Cappuccino.DataAccess;
 
 namespace Cappuccino.DataAccess
@@ -234,6 +235,11 @@ namespace Cappuccino.DataAccess
             return entity;
         }
 
+        public virtual int Insert(IEnumerable<T> entities)
+        {
+            return Insert(entities, 500);
+        }
+
         public virtual int Insert(params T[] entities)
         {
             int result = 0;
@@ -257,38 +263,58 @@ namespace Cappuccino.DataAccess
         }
 
         /// <summary>
-        /// 批量插入数据集
+        /// 批量插入数据集（EF6优化版：分批次+事务+关闭变更检测）
         /// </summary>
         /// <param name="entities">数据集</param>
-        public virtual int Insert(IEnumerable<T> entities)
+        /// <param name="batchSize">批次大小（默认500）</param>
+        /// <returns>成功插入的数量</returns>
+        public virtual int Insert(IEnumerable<T> entities, int batchSize = 500)
         {
-            int count = 0;
-
-            if (entities == null) throw new ArgumentNullException(nameof(entities), "插入的数据集不能为null");
-
             var entityList = entities.ToList();
-            if (!entityList.Any()) return count; // 空集合直接返回
+            if (!entityList.Any()) return 0;
 
-            foreach (var entity in entityList)
+            int totalInserted = 0;
+            // 关闭EF自动变更检测（EF6批量操作核心优化）
+            bool autoDetect = Db.Configuration.AutoDetectChangesEnabled;
+            Db.Configuration.AutoDetectChangesEnabled = false;
+
+            try
             {
-                if (entity == null) continue;
-                DbSet.Add(entity);
-                count++;
-
-                // 每累计10条提交一次
-                if (count % 10 == 0)
+                // 事务保证原子性
+                using (var transaction = new TransactionScope())
                 {
-                    SaveChanges();
+                    foreach (var entity in entityList)
+                    {
+                        DbSet.Add(entity);
+                        totalInserted++;
+
+                        // 分批次提交
+                        if (totalInserted % batchSize == 0)
+                        {
+                            SaveChanges();
+                            // EF6 清空跟踪器（替代 Clear()，释放内存）
+                            DetachAllTrackedEntities();
+                        }
+                    }
+
+                    // 提交剩余数据
+                    if (totalInserted % batchSize != 0)
+                    {
+                        SaveChanges();
+                        DetachAllTrackedEntities();
+                    }
+
+                    transaction.Complete();
                 }
             }
-
-            // 提交剩余不足10条的记录
-            if (count % 10 != 0)
+            finally
             {
-                SaveChanges();
+                // 恢复EF配置
+                Db.Configuration.AutoDetectChangesEnabled = autoDetect;
             }
-            return count;
-        }
+
+            return totalInserted;
+        }               
 
         /// <summary>
         /// 插入单个实体并返回ID
@@ -590,19 +616,82 @@ namespace Cappuccino.DataAccess
             return await DbSet.CountAsync(predicate);
         }
 
-        public async Task<int> AddAsync(T entity)
+        public async Task<int> InsertAsync(T entity)
         {
             DbSet.Add(entity);
             return await SaveChangesAsync();
         }
 
-        public async Task<int> AddListAsync(params T[] entities)
+        public async Task<int> InsertListAsync(params T[] entities)
         {
             foreach (var entity in entities)
             {
                 DbSet.Add(entity);
             }
             return await SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// 异步重载
+        /// </summary>
+        public virtual Task<int> InsertAsync(IEnumerable<T> entities)
+        {
+            return InsertAsync(entities, 500);
+        }
+
+        /// <summary>
+        /// 异步批量插入（EF6专属）
+        /// </summary>
+        public virtual async Task<int> InsertAsync(IEnumerable<T> entities, int batchSize = 500)
+        {
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities));
+            if (batchSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(batchSize));
+
+            var entityList = entities.ToList();
+            if (!entityList.Any()) return 0;
+            if (entityList.Any(e => e == null))
+                throw new ArgumentException("数据集中不能包含null元素", nameof(entities));
+
+            int totalInserted = 0;
+            bool autoDetect = Db.Configuration.AutoDetectChangesEnabled;
+            Db.Configuration.AutoDetectChangesEnabled = false;
+
+            try
+            {
+                // 异步事务（EF6 必需配置）
+                using (var transaction = new TransactionScope(
+                    TransactionScopeOption.Required,
+                    TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    foreach (var entity in entityList)
+                    {
+                        DbSet.Add(entity);
+                        totalInserted++;
+
+                        if (totalInserted % batchSize == 0)
+                        {
+                            await SaveChangesAsync();
+                            DetachAllTrackedEntities();
+                        }
+                    }
+
+                    if (totalInserted % batchSize != 0)
+                    {
+                        await SaveChangesAsync();
+                        DetachAllTrackedEntities();
+                    }
+
+                    transaction.Complete();
+                }
+            }
+            finally
+            {
+                Db.Configuration.AutoDetectChangesEnabled = autoDetect;
+            }
+
+            return totalInserted;
         }
 
         public async Task<int> DeleteAsync(T entity)
@@ -657,6 +746,20 @@ namespace Cappuccino.DataAccess
         public async Task<IEnumerable<TElement>> ExecuteSqlQueryAsync<TElement>(string sql, params object[] parameters)
         {
             return await Db.Database.SqlQuery<TElement>(sql, parameters).ToListAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// EF6 专用：清空所有跟踪的实体（替代 ChangeTracker.Clear()）
+        /// </summary>
+        private void DetachAllTrackedEntities()
+        {
+            var entries = Db.ChangeTracker.Entries()
+                .Where(e => e.Entity != null && e.State != EntityState.Detached).ToList();
+
+            foreach (var entry in entries)
+            {
+                entry.State = EntityState.Detached;
+            }
         }
     }
 }

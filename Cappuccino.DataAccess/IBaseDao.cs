@@ -186,8 +186,9 @@ namespace Cappuccino.DataAccess
         Task<IQueryable<T>> GetListAsync(Expression<Func<T, bool>> whereLambda);
         Task<(IQueryable<T>, int)> GetListByPageAsync<S>(Expression<Func<T, bool>> whereLambada, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, bool isAsc);
         Task<int> GetRecordCountAsync(Expression<Func<T, bool>> predicate);
-        Task<int> AddAsync(T entity);
-        Task<int> AddListAsync(params T[] entities);
+        Task<int> InsertAsync(T entity);
+        Task<int> InsertAsync(IEnumerable<T> entities);
+        Task<int> InsertListAsync(params T[] entities);
         Task<int> DeleteAsync(T entity);
         Task<int> DeleteByAsync(Expression<Func<T, bool>> whereLambda);
         Task<bool> UpdateAsync(T entity);
