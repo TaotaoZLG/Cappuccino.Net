@@ -3,5 +3,6 @@ namespace Cappuccino.IDAL
 {
     public interface ISysFileProcessiongDao : IBaseDao<SysCaseInfoEntity>
     {
+
     }
 }

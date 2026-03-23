@@ -221,7 +221,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         public ActionResult InitPwd(long id)
         {
             string salt = VerifyCodeUtils.CreateVerifyCode(5);
-            string pwd = _sysConfigService.GetByConfig("sys_initPassword").ConfigValue;
+            string pwd = _sysConfigService.GetConfigByKey("sys_initPassword").ConfigValue;
             string passwordHash = Md5Utils.EncryptTo32(salt + pwd);
             SysUserEntity entity = new SysUserEntity
             {

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using Cappuccino.Common.Extensions;
+using MiniExcelLibs;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
@@ -373,5 +374,19 @@ namespace Cappuccino.Common.Helper
             return null;
         }
         #endregion
+    }
+
+    public class MiniExcelHelper<T> where T : class, new()
+    {
+        /// <summary>
+        /// Excel导入为List<T>（MiniExcel实现）
+        /// </summary>
+        /// <param name="filePath">Excel文件路径</param>
+        /// <returns>List<T></returns>
+        public static List<T> ImportFromExcel(string filePath)
+        {
+            // MiniExcel导入核心逻辑（自动映射列头到实体属性）
+            return MiniExcel.Query<T>(filePath).ToList();
+        }
     }
 }

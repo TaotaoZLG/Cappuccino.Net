@@ -11,7 +11,8 @@
             height: 36px;
             line-height: 36px;
         }
-            .process-header {
+
+        .process-header {
             padding-bottom: 15px;
             border-bottom: 1px solid #e6e6e6;
             margin-bottom: 20px;
@@ -35,9 +36,9 @@
             justify-content: flex-start;
         }
 
-        
+
         /* 文件选择区域样式 - 表单格式 */
-       
+
 
         .upload-input-group {
             display: flex;
@@ -212,20 +213,30 @@
 
         <div class="layui-row layui-col-space20" style="height: 730px;">
             <div class="layui-col-md6">
-                <div class="layui-form upload-card">
+                <form class="layui-form upload-card">
                     <h4 style="margin:0 0 15px 0;color:#333;">📤 压缩包上传</h4>
 
-                    <div class="archive-rule-box">
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">归档规则</label>
-                            <div class="layui-input-block">
-                                <select name="extractRule" id="extractRule" lay-verify="required">
-                                    <option value="0">0. 系统默认（自动降级规则1-3）</option>
-                                    <option value="1">1. 下划线分隔取首段</option>
-                                    <option value="2">2. 姓名 + 身份证号/身份证号 + 姓名</option>
-                                    <option value="3">3. 源文件名兜底</option>
-                                </select>
-                            </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">处理类型</label>
+                        <div class="layui-input-block">
+                            <select name="processType" id="processType" lay-verify="required" lay-reqtext="请选择处理类型">
+                                <option value="" selected>请选择处理类型</option>
+                                <option value="0">Excel解析 + 文件打包</option>
+                                <option value="1">图片OCR识别 + 文件打包</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">归档规则</label>
+                        <div class="layui-input-block">
+                            <select name="extractRule" id="extractRule" lay-verify="required" lay-reqtext="请选择归档规则">
+                                <option value="">请选择归档规则</option>
+                                <option value="0" selected>0. 系统默认（自动降级规则1-3）</option>
+                                <option value="1">1. 下划线分隔取首段</option>
+                                <option value="2">2. 姓名 + 身份证号/身份证号 + 姓名</option>
+                                <option value="3">3. 源文件名兜底</option>
+                            </select>
                         </div>
                     </div>
                     <hr />
@@ -235,13 +246,13 @@
                                 <label class="layui-form-label">选择文件</label>
                                 <div class="layui-input-block">
                                     <div class="upload-input-group">
-                                        <input type="text" class="layui-input" id="fileNameInput" placeholder="请选择压缩包文件" readonly />
+                                        <input type="text" class="layui-input" id="fileNameInput" placeholder="请选择压缩包文件" readonly lay-verify="required" lay-reqtext="请选择压缩包文件">
 
                                         <button type="button" class="layui-btn layui-btn-primary" id="chooseFileBtn">
-                                            <i class="layui-icon">&#xe608;</i> 浏览
+                                            <i class="layui-icon">&#xe608;</i> 浏览...
                                         </button>
 
-                                        <button type="button" class="layui-btn layui-btn-normal" id="uploadFileBtn">
+                                        <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="uploadFileBtn">
                                             <i class="layui-icon">&#xe67c;</i> 上传并处理
                                         </button>
                                     </div>
@@ -261,7 +272,7 @@
                             <div class="layui-word-aux text-danger" id="uploadTip"></div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
 
             <div class="layui-col-md6">
@@ -407,6 +418,9 @@
                 data: {
                     extractRule: function () {
                         return $('#extractRule').val();
+                    },
+                    processType: function () {
+                        return $('#processType').val();
                     }
                 },
                 choose: function (obj) {
@@ -420,12 +434,6 @@
                     });
                 },
                 before: function (obj) {
-                    var extractRule = $('#extractRule').val();
-                    if (!extractRule) {
-                        layer.msg("请选择归档规则", { icon: 5 });
-                        return false;
-                    }
-
                     if (!isHubConnected) {
                         layer.msg("SignalR 未连接，请稍候重试", { icon: 2 });
                         initSignalR().then(function () {
@@ -434,7 +442,7 @@
                         return false;
                     }
 
-                    clearUploadTip();
+                    //clearUploadTip();
                     currentBatchId = "";
                     $("#progressBar").css("width", "0%").text("0%");
                     $("#progressLog").html('<div class="empty-tip"><i class="layui-icon layui-icon-file" style="font-size: 30px; color: #ccc; display: block; margin-bottom: 10px;"></i>任务开始中...</div>');
@@ -446,11 +454,11 @@
                 },
                 done: function (response) {
                     layer.closeAll('loading');
+
+                    var message = response.message;
                     if (response.status === 1) {
                         currentBatchId = response.data.batchId;
                         var data = response.data.data;
-                        var message = response.message;
-
                         window.location.href = "@Url.Content("~/File/DownloadFile?filePath=")" + data + "&delete=0";
                         $(".progress-box").show();
                         $("#clearLogBtn").show();
@@ -469,27 +477,10 @@
                 }
             });
 
-            // ========== 手动上传按钮点击事件 ==========
-            $("#uploadFileBtn").on("click", function () {
-                if (!selectedFile) {
-                    layer.msg("请先选择文件", { icon: 5 });
-                    return;
-                }
-
-                var extractRule = $('#extractRule').val();
-                if (!extractRule) {
-                    layer.msg("请选择归档规则", { icon: 5 });
-                    return;
-                }
-
-                if (!isHubConnected) {
-                    layer.msg("SignalR 未连接，请稍候重试", { icon: 2 });
-                    initSignalR();
-                    return;
-                }
-
+            form.on("submit(uploadFileBtn)", function (data) {
                 uploadInst.upload();
-            });
+                return false;
+            });            
 
             // ========== 清空日志 ==========
             window.clearLog = function () {

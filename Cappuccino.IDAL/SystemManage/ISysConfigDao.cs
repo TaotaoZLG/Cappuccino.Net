@@ -8,6 +8,6 @@ namespace Cappuccino.IDAL
         /// </summary>
         /// <param name="configKey"></param>
         /// <returns></returns>
-        SysConfigEntity GetByConfig(string configKey);
+        SysConfigEntity GetConfigByKey(string configKey);
     }
 }

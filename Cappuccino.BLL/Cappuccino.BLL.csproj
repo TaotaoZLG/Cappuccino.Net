@@ -76,6 +76,7 @@
     <ProjectReference Include="..\Cappuccino.Entity\Cappuccino.Entity.csproj">
       <Project>{93fe2ce0-1a84-4138-b18f-d984ae0f4d81}</Project>
       <Name>Cappuccino.Entity</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
     <ProjectReference Include="..\Cappuccino.IBLL\Cappuccino.IBLL.csproj">
       <Project>{2D44CCE2-A040-4A43-9AD3-6B4CAB0FE740}</Project>

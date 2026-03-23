@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Helper;
 using Cappuccino.Common.Util;
+using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Web.Core;
+using MiniExcelLibs;
 
 namespace Cappuccino.Web.Areas.BusinessManage.Controllers
 {
@@ -37,27 +41,19 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> UploadAndProcess()
+        public async Task<ActionResult> UploadAndProcess(HttpPostedFileBase compressFile, int extractRule, int processType)
         {
+            TData<string> result = new TData<string>();
             string batchId = GuidHelper.GetGuid(true);
             try
             {
-                // 获取上传文件
-                HttpPostedFileBase file = Request.Files["compressFile"];
-
-                // 获取归档规则
-                if (!int.TryParse(Request.Form["extractRule"], out int extractRule))
-                {
-                    extractRule = (int)FileArchiveRuleEnum.SystemDefault;
-                }
-
                 // 处理进度回调
                 Action<ProcessProgress> progressAction = (progress) =>
                 {
                     ProcessProgressHub.SendProgress(progress);
                 };
 
-                var result = await _fileProcessService.ProcessCompressFileAsync(file, extractRule, batchId, progressAction).ConfigureAwait(false);
+                result = await _fileProcessService.ProcessCompressFileAsync(compressFile, extractRule, processType, batchId, progressAction).ConfigureAwait(false);
                 if (result.Status == 0)
                 {
                     return WriteError(result.Message);
@@ -71,7 +67,6 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
                     Type = "Finish",
                     Message = $"处理完成，可下载文件：{result.Data}"
                 });
-
                 return WriteSuccess("任务处理成功", new { data = result.Data, BatchId = batchId });
             }
             catch (Exception ex)

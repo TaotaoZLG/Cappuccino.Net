@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using MiniExcelLibs.Attributes;
 
 namespace Cappuccino.Entity
 {
@@ -17,54 +18,63 @@ namespace Cappuccino.Entity
         /// </summary>
         /// <returns></returns>
         [DisplayName("客户编号")]
+        [ExcelColumnName("案件ID")]
         public string CustomerId { get; set; }
         /// <summary>
         /// 客户姓名
         /// </summary>
         /// <returns></returns>
         [DisplayName("客户姓名")]
+        [ExcelColumnName("客户姓名")]
         public string CustName { get; set; }
         /// <summary>
         /// 客户身份证号
         /// </summary>
         /// <returns></returns>
         [DisplayName("客户身份证号")]
+        [ExcelColumnName("客户身份证号")]
         public string CustIDNumber { get; set; }
         /// <summary>
         /// 客户银行卡号
         /// </summary>
         /// <returns></returns>
         [DisplayName("客户银行卡号")]
+        [ExcelColumnName("客户银行卡号")]
         public string CustCardNo { get; set; }
         /// <summary>
         /// 客户贷款账号
         /// </summary>
         /// <returns></returns>
         [DisplayName("客户贷款账号")]
+        [ExcelColumnName("客户贷款账号")]
         public string CustLoanAccountNo { get; set; }
         /// <summary>
         /// 客户贷款城市
         /// </summary>
         /// <returns></returns>
         [DisplayName("客户贷款城市")]
+        [ExcelColumnName("客户贷款城市")]
         public string CustLoanCity { get; set; }
         /// <summary>
         /// 客户邮箱
         /// </summary>
         /// <returns></returns>
         [DisplayName("客户邮箱")]
+        [ExcelColumnName("客户邮箱")]
         public string CustEmail { get; set; }
         /// <summary>
         /// 案件编号（格式：机构代码+日期+序列号）
         /// </summary>
         /// <returns></returns>
         [DisplayName("案件编号")]
+        [ExcelColumnName("案件编号")]
         public string CaseNo { get; set; }
         /// <summary>
         /// 案件合同编号
         /// </summary>
         /// <returns></returns>
         [DisplayName("案件合同编号")]
+        [ExcelColumnName("案件合同编号")]
         public string CaseContractNo { get; set; }
         /// <summary>
         /// 案件状态（1-待分配，2-调解中，3-已结案）

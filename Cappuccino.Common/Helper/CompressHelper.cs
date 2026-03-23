@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MiniExcelLibs;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using SharpCompress.Archives;
@@ -447,6 +448,40 @@ namespace Cappuccino.Common.Helper
                     Message = $"Excel文件生成完成，路径：{excelFilePath}"
                 });
             });
+        }
+
+        /// <summary>
+        /// 根据实体列表生成Excel文件（MiniExcel）
+        /// </summary>
+        /// <param name="dataList">实体列表</param>
+        /// <param name="excelPath">生成的Excel路径</param>
+        /// <param name="batchId">批次ID</param>
+        /// <param name="progressAction">进度回调</param>
+        public static async Task GenerateExcelFromEntityAsync(object dataList, string excelPath, string batchId, Action<ProcessProgress> progressAction)
+        {
+            try
+            {
+                // MiniExcel写入Excel（自动映射中文列头）
+                await MiniExcel.SaveAsAsync(excelPath, dataList);
+                progressAction.Invoke(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 80,
+                    Type = "Finish",
+                    Message = $"成功生成Excel文件：{Path.GetFileName(excelPath)}"
+                });
+            }
+            catch (Exception ex)
+            {
+                progressAction.Invoke(new ProcessProgress
+                {
+                    BatchId = batchId,
+                    Progress = 80,
+                    Type = "Error",
+                    Message = $"生成Excel文件失败：{ex.Message}"
+                });
+                throw;
+            }
         }
 
         /// <summary>

@@ -19,13 +19,15 @@ namespace Cappuccino.BLL
     public class SysCaseInfoService : BaseService<SysCaseInfoEntity>, ISysCaseInfoService
     {
         private ISysCaseInfoDao _sysCaseInfoDao;
+        private ISysFileService _sysFileService;
         private ISysTemplateService _sysTemplateService;
 
         #region 依赖注入
-        public SysCaseInfoService(ISysCaseInfoDao sysCaseInfoDao, ISysTemplateService sysTemplateService)
+        public SysCaseInfoService(ISysCaseInfoDao sysCaseInfoDao, ISysTemplateService sysTemplateService,ISysFileService sysFileService)
         {
             _sysCaseInfoDao = sysCaseInfoDao;
             _sysTemplateService = sysTemplateService;
+            _sysFileService = sysFileService;
             base.CurrentDao = sysCaseInfoDao;
             this.AddDisposableObject(this.CurrentDao);
             this.AddDisposableObject(_sysTemplateService);
@@ -77,7 +79,7 @@ namespace Cappuccino.BLL
                 {
                     nextWord++;
 
-                    // 复制模板到临时文件（避免修改原模板）
+                    long caseId = caseInfo.Id;
                     string custName = caseInfo?.CustName;
                     string custIDNumber = caseInfo?.CustIDNumber;
 
@@ -87,8 +89,11 @@ namespace Cappuccino.BLL
                     // 复制模板文件（覆盖模式）
                     File.Copy(templatePhysicalPath, tempWordPath, true);
 
+                    // 获取案件图片
+                    var imageFileList = _sysFileService.GetFilePathById(caseId);
+
                     // 使用NPOI替换Word域值
-                    WordHelper.ReplaceContent(tempWordPath, caseInfo);
+                    WordHelper.ReplaceContent(tempWordPath, caseInfo, imageFileList);
                 }
 
                 // 压缩为Zip并返回虚拟路径

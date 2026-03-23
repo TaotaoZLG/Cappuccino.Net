@@ -12,13 +12,13 @@ namespace Cappuccino.BLL
 {
     public class SysFileService : BaseService<SysFileEntity>, ISysFileService
     {
-        private ISysFileDao _fileDao;
+        private ISysFileDao _sysFileDao;
 
         #region 依赖注入
-        public SysFileService(ISysFileDao fileDao)
+        public SysFileService(ISysFileDao sysFileDao)
         {
-            _fileDao = fileDao;
-            base.CurrentDao = fileDao;
+            _sysFileDao = sysFileDao;
+            base.CurrentDao = sysFileDao;
             this.AddDisposableObject(this.CurrentDao);
         }
         #endregion
@@ -27,6 +27,11 @@ namespace Cappuccino.BLL
         {
             entity.Create();
             return await InsertAsync(entity);
+        }
+
+        public List<string> GetFilePathById(long objectId)
+        {
+            return _sysFileDao.GetList(x => x.ObjectId == objectId).Select(x => x.FilePath).ToList();
         }
     }
 }

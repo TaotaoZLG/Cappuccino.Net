@@ -7,7 +7,7 @@ namespace Cappuccino.DAL.System
 {
     public class SysConfigDao : BaseDao<SysConfigEntity>, ISysConfigDao
     {
-        public SysConfigEntity GetByConfig(string configKey)
+        public SysConfigEntity GetConfigByKey(string configKey)
         {
             return GetList(x => x.ConfigKeys == configKey).FirstOrDefault();
         }

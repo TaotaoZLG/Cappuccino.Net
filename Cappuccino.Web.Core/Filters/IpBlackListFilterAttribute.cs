@@ -56,7 +56,7 @@ namespace Cappuccino.Web.Core.Filters
             var container = CacheManager.Get<IContainer>(KeyManager.AutofacContainer);
             var _sysConfigService = container.Resolve<ISysConfigService>();
 
-            var configEntity = _sysConfigService.GetByConfig("sys_ipBlackList");
+            var configEntity = _sysConfigService.GetConfigByKey("sys_ipBlackList");
             if (configEntity != null && !string.IsNullOrWhiteSpace(configEntity.ConfigValue))
             {
                 blackList = configEntity.ConfigValue.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(ip => ip.Trim()).ToList();

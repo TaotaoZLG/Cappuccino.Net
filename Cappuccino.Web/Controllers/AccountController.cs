@@ -49,7 +49,7 @@ namespace Cappuccino.Web.Controllers
         public ActionResult ChangePassword()
         {
             ViewBag.UserName = UserManager.GetCurrentUserInfo().UserName;
-            ViewBag.ChrType = _sysConfigService.GetByConfig("sys_chrtype").ConfigValue;
+            ViewBag.ChrType = _sysConfigService.GetConfigByKey("sys_chrtype").ConfigValue;
             return View();
         }
 
