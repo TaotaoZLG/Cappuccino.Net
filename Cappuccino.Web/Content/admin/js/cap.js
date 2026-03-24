@@ -404,7 +404,7 @@
                         window.location.href = "/File/DownloadFile?filePath=" + obj.data + "&delete=1";
                     }
                     else {
-                        ys.msgError(obj.msg);
+                        ys.msgError(obj.message);
                     }
                 },
                 beforeSend: function (xhr) {

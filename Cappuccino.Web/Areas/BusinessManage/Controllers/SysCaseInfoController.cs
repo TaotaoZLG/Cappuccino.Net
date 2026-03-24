@@ -55,7 +55,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
         {
             try
             {
-                var file = Request.Files["fileList"];
+                var file = Request.Files["fileList"] ;
 
                 return WriteSuccess("任务处理成功");
             }

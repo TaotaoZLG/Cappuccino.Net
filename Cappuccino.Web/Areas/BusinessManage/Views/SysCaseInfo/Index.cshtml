@@ -55,36 +55,42 @@
                     [
                         { type: 'checkbox' },
                         { title: 'ID', field: 'id', hide: true },
-                        { title: '客户编号', field: 'customerId', },
-                        { title: '客户姓名', field: 'custName', },
+                        { title: '姓名', field: 'custName', },
                         { title: '身份证号', field: 'custIDNumber', },
+                        { title: '性别', field: 'custGender', },
+                        { title: '民族', field: 'custNation', },
+                        { title: '出生日期', field: 'custBirthdate', },
                         { title: '银行卡号', field: 'custCardNo', },
-                        { title: '贷款账号', field: 'custLoanAccountNo', },
-                        { title: '欠款金额', field: 'caseDebtAmount', },
-                        { title: '贷款城市', field: 'custLoanCity', },
-                        { title: '本金', field: 'caseCapital', },
-                        { title: '利息', field: 'caseInterest', },
-                        { title: '手别', field: 'caseLevel', },
-                        { title: '调解案号', field: 'caseMediationWmn', },
+                        { title: '邮箱', field: 'custEmail', },
+                        { title: '户籍地址', field: 'householdAddress', },
+                        { title: '住宅地址', field: 'homeAddress', },
+                        { title: '邮寄地址', field: 'mailingAddress', },
+                        { title: '单位地址', field: 'companyAddress', },
+                        { title: '联系电话', field: 'contactPhone', },
+                        { title: '开户日期', field: 'accountOpenDate', },
+                        { title: '开卡日期', field: 'cardOpenDate', },
+                        { title: '账户激活日期', field: 'accountActivateDate', },
+                        { title: '账单日', field: 'billDay', },
+                        { title: '欠款本金', field: 'principalAmount', },
+                        { title: '利息', field: 'interestAmount', },
+                        { title: '违约金', field: 'penaltyInterest', },
+                        { title: '分期手续费', field: 'installmentFee', },
+                        { title: '服务费', field: 'serviceFee', },
+                        { title: '逾期金额', field: 'overdueAmount', },
                         { title: '逾期天数', field: 'overdueDays', },
-                        { title: '产品名称', field: 'productName', },
-                        { title: '案件编号', field: 'caseNo', },
-                        { title: '合同编号', field: 'caseContractNo', },
-                        { title: '案件状态', field: 'caseStatus', },
-                        {
-                            title: '调解开始日期', field: 'mediationStartDate', formatter: function (value, row, index) {
-                                return ys.formatDate(value);
-                            }
-                       , },
-                        {
-                            title: '调解结束日期', field: 'mediationEndDate', formatter: function (value, row, index) {
-                                return ys.formatDate(value);
-                            }
-                       , },
-                        { title: '案件所在部门', field: 'departmentName', },
-                        { title: '调解员', field: 'mediator', },
-                        { title: '助理调解员', field: 'assistantMediator', },
-                        { title: '客户邮箱', field: 'custEmail', },
+                        { title: '开始逾期日期', field: 'overdueStartDate', },
+                        { title: '最后一次还款日期', field: 'lastRepayDate', },
+                        { title: '账单余额', field: 'billBalance', },
+                        //{
+                        //    title: '调解开始日期', field: 'mediationStartDate', formatter: function (value, row, index) {
+                        //        return ys.formatDate(value);
+                        //    }
+                        //},
+                        //{
+                        //    title: '调解结束日期', field: 'mediationEndDate', formatter: function (value, row, index) {
+                        //        return ys.formatDate(value);
+                        //    }
+                        //},
                         { title: '案件备注1', field: 'remark1', },
                         { title: '案件备注2', field: 'remark2', },
                         { title: '案件备注3', field: 'remark3', },

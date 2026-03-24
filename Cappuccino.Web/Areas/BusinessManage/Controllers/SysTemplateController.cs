@@ -20,7 +20,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
 {
     public class SysTemplateController : BaseController
     {
-        private readonly ISysTemplateService _sysTemplateService;
+        private ISysTemplateService _sysTemplateService;
 
         public SysTemplateController(ISysTemplateService sysTemplateService)
         {
@@ -40,6 +40,13 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
         public ActionResult Create()
         {
             return View();
+        }
+
+        [HttpGet, CheckPermission("system.template.edit")]
+        public ActionResult Edit(long id)
+        {
+            SysTemplateEntity viewModel = _sysTemplateService.GetList(x => x.Id == id).FirstOrDefault();
+            return View(viewModel.EntityMap());
         }
         #endregion
 
@@ -83,11 +90,11 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
             {
                 return WriteError("实体验证失败");
             }
-            viewModel.Id = viewModel.Id;
-            viewModel.UpdateTime = DateTime.Now;
-            viewModel.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
             SysTemplateEntity entity = viewModel.EntityMap();
-            _sysTemplateService.Update(entity, new string[] { "Name", "Code", "SortCode", "UpdateTime", "UpdateUserId" });
+            entity.UpdateTime = DateTime.Now;
+            entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
+
+            _sysTemplateService.Update(entity, new string[] { "TemplateName", "TemplateType", "TemplateStatus", "TemplateFilePath", "SortCode", "Remark", "UpdateTime", "UpdateUserId" });
             return WriteSuccess();
         }
 

@@ -15,7 +15,6 @@ namespace Cappuccino.Web.Core.Filters
         /// <param name="filterContext"></param>
         public override void OnException(ExceptionContext filterContext)
         {
-
             Exception ex = filterContext.Exception;
             //写到队列
             ExecptionQueue.Enqueue(ex);
@@ -31,7 +30,7 @@ namespace Cappuccino.Web.Core.Filters
             if (filterContext.HttpContext.Request.IsAjaxRequest())
             {
                 JsonResult json = new JsonResult();
-                json.Data = new { status = (int)AjaxStateEnum.Error, msg = innerEx.Message };
+                json.Data = new { status = (int)AjaxStateEnum.Error, message = innerEx.Message };
                 json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
                 filterContext.Result = json;
             }

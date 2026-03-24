@@ -185,7 +185,7 @@
 
             form.on('switch(userStatus)', function (obj) {
                 layer.confirm('确定更改状态', { icon: 3, title: '提示' }, function (index) {
-                    common.ajax(MODULE_PATH + "UpdateUserStatus", "post", { id: parseInt(obj.value), userStatus: obj.elem.checked * 1 }, true, true).done(function (response) {
+                    common.ajax(MODULE_PATH + "UpdateUserStatus", "post", { id: obj.value, userStatus: obj.elem.checked * 1 }, true, true).done(function (response) {
                         layer.msg(response.message, { icon: 1 });
                     }).fail(function (error) {
                         $(obj.elem).prop('checked', !obj.elem.checked);

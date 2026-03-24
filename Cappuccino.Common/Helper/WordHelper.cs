@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using NPOI.Util;
 using NPOI.XWPF.UserModel;
 
 namespace Cappuccino.Common.Helpers
@@ -59,6 +60,46 @@ namespace Cappuccino.Common.Helpers
             File.Move(tempFilePath, wordFilePath);
         }
 
+        /// <summary>
+        /// NPOI创建Word文档，批量插入图片
+        /// </summary>
+        public static void CreateWordWithImages(List<string> imagePaths, string savePath)
+        {
+            // 创建Word文档（.docx格式）
+            XWPFDocument document = new XWPFDocument();
+
+            // 添加标题
+            //var titleParagraph = document.CreateParagraph();
+            //titleParagraph.Alignment = ParagraphAlignment.CENTER;
+            //var titleRun = titleParagraph.CreateRun();
+            //titleRun.SetText("案件归档图片文档");
+            //titleRun.IsBold = true;
+            //titleRun.FontSize = 16;
+
+            // 批量插入图片
+            foreach (var imgPath in imagePaths)
+            {
+                // 换行
+                document.CreateParagraph();
+                var para = document.CreateParagraph();
+                para.Alignment = ParagraphAlignment.CENTER;
+                var run = para.CreateRun();
+
+                // 插入图片（设置宽度：400px，自适应高度）
+                using (FileStream fs = new FileStream(imgPath, FileMode.Open, FileAccess.Read))
+                {
+                    run.AddPicture(fs, (int)GetPictureType(imgPath), Path.GetFileName(imgPath),
+                        Units.ToEMU(400), Units.ToEMU(300));
+                }
+            }
+
+            // 保存Word文档
+            using (FileStream fs = new FileStream(savePath, FileMode.Create))
+            {
+                document.Write(fs);
+            }
+        }
+
         #region 图片插入核心功能
         private static void InsertImagesToWord(XWPFDocument doc, List<string> imagePaths)
         {
@@ -102,7 +143,7 @@ namespace Cappuccino.Common.Helpers
                         // 插入图片：调整参数类型为long（NPOI 2.5.6 实际接收long，强转int会溢出）
                         run.AddPicture(
                             imgStream,
-                            (int)GetPictureTypeForNPOI256(path),
+                            (int)GetPictureType(path),
                             Path.GetFileName(path),
                             MAX_WIDTH, // 直接用long，避免int溢出
                             renderHeight
@@ -134,7 +175,7 @@ namespace Cappuccino.Common.Helpers
         /// <summary>
         /// 获取NPOI 2.5.6兼容的图片类型
         /// </summary>
-        private static PictureType GetPictureTypeForNPOI256(string fileName)
+        private static PictureType GetPictureType(string fileName)
         {
             string ext = Path.GetExtension(fileName).TrimStart('.').ToLower();
             PictureType picType = PictureType.PNG;

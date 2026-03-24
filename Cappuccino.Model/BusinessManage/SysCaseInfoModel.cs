@@ -9,198 +9,238 @@ namespace Cappuccino.Model
     public class SysCaseInfoModel
     {
         /// <summary>
-        /// 客户编号
+        /// 业务批次Id
         /// </summary>
-        /// <returns></returns>
-        public string CustomerId { get; set; }
-        /// <summary>
-        /// 客户姓名
-        /// </summary>
-        /// <returns></returns>
-        public string CustName { get; set; }
-        /// <summary>
-        /// 客户身份证号
-        /// </summary>
-        /// <returns></returns>
-        public string CustIDNumber { get; set; }
-        /// <summary>
-        /// 客户银行卡号
-        /// </summary>
-        /// <returns></returns>
-        public string CustCardNo { get; set; }
-        /// <summary>
-        /// 客户贷款账号
-        /// </summary>
-        /// <returns></returns>
-        public string CustLoanAccountNo { get; set; }
-        /// <summary>
-        /// 客户贷款城市
-        /// </summary>
-        /// <returns></returns>
-        public string CustLoanCity { get; set; }
-        /// <summary>
-        /// 客户邮箱
-        /// </summary>
-        /// <returns></returns>
-        public string CustEmail { get; set; }
+        public string BusinessBatchId { get; set; }
+
         /// <summary>
         /// 案件编号（格式：机构代码+日期+序列号）
         /// </summary>
-        /// <returns></returns>
         public string CaseNo { get; set; }
+
         /// <summary>
-        /// 案件合同编号
+        /// 案号
         /// </summary>
-        /// <returns></returns>
-        public string CaseContractNo { get; set; }
+        public string CaseNumber { get; set; }
+
         /// <summary>
-        /// 案件状态（1-待分配，2-调解中，3-已结案）
+        /// 客户姓名
         /// </summary>
-        /// <returns></returns>
-        public byte? CaseStatus { get; set; }
+        public string CustName { get; set; }
+
         /// <summary>
-        /// 案件状态变更时间
+        /// 客户性别
         /// </summary>
-        /// <returns></returns>
-        public DateTime? CaseStatusChangeTime { get; set; }
+        public string CustGender { get; set; }
+
         /// <summary>
-        /// 案件类型Id（关联SysCaseType表Id）
+        /// 客户民族
         /// </summary>
-        /// <returns></returns>
-        public long? CaseTypeId { get; set; }
+        public string CustNation { get; set; }
+
         /// <summary>
-        /// 案件欠款金额
+        /// 客户出生日期
         /// </summary>
-        /// <returns></returns>
-        public decimal? CaseDebtAmount { get; set; }
+        public string CustBirthdate { get; set; }
+
         /// <summary>
-        /// 案件本金
+        /// 客户身份证号
         /// </summary>
-        /// <returns></returns>
-        public decimal? CaseCapital { get; set; }
+        public string CustIDNumber { get; set; }
+
         /// <summary>
-        /// 案件利息
+        /// 银行卡号
         /// </summary>
-        /// <returns></returns>
-        public decimal? CaseInterest { get; set; }
+        public string CustCardNo { get; set; }
+
         /// <summary>
-        /// 案件手别
+        /// 客户邮箱
         /// </summary>
-        /// <returns></returns>
-        public byte? CaseLevel { get; set; }
+        public string CustEmail { get; set; }
+
         /// <summary>
-        /// 案件详情（案由）
+        /// 户籍地址
         /// </summary>
-        /// <returns></returns>
-        public string CaseDetails { get; set; }
+        public string HouseholdAddress { get; set; }
+
         /// <summary>
-        /// 调解案号（调解书字号）
+        /// 住宅地址
         /// </summary>
-        /// <returns></returns>
-        public string CaseMediationWmn { get; set; }
+        public string HomeAddress { get; set; }
+
         /// <summary>
-        /// 逾期金额
+        /// 邮寄地址
         /// </summary>
-        /// <returns></returns>
-        public decimal? OverdueAmount { get; set; }
+        public string MailingAddress { get; set; }
+
         /// <summary>
-        /// 逾期天数
+        /// 单位地址
         /// </summary>
-        /// <returns></returns>
-        public byte? OverdueDays { get; set; }
+        public string CompanyAddress { get; set; }
+
         /// <summary>
-        /// 逾期时段
+        /// 联系电话
         /// </summary>
-        /// <returns></returns>
-        public string OverduePeriod { get; set; }
+        public string ContactPhone { get; set; }
+
         /// <summary>
-        /// 已还金额
+        /// 开户日期
         /// </summary>
-        /// <returns></returns>
-        public decimal? PaidAmount { get; set; }
+        public string AccountOpenDate { get; set; }
+
         /// <summary>
-        /// 罚息
+        /// 开卡日期
         /// </summary>
-        /// <returns></returns>
-        public decimal? PenaltyInterest { get; set; }
+        public string CardOpenDate { get; set; }
+
+        /// <summary>
+        /// 账户激活日期
+        /// </summary>
+        public string AccountActivateDate { get; set; }
+
+        /// <summary>
+        /// 账单日（1-31）
+        /// </summary>
+        public string BillDay { get; set; }
+
+        /// <summary>
+        /// 欠款本金
+        /// </summary>
+        public string PrincipalAmount { get; set; }
+
+        /// <summary>
+        /// 利息
+        /// </summary>
+        public string InterestAmount { get; set; }
+
         /// <summary>
         /// 违约金
         /// </summary>
-        /// <returns></returns>
-        public decimal? Dedit { get; set; }
+        public string PenaltyInterest { get; set; }
+
         /// <summary>
-        /// 贷款还款日
+        /// 分期手续费
         /// </summary>
-        /// <returns></returns>
-        public DateTime? RepaymentDate { get; set; }
+        public string InstallmentFee { get; set; }
+
         /// <summary>
-        /// 分配方式（自动/手动）
+        /// 人民币费用
         /// </summary>
-        /// <returns></returns>
-        public string AssignmentMethod { get; set; }
+        public string RMBFeeAmount { get; set; }
+
+        /// <summary>
+        /// 共计人民币
+        /// </summary>
+        public string TotalAmount { get; set; }
+
+        /// <summary>
+        /// 服务费
+        /// </summary>
+        public string ServiceFee { get; set; }
+
+        /// <summary>
+        /// 逾期金额
+        /// </summary>
+        public string OverdueAmount { get; set; }
+
+        /// <summary>
+        /// 逾期天数
+        /// </summary>
+        public string OverdueDays { get; set; }
+
+        /// <summary>
+        /// 开始逾期时间
+        /// </summary>
+        public string OverdueStartDate { get; set; }
+
+        /// <summary>
+        /// 最后一次还款日期
+        /// </summary>
+        public string LastRepayDate { get; set; }
+
+        /// <summary>
+        /// 账单余额
+        /// </summary>
+        public string BillBalance { get; set; }
+
+        /// <summary>
+        /// 本金核算
+        /// </summary>
+        public string PrincipalCalculated { get; set; }
+
+        /// <summary>
+        /// 违约金合计
+        /// </summary>
+        public string TotalPenalty { get; set; }
+
+        /// <summary>
+        /// 分期手续费合计
+        /// </summary>
+        public string TotalInstallmentFee { get; set; }
+
+        /// <summary>
+        /// 利息截止
+        /// </summary>
+        public string InterestEndDate { get; set; }
+
+        /// <summary>
+        /// 截止至日
+        /// </summary>
+        public string EndDate { get; set; }
+
+        /// <summary>
+        /// 诉讼费
+        /// </summary>
+        public string LitigationFee { get; set; }
+
+        /// <summary>
+        /// 案件详情（案由）
+        /// </summary>
+        public string CaseDetails { get; set; }
+
         /// <summary>
         /// 产品Id（关联SysProduct表Id）
         /// </summary>
-        /// <returns></returns>
-        public long? ProductId { get; set; }
-        /// <summary>
-        /// 调解开始日期
-        /// </summary>
-        /// <returns></returns>
-        public DateTime? MediationStartDate { get; set; }
-        /// <summary>
-        /// 调解结束日期
-        /// </summary>
-        /// <returns></returns>
-        public DateTime? MediationEndDate { get; set; }
+        public string ProductId { get; set; }
+
         /// <summary>
         /// 案件所在部门Id（关联SysDepartment表Id）
         /// </summary>
-        /// <returns></returns>
-        public long? DepartmentId { get; set; }
+        public string DepartmentId { get; set; }
+
         /// <summary>
         /// 所在部门变更时间
         /// </summary>
-        /// <returns></returns>
-        public DateTime? DepartmentChangeTime { get; set; }
+        public string DepartmentChangeTime { get; set; }
+
         /// <summary>
         /// 调解员Id（关联SysUser表Id）
         /// </summary>
-        /// <returns></returns>
-        public long? MediatorId { get; set; }
+        public string MediatorId { get; set; }
+
         /// <summary>
         /// 调解员变更时间
         /// </summary>
-        /// <returns></returns>
-        public DateTime? MediatorChangeTime { get; set; }
+        public string MediatorChangeTime { get; set; }
+
         /// <summary>
-        /// 助理调解员Id（关联SysUser表Id）
+        /// 归档文件保存路径（虚拟路径）
         /// </summary>
-        /// <returns></returns>
-        public long? AssistantMediatorId { get; set; }
-        /// <summary>
-        /// 助理调解员变更时间
-        /// </summary>
-        /// <returns></returns>
-        public DateTime? AssistantMediatorChangeTime { get; set; }
-        /// <summary>
-        /// 业务批次Id
-        /// </summary>
-        public string BatchId { get; set; }
+        public string ArchiveVirtualPath { get; set; }
+
         /// <summary>
         /// 案件备注信息1
         /// </summary>
-        /// <returns></returns>
         public string Remark1 { get; set; }
+
         /// <summary>
         /// 案件备注信息2
         /// </summary>
-        /// <returns></returns>
         public string Remark2 { get; set; }
+
         /// <summary>
         /// 案件备注信息3
         /// </summary>
-        /// <returns></returns>
         public string Remark3 { get; set; }
     }
 }

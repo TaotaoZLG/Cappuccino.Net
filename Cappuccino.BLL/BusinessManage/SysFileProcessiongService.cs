@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Helper;
+using Cappuccino.Common.Helpers;
 using Cappuccino.Common.Log;
 using Cappuccino.Common.Util;
 using Cappuccino.Entity;
@@ -29,196 +30,6 @@ namespace Cappuccino.BLL
             this.AddDisposableObject(this.CurrentDao);
         }
         #endregion
-
-        /// <summary>
-        /// 处理压缩包图片（保存文件→解压→归档→OCR→生成Excel→打包→清理）
-        /// </summary>
-        /// <param name="file">上传的压缩包文件</param>
-        /// <param name="extractRule">归档规则</param>
-        /// <param name="batchId">批次ID</param>
-        /// <param name="progressAction">进度回调</param>
-        /// <returns>导出ZIP路径</returns>
-        public async Task<TData<string>> ProcessCompressFileAsync(HttpPostedFileBase file, int extractRule, string batchId, Action<ProcessProgress> progressAction)
-        {
-            TData<string> obj = new TData<string>();
-            try
-            {
-                if (file == null || file.ContentLength == 0)
-                {
-                    obj.Status = 0;
-                    obj.Message = "请选择要上传的压缩包文件";
-                    return obj;
-                }
-
-                // 文件格式校验
-                string fileName = file.FileName;
-                string fileExt = Path.GetExtension(fileName).TrimStart('.').ToLower();
-                string supportFormats = ConfigUtils.AppSetting.GetValue("CompressSupportFormats");
-                var supportExtList = supportFormats.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => x.Trim().ToLower()).ToList();
-                if (!supportExtList.Contains(fileExt))
-                {
-                    obj.Status = 0;
-                    obj.Message = $"当前不支持该文件类型，请尝试其他文件。支持格式：{string.Join("、", supportExtList)}";
-                    return obj;
-                }
-
-                // 文件大小校验
-                long maxSize = ConfigUtils.AppSetting.GetValue("UploadMaxFileSize").ParseToLong();
-                if (file.ContentLength > maxSize)
-                {
-                    obj.Status = 0;
-                    obj.Message = $"文件大小超出限制，最大支持{maxSize / 1024 / 1024}MB";
-                    return obj;
-                }
-
-                // 从配置文件获取路径
-                string tempRootPath = ConfigUtils.AppSetting.GetValue("TempRootPath");
-                string exportRootPath = ConfigUtils.AppSetting.GetValue("ExportRootPath");
-                string archiveRootPath = ConfigUtils.AppSetting.GetValue("ArchiveRootPath");
-
-                // 保存上传文件
-                string fileVirtualPath = Path.Combine(tempRootPath, batchId, fileName);
-                string tempCompressPath = FileHelper.GetPhysicalPath(fileVirtualPath);
-                FileHelper.EnsureDirectoryExists(Path.GetDirectoryName(tempCompressPath));
-                file.SaveAs(tempCompressPath); // 同步保存，确保文件内容完整写入
-
-                // 定义用于 IO 操作的物理路径变量
-                string tempRootDir = Path.Combine(FileHelper.GetPhysicalPath(tempRootPath), batchId);
-                string unzipDir = Path.Combine(tempRootDir, "unzip");
-                string archiveDir = Path.Combine(FileHelper.GetPhysicalPath(archiveRootPath), batchId);
-                string exportRootDir_Physical = Path.Combine(FileHelper.GetPhysicalPath(exportRootPath), batchId);
-
-                // 定义用于传递给新方法的虚拟路径
-                string exportRootDir_Virtual = Path.Combine(exportRootPath, batchId);
-                string finalZipFileName = string.Format("压缩包处理结果_{0}.zip", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
-                string finalZipPath_Virtual = Path.Combine(exportRootPath, string.Format("final_{0}", finalZipFileName));
-
-                // 统一创建所有批次目录
-                FileHelper.EnsureDirectoryExists(tempRootDir);
-                FileHelper.EnsureDirectoryExists(unzipDir);
-                FileHelper.EnsureDirectoryExists(archiveDir);
-                FileHelper.EnsureDirectoryExists(exportRootDir_Physical);
-
-                // 解压压缩包
-                List<string> unzipFiles = await CompressHelper.UnzipFileAsync(tempCompressPath, unzipDir, batchId, progressAction).ConfigureAwait(false);
-
-                // 按规则归档文件
-                FileArchiveRuleEnum rule = (FileArchiveRuleEnum)extractRule;
-                Dictionary<string, List<string>> archiveDict = await CompressHelper.ArchiveFilesAsync(unzipFiles, archiveDir, rule, batchId, progressAction).ConfigureAwait(false);
-
-                // 案件信息
-                List<SysCaseInfoEntity> caseInfoList = new List<SysCaseInfoEntity>();
-                // 案件文件信息（只保存图片）
-                List<SysFileEntity> fileList = new List<SysFileEntity>();
-
-                // 过滤图片并OCR识别
-                Dictionary<string, Dictionary<string, string>> ocrResultDict = new Dictionary<string, Dictionary<string, string>>();
-                foreach (var folderItem in archiveDict)
-                {
-                    string folderName = folderItem.Key;
-                    List<string> filePaths = folderItem.Value;
-
-                    List<string> imageFiles = await CompressHelper.FilterImageFilesAsync(filePaths, batchId, progressAction).ConfigureAwait(false);
-                    if (imageFiles.Count == 0)
-                    {
-                        progressAction.Invoke(new ProcessProgress
-                        {
-                            BatchId = batchId,
-                            Progress = 0,
-                            Type = "Filter",
-                            Message = $"文件夹{folderName}无有效图片，跳过OCR识别"
-                        });
-                        continue;
-                    }
-
-                    long caseId = IdGeneratorHelper.Instance.NextId();
-
-                    // 识别结果入库
-                    caseInfoList.Add(new SysCaseInfoEntity
-                    {
-                        Id = caseId,
-                        CustName = "测试",
-                        CustCardNo = "6222021234",
-                        CustIDNumber = "1101011234",
-                        CaseStatus = 1,
-                        CaseStatusChangeTime = DateTime.Now,
-                        CaseTypeId = 1,
-                        CreateTime = DateTime.Now
-                    });
-
-                    Dictionary<string, string> ocrResults = new Dictionary<string, string>();
-                    foreach (var imagePath in imageFiles)
-                    {
-                        string ocrText = await AIRecognitionHelper.ImageOcrRecognizeAsync(imagePath, batchId, progressAction).ConfigureAwait(false);
-                        ocrResults.Add(imagePath, ocrText);
-
-                        // 文件信息入库
-                        fileList.Add(new SysFileEntity
-                        {
-                            Id = IdGeneratorHelper.Instance.NextId(),
-                            ObjectId = caseId,
-                            FileName = Path.GetFileName(imagePath),
-                            FilePath = imagePath,
-                            FileExtension = Path.GetExtension(imagePath),
-                            CreateTime = DateTime.Now
-                        });
-                    }
-                    ocrResultDict.Add(folderName, ocrResults);
-                }
-
-                // 批量插入到案件信息数据表
-                if (caseInfoList.Count() > 0)
-                {
-                    await _fileProcessiongDao.InsertAsync(caseInfoList).ConfigureAwait(false);
-                }
-
-                // 批量插入到文件信息数据表
-                if (fileList.Count() > 0)
-                {
-                    await _fileDao.InsertAsync(fileList).ConfigureAwait(false);
-                }
-
-                // 生成Excel识别结果
-                string excelFileName = string.Format("OCR识别结果_{0}.xlsx", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
-                string excelPath_Physical = Path.Combine(exportRootDir_Physical, excelFileName);
-                await CompressHelper.GenerateOcrExcelAsync(ocrResultDict, excelPath_Physical, batchId, progressAction).ConfigureAwait(false);
-
-                // 复制归档文件夹到导出目录
-                foreach (var folderItem in archiveDict)
-                {
-                    string sourceFolder = Path.Combine(archiveDir, folderItem.Key);
-                    string targetFolder = Path.Combine(exportRootDir_Physical, folderItem.Key);
-                    CompressHelper.DirectoryCopy(sourceFolder, targetFolder, true);
-                }
-
-                // 打包导出目录为最终ZIP
-                await CompressHelper.PackFolderToZipAsync(exportRootDir_Virtual, finalZipPath_Virtual, batchId, progressAction).ConfigureAwait(false);
-
-                // 清理临时目录
-                await CompressHelper.CleanTempDirAsync(tempRootDir, batchId, progressAction).ConfigureAwait(false);
-
-                obj.Status = 1;
-                obj.Message = $"处理完成";
-                obj.Data = finalZipPath_Virtual;
-                return obj;
-            }
-            catch (Exception ex)
-            {
-                progressAction.Invoke(new ProcessProgress
-                {
-                    BatchId = batchId,
-                    Progress = 0,
-                    Type = "Error",
-                    Message = $"处理失败：{ex.Message}"
-                });
-            }
-            finally
-            {
-                //await CompressHelper.CleanTempDirAsync(tempRootDir, batchId, progressAction);
-            }
-            return obj;
-        }
 
         /// <summary>
         /// 处理压缩包图片/Excel（保存文件→解压→分支处理（Excel解析/OCR）→生成Excel→打包→清理）
@@ -264,6 +75,7 @@ namespace Cappuccino.BLL
                 // 2. 路径初始化（原有逻辑保留）
                 string tempRootPath = ConfigUtils.AppSetting.GetValue("TempRootPath");
                 string exportRootPath = ConfigUtils.AppSetting.GetValue("ExportRootPath");
+                // 归档文件路径
                 string archiveRootPath = ConfigUtils.AppSetting.GetValue("ArchiveRootPath");
                 string fileVirtualPath = Path.Combine(tempRootPath, batchId, fileName);
                 string tempCompressPath = FileHelper.GetPhysicalPath(fileVirtualPath);
@@ -361,18 +173,7 @@ namespace Cappuccino.BLL
                                 Progress = 50,
                                 Type = "Filter",
                                 Message = $"成功解析Excel文件{Path.GetFileName(excelPath)}，共{excelData.Count}条数据"
-                            });
-
-                            // 记录Excel文件信息到fileList
-                            fileList.Add(new SysFileEntity
-                            {
-                                Id = IdGeneratorHelper.Instance.NextId(),
-                                ObjectId = excelData.First().Id, // 关联第一个案件ID（可根据业务调整）
-                                FileName = Path.GetFileName(excelPath),
-                                FilePath = excelPath,
-                                FileExtension = Path.GetExtension(excelPath),
-                                CreateTime = DateTime.Now
-                            });
+                            });                           
                         }
                         catch (Exception ex)
                         {
@@ -418,6 +219,11 @@ namespace Cappuccino.BLL
                             continue;
                         }
 
+                        // 创建Word文档并将图片插入
+                        string wordFileName = $"案件相关图片资料_{folderName}.docx";
+                        string wordPhysicalPath = Path.Combine(archiveDir, folderName, wordFileName);
+                        WordHelper.CreateWordWithImages(imageFiles, wordPhysicalPath);
+
                         long caseId = IdGeneratorHelper.Instance.NextId();
 
                         // 识别结果入库
@@ -427,28 +233,15 @@ namespace Cappuccino.BLL
                             CustName = "测试",
                             CustCardNo = "6222021234",
                             CustIDNumber = "1101011234",
-                            CaseStatus = 1,
-                            CaseStatusChangeTime = DateTime.Now,
-                            CaseTypeId = 1,
                             CreateTime = DateTime.Now
                         });
 
+                        // OCR识别结果字典（图片路径 -> 识别文本）
                         Dictionary<string, string> ocrResults = new Dictionary<string, string>();
                         foreach (var imagePath in imageFiles)
                         {
                             string ocrText = await AIRecognitionHelper.ImageOcrRecognizeAsync(imagePath, batchId, progressAction).ConfigureAwait(false);
-                            ocrResults.Add(imagePath, ocrText);
-
-                            // 文件信息入库
-                            fileList.Add(new SysFileEntity
-                            {
-                                Id = IdGeneratorHelper.Instance.NextId(),
-                                ObjectId = caseId,
-                                FileName = Path.GetFileName(imagePath),
-                                FilePath = imagePath,
-                                FileExtension = Path.GetExtension(imagePath),
-                                CreateTime = DateTime.Now
-                            });
+                            ocrResults.Add(imagePath, ocrText);                            
                         }
                         ocrResultDict.Add(folderName, ocrResults);
                     }
@@ -464,17 +257,6 @@ namespace Cappuccino.BLL
                         Progress = 70,
                         Type = "Recognize",
                         Message = $"成功插入{caseInfoList.Count}条案件信息到数据库"
-                    });
-                }
-                if (fileList.Count > 0)
-                {
-                    await _fileDao.InsertAsync(fileList).ConfigureAwait(false);
-                    progressAction.Invoke(new ProcessProgress
-                    {
-                        BatchId = batchId,
-                        Progress = 75,
-                        Type = "Recognize",
-                        Message = $"成功插入{fileList.Count}条文件信息到数据库"
                     });
                 }
 

@@ -104,6 +104,16 @@
                 });
             }
 
+            window.edit = function (id) {
+                layer.open({
+                    type: 2,
+                    title: '修改',
+                    shade: 0.1,
+                    area: ['750px', '650px'],
+                    content: MODULE_PATH + 'Edit/' + id
+                });
+            }
+
             window.batchDel = function (obj) {
                 let selectRow = table.checkStatus(obj.config.id).data;
                 if (selectRow.length === 0) {

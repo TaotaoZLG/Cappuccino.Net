@@ -575,6 +575,7 @@
     <Content Include="Areas\BusinessManage\Views\SysTemplate\Create.cshtml" />
     <Content Include="Areas\BusinessManage\Views\SysCaseInfo\UploadFile.cshtml" />
     <Content Include="Areas\BusinessManage\Views\SysCaseInfo\Indictment.cshtml" />
+    <Content Include="Areas\BusinessManage\Views\SysTemplate\Edit.cshtml" />
     <None Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

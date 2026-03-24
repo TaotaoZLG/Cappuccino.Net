@@ -166,7 +166,7 @@
 
         #uploadTip {
             line-height: 1.5;
-            max-height: 100px;
+            max-height: 200px;
             overflow-y: auto;
             padding: 5px;
             border-radius: 4px;
@@ -220,9 +220,9 @@
                         <label class="layui-form-label">处理类型</label>
                         <div class="layui-input-block">
                             <select name="processType" id="processType" lay-verify="required" lay-reqtext="请选择处理类型">
-                                <option value="" selected>请选择处理类型</option>
+                                <option value="">请选择处理类型</option>
                                 <option value="0">Excel解析 + 文件打包</option>
-                                <option value="1">图片OCR识别 + 文件打包</option>
+                                <option value="1" selected>图片OCR识别 + 文件打包</option>
                             </select>
                         </div>
                     </div>
@@ -233,7 +233,7 @@
                             <select name="extractRule" id="extractRule" lay-verify="required" lay-reqtext="请选择归档规则">
                                 <option value="">请选择归档规则</option>
                                 <option value="0" selected>0. 系统默认（自动降级规则1-3）</option>
-                                <option value="1">1. 下划线分隔取首段</option>
+                                <option value="1">1. 下划线分隔取首段（_）</option>
                                 <option value="2">2. 姓名 + 身份证号/身份证号 + 姓名</option>
                                 <option value="3">3. 源文件名兜底</option>
                             </select>
@@ -313,7 +313,6 @@
             var tipIdCounter = 0;
             var selectedFile = null;
 
-            // ========== showUploadTip 函数 ==========
             function showUploadTip(msg, isSuccess) {
                 var $tip = $("#uploadTip");
                 var time = new Date().toLocaleTimeString();
@@ -442,7 +441,7 @@
                         return false;
                     }
 
-                    //clearUploadTip();
+                    clearUploadTip();
                     currentBatchId = "";
                     $("#progressBar").css("width", "0%").text("0%");
                     $("#progressLog").html('<div class="empty-tip"><i class="layui-icon layui-icon-file" style="font-size: 30px; color: #ccc; display: block; margin-bottom: 10px;"></i>任务开始中...</div>');
