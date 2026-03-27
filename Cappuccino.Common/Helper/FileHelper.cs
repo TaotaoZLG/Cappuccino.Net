@@ -297,6 +297,12 @@ namespace Cappuccino.Common.Helper
             return http;
         }
 
+        /// <summary>
+        /// 检查文件扩展名
+        /// </summary>
+        /// <param name="fileExtension"></param>
+        /// <param name="allowExtension"></param>
+        /// <returns></returns>
         public static TData CheckFileExtension(string fileExtension, string allowExtension)
         {
             TData obj = new TData();
@@ -312,6 +318,11 @@ namespace Cappuccino.Common.Helper
             return obj;
         }
 
+        /// <summary>
+        /// 过滤文件路径中的非法字符（如../、..、~等），防止目录遍历攻击
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public static string FilterFilePath(string filePath)
         {
             filePath = filePath.Replace("../", string.Empty);
@@ -327,7 +338,8 @@ namespace Cappuccino.Common.Helper
         /// </summary>
         public static string GetPhysicalPath(string virtualPath)
         {
-            return HostingEnvironment.MapPath(virtualPath);
+            if (string.IsNullOrEmpty(virtualPath)) return string.Empty;
+            return HttpContext.Current?.Server.MapPath(virtualPath) ?? HostingEnvironment.MapPath(virtualPath);
         }
     }
 }

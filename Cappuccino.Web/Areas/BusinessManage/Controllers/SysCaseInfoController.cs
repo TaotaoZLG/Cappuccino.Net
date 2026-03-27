@@ -55,7 +55,15 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
         {
             try
             {
-                var file = Request.Files["fileList"] ;
+                HttpFileCollectionBase files = Request.Files;
+                foreach (var item in files.AllKeys)
+                {
+                    var file = files[item];
+                    if (file != null && file.ContentLength > 0)
+                    {
+                        // 处理文件上传
+                    }
+                }
 
                 return WriteSuccess("任务处理成功");
             }

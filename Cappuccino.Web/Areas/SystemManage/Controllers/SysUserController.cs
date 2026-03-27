@@ -102,7 +102,9 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                     return WriteError("该账号已存在");
                 }
                 string salt = VerifyCodeUtils.CreateVerifyCode(5);
-                string passwordHash = Md5Utils.EncryptTo32(salt + ConfigUtils.AppSetting.GetValue("InitUserPwd"));
+                string initPwd = _sysConfigService.GetConfigByKey("sys_initPassword").ConfigValue;
+
+                string passwordHash = Md5Utils.EncryptTo32(salt + initPwd);
                 SysUserEntity entity = viewModel.EntityMap();
                 entity.Id = IdGeneratorHelper.Instance.NextId();
                 entity.CreateUserId = UserManager.GetCurrentUserInfo().Id;
@@ -221,8 +223,8 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
         public ActionResult InitPwd(long id)
         {
             string salt = VerifyCodeUtils.CreateVerifyCode(5);
-            string pwd = _sysConfigService.GetConfigByKey("sys_initPassword").ConfigValue;
-            string passwordHash = Md5Utils.EncryptTo32(salt + pwd);
+            string initPwd = _sysConfigService.GetConfigByKey("sys_initPassword").ConfigValue;
+            string passwordHash = Md5Utils.EncryptTo32(salt + initPwd);
             SysUserEntity entity = new SysUserEntity
             {
                 Id = id,
@@ -232,7 +234,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                 UpdateUserId = UserManager.GetCurrentUserInfo().Id
             };
             _sysUserService.Update(entity, new string[] { "PasswordSalt", "PasswordHash", "UpdateTime", "UpdateUserId" });
-            return WriteSuccess("重置密码成功，新密码:" + pwd);
+            return WriteSuccess("重置密码成功，新密码:" + initPwd);
         }
 
         [HttpPost, CheckPermission("system.user.edit")]

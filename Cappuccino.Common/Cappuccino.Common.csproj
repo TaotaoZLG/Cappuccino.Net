@@ -209,6 +209,7 @@
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\Extension.Enum.cs" />
     <Compile Include="Extensions\Extensions.Convert.cs" />
+    <Compile Include="Extensions\PathExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helper\AIRecognitionHelper.cs" />
     <Compile Include="Helper\AsyncTaskHelper.cs" />

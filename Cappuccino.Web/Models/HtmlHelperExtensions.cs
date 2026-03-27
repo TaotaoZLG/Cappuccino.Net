@@ -146,7 +146,6 @@ namespace Cappuccino.Web
             return htmlHelper.EnumDropDownListFor(expression, defaultValue, optionLabel: null, htmlAttributes);
         }
 
-
         /// <summary>
         /// 核心实现：支持指定默认选中的枚举值、首选项文本和HTML属性字典
         /// </summary>

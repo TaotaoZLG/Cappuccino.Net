@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Cappuccino.Common.Extensions;
 using MiniExcelLibs;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -134,6 +135,7 @@ namespace Cappuccino.Common.Helper
 
         /// <summary>
         /// 根据归档规则归档文件（相同规则文件名的文件存放到同一个文件夹）
+        /// 新增：如果文件只有一层目录，直接复制当前目录层级到归档文件夹
         /// </summary>
         /// <param name="filePaths">待归档的文件路径</param>
         /// <param name="archiveRootDir">归档根目录</param>
@@ -156,67 +158,160 @@ namespace Cappuccino.Common.Helper
                     Message = $"开始按规则归档文件，规则：{rule.ToString()}"
                 });
 
-                #region 需求1核心：先按规则分组，同组文件放入同一文件夹
-                // 1. 按归档规则分组，key=目标文件夹名，value=同组文件路径列表
-                Dictionary<string, List<string>> groupDict = new Dictionary<string, List<string>>();
-                foreach (var filePath in filePaths)
+                // 【新增】检测是否为单层目录结构
+                bool isSingleLayer = filePaths.IsSingleLayerDirectory();
+
+                if (isSingleLayer && filePaths.Count > 0)
                 {
-                    string fileName = Path.GetFileNameWithoutExtension(filePath);
-                    string targetFolderName = GetTargetFolderName(fileName, rule);
+                    // 单层目录：直接复制整个目录结构
+                    string sourceParentDir = Path.GetDirectoryName(filePaths[0]);
+                    string sourceParentDirName = Path.GetFileName(sourceParentDir);
 
-                    // 同规则文件名分到同一组
-                    if (!groupDict.ContainsKey(targetFolderName))
-                    {
-                        groupDict.Add(targetFolderName, new List<string>());
-                    }
-                    groupDict[targetFolderName].Add(filePath);
-                }
-
-                // 2. 处理重复文件夹名（整组加序号，而非单文件）
-                Dictionary<string, List<string>> archiveDict = new Dictionary<string, List<string>>();
-                foreach (var groupItem in groupDict)
-                {
-                    string targetFolderName = groupItem.Key;
-                    List<string> groupFiles = groupItem.Value;
-
-                    // 处理重名
-                    string finalFolderName = targetFolderName;
+                    // 处理目标文件夹名（避免重名）
+                    string targetFolderName = sourceParentDirName;
+                    string targetFolderPath = Path.Combine(archiveRootDir, targetFolderName);
                     int index = 1;
-                    while (Directory.Exists(Path.Combine(archiveRootDir, finalFolderName)))
+                    while (Directory.Exists(targetFolderPath))
                     {
-                        finalFolderName = $"{targetFolderName}_{index}";
+                        targetFolderName = $"{sourceParentDirName}_{index}";
                         index++;
                     }
-
-                    // 创建归档文件夹
-                    string targetFolderPath = Path.Combine(archiveRootDir, finalFolderName);
                     FileHelper.EnsureDirectoryExists(targetFolderPath);
 
-                    // 复制同组所有文件到该文件夹
-                    List<string> archivedFilePaths = new List<string>();
-                    foreach (var filePath in groupFiles)
+                    progressAction.Invoke(new ProcessProgress
                     {
-                        string targetFilePath = Path.Combine(targetFolderPath, Path.GetFileName(filePath));
+                        BatchId = batchId,
+                        Progress = 40,
+                        Type = "Archive",
+                        Message = $"检测到单层目录结构，直接复制目录：{sourceParentDirName}"
+                    });
+
+                    // 复制所有文件（保持原有子目录结构）
+                    List<string> archivedFilePaths = new List<string>();
+                    int total = filePaths.Count;
+                    int processed = 0;
+
+                    foreach (var filePath in filePaths)
+                    {
+                        // 计算相对路径（保持原有子目录结构）
+                        string relativePath = PathExtensions.GetRelativePath(sourceParentDir, filePath);
+                        string targetFilePath = Path.Combine(targetFolderPath, relativePath);
+
+                        // 确保目标文件的目录存在
+                        FileHelper.EnsureDirectoryExists(targetFilePath);
+
+                        // 复制文件
                         File.Copy(filePath, targetFilePath, true);
                         archivedFilePaths.Add(targetFilePath);
+
+                        processed++;
+                        int progress = 40 + (int)((processed / (double)total) * 5);
+                        progressAction.Invoke(new ProcessProgress
+                        {
+                            BatchId = batchId,
+                            Progress = progress,
+                            Type = "Archive",
+                            Message = $"已复制：{relativePath}（{processed}/{total}）"
+                        });
                     }
 
-                    // 加入结果字典
-                    archiveDict.Add(finalFolderName, archivedFilePaths);
-                }
-                #endregion
+                    progressAction.Invoke(new ProcessProgress
+                    {
+                        BatchId = batchId,
+                        Progress = 45,
+                        Type = "Archive",
+                        Message = $"单层目录归档完成，共复制{total}个文件到：{targetFolderName}"
+                    });
 
-                progressAction.Invoke(new ProcessProgress
+                    return new Dictionary<string, List<string>> { { targetFolderName, archivedFilePaths } };
+                }
+                else
                 {
-                    BatchId = batchId,
-                    Progress = 45,
-                    Type = "Archive",
-                    Message = $"文件归档完成，共创建{archiveDict.Count}个文件夹"
-                });
-                return archiveDict;
+                    // 多层目录或扁平文件：按原有规则分组归档
+                    #region 需求1核心：先按规则分组，同组文件放入同一文件夹
+                    // 1. 按归档规则分组，key=目标文件夹名，value=同组文件路径列表
+                    Dictionary<string, List<string>> groupDict = new Dictionary<string, List<string>>();
+                    foreach (var filePath in filePaths)
+                    {
+                        string fileName = Path.GetFileNameWithoutExtension(filePath);
+                        string targetFolderName = GetTargetFolderName(fileName, rule);
+
+                        // 同规则文件名分到同一组
+                        if (!groupDict.ContainsKey(targetFolderName))
+                        {
+                            groupDict.Add(targetFolderName, new List<string>());
+                        }
+                        groupDict[targetFolderName].Add(filePath);
+                    }
+
+                    // 2. 处理重复文件夹名（整组加序号，而非单文件）
+                    Dictionary<string, List<string>> archiveDict = new Dictionary<string, List<string>>();
+                    foreach (var groupItem in groupDict)
+                    {
+                        string targetFolderName = groupItem.Key;
+                        List<string> groupFiles = groupItem.Value;
+
+                        // 处理重名
+                        string finalFolderName = targetFolderName;
+                        int index = 1;
+                        while (Directory.Exists(Path.Combine(archiveRootDir, finalFolderName)))
+                        {
+                            finalFolderName = $"{targetFolderName}_{index}";
+                            index++;
+                        }
+
+                        // 创建归档文件夹
+                        string targetFolderPath = Path.Combine(archiveRootDir, finalFolderName);
+                        FileHelper.EnsureDirectoryExists(targetFolderPath);
+
+                        // 复制同组所有文件到该文件夹
+                        List<string> archivedFilePaths = new List<string>();
+                        foreach (var filePath in groupFiles)
+                        {
+                            string targetFilePath = Path.Combine(targetFolderPath, Path.GetFileName(filePath));
+                            File.Copy(filePath, targetFilePath, true);
+                            archivedFilePaths.Add(targetFilePath);
+                        }
+
+                        // 加入结果字典
+                        archiveDict.Add(finalFolderName, archivedFilePaths);
+                    }
+                    #endregion
+
+                    progressAction.Invoke(new ProcessProgress
+                    {
+                        BatchId = batchId,
+                        Progress = 45,
+                        Type = "Archive",
+                        Message = $"文件归档完成，共创建{archiveDict.Count}个文件夹"
+                    });
+                    return archiveDict;
+                }
             });
         }
 
+        /// <summary>
+        /// 检测文件列表是否为单层目录结构（所有文件的父目录相同）
+        /// </summary>
+        /// <param name="filePaths">文件路径列表</param>
+        /// <returns>true=单层目录，false=多层目录或扁平文件</returns>
+        public static bool IsSingleLayerDirectory(this List<string> filePaths)
+        {
+            if (filePaths == null || filePaths.Count == 0)
+            {
+                return false;
+            }
+
+            // 获取所有文件的父目录
+            var parentDirs = filePaths
+                .Where(f => !string.IsNullOrEmpty(f))
+                .Select(f => Path.GetDirectoryName(f))
+                .Distinct()
+                .ToList();
+
+            // 如果所有文件的父目录相同，则为单层目录
+            return parentDirs.Count == 1;
+        }
         /// <summary>
         /// 根据规则获取目标文件夹名（保留原有自动降级规则）
         /// </summary>

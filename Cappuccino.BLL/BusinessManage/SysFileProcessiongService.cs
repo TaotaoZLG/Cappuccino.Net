@@ -45,6 +45,8 @@ namespace Cappuccino.BLL
             TData<string> obj = new TData<string>();
             try
             {
+                var userId = UserManager.GetCurrentUserInfo().Id;
+
                 if (file == null || file.ContentLength == 0)
                 {
                     obj.Status = 0;
@@ -79,7 +81,7 @@ namespace Cappuccino.BLL
                 string archiveRootPath = ConfigUtils.AppSetting.GetValue("ArchiveRootPath");
                 string fileVirtualPath = Path.Combine(tempRootPath, batchId, fileName);
                 string tempCompressPath = FileHelper.GetPhysicalPath(fileVirtualPath);
-                FileHelper.EnsureDirectoryExists(Path.GetDirectoryName(tempCompressPath));
+                FileHelper.EnsureDirectoryExists(tempCompressPath);
                 file.SaveAs(tempCompressPath);
 
                 string tempRootDir = Path.Combine(FileHelper.GetPhysicalPath(tempRootPath), batchId);
@@ -221,6 +223,7 @@ namespace Cappuccino.BLL
 
                         // 创建Word文档并将图片插入
                         string wordFileName = $"案件相关图片资料_{folderName}.docx";
+                        string wordVirtualPath = Path.Combine(archiveRootPath, folderName);
                         string wordPhysicalPath = Path.Combine(archiveDir, folderName, wordFileName);
                         WordHelper.CreateWordWithImages(imageFiles, wordPhysicalPath);
 
@@ -233,7 +236,8 @@ namespace Cappuccino.BLL
                             CustName = "测试",
                             CustCardNo = "6222021234",
                             CustIDNumber = "1101011234",
-                            CreateTime = DateTime.Now
+                            CreateTime = DateTime.Now,
+                            ArchiveVirtualPath = wordVirtualPath
                         });
 
                         // OCR识别结果字典（图片路径 -> 识别文本）

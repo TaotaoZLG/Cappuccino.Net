@@ -17,7 +17,6 @@ namespace Cappuccino.Web.Core.Filters
     {
         public void OnAuthorization(AuthorizationContext filterContext)
         {
-
             // 判断是否有贴跳过登录检查的特性标签(控制器或方法)
             if (filterContext.ActionDescriptor.ControllerDescriptor.IsDefined(typeof(SkipCheckLogin), false) || filterContext.ActionDescriptor.IsDefined(typeof(SkipCheckLogin), false))
             {
@@ -34,26 +33,35 @@ namespace Cappuccino.Web.Core.Filters
                     ToLogin(filterContext);
                     return;
                 }
-                SysUserEntity userEntity = CacheManager.Get<SysUserEntity>(list[0]);
-                if (userEntity != null)
+                SysUserEntity userInfo = CacheManager.Get<SysUserEntity>(list[0]);
+                if (userInfo != null)
                 {
+                    TimeSpan expiresTime = TimeSpan.Zero;
+
                     // 0为永久key
                     if (list[1] == "0")
                     {
-                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()));
-                        CacheManager.Set(list[0], userEntity, TimeSpan.FromDays(10));
+                        expiresTime = TimeSpan.FromDays(10);
+
+                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), expiresTime);
+                        CacheManager.Set(list[0], userInfo, expiresTime);
                     }
                     // 1为滑动key（30分钟过期，每次访问续期）
                     else if (list[1] == "1")
                     {
-                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30);
-                        CacheManager.Set(list[0], userEntity, TimeSpan.FromMinutes(30));
+                        expiresTime = TimeSpan.FromMinutes(30);
+
+                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), expiresTime);
+                        CacheManager.Set(list[0], userInfo, expiresTime);
                     }
                     else
                     {
                         ToLogin(filterContext);
                         return;
                     }
+
+                    // 无论是否记住，都写入Session（避免立即过期）
+                    SessionHelper.Set(KeyManager.UserInfo, userInfo);
                 }
                 else
                 {

@@ -6,6 +6,19 @@ namespace Cappuccino.Common.Helper
     public class SessionHelper
     {
         #region Session操作
+
+        /// <summary>
+        /// 设置Session全局超时时间
+        /// </summary>
+        /// <param name="timeout">超时时间(分钟)，最大为1440(24小时)</param>
+        public static void SetTimeout(int timeout)
+        {
+            if (HttpContext.Current != null && HttpContext.Current.Session != null)
+            {
+                HttpContext.Current.Session.Timeout = timeout;
+            }
+        }
+
         /// <summary>
         /// 写Session
         /// </summary>

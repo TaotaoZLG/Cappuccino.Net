@@ -64,6 +64,7 @@ namespace Cappuccino.Web.Controllers
         [LogOperate(Title = "登录", BusinessType = (int)OperateType.Login)]
         public ActionResult Login(LoginModel loginModel)
         {
+            string browser = NetHelper.GetBrowser(null);
             try
             {
                 if (!ModelState.IsValid)
@@ -77,8 +78,9 @@ namespace Cappuccino.Web.Controllers
                 bool result = _sysUserService.CheckLogin(loginModel.LoginName, loginModel.LoginPassword);
                 if (result)
                 {
-                    SysUserEntity user = _sysUserService.GetList(x => x.UserName == loginModel.LoginName).FirstOrDefault();
+                    SysUserEntity userInfo = _sysUserService.GetList(x => x.UserName == loginModel.LoginName).FirstOrDefault();
                     string userLoginId = Guid.NewGuid().ToString();
+
                     // 若选择"记住登录"（IsMember为true），缓存10天，Cookie长期有效
                     if (loginModel.IsMember)
                     {
@@ -87,8 +89,8 @@ namespace Cappuccino.Web.Controllers
                             userLoginId,
                             "0"
                         };
-                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()));
-                        CacheManager.Set(userLoginId, user, TimeSpan.FromDays(10)); // 10天过期
+                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), TimeSpan.FromDays(10));
+                        CacheManager.Set(userLoginId, userInfo, TimeSpan.FromDays(10));
                     }
                     else
                     {
@@ -99,16 +101,20 @@ namespace Cappuccino.Web.Controllers
                             userLoginId,
                             "1"
                         };
-                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30); // 30分钟过期
-                        CacheManager.Set(userLoginId, user, TimeSpan.FromMinutes(30));    // 30分钟过期
+                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), TimeSpan.FromMinutes(30));
+                        CacheManager.Set(userLoginId, userInfo, TimeSpan.FromMinutes(30));
                     }
+
+                    // 无论是否记住，都写入Session（避免立即过期）
+                    SessionHelper.Set("LoginUser", userInfo);
+
                     _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
                     {
                         LogType = OperateType.Login.ToString(),
-                        Account = user.UserName,
-                        RealName = user.NickName,
-                        SystemOs = NetHelper.GetSystemOs(null),
-                        Browser = NetHelper.GetBrowser(null),
+                        Account = userInfo.UserName,
+                        RealName = userInfo.NickName,
+                        SystemOs = browser,
+                        Browser = browser,
                         Description = "登陆成功",
                     });
                     return WriteSuccess("登录成功");
@@ -125,8 +131,8 @@ namespace Cappuccino.Web.Controllers
                     LogType = OperateType.Exception.ToString(),
                     Account = loginModel.LoginName,
                     RealName = loginModel.LoginName,
-                    SystemOs = NetHelper.GetSystemOs(null),
-                    Browser = NetHelper.GetBrowser(null),
+                    SystemOs = browser,
+                    Browser = browser,
                     Description = "登录失败，" + ex.Message
                 });
                 return WriteError(ex);
@@ -198,23 +204,32 @@ namespace Cappuccino.Web.Controllers
                         if (list != null && list.Count == 2)
                         {
                             //获取缓存的用户信息
-                            SysUserEntity userinfo = CacheManager.Get<SysUserEntity>(list[0]);
-                            if (userinfo != null)
+                            SysUserEntity userInfo = CacheManager.Get<SysUserEntity>(list[0]);
+                            if (userInfo != null)
                             {
+                                TimeSpan expiresTime = TimeSpan.Zero;
+
                                 //删除缓存的用户信息
                                 CacheManager.Remove(list[0]);
                                 //更新缓存用户信息的KEY
                                 list[0] = Guid.NewGuid().ToString();
                                 if (list[1] == "0")  //记住密码（10天）
                                 {
-                                    CacheManager.Set(list[0], userinfo, TimeSpan.FromDays(10)); // 10天
-                                    CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()));
+                                    expiresTime = TimeSpan.FromDays(10);
+
+                                    CacheManager.Set(list[0], userInfo, expiresTime);
+                                    CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), expiresTime);
                                 }
                                 else if (list[1] == "1")   //不记住密码（30分钟）
                                 {
-                                    CacheManager.Set(list[0], userinfo, TimeSpan.FromMinutes(30));    // 30分钟
-                                    CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), 30);
+                                    expiresTime = TimeSpan.FromMinutes(30);
+
+                                    CacheManager.Set(list[0], userInfo, expiresTime);
+                                    CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), expiresTime);
                                 }
+
+                                // 无论是否记住，都写入Session（避免立即过期）
+                                SessionHelper.Set(KeyManager.UserInfo, userInfo);
                             }
                         }
                     }

@@ -39,6 +39,23 @@ namespace Cappuccino.Common.Helper
             HttpContext.Current.Response.AppendCookie(cookie);
         }
         /// <summary>
+        /// 写cookie值
+        /// </summary>
+        /// <param name="strName">名称</param>
+        /// <param name="strValue">值</param>
+        /// <param name="expires">过期时间(时间间隔)</param>
+        public static void Set(string strName, string strValue, TimeSpan expires)
+        {
+            HttpCookie cookie = HttpContext.Current.Request.Cookies[strName];
+            if (cookie == null)
+            {
+                cookie = new HttpCookie(strName);
+            }
+            cookie.Value = strValue;
+            cookie.Expires = DateTime.Now.Add(expires);
+            HttpContext.Current.Response.AppendCookie(cookie);
+        }
+        /// <summary>
         /// 读cookie值
         /// </summary>
         /// <param name="strName">名称</param>
