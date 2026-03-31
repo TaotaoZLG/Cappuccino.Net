@@ -27,10 +27,13 @@
     </div>
 </div>
 @section Scripts {
-
     <!-- 头工具栏模板 -->
     <script type="text/html" id="toolbarTpl">
         @Html.TopToolBarHtml(ViewData["TopButtonList"])
+    </script>
+
+    <script type="text/html" id="operationTpl">
+        @Html.RightToolBarHtml(ViewData["RightButtonList"])
     </script>
 
     <script>
@@ -61,6 +64,7 @@
                         },
                         { title: '排序', field: 'sortCode', },
                         { title: '备注', field: 'remark', },
+                        { title: '操作', toolbar: '#operationTpl', align: 'center', width: 195 }
                     ]
                 ],
                 skin: 'line',

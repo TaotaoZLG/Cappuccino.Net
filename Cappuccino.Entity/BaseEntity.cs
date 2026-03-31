@@ -43,7 +43,6 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 创建时间
         /// </summary>
-        [JsonConverter(typeof(DateTimeJsonConverter))]
         public DateTime? CreateTime { get; set; }
 
         /// <summary>
@@ -54,7 +53,6 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 修改时间
         /// </summary>
-        [JsonConverter(typeof(DateTimeJsonConverter))]
         public DateTime? UpdateTime { get; set; }
 
         public void Create()
@@ -85,7 +83,6 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 创建时间
         /// </summary>
-        [JsonConverter(typeof(DateTimeJsonConverter))]
         public DateTime? CreateTime { get; set; }
 
         /// <summary>
@@ -115,7 +112,6 @@ namespace Cappuccino.Entity
         /// <summary>
         /// 修改时间
         /// </summary>
-        [JsonConverter(typeof(DateTimeJsonConverter))]
         public DateTime? UpdateTime { get; set; }
 
         /// <summary>

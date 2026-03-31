@@ -64,7 +64,6 @@ namespace Cappuccino.Web.Controllers
         [LogOperate(Title = "登录", BusinessType = (int)OperateType.Login)]
         public ActionResult Login(LoginModel loginModel)
         {
-            string browser = NetHelper.GetBrowser(null);
             try
             {
                 if (!ModelState.IsValid)
@@ -105,16 +104,11 @@ namespace Cappuccino.Web.Controllers
                         CacheManager.Set(userLoginId, userInfo, TimeSpan.FromMinutes(30));
                     }
 
-                    // 无论是否记住，都写入Session（避免立即过期）
-                    SessionHelper.Set("LoginUser", userInfo);
-
                     _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
                     {
                         LogType = OperateType.Login.ToString(),
                         Account = userInfo.UserName,
-                        RealName = userInfo.NickName,
-                        SystemOs = browser,
-                        Browser = browser,
+                        RealName = userInfo.NickName,                        
                         Description = "登陆成功",
                     });
                     return WriteSuccess("登录成功");
@@ -130,9 +124,7 @@ namespace Cappuccino.Web.Controllers
                 {
                     LogType = OperateType.Exception.ToString(),
                     Account = loginModel.LoginName,
-                    RealName = loginModel.LoginName,
-                    SystemOs = browser,
-                    Browser = browser,
+                    RealName = loginModel.LoginName,                   
                     Description = "登录失败，" + ex.Message
                 });
                 return WriteError(ex);

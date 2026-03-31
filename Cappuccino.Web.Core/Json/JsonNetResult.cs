@@ -12,23 +12,6 @@ namespace Cappuccino.Web.Core.Json
     /// </summary>
     public class JsonNetResult : JsonResult
     {
-        public JsonSerializerSettings Settings { get; set; }
-
-        public JsonNetResult()
-        {
-            Settings = new JsonSerializerSettings
-            {
-                //忽略循环引用，如果设置为Error，则遇到循环引用的时候报错（建议设置为Error，这样更规范）
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                //日期格式化，默认的格式也不好看
-                DateFormatString = "yyyy-MM-dd HH:mm:ss",
-                //json中属性开头字母小写的驼峰命名
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                //添加Long转换器（解决前端JS精度丢失）
-                Converters = { new LongToStringConverter() }
-            };
-        }
-
         public override void ExecuteResult(ControllerContext context)
         {
             if (context == null)
@@ -45,8 +28,13 @@ namespace Cappuccino.Web.Core.Json
             if (this.Data == null)
                 return;
 
-            var scriptSerializer = JsonSerializer.Create(this.Settings);
-            scriptSerializer.Serialize(response.Output, this.Data);
+            var scriptSerializer = JsonSerializer.Create(JsonGlobalConfig.Settings);
+            using (var writer = new JsonTextWriter(response.Output))
+            {
+                scriptSerializer.Serialize(writer, Data);
+                writer.Flush();
+            }
+            //scriptSerializer.Serialize(response.Output, this.Data);
         }
     }
 }

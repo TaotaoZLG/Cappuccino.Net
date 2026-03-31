@@ -42,7 +42,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
             return View();
         }
 
-        [HttpGet, CheckPermission("system.template.edit")]
+        [HttpGet, CheckPermission("business.template.edit")]
         public ActionResult Edit(long id)
         {
             SysTemplateEntity viewModel = _sysTemplateService.GetList(x => x.Id == id).FirstOrDefault();

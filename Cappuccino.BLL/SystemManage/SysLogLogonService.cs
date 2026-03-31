@@ -19,7 +19,6 @@ namespace Cappuccino.BLL
         }
         #endregion
 
-
         /// <summary>
         /// 写入登录日志
         /// </summary>
@@ -27,10 +26,19 @@ namespace Cappuccino.BLL
         /// <returns></returns>
         public int WriteLogonLog(SysLogLogonEntity logLogon)
         {
-            logLogon.Create();
-            logLogon.IPAddress = NetHelper.GetIp;
-            logLogon.IPAddressName = NetHelper.GetIpLocation(logLogon.IPAddress);
+            string ip = NetHelper.GetIp;
+            string IPAddressName = NetHelper.GetIpLocation(ip);
+            string systemOs = NetHelper.GetSystemOs(null);
+            string browser = NetHelper.GetBrowser(null);
+
+            logLogon.IPAddress = ip;
+            logLogon.IPAddressName = IPAddressName;
             logLogon.CreateUserId = UserManager.GetCurrentUserInfo()?.Id ?? 0;
+            logLogon.SystemOs = systemOs;
+            logLogon.Browser = browser;
+
+            logLogon.Create();
+
             return Insert(logLogon);
         }
     }

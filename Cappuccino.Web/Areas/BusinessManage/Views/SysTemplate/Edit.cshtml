@@ -1,4 +1,4 @@
-﻿@model Cappuccino.Model.SysConfigModel
+﻿@model Cappuccino.Model.SysTemplateModel
 @{
     ViewBag.Title = "Edit";
     Layout = "~/Views/Shared/_LayoutForm.cshtml";
@@ -10,7 +10,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">模板名称</label>
                 <div class="layui-input-block">
-                    <input type="text" name="templateName" lay-verify="required" lay-reqtext="请输入模板名称" placeholder="请输入模板名称" class="layui-input">
+                    <input type="text" name="templateName" value="@Model.TemplateName" lay-verify="required" lay-reqtext="请输入模板名称" placeholder="请输入模板名称" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -24,17 +24,17 @@
                     </button>
                 </div>
             </div>
-            @Html.EnabledMarkRadioHtml("templateStatus", 1)
+            @Html.EnabledMarkRadioHtml("templateStatus", Model.TemplateStatus)
             <div class="layui-form-item">
                 <label class="layui-form-label">备注</label>
                 <div class="layui-input-block">
-                    <textarea name="Remark" placeholder="请输入备注信息" class="layui-textarea" rows="3"></textarea>
+                    <textarea name="Remark" value="@Model.Remark" placeholder="请输入备注信息" class="layui-textarea" rows="3"></textarea>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">排序码</label>
                 <div class="layui-input-block">
-                    <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
+                    <input type="text" name="sortCode" value="@Model.SortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
                 </div>
             </div>
         </div>

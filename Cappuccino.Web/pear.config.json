@@ -24,7 +24,8 @@
 		"defaultMenu": "light-theme",
 		"allowCustom": true
 	},
-	"colors": [{
+	"colors": [
+		{
 			"id": "1",
 			"color": "#FF5722"
 		},
@@ -35,15 +36,19 @@
 		{
 			"id": "3",
 			"color": "#1E9FFF"
-		}, {
+		},
+		{
 			"id": "4",
 			"color": "#FFB800"
-		}, {
+		},
+		{
 			"id": "5",
 			"color": "darkgray"
 		}
 	],
-	"links": [{
+	"links": [],
+	"links1": [
+		{
 			"icon": "layui-icon layui-icon-website",
 			"title": "官方网站",
 			"href": "http://www.pearadmin.com"

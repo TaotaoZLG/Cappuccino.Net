@@ -66,6 +66,9 @@ namespace Cappuccino.Web.Attributes
                 SysLogOperateEntity logOperateEntity = new SysLogOperateEntity();
 
                 string ip = NetHelper.GetIp;
+                string IPAddressName = NetHelper.GetIpLocation(ip);
+                string systemOs = NetHelper.GetSystemOs(request.UserAgent);
+                string browser = NetHelper.GetBrowser(request.UserAgent);
                 long id = 0;
                 int businesstype = attribute.BusinessType;
                 string title = attribute.Title;
@@ -131,10 +134,10 @@ namespace Cappuccino.Web.Attributes
 
                 // 环境信息
                 logOperateEntity.IPAddress = ip;
-                logOperateEntity.IPAddressName = NetHelper.GetIpLocation(ip);
+                logOperateEntity.IPAddressName = IPAddressName;
                 logOperateEntity.OperateName = user?.UserName ?? loginName;
-                logOperateEntity.SystemOs = NetHelper.GetSystemOs(request.UserAgent);
-                logOperateEntity.Browser = NetHelper.GetBrowser(request.UserAgent);
+                logOperateEntity.SystemOs = systemOs;
+                logOperateEntity.Browser = browser;
                 logOperateEntity.CreateUserId = user?.Id ?? 1;
 
                 // 写入日志

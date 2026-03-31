@@ -386,6 +386,9 @@
 
 		function buildLinkHtml() {
 			var links = "";
+			if (!config.links) {
+				return links;
+            }
 			$.each(config.links, function(i, value) {
 				links += '<a class="more-menu-item" href="' + value.href + '" target="_blank">' +
 					'<i class="' + value.icon + '" style="font-size: 19px;"></i> ' + value.title +

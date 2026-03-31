@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -24,14 +25,12 @@ namespace Cappuccino.Common.Helper
 
         #endregion
 
-        #region 配置项 (可在 Global.asax 中通过 SetConfig 修改，或默认读取)
-
-        // 默认值，如果不在 Global.asax 设置，则使用这些默认值
-        private long _workerId = 1;
-        private long _datacenterId = 1;
+        #region 配置项 
 
         // 基准时间 (2023-01-01)，可根据项目实际启动时间调整
         private const long Epoch = 1672531200000L;
+        private long _workerId;
+        private long _datacenterId;
 
         #endregion
 
@@ -59,12 +58,31 @@ namespace Cappuccino.Common.Helper
 
         /// <summary>
         /// 私有构造函数，防止外部 new
+        /// 直接在构造函数中完成 WorkerId/DatacenterId 的初始化
         /// </summary>
-        private IdGeneratorHelper() { }
+        private IdGeneratorHelper()
+        {
+            // 1. 从配置文件读取 WorkerId/DatacenterId，读取失败则用默认值1
+            long workerId = long.TryParse(ConfigurationManager.AppSettings["Snowflake.WorkerId"], out var w) ? w : 1;
+            long datacenterId = long.TryParse(ConfigurationManager.AppSettings["Snowflake.DatacenterId"], out var d) ? d : 1;
+
+            // 2. 校验参数合法性（复用原 SetConfig 的校验逻辑）
+            if (workerId > MaxWorkerId || workerId < 0)
+                throw new ArgumentException($"WorkerId 必须在 0 到 {MaxWorkerId} 之间");
+            if (datacenterId > MaxDatacenterId || datacenterId < 0)
+                throw new ArgumentException($"DatacenterId 必须在 0 到 {MaxDatacenterId} 之间");
+
+            // 3. 完成初始化
+            _workerId = workerId;
+            _datacenterId = datacenterId;
+            _initialized = true;
+
+            // 可选：添加日志，提示当前使用的 WorkerId/DatacenterId
+            // LogHelper.Info($"雪花算法初始化完成，WorkerId={workerId}, DatacenterId={datacenterId}");
+        }
 
         /// <summary>
-        /// 【重要】在项目启动时调用此方法配置 WorkerId 和 DatacenterId
-        /// 必须在第一次调用 NextId() 之前调用
+        /// 如需外部重配置可保留，但构造函数已初始化后调用会抛异常
         /// </summary>
         /// <param name="workerId">工作机器ID (0-31)</param>
         /// <param name="datacenterId">数据中心ID (0-31)</param>
@@ -77,7 +95,6 @@ namespace Cappuccino.Common.Helper
 
             if (workerId > MaxWorkerId || workerId < 0)
                 throw new ArgumentException($"WorkerId 必须在 0 到 {MaxWorkerId} 之间");
-
             if (datacenterId > MaxDatacenterId || datacenterId < 0)
                 throw new ArgumentException($"DatacenterId 必须在 0 到 {MaxDatacenterId} 之间");
 
@@ -91,13 +108,6 @@ namespace Cappuccino.Common.Helper
         /// </summary>
         public long NextId()
         {
-            // 如果尚未显式配置，则自动标记为已初始化（使用默认值）
-            if (!_initialized)
-            {
-                _initialized = true;
-                // 这里可以添加日志，提示正在使用默认 WorkerId=1
-            }
-
             lock (_lock)
             {
                 long timestamp = GetTimeNow();

@@ -10,6 +10,7 @@ using Cappuccino.AutoJob;
 using Cappuccino.Common.Helper;
 using Cappuccino.Common.Log;
 using Cappuccino.Web.Core.Filters;
+using Cappuccino.Web.Core.Json;
 
 namespace Cappuccino.Web
 {
@@ -17,6 +18,9 @@ namespace Cappuccino.Web
     {
         protected void Application_Start()
         {
+            //优先初始化全局JSON序列化配置（必须在过滤器注册前）
+            JsonGlobalConfig.Init();
+
             //注册区域路由规则
             AreaRegistration.RegisterAllAreas();
             //注册全局过滤器
@@ -52,15 +56,7 @@ namespace Cappuccino.Web
                         Thread.Sleep(3000);
                     }
                 }
-            });
-
-            // 1. 初始化雪花算法（关键：不同服务器/实例需配置不同的WorkerId，范围0-31）
-            // 示例：测试环境WorkerId=1，生产环境可通过配置文件/环境变量读取
-            var workerId = long.TryParse(ConfigurationManager.AppSettings["Snowflake.WorkerId"], out var w) ? w : 1;
-            var datacenterId = long.TryParse(ConfigurationManager.AppSettings["Snowflake.DatacenterId"], out var d) ? d : 1;
-
-            // 必须在任何地方调用 Instance 之前执行
-            IdGeneratorHelper.Instance.SetConfig(workerId, datacenterId);
+            });            
 
             // 从容器中获取调度器并启动
             var _jobCenter = DependencyResolver.Current.GetService<JobCenter>();
