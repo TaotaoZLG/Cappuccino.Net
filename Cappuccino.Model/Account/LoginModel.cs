@@ -11,7 +11,7 @@ namespace Cappuccino.Model
         public string LoginPassword { get; set; }
         [DisplayName("验证码"), Required(ErrorMessage = "帐号非空")]
         public string VerifyCode { get; set; }
-        [DisplayName("验证码")]
+        [DisplayName("记住密码")]
         public bool IsMember { get; set; }
     }
 }

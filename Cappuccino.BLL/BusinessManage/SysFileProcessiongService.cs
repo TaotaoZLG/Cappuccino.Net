@@ -66,7 +66,7 @@ namespace Cappuccino.BLL
                     obj.Message = $"当前不支持该文件类型，请尝试其他文件。支持格式：{string.Join("、", supportExtList)}";
                     return obj;
                 }
-                long maxSize = ConfigUtils.AppSetting.GetValue("UploadMaxFileSize").ParseToLong();
+                int maxSize = ConfigUtils.AppSetting.GetValue("UploadMaxFileSize").ParseToInt();
                 if (file.ContentLength > maxSize)
                 {
                     obj.Status = 0;
@@ -244,7 +244,7 @@ namespace Cappuccino.BLL
                         Dictionary<string, string> ocrResults = new Dictionary<string, string>();
                         foreach (var imagePath in imageFiles)
                         {
-                            string ocrText = await AIRecognitionHelper.ImageOcrRecognizeAsync(imagePath, batchId, progressAction).ConfigureAwait(false);
+                            string ocrText = await AIRecognitionHelper.ImageOcrRecognizeAsync1(imagePath, batchId, progressAction).ConfigureAwait(false);
                             ocrResults.Add(imagePath, ocrText);                            
                         }
                         ocrResultDict.Add(folderName, ocrResults);

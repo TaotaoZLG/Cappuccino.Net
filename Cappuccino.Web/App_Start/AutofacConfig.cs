@@ -63,10 +63,11 @@ namespace Cappuccino.Web
 
             //创建一个Autofac的容器
             var container = builder.Build();
-
             //将container对象缓存起来，并永久有效
-            CacheManager.Set(KeyManager.AutofacContainer, container);
+            //CacheManager.Set(KeyManager.AutofacContainer, container);
 
+            //用静态类持有容器，而非存入缓存
+            GlobalContext.Initialize(container);
             //设置依赖解析器 将MVC的控制器对象实例 交由autofac来创建
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
         }

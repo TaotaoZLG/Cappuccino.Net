@@ -87,8 +87,7 @@ namespace Cappuccino.Web.Core.Filters
                 .GetCustomAttributes(typeof(CheckPermission), false);
             if (permAtts?.Length > 0)
             {
-                var container = CacheManager.Get<IContainer>(KeyManager.AutofacContainer);
-                ISysActionService sysActionService = container.Resolve<ISysActionService>();
+                ISysActionService sysActionService = GlobalContext.Container.Resolve<ISysActionService>();
 
                 // 检查是否有权限
                 foreach (var permAtt in permAtts)

@@ -53,8 +53,7 @@ namespace Cappuccino.Web.Core.Filters
             }
 
             // 缓存不存在则从数据库读取
-            var container = CacheManager.Get<IContainer>(KeyManager.AutofacContainer);
-            var _sysConfigService = container.Resolve<ISysConfigService>();
+            var _sysConfigService = GlobalContext.Container.Resolve<ISysConfigService>();
 
             var configEntity = _sysConfigService.GetConfigByKey("sys_ipBlackList");
             if (configEntity != null && !string.IsNullOrWhiteSpace(configEntity.ConfigValue))

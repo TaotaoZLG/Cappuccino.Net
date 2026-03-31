@@ -251,10 +251,35 @@ namespace Cappuccino.Common.Extensions
 
         #region 转换为DateTime
         /// <summary>
-        /// 将string转换为DateTime，若转换失败，则返回日期最小值。不抛出异常。  
+        /// 全局静态只读日期格式数组（全格式兼容，仅初始化一次）
+        /// 包含：横杠/斜杠、单/双位日月、带时间/仅日期、无分隔符紧凑格式
         /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
+        private static readonly string[] _allSupportedFormats = new[]
+        {
+            // 带分隔符 - 时间+日期
+            "yyyy/M/d H:mm:ss",
+            "yyyy/M/d HH:mm:ss",
+            "yyyy/MM/dd HH:mm:ss",
+            "yyyy-M-d H:mm:ss",
+            "yyyy-M-d HH:mm:ss",
+            "yyyy-MM-dd HH:mm:ss",
+            // 带分隔符 - 仅日期
+            "yyyy/M/d",
+            "yyyy/MM/dd",
+            "yyyy-M-d",
+            "yyyy-MM-dd",
+            // 无分隔符紧凑格式
+            "yyyyMMddHHmmss",
+            "yyyyMMddHHmm",
+            "yyyyMMddHH",
+            "yyyyMMdd",
+            "yyyyMM",
+            "yyyy"
+        };
+
+        /// <summary>
+        /// 将string转换为DateTime，转换失败返回 DateTime.MinValue，不抛出异常
+        /// </summary>
         public static DateTime ParseToDateTime(this string str)
         {
             try
@@ -263,31 +288,7 @@ namespace Cappuccino.Common.Extensions
                 {
                     return DateTime.MinValue;
                 }
-                if (str.Contains("-") || str.Contains("/"))
-                {
-                    return DateTime.ParseExact(str, "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.CurrentCulture);
-                }
-                else
-                {
-                    int length = str.Length;
-                    switch (length)
-                    {
-                        case 4:
-                            return DateTime.ParseExact(str, "yyyy", System.Globalization.CultureInfo.CurrentCulture);
-                        case 6:
-                            return DateTime.ParseExact(str, "yyyyMM", System.Globalization.CultureInfo.CurrentCulture);
-                        case 8:
-                            return DateTime.ParseExact(str, "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture);
-                        case 10:
-                            return DateTime.ParseExact(str, "yyyyMMddHH", System.Globalization.CultureInfo.CurrentCulture);
-                        case 12:
-                            return DateTime.ParseExact(str, "yyyyMMddHHmm", System.Globalization.CultureInfo.CurrentCulture);
-                        case 14:
-                            return DateTime.ParseExact(str, "yyyyMMddHHmmss", System.Globalization.CultureInfo.CurrentCulture);
-                        default:
-                            return DateTime.ParseExact(str, "yyyyMMddHHmmss", System.Globalization.CultureInfo.CurrentCulture);
-                    }
-                }
+                return DateTime.ParseExact(str.Trim(), _allSupportedFormats, CultureInfo.CurrentCulture, DateTimeStyles.None);
             }
             catch
             {
@@ -296,57 +297,8 @@ namespace Cappuccino.Common.Extensions
         }
 
         /// <summary>
-        /// 智能解析时间字符串，兼容多种格式
+        /// 将string转换为DateTime，转换失败返回自定义默认值，不抛出异常
         /// </summary>
-        public static DateTime ParseToDateTime2(this string str)
-        {
-            if (string.IsNullOrWhiteSpace(str))
-            {
-                return DateTime.MinValue;
-            }
-
-            string[] formats = new string[]
-            {
-                // 带分隔符的格式 (兼容单数字和双数字，兼容 / 和 -)
-                "yyyy/M/d H:mm:ss",
-                "yyyy/M/d HH:mm:ss",
-                "yyyy/MM/dd HH:mm:ss",
-                "yyyy-M-d H:mm:ss",
-                "yyyy-M-d HH:mm:ss",
-                "yyyy-MM-dd HH:mm:ss",
-            
-                // 紧凑格式 (无分隔符)
-                "yyyyMMddHHmmss",
-                "yyyyMMddHHmm",
-                "yyyyMMddHH",
-                "yyyyMMdd",
-                "yyyyMM",
-                "yyyy"
-            };
-
-            try
-            {
-                return DateTime.ParseExact(str, formats, CultureInfo.CurrentCulture, DateTimeStyles.AllowWhiteSpaces);
-            }
-            catch
-            {
-                try
-                {
-                    return DateTime.Parse(str, CultureInfo.CurrentCulture);
-                }
-                catch
-                {
-                    return DateTime.MinValue;
-                }
-            }
-        }
-
-        /// <summary>
-        /// 将string转换为DateTime，若转换失败，则返回默认值。  
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="defaultValue"></param>
-        /// <returns></returns>
         public static DateTime ParseToDateTime(this string str, DateTime? defaultValue)
         {
             try
@@ -355,31 +307,7 @@ namespace Cappuccino.Common.Extensions
                 {
                     return defaultValue.GetValueOrDefault();
                 }
-                if (str.Contains("-") || str.Contains("/"))
-                {
-                    return DateTime.Parse(str);
-                }
-                else
-                {
-                    int length = str.Length;
-                    switch (length)
-                    {
-                        case 4:
-                            return DateTime.ParseExact(str, "yyyy", System.Globalization.CultureInfo.CurrentCulture);
-                        case 6:
-                            return DateTime.ParseExact(str, "yyyyMM", System.Globalization.CultureInfo.CurrentCulture);
-                        case 8:
-                            return DateTime.ParseExact(str, "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture);
-                        case 10:
-                            return DateTime.ParseExact(str, "yyyyMMddHH", System.Globalization.CultureInfo.CurrentCulture);
-                        case 12:
-                            return DateTime.ParseExact(str, "yyyyMMddHHmm", System.Globalization.CultureInfo.CurrentCulture);
-                        case 14:
-                            return DateTime.ParseExact(str, "yyyyMMddHHmmss", System.Globalization.CultureInfo.CurrentCulture);
-                        default:
-                            return DateTime.ParseExact(str, "yyyyMMddHHmmss", System.Globalization.CultureInfo.CurrentCulture);
-                    }
-                }
+                return DateTime.ParseExact(str.Trim(), _allSupportedFormats, CultureInfo.CurrentCulture, DateTimeStyles.None);
             }
             catch
             {

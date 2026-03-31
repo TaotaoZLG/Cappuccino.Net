@@ -22,8 +22,7 @@ namespace Cappuccino.Web.Core
         public virtual ActionResult Index()
         {
             string url = Request.Url.AbsolutePath.ToString();
-            var container = CacheManager.Get<IContainer>(KeyManager.AutofacContainer);
-            ISysActionButtonService sysActionButtonService = container.Resolve<ISysActionButtonService>();
+            ISysActionButtonService sysActionButtonService = GlobalContext.Container.Resolve<ISysActionButtonService>();
             ViewData["RightButtonList"] = sysActionButtonService.GetButtonListByUserIdAndMenuId(UserManager.GetCurrentUserInfo().Id, url, PositionEnum.FormInside);
             ViewData["TopButtonList"] = sysActionButtonService.GetButtonListByUserIdAndMenuId(UserManager.GetCurrentUserInfo().Id, url, PositionEnum.FormRightTop);
             return View();

@@ -13,6 +13,14 @@ namespace Cappuccino.Common.Caching
         private readonly IDatabase _database;
         private readonly ConnectionMultiplexer _connectionMultiplexer;
 
+        // 全局序列化配置（解决循环引用）
+        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore, // 忽略循环引用（关键！）
+            DateFormatString = "yyyy-MM-dd HH:mm:ss",             // 日期格式化
+            NullValueHandling = NullValueHandling.Ignore          // 忽略空值
+        };
+
         /// <summary>
         /// 构造函数，从配置文件读取连接字符串并初始化连接
         /// </summary>
@@ -64,7 +72,7 @@ namespace Cappuccino.Common.Caching
             RedisValue value = _database.StringGet(key);
             if (value.HasValue)
             {
-                return JsonConvert.DeserializeObject<T>(value);
+                return JsonConvert.DeserializeObject<T>(value, _jsonSettings);
             }
             return default(T);
         }
@@ -78,7 +86,7 @@ namespace Cappuccino.Common.Caching
             if (value.HasValue)
             {
                 // 注意：反序列化为 object 时，Json.NET 会返回 JObject/JArray 等类型
-                return JsonConvert.DeserializeObject(value);
+                return JsonConvert.DeserializeObject(value, _jsonSettings);
             }
             return null;
         }
@@ -98,7 +106,7 @@ namespace Cappuccino.Common.Caching
         {
             if (value == null) return;
 
-            string json = JsonConvert.SerializeObject(value);
+            string json = JsonConvert.SerializeObject(value, _jsonSettings);
             _database.StringSet(key, json, cacheTime);
         }
 
@@ -109,7 +117,7 @@ namespace Cappuccino.Common.Caching
         {
             if (value == null) return;
 
-            string json = JsonConvert.SerializeObject(value);
+            string json = JsonConvert.SerializeObject(value, _jsonSettings);
             // 在 Redis 中，不设置过期时间即为永不过期
             _database.StringSet(key, json);
         }

@@ -407,20 +407,16 @@
             // ========== 上传组件配置（手动上传模式）==========
             var uploadInst = upload.render({
                 elem: '#chooseFileBtn',
-                url: '/SysFileProcessiong/UploadAndProcess',
+                url: '/BusinessManage/SysFileProcessiong/UploadAndProcess',
                 accept: 'file',
                 field: 'compressFile',
                 exts: 'zip|rar|7z',
-                size: 102400,
+                size: 104857600,
                 auto: false,
                 multiple: false,
                 data: {
-                    extractRule: function () {
-                        return $('#extractRule').val();
-                    },
-                    processType: function () {
-                        return $('#processType').val();
-                    }
+                    extractRule: $('#extractRule').val(),
+                    processType: $('#processType').val()
                 },
                 choose: function (obj) {
                     obj.preview(function (index, file, result) {

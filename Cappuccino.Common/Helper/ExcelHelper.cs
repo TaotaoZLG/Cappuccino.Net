@@ -179,7 +179,7 @@ namespace Cappuccino.Common.Helper
 
                         case "System.DateTime":
                         case "System.Nullable`1[System.DateTime]":
-                            newCell.SetCellValue(drValue.ParseToDateTime2());
+                            newCell.SetCellValue(drValue.ParseToDateTime());
                             newCell.CellStyle = dateStyle; //格式化显示
                             break;
 

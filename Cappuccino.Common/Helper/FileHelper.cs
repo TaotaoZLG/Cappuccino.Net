@@ -338,8 +338,7 @@ namespace Cappuccino.Common.Helper
         /// </summary>
         public static string GetPhysicalPath(string virtualPath)
         {
-            if (string.IsNullOrEmpty(virtualPath)) return string.Empty;
-            return HttpContext.Current?.Server.MapPath(virtualPath) ?? HostingEnvironment.MapPath(virtualPath);
+            return HostingEnvironment.MapPath(virtualPath);
         }
     }
 }

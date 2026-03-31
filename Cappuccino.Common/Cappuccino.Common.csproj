@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=5.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.5.0.0\lib\net461\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.9.0.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
       <HintPath>..\packages\Portable.BouncyCastle.1.9.0\lib\net40\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
@@ -104,6 +107,7 @@
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.ConfigurationManager, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -196,14 +200,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Caching\CacheManager.cs" />
+    <Compile Include="Caching\CustomRedisSerializer.cs" />
     <Compile Include="Caching\HttpRuntimeCache\HttpRuntimeCacheManager.cs" />
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\MemoryCache\MemoryCacheManager.cs" />
     <Compile Include="Caching\RedisCache\RedisCacheManager.cs" />
     <Compile Include="Enum\ActionTypeEnum.cs" />
     <Compile Include="Enum\AjaxStateEnum.cs" />
-    <Compile Include="Enum\OperateType.cs" />
     <Compile Include="Enum\EnabledMarkEnum.cs" />
+    <Compile Include="Enum\OperateType.cs" />
     <Compile Include="Enum\PositionEnum.cs" />
     <Compile Include="Enum\UploadFileType.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
@@ -211,6 +216,7 @@
     <Compile Include="Extensions\Extensions.Convert.cs" />
     <Compile Include="Extensions\PathExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="GlobalContext.cs" />
     <Compile Include="Helper\AIRecognitionHelper.cs" />
     <Compile Include="Helper\AsyncTaskHelper.cs" />
     <Compile Include="Helper\CompressHelper.cs" />
@@ -249,7 +255,6 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -8,7 +8,6 @@ using Cappuccino.Common.Log;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Quartz;
-using IContainer = Autofac.IContainer;
 
 namespace Cappuccino.AutoJob
 {
@@ -23,8 +22,7 @@ namespace Cappuccino.AutoJob
         // 无参构造函数（供Quartz实例化）
         public JobExecutor()
         {
-            // 从缓存获取Autofac容器
-            var container = CacheManager.Get<IContainer>(KeyManager.AutofacContainer);
+            var container = GlobalContext.Container;
             if (container == null)
             {
                 throw new InvalidOperationException("Autofac容器未初始化，请检查AutofacConfig配置");
