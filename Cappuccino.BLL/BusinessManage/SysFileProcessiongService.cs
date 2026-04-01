@@ -520,20 +520,23 @@ namespace Cappuccino.BLL
 
                             #region 合并数据保存为 Excel 到服务器本地
                             // 配置保存目录（自动创建，不存在则新建）
-                            var saveRootPath = FileHelper.GetPhysicalPath("/Resource/Upload/MergedExcel/");
-                            Directory.CreateDirectory(saveRootPath);
+                            //var saveRootPath = FileHelper.GetPhysicalPath("/Resource/Upload/MergedExcel/");
+                            //Directory.CreateDirectory(saveRootPath);
+
+                            string saveRootPath = FileHelper.GetPhysicalPath(archiveDir);
+                            FileHelper.EnsureDirectoryExists(saveRootPath);
 
                             // 生成唯一文件名（避免重复）
-                            var saveFileName = $"合并结果_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid():N}.xlsx";
+                            var saveFileName = $"Excel多表合并结果_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid():N}.xlsx";
                             var saveFullPath = Path.Combine(saveRootPath, saveFileName); // 本地物理路径
-                            var saveRelativePath = $"/Upload/MergedExcel/{saveFileName}"; // 网站相对访问路径
+                            var saveRelativePath = $"{archiveDir}/{saveFileName}"; // 网站相对访问路径
 
                             // MiniExcel 一键保存合并数据到Excel
                             MiniExcel.SaveAs(saveFullPath, finalMergeList);
 
                             #endregion
 
-                            // ===================== 新增：文件归档核心逻辑（MVC5 .NET4.8） =====================
+                            // ===================== 文件归档核心逻辑 =====================
                             #region 文件自动归档（匹配3个目录 + 统一归档）
                             // 基础配置
                             string archiveVirtualRoot = archiveDir;
@@ -542,9 +545,10 @@ namespace Cappuccino.BLL
                             var finalResultList = new List<Dictionary<string, string>>();
 
                             // 获取解压后的3个目标目录（原逻辑保留）
-                            string imgAmountDir = Directory.GetDirectories(unzipDir + "/测试/", "影像金额", SearchOption.AllDirectories).FirstOrDefault();
-                            string sealDir = Directory.GetDirectories(unzipDir + "/测试/", "电子章", SearchOption.AllDirectories).FirstOrDefault();
-                            string addressDir = Directory.GetDirectories(unzipDir + "/测试/", "地址截屏", SearchOption.AllDirectories).FirstOrDefault();
+                            string unzipVirtualPath = Path.Combine(unzipDir, Path.GetFileNameWithoutExtension(fileName));
+                            string imgAmountDir = Directory.GetDirectories(unzipVirtualPath, "影像金额", SearchOption.AllDirectories).FirstOrDefault();
+                            string sealDir = Directory.GetDirectories(unzipVirtualPath, "电子章", SearchOption.AllDirectories).FirstOrDefault();
+                            string addressDir = Directory.GetDirectories(unzipVirtualPath, "地址截屏", SearchOption.AllDirectories).FirstOrDefault();
 
                             // 遍历最终合并数据，逐个归档
                             foreach (var data in finalMergeList) // 假设finalMergeList是你的合并数据源
