@@ -53,7 +53,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
                     ProcessProgressHub.SendProgress(progress);
                 };
 
-                result = await _fileProcessService.ProcessCompressFileAsync(compressFile, extractRule, processType, batchId, progressAction).ConfigureAwait(false);
+                result = await _fileProcessService.ProcessCompressFileAsync2(compressFile, extractRule, processType, batchId, progressAction).ConfigureAwait(false);
                 if (result.Status == 0)
                 {
                     return WriteError(result.Message);

@@ -65,7 +65,6 @@ namespace Cappuccino.Common.Helper
                 IArchive archive = null;
                 try
                 {
-                    // 兼容C#7.3 传统switch写法，不使用简写
                     switch (fileExt)
                     {
                         case ".zip":
@@ -720,6 +719,18 @@ namespace Cappuccino.Common.Helper
                     string tempPath = Path.Combine(destDirName, subdir.Name);
                     DirectoryCopy(subdir.FullName, tempPath, copySubDirs);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 批量复制文件（覆盖已存在文件）
+        /// </summary>
+        public static void CopyFiles(IEnumerable<string> files, string targetDir)
+        {
+            foreach (var file in files)
+            {
+                string destFile = Path.Combine(targetDir, Path.GetFileName(file));
+                File.Copy(file, destFile, overwrite: true);
             }
         }
     }

@@ -85,6 +85,12 @@ namespace Cappuccino.Entity
         public string CustEmail { get; set; }
 
         /// <summary>
+        /// 申请编号
+        /// </summary>
+        [DisplayName("申请编号")]
+        public string ApplayNumber { get; set; }
+
+        /// <summary>
         /// 户籍地址
         /// </summary>
         [DisplayName("户籍地址")]
