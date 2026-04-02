@@ -261,6 +261,10 @@ namespace Cappuccino.Common.Helper
             }
         }
 
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="filePath"></param>
         public static void DeleteDirectory(string filePath)
         {
             try
@@ -295,6 +299,108 @@ namespace Cappuccino.Common.Helper
             http = http.ParseToString();
             http = http.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
             return http;
+        }
+
+        public static void CopyFileToDirectory(string sourceFilePath, string destinationDirectory, bool overwrite = false)
+        {
+            try
+            {
+                // 检查源文件是否存在
+                if (!File.Exists(sourceFilePath))
+                {
+                    throw new FileNotFoundException($"源文件不存在: {sourceFilePath}");
+                }
+
+                // 检查目标目录是否存在，不存在则创建
+                if (!Directory.Exists(destinationDirectory))
+                {
+                    Directory.CreateDirectory(destinationDirectory);
+                }
+
+                // 获取文件名
+                string fileName = Path.GetFileName(sourceFilePath);
+
+                // 构建目标文件的完整路径
+                string destinationFilePath = Path.Combine(destinationDirectory, fileName);
+
+                // 复制文件
+                File.Copy(sourceFilePath, destinationFilePath, overwrite);
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"文件复制失败: {ex.Message}", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 将文件复制到指定文件夹
+        /// </summary>
+        /// <param name="sourceFilePath">源文件路径</param>
+        /// <param name="destinationFolder">目标文件夹路径</param>
+        /// <param name="overwrite">是否覆盖已存在的文件</param>
+        /// <returns>复制后的完整文件路径</returns>
+        public static string CopyFileToFolder(string sourceFilePath, string destinationFolder, bool overwrite = false)
+        {
+            try
+            {
+                // 检查源文件是否存在
+                if (!File.Exists(sourceFilePath))
+                {
+                    throw new FileNotFoundException($"源文件不存在: {sourceFilePath}");
+                }
+
+                // 检查目标文件夹是否存在，不存在则创建
+                if (!Directory.Exists(destinationFolder))
+                {
+                    Directory.CreateDirectory(destinationFolder);
+                }
+
+                // 获取文件名
+                string fileName = Path.GetFileName(sourceFilePath);
+
+                // 构建目标文件的完整路径
+                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                // 复制文件
+                File.Copy(sourceFilePath, destinationFilePath, overwrite);
+
+                //Console.WriteLine($"文件复制成功: {sourceFilePath} -> {destinationFilePath}");
+                return destinationFilePath;
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"文件复制失败: {ex.Message}", ex);                
+                throw; // 重新抛出异常，让调用方处理
+            }
+        }
+
+        /// <summary>
+        /// 批量复制文件到目标文件夹
+        /// </summary>
+        /// <param name="sourceFiles">源文件路径集合</param>
+        /// <param name="destinationFolder">目标文件夹路径</param>
+        /// <param name="overwrite">是否覆盖已存在的文件</param>
+        /// <returns>复制成功的文件路径列表</returns>
+        public static List<string> CopyFilesToFolder(IEnumerable<string> sourceFiles, string destinationFolder, bool overwrite = false)
+        {
+            List<string> copiedFiles = new List<string>();
+
+            foreach (string sourceFile in sourceFiles)
+            {
+                try
+                {
+                    string copiedFile = CopyFileToFolder(sourceFile, destinationFolder, overwrite);
+                    copiedFiles.Add(copiedFile);
+                }
+                catch (Exception ex)
+                {
+                    Log4netHelper.Error($"复制文件 {sourceFile} 时出错: {ex.Message}", ex);
+                    // 继续处理其他文件
+                }
+            }
+
+            return copiedFiles;
         }
 
         /// <summary>

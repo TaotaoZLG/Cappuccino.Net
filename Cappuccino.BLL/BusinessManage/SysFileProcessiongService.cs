@@ -42,7 +42,7 @@ namespace Cappuccino.BLL
         /// <param name="batchId">批次ID</param>
         /// <param name="progressAction">进度回调</param>
         /// <returns>导出ZIP路径</returns>
-        public async Task<TData<string>> ProcessCompressFileAsync(HttpPostedFileBase file, int extractRule, int processType, string batchId, Action<ProcessProgress> progressAction)
+        public async Task<TData<string>> ProcessCompress(HttpPostedFileBase file, int extractRule, int processType, string batchId, Action<ProcessProgress> progressAction)
         {
             TData<string> obj = new TData<string>();
             try
@@ -310,7 +310,7 @@ namespace Cappuccino.BLL
             }
         }
 
-        public async Task<TData<string>> ProcessCompressFileAsync2(HttpPostedFileBase file, int extractRule, int processType, string batchId, Action<ProcessProgress> progressAction)
+        public async Task<TData<string>> ProcessCompressFileAsync(HttpPostedFileBase file, int extractRule, int processType, string batchId, Action<ProcessProgress> progressAction)
         {
             TData<string> obj = new TData<string>();
             try
@@ -344,31 +344,36 @@ namespace Cappuccino.BLL
                     return obj;
                 }
 
-                // 路径初始化（原有逻辑保留）
+                // 上传文件临时路径
                 string tempRootPath = ConfigUtils.AppSetting.GetValue("TempRootPath");
-                string exportRootPath = ConfigUtils.AppSetting.GetValue("ExportRootPath");
-                // 归档文件路径
-                string archiveRootPath = ConfigUtils.AppSetting.GetValue("ArchiveRootPath");
+                string tempRootPhysical = Path.Combine(FileHelper.GetPhysicalPath(tempRootPath), batchId);
+                FileHelper.EnsureDirectoryExists(tempRootPhysical);
+
                 string fileVirtualPath = Path.Combine(tempRootPath, batchId, fileName);
                 string tempCompressPath = FileHelper.GetPhysicalPath(fileVirtualPath);
                 FileHelper.EnsureDirectoryExists(tempCompressPath);
-                file.SaveAs(tempCompressPath);
+                file.SaveAs(tempCompressPath);                
 
-                string tempRootDir = Path.Combine(FileHelper.GetPhysicalPath(tempRootPath), batchId);
-                string unzipDir = Path.Combine(tempRootDir, "unzip");
-                string archiveDir = Path.Combine(archiveRootPath, batchId);
+                // 归档文件路径
+                string archiveRootPath = ConfigUtils.AppSetting.GetValue("ArchiveRootPath");
+                string ArchiveRootPathDir = Path.Combine(archiveRootPath, batchId);
+                FileHelper.EnsureDirectoryExists(ArchiveRootPathDir);
+
+                string unzipPhysical = Path.Combine(tempRootPhysical, "unzip");
+                FileHelper.EnsureDirectoryExists(unzipPhysical);
+
+                // 导出文件路径
+                string exportRootPath = ConfigUtils.AppSetting.GetValue("ExportRootPath");
                 string exportRootDir = Path.Combine(exportRootPath, batchId);
                 string exportRootPhysical = Path.Combine(FileHelper.GetPhysicalPath(exportRootPath), batchId);
-                string finalZipFileName = string.Format("压缩包处理结果_{0}.zip", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
-                string finalZipPath_Virtual = Path.Combine(exportRootPath, string.Format("final_{0}", finalZipFileName));
-
-                FileHelper.EnsureDirectoryExists(tempRootDir);
-                FileHelper.EnsureDirectoryExists(unzipDir);
-                FileHelper.EnsureDirectoryExists(archiveDir);
                 FileHelper.EnsureDirectoryExists(exportRootPhysical);
 
+                string finalZipFileName = string.Format("压缩包处理结果_{0}.zip", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+                string finalZipPathDir = Path.Combine(exportRootPath, string.Format("final_{0}", finalZipFileName));
+                string finalZipPathPhysical = FileHelper.GetPhysicalPath(finalZipPathDir);
+
                 // 解压压缩包
-                List<string> unzipFiles = await CompressHelper.UnzipFileAsync(tempCompressPath, unzipDir, batchId, progressAction).ConfigureAwait(false);
+                List<string> unzipFiles = await CompressHelper.UnzipFileAsync(tempCompressPath, unzipPhysical, batchId, progressAction).ConfigureAwait(false);
 
                 // 案件信息
                 List<SysCaseInfoEntity> caseInfoList = new List<SysCaseInfoEntity>();
@@ -524,36 +529,34 @@ namespace Cappuccino.BLL
 
                             #region 合并数据保存为 Excel 到服务器本地
                             // 配置保存目录（自动创建，不存在则新建）
-                            //var saveRootPath = FileHelper.GetPhysicalPath("/Resource/Upload/MergedExcel/");
-                            //Directory.CreateDirectory(saveRootPath);
-
-                            string saveRootPath = FileHelper.GetPhysicalPath(archiveDir);
+                            string saveRootPath = FileHelper.GetPhysicalPath(ArchiveRootPathDir);
                             FileHelper.EnsureDirectoryExists(saveRootPath);
 
                             // 生成唯一文件名（避免重复）
-                            var saveFileName = $"Excel多表合并结果_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid():N}.xlsx";
+                            var saveFileName = $"Excel多表合并结果_{batchId}.xlsx";
                             var saveFullPath = Path.Combine(saveRootPath, saveFileName); // 本地物理路径
-                            var saveRelativePath = $"{archiveDir}/{saveFileName}"; // 网站相对访问路径
+                            var saveRelativePath = $"{ArchiveRootPathDir}/{saveFileName}"; // 网站相对访问路径
 
-                            // MiniExcel 一键保存合并数据到Excel
+                            // 保存合并数据到Excel
                             MiniExcel.SaveAs(saveFullPath, finalMergeList);
-
+                            // 复制到导出目录
+                            File.Copy(saveFullPath, Path.Combine(exportRootPhysical, saveFileName));
                             #endregion
 
                             #region 文件自动归档（匹配3个目录 + 统一归档）
                             // 基础配置
-                            string archiveVirtualRoot = archiveDir;
-                            string archivePhysicalRoot = FileHelper.GetPhysicalPath(archiveDir);
+                            string archiveVirtualRoot = ArchiveRootPathDir;
+                            string archivePhysicalRoot = FileHelper.GetPhysicalPath(ArchiveRootPathDir);
                             char[] invalidChars = Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars()).ToArray();
 
-                            // 获取解压后的3个目标目录（原逻辑保留）
-                            string unzipVirtualPath = Path.Combine(unzipDir, Path.GetFileNameWithoutExtension(fileName));
+                            // 获取解压后的3个目标目录
+                            string unzipVirtualPath = Path.Combine(unzipPhysical, Path.GetFileNameWithoutExtension(fileName));
                             string imgAmountDir = Directory.GetDirectories(unzipVirtualPath, "影像金额", SearchOption.AllDirectories).FirstOrDefault();
                             string sealDir = Directory.GetDirectories(unzipVirtualPath, "电子章", SearchOption.AllDirectories).FirstOrDefault();
                             string addressDir = Directory.GetDirectories(unzipVirtualPath, "地址截屏", SearchOption.AllDirectories).FirstOrDefault();
 
                             // 遍历最终合并数据，逐个归档
-                            foreach (var data in finalMergeList) // 假设finalMergeList是你的合并数据源
+                            foreach (var data in finalMergeList)
                             {
                                 // 读取关键字段（增加空值保护）
                                 data.TryGetValue("姓名", out string userName);
@@ -581,7 +584,7 @@ namespace Cappuccino.BLL
                                 // 过滤图片集合
                                 List<string> imageFiles = new List<string>();
                                 // 图片集合，用于后续创建Word文档（合并所有来源的图片）
-                                List<string> allImagesList = new List<string>();                                
+                                List<string> allImagesList = new List<string>();
 
                                 // ============== 1. 影像金额 → 匹配【最后一级】子文件夹名 ==============
                                 if (!string.IsNullOrEmpty(imgAmountDir) && Directory.Exists(imgAmountDir))
@@ -646,7 +649,7 @@ namespace Cappuccino.BLL
                                 {
                                     string matchKey = $"{userName}{last4Card}";
                                     targetScreenshotFiles = Directory.GetFiles(addressDir, "*.*", SearchOption.AllDirectories).Where(f => Path.GetFileName(f).Contains(matchKey));
-                                    CompressHelper.CopyFiles(targetScreenshotFiles, targetPhysicalPath);                                    
+                                    CompressHelper.CopyFiles(targetScreenshotFiles, targetPhysicalPath);
                                 }
 
                                 // 创建Word文档并将图片插入
@@ -665,7 +668,7 @@ namespace Cappuccino.BLL
                                     if (addressWordFiles.Any())
                                     {
                                         string firstWordPath = addressWordFiles.FirstOrDefault();
-                                        
+
                                         if (!string.IsNullOrEmpty(firstWordPath))
                                         {
                                             // 提取Word中的第一张图片
@@ -740,8 +743,10 @@ namespace Cappuccino.BLL
                             #endregion
 
                             #region 打包导出（合并excel + OCR识别结果）
-                            await CompressHelper.PackFolderToZipAsync(exportRootDir, finalZipPath_Virtual, batchId, progressAction).ConfigureAwait(false);
-                            await CompressHelper.CleanTempDirAsync(tempRootDir, batchId, progressAction).ConfigureAwait(false);
+                            await CompressHelper.PackFolderToZipAsync(exportRootDir, finalZipPathDir, batchId, progressAction).ConfigureAwait(false);
+                            await CompressHelper.CleanTempDirAsync(tempRootPhysical, batchId, progressAction).ConfigureAwait(false);
+
+
                             #endregion
                         }
                         catch (Exception ex)
@@ -753,16 +758,41 @@ namespace Cappuccino.BLL
                                 Type = "Error",
                                 Message = $"解析Excel文件{Path.GetFileName(excelPath)}失败：{ex.Message}"
                             });
+
                             obj.Status = 0;
                             obj.Message = $"解析Excel失败：{ex.Message}";
                             return obj;
+                        }
+                        finally
+                        {
+                            try
+                            {
+                                // 清理解压目录
+                                await CompressHelper.CleanTempDirAsync(unzipPhysical, batchId, progressAction).ConfigureAwait(false);
+                                // 清理临时目录
+                                await CompressHelper.CleanTempDirAsync(tempRootPhysical, batchId, progressAction).ConfigureAwait(false);
+                                // 清理导出目录
+                                await CompressHelper.CleanTempDirAsync(exportRootPhysical, batchId, progressAction).ConfigureAwait(false);
+                                // 清理最终Zip文件
+                                await CompressHelper.CleanTempDirAsync(finalZipPathPhysical, batchId, progressAction).ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                progressAction.Invoke(new ProcessProgress
+                                {
+                                    BatchId = batchId,
+                                    Progress = 0,
+                                    Type = "Error",
+                                    Message = $"清理临时解压文件失败：{ex.Message}"
+                                });
+                            }
                         }
                     }
                 }
 
                 obj.Status = 1;
-                obj.Message = $"处理完成（处理类型：{(processType == 0 ? "Excel解析" : "图片OCR")}）";
-                obj.Data = finalZipPath_Virtual;
+                obj.Message = $"处理完成（处理类型：{(processType == 0 ? "Excel解析" : "图片OCR")}），请在浏览器文件下载记录中查看处理结果文件";
+                obj.Data = finalZipPathDir;
                 return obj;
             }
             catch (Exception ex)
@@ -774,6 +804,7 @@ namespace Cappuccino.BLL
                     Type = "Error",
                     Message = $"处理失败：{ex.Message}"
                 });
+
                 obj.Status = 0;
                 obj.Message = $"处理失败：{ex.Message}";
                 return obj;

@@ -20,8 +20,8 @@ namespace Cappuccino.IBLL
         /// <param name="batchId"></param>
         /// <param name="progressAction"></param>
         /// <returns></returns>
-        Task<TData<string>> ProcessCompressFileAsync(HttpPostedFileBase file, int extractRule, int processType, string batchId, Action<ProcessProgress> progressAction);
+        Task<TData<string>> ProcessCompress(HttpPostedFileBase file, int extractRule, int processType, string batchId, Action<ProcessProgress> progressAction);
 
-        Task<TData<string>> ProcessCompressFileAsync2(HttpPostedFileBase file, int extractRule, int processType, string batchId, Action<ProcessProgress> progressAction);
+        Task<TData<string>> ProcessCompressFileAsync(HttpPostedFileBase file, int extractRule, int processType, string batchId, Action<ProcessProgress> progressAction);
     }
 }

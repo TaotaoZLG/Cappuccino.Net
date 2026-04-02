@@ -24,7 +24,7 @@ namespace Cappuccino.Common.Helper
     /// List导出到Excel文件
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ExcelHelper<T> where T : new()
+    public class NpoiExcelHelper<T> where T : new()
     {
         #region List导出到Excel文件
         /// <summary>

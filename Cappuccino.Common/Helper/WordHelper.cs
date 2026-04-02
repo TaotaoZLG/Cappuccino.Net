@@ -133,7 +133,7 @@ namespace Cappuccino.Common.Helpers
                     // 2. 仅取第一张图片 + 获取原始文件名
                     var firstPicture = pictures[0];
                     //string imageFileName = firstPicture.FileName; // 原始图片文件名（含扩展名）
-                    string tempImageFileName = $"OCR识别图片_{Guid.NewGuid()}.png";  // 临时图片文件名（统一使用PNG格式）
+                    string tempImageFileName = $"OCR识别图片_{Path.GetFileNameWithoutExtension(wordFileName)}_{Guid.NewGuid():N}.png";  // 临时图片文件名（统一使用PNG格式）
                     byte[] imageBytes = firstPicture.Data; // 图片字节流
 
                     // 3. 保存临时图片

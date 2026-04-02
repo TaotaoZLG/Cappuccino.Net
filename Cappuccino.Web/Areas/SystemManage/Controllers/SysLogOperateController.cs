@@ -62,7 +62,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                 }
 
                 var logOperateList = _sysLogOperateService.GetList(queries.AsExpression<SysLogOperateEntity>()).ToList();
-                var file = new ExcelHelper<SysLogOperateEntity>().ExportToExcel("操作日志.xlsx", "操作日志", logOperateList);
+                var file = new NpoiExcelHelper<SysLogOperateEntity>().ExportToExcel("操作日志.xlsx", "操作日志", logOperateList);
                 return WriteSuccess("导出成功", file);
             }
             catch (Exception ex)
