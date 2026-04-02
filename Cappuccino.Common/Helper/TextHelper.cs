@@ -65,6 +65,14 @@ namespace Cappuccino.Common.Helper
             return value;
         }
 
+        /// <summary>
+        /// 截取指定起始位置和长度的字符串
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="startlength"></param>
+        /// <param name="endlength"></param>
+        /// <param name="ellipsis"></param>
+        /// <returns></returns>
         public static string GetCustomSubString(string value, int startlength = 0, int endlength = 0, bool ellipsis = false)
         {
             if (string.IsNullOrEmpty(value))

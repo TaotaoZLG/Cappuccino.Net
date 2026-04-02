@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -9,6 +11,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using Cappuccino.Common.Extensions;
+using Cappuccino.Common.Log;
 using MiniExcelLibs;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
@@ -376,17 +379,163 @@ namespace Cappuccino.Common.Helper
         #endregion
     }
 
-    public class MiniExcelHelper<T> where T : class, new()
+    public class MiniExcelHelper
     {
         /// <summary>
-        /// Excel导入为List<T>（MiniExcel实现）
+        /// Excel导入为List<T>
         /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
         /// <param name="filePath">Excel文件路径</param>
         /// <returns>List<T></returns>
-        public static List<T> ImportFromExcel(string filePath)
+        public static List<T> ImportFromExcel<T>(string filePath) where T : class, new()
         {
-            // MiniExcel导入核心逻辑（自动映射列头到实体属性）
-            return MiniExcel.Query<T>(filePath).ToList();
+            try
+            {
+                // MiniExcel导入核心逻辑（自动映射列头到实体属性）
+                return MiniExcel.Query<T>(filePath).ToList();
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"Excel导入失败: {filePath}", ex);
+                throw new Exception($"Excel导入失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 导出记录到Excel（泛型版本）
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="dataList">数据列表</param>
+        /// <param name="savePath">保存路径（包含文件名）</param>
+        public static void ExportToExcel<T>(List<T> dataList, string savePath) where T : class
+        {
+            try
+            {
+                // 确保目录存在
+                string directory = Path.GetDirectoryName(savePath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                // MiniExcel导出
+                MiniExcel.SaveAs(savePath, dataList);
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"Excel导出失败: {savePath}", ex);
+                throw new Exception($"Excel导出失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 导出记录到Excel（非泛型版本，支持IEnumerable）
+        /// </summary>
+        /// <param name="dataList">数据列表</param>
+        /// <param name="savePath">保存路径（包含文件名）</param>
+        public static void ExportToExcel(IEnumerable dataList, string savePath)
+        {
+            try
+            {
+                // 确保目录存在
+                string directory = Path.GetDirectoryName(savePath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                // MiniExcel导出
+                MiniExcel.SaveAs(savePath, dataList);
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"Excel导出失败: {savePath}", ex);
+                throw new Exception($"Excel导出失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 导出字典数据到Excel
+        /// </summary>
+        /// <param name="dataDictionary">字典数据</param>
+        /// <param name="savePath">保存路径（包含文件名）</param>
+        public static void ExportToExcel(IDictionary<string, object> dataDictionary, string savePath)
+        {
+            try
+            {
+                // 确保目录存在
+                string directory = Path.GetDirectoryName(savePath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                // 转换为匿名对象列表
+                var dataList = new List<Dictionary<string, object>> {
+                    new Dictionary<string, object>(dataDictionary)
+                };
+
+                // MiniExcel导出
+                MiniExcel.SaveAs(savePath, dataList);
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"Excel导出字典失败: {savePath}", ex);
+                throw new Exception($"Excel导出字典失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 导出动态数据到Excel
+        /// </summary>
+        /// <param name="dynamicData">动态数据</param>
+        /// <param name="savePath">保存路径（包含文件名）</param>
+        public static void ExportToExcel(dynamic dynamicData, string savePath)
+        {
+            try
+            {
+                // 确保目录存在
+                string directory = Path.GetDirectoryName(savePath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                // MiniExcel导出
+                MiniExcel.SaveAs(savePath, dynamicData);
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"Excel导出字典失败: {savePath}", ex);
+                throw new Exception($"Excel导出动态数据失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 导出object列表到Excel
+        /// </summary>
+        /// <param name="recordList">记录列表</param>
+        /// <param name="saveRootPath">保存根目录</param>
+        /// <param name="fileName">文件名</param>
+        public static void ExportToExcel(List<object> recordList, string saveRootPath, string fileName)
+        {
+            try
+            {
+                // 创建记录保存目录
+                string ocrSaveDir = Path.Combine(saveRootPath);
+                FileHelper.CreateDirectory(saveRootPath);
+
+                // 生成Excel文件名
+                string excelSavePath = Path.Combine(ocrSaveDir, fileName);
+
+                // 调用通用导出方法
+                //ExportToExcel(recordList, excelSavePath);
+                MiniExcel.SaveAs(excelSavePath, recordList);
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error($"Excel生成失败：{ex.Message}");
+            }
         }
     }
 }

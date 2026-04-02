@@ -466,7 +466,7 @@ namespace Cappuccino.Common.Helper
         /// <param name="progressAction">进度回调</param>
         public static async Task GenerateOcrExcelAsync(Dictionary<string, Dictionary<string, string>> ocrResultDict, string excelFilePath, string batchId, Action<ProcessProgress> progressAction)
         {
-            // 修复bug：统一创建Excel所在目录，而非判断文件是否为目录
+            // 统一创建Excel所在目录，而非判断文件是否为目录
             FileHelper.EnsureDirectoryExists(excelFilePath);
 
             await Task.Run(() =>

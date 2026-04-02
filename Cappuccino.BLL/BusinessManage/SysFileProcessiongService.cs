@@ -14,6 +14,7 @@ using Cappuccino.IBLL;
 using Cappuccino.IDAL;
 using Cappuccino.Web.Core;
 using MiniExcelLibs;
+using Newtonsoft.Json.Linq;
 
 namespace Cappuccino.BLL
 {
@@ -149,7 +150,7 @@ namespace Cappuccino.BLL
                         try
                         {
                             // 使用MiniExcel读取Excel，映射中文列头到实体
-                            var excelData = MiniExcelHelper<SysCaseInfoEntity>.ImportFromExcel(excelPath);
+                            var excelData = MiniExcelHelper.ImportFromExcel<SysCaseInfoEntity>(excelPath);
                             if (excelData.Count == 0)
                             {
                                 progressAction.Invoke(new ProcessProgress
@@ -245,7 +246,7 @@ namespace Cappuccino.BLL
                         Dictionary<string, string> ocrResults = new Dictionary<string, string>();
                         foreach (var imagePath in imageFiles)
                         {
-                            string ocrText = await AIRecognitionHelper.ImageOcrRecognizeAsync1(imagePath, batchId, progressAction).ConfigureAwait(false);
+                            string ocrText = await AIRecognitionHelper.ImageOcrRecognizeAsync(imagePath, batchId, progressAction).ConfigureAwait(false);
                             ocrResults.Add(imagePath, ocrText);                            
                         }
                         ocrResultDict.Add(folderName, ocrResults);
@@ -356,20 +357,23 @@ namespace Cappuccino.BLL
                 string tempRootDir = Path.Combine(FileHelper.GetPhysicalPath(tempRootPath), batchId);
                 string unzipDir = Path.Combine(tempRootDir, "unzip");
                 string archiveDir = Path.Combine(archiveRootPath, batchId);
-                string exportRootDir_Physical = Path.Combine(FileHelper.GetPhysicalPath(exportRootPath), batchId);
-                string exportRootDir_Virtual = Path.Combine(exportRootPath, batchId);
+                string exportRootDir = Path.Combine(exportRootPath, batchId);
+                string exportRootPhysical = Path.Combine(FileHelper.GetPhysicalPath(exportRootPath), batchId);
                 string finalZipFileName = string.Format("压缩包处理结果_{0}.zip", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
                 string finalZipPath_Virtual = Path.Combine(exportRootPath, string.Format("final_{0}", finalZipFileName));
 
                 FileHelper.EnsureDirectoryExists(tempRootDir);
                 FileHelper.EnsureDirectoryExists(unzipDir);
                 FileHelper.EnsureDirectoryExists(archiveDir);
-                FileHelper.EnsureDirectoryExists(exportRootDir_Physical);
+                FileHelper.EnsureDirectoryExists(exportRootPhysical);
 
                 // 解压压缩包
                 List<string> unzipFiles = await CompressHelper.UnzipFileAsync(tempCompressPath, unzipDir, batchId, progressAction).ConfigureAwait(false);
 
+                // 案件信息
                 List<SysCaseInfoEntity> caseInfoList = new List<SysCaseInfoEntity>();
+                // OCR记录集合
+                List<object> ocrRecordList = new List<object>();
 
                 // 分支处理：根据processType选择Excel解析或OCR识别
                 if (processType == 0)
@@ -536,13 +540,11 @@ namespace Cappuccino.BLL
 
                             #endregion
 
-                            // ===================== 文件归档核心逻辑 =====================
                             #region 文件自动归档（匹配3个目录 + 统一归档）
                             // 基础配置
                             string archiveVirtualRoot = archiveDir;
                             string archivePhysicalRoot = FileHelper.GetPhysicalPath(archiveDir);
                             char[] invalidChars = Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars()).ToArray();
-                            var finalResultList = new List<Dictionary<string, string>>();
 
                             // 获取解压后的3个目标目录（原逻辑保留）
                             string unzipVirtualPath = Path.Combine(unzipDir, Path.GetFileNameWithoutExtension(fileName));
@@ -562,21 +564,29 @@ namespace Cappuccino.BLL
                                 data.TryGetValue("人民币消费本金余额", out string principalAmount);
                                 data.TryGetValue("人民币消费利息余额", out string interestAmount);
 
+                                var (Gender, BirthDate) = OtherHelper.ParseIdCard(idNumber);
                                 string last4Card = cardNo.Length >= 4 ? cardNo.Substring(cardNo.Length - 4) : cardNo;
+                                // 存储OCR识别结果
+                                string ocrResult = string.Empty;
 
                                 // 生成归档文件夹：姓名+卡号（过滤非法字符）
                                 string folderName = new string($"{userName}{cardNo}".Where(c => !invalidChars.Contains(c)).ToArray());
-                                string targetPhysicalPath = Path.Combine(archivePhysicalRoot, folderName);
-                                string targetVirtualPath = $"{archiveVirtualRoot}/{folderName}/";
+                                string targetPhysicalPath = Path.Combine(archivePhysicalRoot, folderName);  //归档存储物理路径
+                                string targetVirtualPath = $"{archiveVirtualRoot}/{folderName}/";  //归档存储虚拟路径
                                 Directory.CreateDirectory(targetPhysicalPath);
 
+                                // 地址截屏集合（后续OCR识别）初始化
+                                IEnumerable<string> targetScreenshotFiles = Enumerable.Empty<string>();
+
+                                // 过滤图片集合
                                 List<string> imageFiles = new List<string>();
-                                List<string> allImagesList = new List<string>();
+                                // 图片集合，用于后续创建Word文档（合并所有来源的图片）
+                                List<string> allImagesList = new List<string>();                                
 
                                 // ============== 1. 影像金额 → 匹配【最后一级】子文件夹名 ==============
                                 if (!string.IsNullOrEmpty(imgAmountDir) && Directory.Exists(imgAmountDir))
                                 {
-                                    IEnumerable<string> targetFiles = Enumerable.Empty<string>();
+                                    IEnumerable<string> targetImageFiles = Enumerable.Empty<string>();
 
                                     // 步骤1：获取影像金额下【所有层级】的子文件夹
                                     var allSubFolders = Directory.GetDirectories(imgAmountDir, "*", SearchOption.AllDirectories);
@@ -588,27 +598,25 @@ namespace Cappuccino.BLL
                                     if (matchFolders.Any())
                                     {
                                         // 遍历匹配的最后一级文件夹内的所有文件
-                                        targetFiles = matchFolders.SelectMany(f =>
-                                            Directory.GetFiles(f, "*.*", SearchOption.AllDirectories));
+                                        targetImageFiles = matchFolders.SelectMany(f => Directory.GetFiles(f, "*.*", SearchOption.AllDirectories));
                                     }
                                     else
                                     {
                                         // 降级逻辑：无匹配最后一级文件夹时，按原有规则匹配文件名
-                                        targetFiles = Directory.GetFiles(imgAmountDir, "*.*", SearchOption.AllDirectories)
-                                            .Where(f => Path.GetFileName(f).Contains(applyNo));
+                                        targetImageFiles = Directory.GetFiles(imgAmountDir, "*.*", SearchOption.AllDirectories).Where(f => Path.GetFileName(f).Contains(applyNo));
                                     }
 
-                                    CompressHelper.CopyFiles(targetFiles, targetPhysicalPath);
+                                    CompressHelper.CopyFiles(targetImageFiles, targetPhysicalPath);
 
                                     // 过滤图片
-                                    imageFiles = await CompressHelper.FilterImageFilesAsync(targetFiles.ToList(), batchId, progressAction).ConfigureAwait(false);
+                                    imageFiles = await CompressHelper.FilterImageFilesAsync(targetImageFiles.ToList(), batchId, progressAction).ConfigureAwait(false);
                                     allImagesList.AddRange(imageFiles);
                                 }
 
                                 // ============== 2. 电子章 → 先匹配子文件夹名，再取文件 ==============
                                 if (!string.IsNullOrEmpty(sealDir) && Directory.Exists(sealDir))
                                 {
-                                    IEnumerable<string> targetFiles = Enumerable.Empty<string>();
+                                    IEnumerable<string> targetSealFiles = Enumerable.Empty<string>();
 
                                     // 步骤1：获取电子章下的所有直接子文件夹
                                     var subFolders = Directory.GetDirectories(sealDir, "*", SearchOption.TopDirectoryOnly);
@@ -618,59 +626,101 @@ namespace Cappuccino.BLL
                                     if (matchSubFolders.Any())
                                     {
                                         // 若找到匹配的子文件夹，仅遍历这些文件夹内的文件
-                                        targetFiles = matchSubFolders.SelectMany(f =>
-                                            Directory.GetFiles(f, "*.*", SearchOption.AllDirectories));
+                                        targetSealFiles = matchSubFolders.SelectMany(f => Directory.GetFiles(f, "*.*", SearchOption.AllDirectories));
                                     }
                                     else
                                     {
                                         // 降级逻辑：无匹配子文件夹时，按原有规则匹配文件名
-                                        targetFiles = Directory.GetFiles(sealDir, "*.*", SearchOption.AllDirectories)
-                                            .Where(f => Path.GetFileName(f).Contains(caseNo));
+                                        targetSealFiles = Directory.GetFiles(sealDir, "*.*", SearchOption.AllDirectories).Where(f => Path.GetFileName(f).Contains(caseNo));
                                     }
 
-                                    CompressHelper.CopyFiles(targetFiles, targetPhysicalPath);
+                                    CompressHelper.CopyFiles(targetSealFiles, targetPhysicalPath);
 
                                     // 过滤图片
-                                    imageFiles = await CompressHelper.FilterImageFilesAsync(targetFiles.ToList(), batchId, progressAction).ConfigureAwait(false);
+                                    imageFiles = await CompressHelper.FilterImageFilesAsync(targetSealFiles.ToList(), batchId, progressAction).ConfigureAwait(false);
                                     allImagesList.AddRange(imageFiles);
                                 }
 
-                                // ============== 3. 地址截屏（原有逻辑保留，若有嵌套可参考上面修改） ==============
+                                // ============== 3. 地址截屏（若有嵌套可参考上面修改）+ OCR识别 ==============
                                 if (!string.IsNullOrEmpty(addressDir) && Directory.Exists(addressDir))
                                 {
                                     string matchKey = $"{userName}{last4Card}";
-                                    var files = Directory.GetFiles(addressDir, "*.*", SearchOption.AllDirectories)
-                                        .Where(f => Path.GetFileName(f).Contains(matchKey));
-                                    CompressHelper.CopyFiles(files, targetPhysicalPath);
+                                    targetScreenshotFiles = Directory.GetFiles(addressDir, "*.*", SearchOption.AllDirectories).Where(f => Path.GetFileName(f).Contains(matchKey));
+                                    CompressHelper.CopyFiles(targetScreenshotFiles, targetPhysicalPath);                                    
                                 }
 
                                 // 创建Word文档并将图片插入
                                 if (allImagesList.Any())
                                 {
-                                    string wordPath = Path.Combine(targetPhysicalPath, $"{userName}{cardNo}_资料归档.docx");
+                                    string wordPath = Path.Combine(targetPhysicalPath, $"{userName}{cardNo}_图片资料归档.docx");
                                     WordHelper.CreateWordWithImages(allImagesList, wordPath);
                                 }
 
-                                // 添加归档路径
-                                var result = new Dictionary<string, string>(data);
-                                result["归档虚拟路径"] = targetVirtualPath;
-                                finalResultList.Add(result);
-
-                                // 识别结果入库
-                                caseInfoList.Add(new SysCaseInfoEntity
+                                // OCR识别获取地址信息（地址截屏目录下Word 仅第一张图片）
+                                if (targetScreenshotFiles.Any())
                                 {
-                                    Id = IdGeneratorHelper.Instance.NextId(),
-                                    CustName = userName,
-                                    CustCardNo = cardNo,
-                                    CustIDNumber = idNumber,
-                                    CaseNumber = caseNo,
-                                    ApplayNumber = applyNo,
-                                    PrincipalAmount= principalAmount.ParseToDecimal(),
-                                    InterestAmount = interestAmount.ParseToDecimal(),
-                                    CreateTime = DateTime.Now,
-                                    CreateUserId = userId,
-                                    ArchiveVirtualPath = targetVirtualPath
-                                });
+                                    string[] WordExtensions = { ".docx", ".doc" };
+                                    var addressWordFiles = targetScreenshotFiles.Where(f => WordExtensions.Contains(Path.GetExtension(f).ToLower())).ToList();
+
+                                    if (addressWordFiles.Any())
+                                    {
+                                        string firstWordPath = addressWordFiles.FirstOrDefault();
+                                        
+                                        if (!string.IsNullOrEmpty(firstWordPath))
+                                        {
+                                            // 提取Word中的第一张图片
+                                            (string result, string tempImgPath, string wordFileName, string imageFileName) = WordHelper.ExtractFirstImageFromWord(firstWordPath, exportRootPhysical);
+
+                                            // OCR识别
+                                            //ocrResult = await AIRecognitionHelper.ImageOcrRecognizeAsync(tempImgPath, batchId, progressAction).ConfigureAwait(false);
+
+                                            ocrResult = "{\"detail\": \"不支持的图片格式：docx\"}";
+
+                                            var objData = JObject.Parse(ocrResult);
+                                            string residentialAddress = objData.Value<string>("住宅地址");
+                                            string unitAddress = objData.Value<string>("单位地址");
+                                            string mailingAddress = objData.Value<string>("邮寄地址");
+                                            string phone = objData.Value<string>("手机");
+
+                                            ocrRecordList.Add(new
+                                            {
+                                                图片所在Word文件名 = wordFileName,
+                                                图片文件名 = imageFileName,
+                                                识别结果 = ocrResult,
+                                                识别时间 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                                            });
+
+                                            // 组装入库数据（含OCR结果）
+                                            caseInfoList.Add(new SysCaseInfoEntity
+                                            {
+                                                Id = IdGeneratorHelper.Instance.NextId(),
+                                                CustName = userName,
+                                                CustCardNo = cardNo,
+                                                CustIDNumber = idNumber,
+                                                CaseNumber = caseNo,
+                                                CustBirthdate = BirthDate.ParseToDateTime(),
+                                                CustGender = Gender,
+                                                ApplayNumber = applyNo,
+                                                PrincipalAmount = principalAmount.ParseToDecimal(),
+                                                InterestAmount = interestAmount.ParseToDecimal(),
+                                                ContactPhone = phone,
+                                                MailingAddress = mailingAddress,
+                                                CompanyAddress = unitAddress,
+                                                HomeAddress = residentialAddress,
+                                                CreateTime = DateTime.Now,
+                                                CreateUserId = userId,
+                                                ArchiveVirtualPath = targetVirtualPath
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                            #endregion
+
+                            #region 批量生成OCR记录Excel
+                            if (ocrRecordList.Any())
+                            {
+                                MiniExcelHelper.ExportToExcel(ocrRecordList, exportRootPhysical, $"OCR识别记录_{batchId}.xlsx");
                             }
                             #endregion
 
@@ -687,6 +737,11 @@ namespace Cappuccino.BLL
                                     Message = $"成功插入{caseInfoList.Count}条案件信息到数据库"
                                 });
                             }
+                            #endregion
+
+                            #region 打包导出（合并excel + OCR识别结果）
+                            await CompressHelper.PackFolderToZipAsync(exportRootDir, finalZipPath_Virtual, batchId, progressAction).ConfigureAwait(false);
+                            await CompressHelper.CleanTempDirAsync(tempRootDir, batchId, progressAction).ConfigureAwait(false);
                             #endregion
                         }
                         catch (Exception ex)

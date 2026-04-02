@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using NPOI.Util;
 using NPOI.XWPF.UserModel;
+using Xceed.Words.NET;
+using static SharpCompress.Compressors.Filters.BranchExecFilter;
 
 namespace Cappuccino.Common.Helpers
 {
@@ -97,6 +100,56 @@ namespace Cappuccino.Common.Helpers
             using (FileStream fs = new FileStream(savePath, FileMode.Create))
             {
                 document.Write(fs);
+            }
+        }
+
+        /// <summary>
+        /// NPOI提取Word(.docx)第一张图片
+        /// 返回：提取结果、临时图片路径、原Word文件名、图片文件名(含扩展名)
+        /// </summary>
+        /// <param name="wordPath">Word文件路径</param>
+        /// <param name="tempImgPath">临时图片保存路径</param>
+        /// <returns></returns>
+        public static (string result, string tempImgPath, string wordFileName, string imageFileName) ExtractFirstImageFromWord(string wordPath, string tempImagePath)
+        {
+            try
+            {
+                if (!File.Exists(wordPath)) return ("Word文件不存在", "", "", "");
+
+                // NPOI仅支持 .docx 格式，不支持旧版 .doc
+                string ext = Path.GetExtension(wordPath).ToLower();
+                if (ext == ".doc") return ("NPOI不支持.doc格式，请使用.docx文件", "", "", "");
+
+                string wordFileName = Path.GetFileName(wordPath);
+
+                // 1. NPOI加载docx文档
+                using (FileStream fs = new FileStream(wordPath, FileMode.Open, FileAccess.Read))
+                {
+                    XWPFDocument doc = new XWPFDocument(fs);
+                    // 获取文档中所有图片
+                    var pictures = doc.AllPictures;
+                    if (pictures == null || !pictures.Any()) return ("Word中未找到图片", "", "", "");
+
+                    // 2. 仅取第一张图片 + 获取原始文件名
+                    var firstPicture = pictures[0];
+                    //string imageFileName = firstPicture.FileName; // 原始图片文件名（含扩展名）
+                    string tempImageFileName = $"OCR识别图片_{Guid.NewGuid()}.png";  // 临时图片文件名（统一使用PNG格式）
+                    byte[] imageBytes = firstPicture.Data; // 图片字节流
+
+                    // 3. 保存临时图片
+                    string tempImgPath = Path.Combine(tempImagePath, tempImageFileName);
+                    using (var ms = new MemoryStream(imageBytes))
+                    using (var img = Image.FromStream(ms))
+                    {
+                        img.Save(tempImgPath, ImageFormat.Png);
+                    }
+
+                    return ("图片提取成功", tempImgPath, wordFileName, tempImageFileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                return ($"图片提取失败：{ex.Message}", "", "", "");
             }
         }
 
@@ -341,5 +394,73 @@ namespace Cappuccino.Common.Helpers
             para.CreateRun().SetText(text);
         }
         #endregion
+    }
+    public class DocxHelper
+    {
+        /// <summary>
+        /// 创建Word并插入所有图片（单集合遍历）
+        /// </summary>
+        public static void CreateWordWithImages(string wordPath, string userName, string cardNo, List<string> allImages)
+        {
+            using (var document = DocX.Create(wordPath))
+            {
+                // 遍历【唯一图片集合】插入所有图片
+                foreach (var imgPath in allImages)
+                {
+                    try
+                    {
+                        // 插入图片
+                        var p = document.InsertParagraph();
+                        p.AppendPicture(document.AddImage(imgPath).CreatePicture());
+                        // 插入图片文件名备注
+                        document.InsertParagraph($"文件名：{Path.GetFileName(imgPath)}").FontSize(9).Italic();
+                        document.InsertParagraph();
+                    }
+                    catch
+                    {
+                        // 图片损坏/无法读取则跳过
+                        continue;
+                    }
+                }
+
+                // 保存Word到主文件夹
+                document.Save();
+            }
+        }
+
+        /// <summary>
+        /// 从Word中提取第一张图片
+        /// </summary>
+        public static string ExtractFirstImageFromWordAndOcr(string wordPath)
+        {
+            try
+            {
+                if (!File.Exists(wordPath)) return "Word文件不存在";
+
+                // 读取Word，提取第一张图片
+                using (var doc = DocX.Load(wordPath))
+                {
+                    var images = doc.Images.ToList();
+                    if (!images.Any()) return "Word中未找到图片";
+
+                    // 仅取第一张图片
+                    var firstImage = images.First();
+                    string tempImgPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.png");
+
+                    // 通过GetStream方法获取图片流
+                    using (var imgStream = firstImage.GetStream(FileMode.Open, FileAccess.Read))
+                    using (var img = Image.FromStream(imgStream))
+                    {
+                        img.Save(tempImgPath, ImageFormat.Png);
+                    }
+
+                    return tempImgPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"OCR识别失败：{ex.Message}";
+            }
+        }
     }
 }
