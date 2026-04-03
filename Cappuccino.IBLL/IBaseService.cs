@@ -18,6 +18,8 @@ namespace Cappuccino.IBLL
         /// <returns></returns>
         IQueryable<T> GetList(Expression<Func<T, bool>> whereLambda);
 
+        T GetEntity(Expression<Func<T, bool>> whereLambda);
+
         /// <summary>
         /// 分页查询
         /// </summary>

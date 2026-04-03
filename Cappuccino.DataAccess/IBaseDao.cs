@@ -29,6 +29,8 @@ namespace Cappuccino.DataAccess
         /// <returns></returns>
         IQueryable<T> GetList(Expression<Func<T, bool>> whereLambda);
 
+        T GetEntity(Expression<Func<T, bool>> whereLambda);
+
         /// <summary>
         /// 执行原生SQL查询
         /// </summary>

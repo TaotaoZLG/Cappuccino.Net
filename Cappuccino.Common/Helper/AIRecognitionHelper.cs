@@ -21,7 +21,7 @@ namespace Cappuccino.Common.Helper
         static AIRecognitionHelper()
         {
             string timeoutStr = ConfigUtils.AppSetting.GetValue("AITimeout");
-            int timeout = timeoutStr.ParseToInt() > 0 ? timeoutStr.ParseToInt() : 180;
+            int timeout = timeoutStr.ParseToInt() > 0 ? timeoutStr.ParseToInt() : 360;
             _httpClient = new HttpClient
             {
                 Timeout = TimeSpan.FromSeconds(timeout)
@@ -35,7 +35,8 @@ namespace Cappuccino.Common.Helper
         /// <param name="progressAction">进度回调</param>
         /// <returns>识别结果（JSON字符串）</returns>
         public static async Task<string> ImageOcrRecognizeAsync(string imagePath, string batchId, Action<ProcessProgress> progressAction)
-        {           
+        {
+            string responseContent = string.Empty;
             try
             {
                 // 校验文件是否存在
@@ -83,7 +84,7 @@ namespace Cappuccino.Common.Helper
                 HttpResponseMessage response = await _httpClient.PostAsync(endpoint, multipartContent);
 
                 // 读取响应结果（接口返回JSON，直接返回或按需解析）
-                string responseContent = await response.Content.ReadAsStringAsync();
+                responseContent = await response.Content.ReadAsStringAsync();
 
                 // 进度回调：识别完成
                 progressAction.Invoke(new ProcessProgress
@@ -95,11 +96,7 @@ namespace Cappuccino.Common.Helper
                 });
 
                 // 检查响应状态码，返回识别结果
-                if (!response.IsSuccessStatusCode)
-                {
-                    return responseContent;
-                }
-                else
+                if (response.IsSuccessStatusCode)
                 {
                     // 返回原始JSON响应（如需解析成特定格式，可在此处处理）
                     var jsonObj = JObject.Parse(responseContent);
@@ -109,7 +106,6 @@ namespace Cappuccino.Common.Helper
                         responseContent = jsonObj.Value<string>("data").ToString();
                     }
                 }
-                return responseContent;
             }
             catch (Exception ex)
             {
@@ -122,8 +118,9 @@ namespace Cappuccino.Common.Helper
                     Type = "Error",
                     Message = errorMsg
                 });
-                return errorMsg;
+                //return errorMsg;
             }
+            return responseContent;
         }
 
         /// <summary>

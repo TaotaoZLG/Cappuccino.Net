@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
@@ -10,12 +12,12 @@ using Cappuccino.Common.Enum;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Log;
 using Cappuccino.Common.Util;
-using log4net;
 
 namespace Cappuccino.Common.Helper
 {
     public class FileHelper
     {
+        #region 上传下载操作
         #region 上传单个文件
         /// <summary>
         /// 上传单个文件
@@ -228,65 +230,60 @@ namespace Cappuccino.Common.Helper
             obj.Status = 1;
             return obj;
         }
-        #endregion 
+        #endregion
+        #endregion
 
+        #region 路径转换操作
         /// <summary>
-        /// 判断目录是否存在，不存在则创建
+        /// 获取物理路径（转换虚拟路径）
         /// </summary>
-        /// <param name="directory">目录路径</param>
-        public static void CreateDirectory(string directory)
+        public static string GetPhysicalPath(string virtualPath)
         {
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
+            return HostingEnvironment.MapPath(virtualPath);
         }
 
         /// <summary>
-        /// 判断目录是否存在，不存在则创建（支持文件路径，自动提取目录）
+        /// 将物理路径转换为虚拟路径
         /// </summary>
-        /// <param name="directoryPath">目录路径（支持文件路径，自动提取目录）</param>
-        public static void EnsureDirectoryExists(string directoryPath)
-        {
-            if (string.IsNullOrEmpty(directoryPath)) return;
-
-            // 如果是文件路径，提取所在目录
-            string targetDir = Path.HasExtension(directoryPath)
-                ? Path.GetDirectoryName(directoryPath)
-                : directoryPath;
-
-            if (!Directory.Exists(targetDir))
-            {
-                Directory.CreateDirectory(targetDir);
-            }
-        }
-
-        /// <summary>
-        /// 删除
-        /// </summary>
-        /// <param name="filePath"></param>
-        public static void DeleteDirectory(string filePath)
+        /// <param name="physicalPath">物理路径</param>
+        /// <returns>虚拟路径（以"~/"开头）</returns>
+        public static string GetVirtualPath(string physicalPath)
         {
             try
             {
-                if (Directory.Exists(filePath)) //如果存在这个文件夹删除之 
+                // 获取应用程序物理路径
+                string appPhysicalPath = HttpContext.Current != null ? HostingEnvironment.MapPath("~/") : AppDomain.CurrentDomain.BaseDirectory;
+
+                // 确保路径是绝对路径
+                physicalPath = Path.GetFullPath(physicalPath);
+                appPhysicalPath = Path.GetFullPath(appPhysicalPath);
+
+                // 验证物理路径是否在应用程序目录内
+                if (!physicalPath.StartsWith(appPhysicalPath, StringComparison.OrdinalIgnoreCase))
                 {
-                    foreach (string d in Directory.GetFileSystemEntries(filePath))
-                    {
-                        if (File.Exists(d))
-                            File.Delete(d); //直接删除其中的文件                        
-                        else
-                            DeleteDirectory(d); //递归删除子文件夹 
-                    }
-                    Directory.Delete(filePath, true); //删除已空文件夹                 
+                    throw new SecurityException("物理路径不在应用程序目录内，无法转换为虚拟路径");
                 }
+
+                // 移除应用程序物理路径前缀
+                string relativePath = physicalPath.Substring(appPhysicalPath.Length);
+
+                // 替换反斜杠为正斜杠，并移除开头的斜杠
+                relativePath = relativePath.Replace('\\', '/').TrimStart('/');
+
+                // 构建虚拟路径
+                return $"~/{relativePath}";
             }
             catch (Exception ex)
             {
-                Log4netHelper.Error(ex.Message, ex);
+                throw new IOException($"物理路径转换失败: {ex.Message}", ex);
             }
         }
 
+        /// <summary>
+        /// 转换目录路径为HTTP可访问格式（替换分隔符）
+        /// </summary>
+        /// <param name="directory">目录</param>
+        /// <returns></returns>
         public static string ConvertDirectoryToHttp(string directory)
         {
             directory = directory.ParseToString();
@@ -294,13 +291,72 @@ namespace Cappuccino.Common.Helper
             return directory;
         }
 
+        /// <summary>
+        /// 转换HTTP路径为目录格式（替换分隔符）
+        /// </summary>
+        /// <param name="http"></param>
+        /// <returns></returns>
         public static string ConvertHttpToDirectory(string http)
         {
             http = http.ParseToString();
             http = http.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
             return http;
         }
+        #endregion
 
+        #region 文件基础操作
+        /// <summary>
+        /// 读取文件内容
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <param name="encoding">编码方式，默认UTF8</param>
+        /// <returns>文件内容</returns>
+        public static string ReadFile(string filePath, Encoding encoding = null)
+        {
+            try
+            {
+                encoding = encoding ?? Encoding.UTF8;
+                return File.ReadAllText(filePath, encoding);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"读取文件失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 写入文件内容
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <param name="content">文件内容</param>
+        /// <param name="encoding">编码方式，默认UTF8</param>
+        /// <param name="append">是否追加内容</param>
+        public static void WriteFile(string filePath, string content, Encoding encoding = null, bool append = false)
+        {
+            try
+            {
+                encoding = encoding ?? Encoding.UTF8;
+                if (append)
+                {
+                    File.AppendAllText(filePath, content, encoding);
+                }
+                else
+                {
+                    File.WriteAllText(filePath, content, encoding);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"写入文件失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 复制文件到指定目录
+        /// </summary>
+        /// <param name="sourceFilePath">源文件路径</param>
+        /// <param name="destinationDirectory">目标目录</param>
+        /// <param name="overwrite">是否覆盖已存在的文件</param>
         public static void CopyFileToDirectory(string sourceFilePath, string destinationDirectory, bool overwrite = false)
         {
             try
@@ -329,12 +385,11 @@ namespace Cappuccino.Common.Helper
             catch (Exception ex)
             {
                 Log4netHelper.Error($"文件复制失败: {ex.Message}", ex);
-                throw;
             }
         }
 
         /// <summary>
-        /// 将文件复制到指定文件夹
+        /// 复制文件到指定文件夹
         /// </summary>
         /// <param name="sourceFilePath">源文件路径</param>
         /// <param name="destinationFolder">目标文件夹路径</param>
@@ -342,6 +397,7 @@ namespace Cappuccino.Common.Helper
         /// <returns>复制后的完整文件路径</returns>
         public static string CopyFileToFolder(string sourceFilePath, string destinationFolder, bool overwrite = false)
         {
+            string destinationFilePath = string.Empty;
             try
             {
                 // 检查源文件是否存在
@@ -358,21 +414,18 @@ namespace Cappuccino.Common.Helper
 
                 // 获取文件名
                 string fileName = Path.GetFileName(sourceFilePath);
-
                 // 构建目标文件的完整路径
-                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+                destinationFilePath = Path.Combine(destinationFolder, fileName);
 
                 // 复制文件
                 File.Copy(sourceFilePath, destinationFilePath, overwrite);
-
-                //Console.WriteLine($"文件复制成功: {sourceFilePath} -> {destinationFilePath}");
-                return destinationFilePath;
+                
             }
             catch (Exception ex)
             {
-                Log4netHelper.Error($"文件复制失败: {ex.Message}", ex);                
-                throw; // 重新抛出异常，让调用方处理
+                Log4netHelper.Error($"文件复制失败: {ex.Message}", ex);
             }
+            return destinationFilePath;
         }
 
         /// <summary>
@@ -396,34 +449,639 @@ namespace Cappuccino.Common.Helper
                 catch (Exception ex)
                 {
                     Log4netHelper.Error($"复制文件 {sourceFile} 时出错: {ex.Message}", ex);
-                    // 继续处理其他文件
                 }
             }
 
             return copiedFiles;
         }
 
+        public static class FileCopyHelper
+        {
+            /// <summary>
+            /// 批量复制文件
+            /// </summary>
+            /// <param name="copyTasks">复制任务列表，包含源文件路径和目标目录</param>
+            /// <param name="overwrite">是否覆盖已存在的文件</param>
+            /// <param name="batchSize">每批次处理的文件数量（可选）</param>
+            /// <returns>操作结果，包含状态、消息和详细结果</returns>
+            public static TData BatchCopyFiles(List<(string source, string destination)> copyTasks, bool overwrite = false, int batchSize = 100)
+            {
+                var result = new TData
+                {
+                    Status = 1,
+                    Message = "文件批量复制成功"
+                };
+
+                try
+                {
+                    // 分批次处理
+                    for (int i = 0; i < copyTasks.Count; i += batchSize)
+                    {
+                        var batch = copyTasks.Skip(i).Take(batchSize).ToList();
+
+                        // 并行处理当前批次
+                        Parallel.ForEach(batch, task =>
+                        {
+                            try
+                            {
+                                CopyFileToDirectory(task.source, task.destination, overwrite);
+                            }
+                            catch (Exception ex)
+                            {
+                                // 记录单个文件复制失败
+                                result.Status = 0;
+                                result.Message = $"部分文件复制失败: {ex.Message}";
+                            }
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result.Status = 0;
+                    result.Message = "文件批量复制失败: " + ex.Message;
+                }
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// 移动文件到指定目录
+        /// </summary>
+        /// <param name="sourceFilePath">源文件路径</param>
+        /// <param name="destinationDirectory">目标目录</param>
+        /// <returns>移动后的文件路径</returns>
+        public static string MoveFileToDirectory(string sourceFilePath, string destinationDirectory)
+        {
+            try
+            {
+                // 确保目标目录存在
+                if (!Directory.Exists(destinationDirectory))
+                {
+                    Directory.CreateDirectory(destinationDirectory);
+                }
+
+                string fileName = Path.GetFileName(sourceFilePath);
+                string destinationFilePath = Path.Combine(destinationDirectory, fileName);
+
+                File.Move(sourceFilePath, destinationFilePath);
+                return destinationFilePath;
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"移动文件失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 批量移动文件
+        /// </summary>
+        /// <param name="moveTasks">移动任务列表，包含源路径和目标路径</param>
+        /// <param name="batchSize">每批次处理的文件数量（可选）</param>
+        /// <returns>操作结果，包含状态、消息和详细结果</returns>
+        public static TData BatchMoveFiles(List<(string source, string target)> moveTasks, int batchSize = 100)
+        {
+            var result = new TData<bool>
+            {
+                Status = 1,
+                Message = "文件批量移动成功"
+            };
+
+            try
+            {
+                // 分批次处理
+                for (int i = 0; i < moveTasks.Count; i += batchSize)
+                {
+                    var batch = moveTasks.Skip(i).Take(batchSize).ToList();
+
+                    // 并行处理当前批次
+                    Parallel.ForEach(batch, task =>
+                    {
+                        try
+                        {
+                            MoveFileToDirectory(task.source, task.target);
+                        }
+                        catch (Exception ex)
+                        {
+                            // 记录单个文件移动失败
+                            result.Status = 0;
+                            result.Message = $"部分文件移动失败: {ex.Message}";
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Status = 0;
+                result.Message = "文件批量移动失败: " + ex.Message;
+            }
+            return result;
+        }
+        #endregion
+
+        #region 目录操作
+        /// <summary>
+        /// 判断目录是否存在，不存在则创建
+        /// </summary>
+        /// <param name="directoryPath">目录路径</param>
+        public static void CreateDirectory(string directoryPath)
+        {
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+        }
+
+        /// <summary>
+        /// 判断目录是否存在，不存在则创建（支持文件路径，自动提取目录）
+        /// </summary>
+        /// <param name="directoryPath">目录路径（支持文件路径，自动提取目录）</param>
+        public static void EnsureDirectoryExists(string directoryPath)
+        {
+            if (string.IsNullOrEmpty(directoryPath)) return;
+
+            // 如果是文件路径，提取所在目录
+            string targetDir = Path.HasExtension(directoryPath) ? Path.GetDirectoryName(directoryPath) : directoryPath;
+
+            if (!Directory.Exists(targetDir))
+            {
+                Directory.CreateDirectory(targetDir);
+            }
+        }
+
+        /// <summary>
+        /// 删除目录及其下所有文件和子目录（递归删除）
+        /// </summary>
+        /// <param name="filePath">文件夹路径</param>
+        public static void DeleteDirectory(string filePath)
+        {
+            try
+            {
+                if (Directory.Exists(filePath)) //如果存在这个文件夹删除之 
+                {
+                    foreach (string d in Directory.GetFileSystemEntries(filePath))
+                    {
+                        if (File.Exists(d))
+                            File.Delete(d); //直接删除其中的文件                        
+                        else
+                            DeleteDirectory(d); //递归删除子文件夹 
+                    }
+                    Directory.Delete(filePath, true); //删除已空文件夹                 
+                }
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error(ex.Message, ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取目录中的所有文件
+        /// </summary>
+        /// <param name="directoryPath">目录路径</param>
+        /// <param name="searchPattern">搜索模式，如"*.txt"</param>
+        /// <param name="searchOption">搜索选项</param>
+        /// <returns>文件路径数组</returns>
+        public static string[] GetFiles(string directoryPath, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        {
+            try
+            {
+                return Directory.GetFiles(directoryPath, searchPattern, searchOption);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"获取文件列表失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取目录信息
+        /// </summary>
+        /// <param name="directoryPath">目录路径</param>
+        /// <returns>目录信息</returns>
+        public static DirectoryInfo GetDirectoryInfo(string directoryPath)
+        {
+            try
+            {
+                return new DirectoryInfo(directoryPath);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"获取目录信息失败: {ex.Message}", ex);
+            }
+        }        
+        #endregion
+
+        #region 文件信息操作
+        /// <summary>
+        /// 获取文件信息
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <returns>文件信息</returns>
+        public static FileInfo GetFileInfo(string filePath)
+        {
+            try
+            {
+                return new FileInfo(filePath);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"获取文件信息失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取指定文件详细属性
+        /// </summary>
+        /// <param name="filePath">文件详细路径</param>
+        /// <returns></returns>
+        public static string GetFileAttibe(string filePath)
+        {
+            string str = "";
+            FileInfo objFI = new FileInfo(filePath);
+            str += "详细路径:" + objFI.FullName + "<br>文件名称:" + objFI.Name + "<br>文件长度:" + objFI.Length.ToString() + "字节<br>创建时间" + objFI.CreationTime.ToString() + "<br>最后访问时间:" + objFI.LastAccessTime.ToString() + "<br>修改时间:" + objFI.LastWriteTime.ToString() + "<br>所在目录:" + objFI.DirectoryName + "<br>扩展名:" + objFI.Extension;
+            return str;
+        }
+
+        /// <summary>
+        /// 获取文件大小（格式化）
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <returns>格式化的文件大小字符串</returns>
+        public static string GetFormattedFileSize(string filePath)
+        {
+            try
+            {
+                var fileInfo = new FileInfo(filePath);
+                return FormatFileSize(fileInfo.Length);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"获取文件大小失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取文件夹大小
+        /// </summary>
+        /// <param name="dirPath">文件夹路径</param>
+        /// <returns></returns>
+        public static long GetDirectoryLength(string dirPath)
+        {
+            if (!Directory.Exists(dirPath))
+                return 0;
+            long len = 0;
+            DirectoryInfo di = new DirectoryInfo(dirPath);
+            foreach (FileInfo fi in di.GetFiles())
+            {
+                len += fi.Length;
+            }
+            DirectoryInfo[] dis = di.GetDirectories();
+            if (dis.Length > 0)
+            {
+                for (int i = 0; i < dis.Length; i++)
+                {
+                    len += GetDirectoryLength(dis[i].FullName);
+                }
+            }
+            return len;
+        }              
+
+        /// <summary>
+        /// 格式化文件大小
+        /// </summary>
+        /// <param name="bytes">字节数</param>
+        /// <returns>格式化的大小字符串</returns>
+        public static string FormatFileSize(long bytes)
+        {
+            if (bytes >= 1024 * 1024 * 1024) // GB
+                return $"{bytes / (1024.0 * 1024 * 1024):0.##} GB";
+            if (bytes >= 1024 * 1024) // MB
+                return $"{bytes / (1024.0 * 1024):0.##} MB";
+            if (bytes >= 1024) // KB
+                return $"{bytes / 1024.0:0.##} KB";
+            return $"{bytes} bytes";
+        }
+
+        /// <summary>
+        /// 获取文件MIME类型
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <returns>MIME类型</returns>
+        public static string GetMimeType(string filePath)
+        {
+            string extension = Path.GetExtension(filePath)?.ToLowerInvariant() ?? string.Empty;
+
+            var mimeTypes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { ".txt", "text/plain" },
+                { ".pdf", "application/pdf" },
+                { ".doc", "application/msword" },
+                { ".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+                { ".xls", "application/vnd.ms-excel" },
+                { ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
+                { ".png", "image/png" },
+                { ".jpg", "image/jpeg" },
+                { ".jpeg", "image/jpeg" },
+                { ".gif", "image/gif" },
+                { ".bmp", "image/bmp" },
+                { ".zip", "application/zip" },
+                { ".rar", "application/x-rar-compressed" },
+                { ".7z", "application/x-7z-compressed" },
+                { ".json", "application/json" },
+                { ".xml", "application/xml" },
+                { ".csv", "text/csv" },
+                { ".html", "text/html" },
+                { ".htm", "text/html" }
+            };
+
+            return mimeTypes.TryGetValue(extension, out string mimeType) ? mimeType : "application/octet-stream";
+        }
+        #endregion
+
+        #region 高级操作
+
+        /// <summary>
+        /// 合并多个文件
+        /// </summary>
+        /// <param name="sourceFiles">源文件路径列表</param>
+        /// <param name="destinationFile">目标文件路径</param>
+        /// <param name="overwrite">是否覆盖已存在的文件</param>
+        public static void MergeFiles(IEnumerable<string> sourceFiles, string destinationFile, bool overwrite = false)
+        {
+            try
+            {
+                if (!overwrite && File.Exists(destinationFile))
+                    throw new IOException($"文件已存在: {destinationFile}");
+
+                using (var destinationStream = new FileStream(destinationFile, FileMode.Create, FileAccess.Write))
+                {
+                    foreach (var sourceFile in sourceFiles)
+                    {
+                        using (var sourceStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))
+                        {
+                            sourceStream.CopyTo(destinationStream);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"合并文件失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 分块读取大文件
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <param name="chunkSize">块大小（字节）</param>
+        /// <param name="processChunk">处理每个块的委托</param>
+        public static void ReadFileInChunks(string filePath, int chunkSize = 1024 * 1024, Action<byte[], int> processChunk = null)
+        {
+            if (chunkSize <= 0)
+                throw new ArgumentException("块大小必须大于0", nameof(chunkSize));
+
+            try
+            {
+                using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    var buffer = new byte[chunkSize];
+                    int bytesRead;
+
+                    while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        processChunk?.Invoke(buffer, bytesRead);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"分块读取文件失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 计算文件哈希值（MD5）
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <returns>MD5哈希值</returns>
+        public static string GetFileHashMD5(string filePath)
+        {
+            try
+            {
+                using (var md5 = System.Security.Cryptography.MD5.Create())
+                using (var stream = File.OpenRead(filePath))
+                {
+                    var hashBytes = md5.ComputeHash(stream);
+                    return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"计算文件MD5失败: {ex.Message}", ex);
+            }
+        }
+
+        #endregion
+
+        #region 文件名和扩展名操作
+
+        /// <summary>
+        /// 获取文件名（不带扩展名）
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <returns>文件名（不带扩展名）</returns>
+        public static string GetFileNameWithoutExtension(string filePath)
+        {
+            try
+            {
+                return Path.GetFileNameWithoutExtension(filePath);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"获取文件名（不带扩展名）失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取文件名（带扩展名）
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <returns>文件名（带扩展名）</returns>
+        public static string GetFileNameWithExtension(string filePath)
+        {
+            try
+            {
+                return Path.GetFileName(filePath);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"获取文件名（带扩展名）失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取文件扩展名（包含点号，如".txt"）
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <returns>文件扩展名</returns>
+        public static string GetFileExtension(string filePath)
+        {
+            try
+            {
+                string extension = Path.GetExtension(filePath);
+                return string.IsNullOrEmpty(extension) ? string.Empty : extension.ToLowerInvariant();
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"获取文件扩展名失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取文件扩展名（不包含点号，如"txt"）
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <returns>文件扩展名（不包含点号）</returns>
+        public static string GetFileExtensionWithoutDot(string filePath)
+        {
+            try
+            {
+                string extension = Path.GetExtension(filePath);
+                if (string.IsNullOrEmpty(extension))
+                    return string.Empty;
+
+                return extension.TrimStart('.').ToLowerInvariant();
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"获取文件扩展名（不包含点号）失败: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// 更改文件扩展名
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <param name="newExtension">新的扩展名（可以包含或不包含点号）</param>
+        /// <returns>更改扩展名后的新路径</returns>
+        public static string ChangeFileExtension(string filePath, string newExtension)
+        {
+            try
+            {
+                // 确保扩展名以点号开头
+                if (!newExtension.StartsWith("."))
+                {
+                    newExtension = "." + newExtension;
+                }
+
+                return Path.ChangeExtension(filePath, newExtension);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"更改文件扩展名失败: {ex.Message}", ex);
+            }
+        }
+
         /// <summary>
         /// 检查文件扩展名
         /// </summary>
-        /// <param name="fileExtension"></param>
-        /// <param name="allowExtension"></param>
+        /// <param name="fileExtension">文件扩展名</param>
+        /// <param name="allowedExtensions">允许的扩展名列表</param>
         /// <returns></returns>
-        public static TData CheckFileExtension(string fileExtension, string allowExtension)
+        public static TData CheckFileExtension(string fileExtension, string allowedExtensions)
         {
             TData obj = new TData();
-            string[] allowArr = TextHelper.SplitToArray<string>(allowExtension.ToLower(), '|');
+            string[] allowArr = TextHelper.SplitToArray<string>(allowedExtensions.ToLower(), '|');
             if (allowArr.Where(p => p.Trim() == fileExtension.ParseToString().ToLower()).Any())
             {
                 obj.Status = 1;
             }
             else
             {
-                obj.Message = "只有文件扩展名是 " + allowExtension + " 的文件才能上传";
+                obj.Message = "只有文件扩展名是 " + allowedExtensions + " 的文件才能上传";
             }
             return obj;
         }
 
+        /// <summary>
+        /// 检查文件扩展名，使用逗号分隔的字符串指定允许的扩展名（如".jpg,.jpeg,.png"）
+        /// </summary>
+        /// <param name="fileName">文件名</param>
+        /// <param name="allowedExtensions">允许的扩展名列表，用逗号分隔（如".jpg,.jpeg,.png"）</param>
+        /// <returns>是否有效</returns>
+        public static bool IsValidFileExtension(string fileName, string allowedExtensions)
+        {
+            if (string.IsNullOrWhiteSpace(fileName) || string.IsNullOrWhiteSpace(allowedExtensions))
+                return false;
+
+            try
+            {
+                string extension = Path.GetExtension(fileName)?.ToLowerInvariant() ?? string.Empty;
+
+                // 分割允许的扩展名，移除空格，并转换为小写
+                var validExtensions = allowedExtensions.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(ext => ext.Trim().ToLowerInvariant())
+                    .ToList();
+
+                return validExtensions.Any(ext =>
+                    ext.Equals(extension, StringComparison.OrdinalIgnoreCase) ||
+                    ext.Equals(extension.TrimStart('.'), StringComparison.OrdinalIgnoreCase));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 检查文件扩展名，使用可变参数列表指定允许的扩展名（如".jpg", ".png"等）
+        /// </summary>
+        /// <param name="fileName">文件名</param>
+        /// <param name="allowedExtensions">允许的扩展名列表</param>
+        /// <returns>是否有效</returns>
+        public static bool IsValidFileExtension(string fileName, params string[] allowedExtensions)
+        {
+            if (string.IsNullOrWhiteSpace(fileName) || allowedExtensions == null || allowedExtensions.Length == 0)
+                return false;
+
+            string extension = Path.GetExtension(fileName)?.ToLowerInvariant() ?? string.Empty;
+            return allowedExtensions.Any(ext => ext.Equals(extension, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// 检查文件扩展名，使用指定分隔符的字符串指定允许的扩展名（如".jpg|.jpeg|.png"），分隔符默认为逗号
+        /// </summary>
+        /// <param name="fileName">文件名</param>
+        /// <param name="allowedExtensions">允许的扩展名列表，用指定分隔符分隔（如".jpg|.jpeg|.png"）</param>
+        /// <param name="separator">分隔符，默认为逗号</param>
+        /// <returns>是否有效</returns>
+        public static bool IsValidFileExtension(string fileName, string allowedExtensions, char separator = ',')
+        {
+            if (string.IsNullOrWhiteSpace(fileName) || string.IsNullOrWhiteSpace(allowedExtensions))
+                return false;
+
+            try
+            {
+                string extension = Path.GetExtension(fileName)?.ToLowerInvariant() ?? string.Empty;
+
+                // 分割允许的扩展名，移除空格，并转换为小写
+                var validExtensions = allowedExtensions.Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(ext => ext.Trim().ToLowerInvariant())
+                    .ToList();
+
+                return validExtensions.Any(ext =>
+                    ext.Equals(extension, StringComparison.OrdinalIgnoreCase) ||
+                    ext.Equals(extension.TrimStart('.'), StringComparison.OrdinalIgnoreCase));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        #endregion
+
+        #region 安全和验证
         /// <summary>
         /// 过滤文件路径中的非法字符（如../、..、~等），防止目录遍历攻击
         /// </summary>
@@ -438,13 +1096,6 @@ namespace Cappuccino.Common.Helper
             filePath = filePath.TrimStart('/');
             return filePath;
         }
-
-        /// <summary>
-        /// 获取物理路径（转换虚拟路径）
-        /// </summary>
-        public static string GetPhysicalPath(string virtualPath)
-        {
-            return HostingEnvironment.MapPath(virtualPath);
-        }
+        #endregion
     }
 }

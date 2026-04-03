@@ -7,6 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Helper;
 using Cappuccino.Common.Helpers;
 using Cappuccino.Common.Util;
@@ -114,6 +116,102 @@ namespace Cappuccino.BLL
             {
                 // 清理临时Word文件
                 //FileHelper.DeleteDirectory(tempWordVirDir);
+            }
+            return obj;
+        }
+
+        /// <summary>
+        /// 上传文件（支持压缩包上传，解压后返回文件列表）
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="saveDirectoryName"></param>
+        /// <returns></returns>
+        public async Task<TData> UploadFiles(HttpPostedFileBase file, string saveDirectoryName)
+        {
+            TData obj = new TData();
+            try
+            {
+                if (file == null || file.ContentLength == 0)
+                {
+                    obj.Status = 0;
+                    obj.Message = "请选择要上传的压缩包文件";
+                    return obj;
+                }
+
+                // 文件格式/大小校验（原有逻辑保留）
+                string unzipFileName = file.FileName;
+                string supportFormats = ConfigUtils.AppSetting.GetValue("CompressedFileFormats");
+                if (!FileHelper.IsValidFileExtension(unzipFileName, supportFormats, '|'))
+                {
+                    obj.Status = 0;
+                    obj.Message = $"当前不支持该文件类型，请尝试其他文件。支持格式：{supportFormats}";
+                    return obj;
+                }
+                int maxSize = ConfigUtils.AppSetting.GetValue("UploadMaxFileSize").ParseToInt();
+                if (file.ContentLength > maxSize)
+                {
+                    obj.Status = 0;
+                    obj.Message = $"文件大小超出限制，最大支持{maxSize / 1024 / 1024}MB";
+                    return obj;
+                }
+
+                string batchId = GuidHelper.GetGuid(true);
+
+                // 上传文件临时路径
+                string tempRootPath = ConfigUtils.AppSetting.GetValue("TempRootPath");
+                // 压缩包保存路径
+                string tempRootPathDir = Path.Combine(tempRootPath, batchId, unzipFileName);
+                string tempRootPhysical = FileHelper.GetPhysicalPath(tempRootPathDir);
+                FileHelper.EnsureDirectoryExists(tempRootPhysical);
+                file.SaveAs(tempRootPhysical);
+
+                // 压缩包解压路径
+                string unzipPhysical = Path.Combine(tempRootPhysical, "unzip");
+                FileHelper.EnsureDirectoryExists(unzipPhysical);
+
+                // 解压压缩包
+                var unzipFiles = CompressHelper.UnzipCompressedFile(tempRootPhysical, unzipPhysical);
+
+                if (unzipFiles.Status == 1)
+                {
+                    var moveTasks = new List<(string source, string target)>();
+
+                    foreach (var path in unzipFiles.Data)
+                    {
+                        string fileName = Path.GetFileName(path);
+                        string fileNameWithoutExt = Path.GetFileNameWithoutExtension(path);
+                        string fileExt = Path.GetExtension(path).ToLower();
+
+                        // 查询案件信息（根据文件名匹配案件名称，实际业务可根据需要调整匹配规则）
+                        var caseInfoEntity = _sysCaseInfoDao.GetList(x => x.CustName == fileName).FirstOrDefault();
+                        if (caseInfoEntity != null)
+                        {
+                            string archivePathDir = caseInfoEntity.ArchiveVirtualPath;
+                            string saveFileDir = Path.Combine(archivePathDir, saveDirectoryName, fileName);
+                            string saveFilePhysical = FileHelper.GetPhysicalPath(saveFileDir);
+                            FileHelper.CreateDirectory(saveFilePhysical);
+
+                            // 记录移动任务
+                            moveTasks.Add((path, saveFilePhysical));
+                        }
+                    }
+
+                    // 批量移动文件
+                    FileHelper.BatchMoveFiles(moveTasks);
+
+                    obj.Status = 1;
+                    obj.Message = "文件上传成功";
+                }
+                else
+                {
+                    obj.Status = 0;
+                    obj.Message = "文件解压失败：" + unzipFiles.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                obj.Status = 0;
+                obj.Message = "文件上传失败：" + ex.Message;
             }
             return obj;
         }

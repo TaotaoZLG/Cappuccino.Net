@@ -44,6 +44,11 @@ namespace Cappuccino.BLL
             return this.CurrentDao.GetList(whereLambda);
         }
 
+        public T GetEntity(Expression<Func<T, bool>> whereLambda)
+        {
+            return this.CurrentDao.GetEntity(whereLambda);
+        }
+
         public IQueryable<T> GetListByPage<S>(Expression<Func<T, bool>> whereLambada, Expression<Func<T, S>> orderBy, int pageSize, int pageIndex, out int totalCount, bool isAsc)
         {
             return this.CurrentDao.GetListByPage<S>(whereLambada, orderBy, pageSize, pageIndex, out totalCount, isAsc);

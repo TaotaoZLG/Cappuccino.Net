@@ -43,6 +43,11 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
         {
             return View();
         }
+
+        public ActionResult UploadFile()
+        {
+            return View();
+        }
         #endregion
 
         #region 提交数据
@@ -51,7 +56,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
         /// </summary>
         [HttpPost]
         [CheckPermission("system.case.uploadfile")]
-        public async Task<ActionResult> UploadFile()
+        public async Task<ActionResult> UploadFileJson()
         {
             try
             {

@@ -1,7 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "上传文件";
-    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
 }
 
 @section style {
@@ -11,10 +11,15 @@
     <div class="mainBox">
         <div class="main-container">
             <div class="layui-form-item">
+                <label class="layui-form-label">保存目录名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="directoryName" lay-verify="required" lay-reqtext="请输入保存目录名称" autocomplete="off" placeholder="请输入保存目录名称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">选择文件</label>
                 <div class="layui-input-block" style="display: flex; align-items: center;">
-                    <input type="text" class="layui-input" id="fileNameInput" placeholder="请选择文件" readonly
-                           style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;" />
+                    <input type="text" class="layui-input" id="fileNameInput" placeholder="请选择文件" readonly lay-verify="required" lay-reqtext="请选择文件" style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;" />
                     <button type="button" class="layui-btn layui-btn-normal" id="chooseFileBtn"
                             style="border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px;">
                         <i class="layui-icon">&#xe621;</i> 浏览...
@@ -23,16 +28,66 @@
             </div>
         </div>
     </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button type="submit" class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="" lay-filter="upload">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
 </form>
 
 @section Scripts {
     <script>
-        layui.use(['common', 'upload'], function () {
+        layui.use(['form', 'common', 'upload'], function () {
             var $ = layui.jquery;
+            var form = layui.form;
             var common = layui.common;
             var upload = layui.upload;
 
 
+            // 执行实例
+            var uploadInst = upload.render({
+                elem: '#chooseFileBtn',
+                url: '/BusinessManage/SysCaseInfo/UploadFileJson',
+                accept: 'file', // 允许上传文件类型
+                exts: 'zip|rar|7z', // 限制文件后缀
+                auto: false, // 选择文件后自动上传
+                multiple: false,
+                url: '/BusinessManage/SysFileProcessiong/UploadAndProcess',
+                data: { // 额外参数
+                    saveDirectoryName: function () { return $('#directoryName').val(); }
+                },
+                choose: function (obj) {
+                    // 选择文件回调
+                    obj.preview(function (index, file, result) {
+                        var fileSize = (file.size / 1024 / 1024).toFixed(2);
+                        $('#fileNameInput').val(`${file.name}（${fileSize}MB）`);
+                    });
+                },
+                done: function (res) {
+                    // 上传成功回调
+                    if (res.Status === 1) {
+                        layer.msg('上传成功');
+                    } else {
+                        layer.alert(res.Message);
+                    }
+                },
+                error: function () {
+                    // 上传失败回调
+                    layer.msg('上传失败');
+                }
+            });
+
+            form.on("submit(upload)", function (data) {
+                uploadInst.upload();
+                return false;
+            });
         });
     </script>
 }

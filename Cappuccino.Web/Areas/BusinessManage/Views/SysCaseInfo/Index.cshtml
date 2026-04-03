@@ -108,8 +108,8 @@
                 else if (obj.event === 'uploadfile') {
                     ys.openDialog({
                         title: "上传文件",
-                        content: '@Url.Content("~/File/UploadFile")',
-                        height: "280px",
+                        content: MODULE_PATH + "UploadFile",
+                        height: "350px",
                         callback: function (index, layero) {
 
                         }
@@ -124,7 +124,7 @@
                         title: '诉状生成',
                         shade: 0.1,
                         area: ['800px', '650px'],
-                        content: '/BusinessManage/SysCaseInfo/Indictment',
+                        content: MODULE_PATH + "Indictment",
                         cancel: function (index, layero) {
                         }
                     });

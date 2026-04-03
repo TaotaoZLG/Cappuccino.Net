@@ -4,7 +4,10 @@ namespace Cappuccino.Common.Util.Model
 {
     public class SystemConfig
     {
-        public SystemConfig() { }
+        static SystemConfig() 
+        {
+        
+        }
 
         /// <summary>
         /// 允许一个用户在多个电脑同时登录

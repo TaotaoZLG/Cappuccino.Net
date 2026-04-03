@@ -87,6 +87,12 @@ namespace Cappuccino.DataAccess
             return result;
         }
 
+        public virtual T GetEntity(Expression<Func<T, bool>> whereLambda)
+        {
+            T result = DbSet.Where(whereLambda).FirstOrDefault();
+            return result;
+        }
+
         public virtual IEnumerable<T> GetList(string sql, params object[] parameters)
         {
             return Db.Database.SqlQuery<T>(sql, parameters);

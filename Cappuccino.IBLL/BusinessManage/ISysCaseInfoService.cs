@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Cappuccino.Common.Util;
 using Cappuccino.Entity;
 using Cappuccino.Model;
@@ -19,5 +20,7 @@ namespace Cappuccino.IBLL
         /// <param name="templateId">模板ID</param>
         /// <returns></returns>
         Task<TData<string>> IndictmentAsync(List<SysCaseInfoEntity> caseInfoList, long templateId);
+
+        Task<TData> UploadFiles(HttpPostedFileBase file, string saveDirectoryName);
     }
 }

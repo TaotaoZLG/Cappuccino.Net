@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Cappuccino.Common.Extensions;
+using Cappuccino.Common.Util;
 using MiniExcelLibs;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -37,20 +38,13 @@ namespace Cappuccino.Common.Helper
         /// <returns>解压后的所有文件路径</returns>
         public static async Task<List<string>> UnzipFileAsync(string compressFilePath, string unzipDir, string batchId, Action<ProcessProgress> progressAction)
         {
-            FileHelper.EnsureDirectoryExists(unzipDir);    
-
             return await Task.Run(() =>
             {
                 if (!File.Exists(compressFilePath))
                 {
                     throw new FileNotFoundException("压缩包文件不存在", compressFilePath);
                 }
-                var fileExt = Path.GetExtension(compressFilePath).ToLower();
-                if (!SupportCompressExts.Contains(fileExt))
-                {
-                    throw new NotSupportedException($"不支持的压缩格式：{fileExt}，仅支持{string.Join(",", SupportCompressExts)}");
-                }
-
+              
                 FileHelper.EnsureDirectoryExists(unzipDir);
 
                 progressAction.Invoke(new ProcessProgress
@@ -65,6 +59,7 @@ namespace Cappuccino.Common.Helper
                 IArchive archive = null;
                 try
                 {
+                    var fileExt = Path.GetExtension(compressFilePath).ToLower();
                     switch (fileExt)
                     {
                         case ".zip":
@@ -733,6 +728,79 @@ namespace Cappuccino.Common.Helper
                 File.Copy(file, destFile, overwrite: true);
             }
         }
+
+        #region 压缩包处理
+        /// <summary>
+        /// 解压压缩包（递归处理目录层级）
+        /// </summary>
+        /// <param name="compressFilePath">压缩包路径</param>
+        /// <param name="unzipDir">解压目录</param>
+        /// <returns>解压后的所有文件路径</returns>
+        public static TData<List<string>> UnzipCompressedFile(string compressFilePath, string unzipDir)
+        {
+            TData<List<string>> obj = new TData<List<string>>();
+            IArchive archive = null;
+            try
+            {
+                if (!File.Exists(compressFilePath))
+                {
+                    obj.Status = 0;
+                    obj.Message = "压缩包文件不存在";
+                    return obj;
+                }
+
+                FileHelper.EnsureDirectoryExists(unzipDir);
+
+                List<string> allFiles = new List<string>();
+
+                var fileExt = Path.GetExtension(compressFilePath).ToLower();
+                switch (fileExt)
+                {
+                    case ".zip":
+                        archive = ZipArchive.Open(compressFilePath);
+                        break;
+                    case ".rar":
+                        archive = RarArchive.Open(compressFilePath);
+                        break;
+                    case ".7z":
+                        archive = SevenZipArchive.Open(compressFilePath);
+                        break;
+                    default:
+                        obj.Status = 0;
+                        obj.Message = "无法识别的压缩包格式";
+                        return obj;
+                }
+
+                // 递归获取所有文件（含子目录）
+                var entries = archive.Entries.Where(x => !x.IsDirectory).ToList();
+                int total = entries.Count;
+
+                foreach (var entry in entries)
+                {
+                    var entryFilePath = Path.Combine(unzipDir, entry.Key);
+                    // 统一创建子目录
+                    FileHelper.EnsureDirectoryExists(entryFilePath);
+
+                    // 解压文件
+                    entry.WriteToFile(entryFilePath, new ExtractionOptions
+                    {
+                        Overwrite = true,
+                        ExtractFullPath = true
+                    });
+                    allFiles.Add(entryFilePath);
+                }
+
+                obj.Status = 0;
+                obj.Data = allFiles;
+                obj.Message = "压缩包解压成功，共" + allFiles.Count + " 个文件";
+                return obj;
+            }
+            finally
+            {
+                archive?.Dispose();
+            }
+        }
+        #endregion
     }
 
     /// <summary>
@@ -760,7 +828,6 @@ namespace Cappuccino.Common.Helper
         /// </summary>
         public string Message { get; set; }
     }
-
 
     /// <summary>
     /// 文件归档规则枚举
