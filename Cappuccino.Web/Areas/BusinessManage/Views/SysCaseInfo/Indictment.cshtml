@@ -46,8 +46,18 @@
                     postData.idsStr = ids;
                 }
                 ys.confirm(msg, function () {
-                    var url = "/BusinessManage/SysCaseInfo/IndictmentJson";
-                    ys.exportExcel(url, postData);
+                    
+                    common.ajax("/BusinessManage/SysCaseInfo/IndictmentJson", "post", postData, true, true).done(function (response) {
+                        layer.msg(response.message, { icon: 1, time: 1000 }, function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
+                        });
+                    }).fail(function (error) {
+                        console.log(error)
+                    });
+                    return false;
+
+                    //var url = "/BusinessManage/SysCaseInfo/IndictmentJson";
+                    //ys.exportExcel(url, postData);
                 });
                 return false;
             });

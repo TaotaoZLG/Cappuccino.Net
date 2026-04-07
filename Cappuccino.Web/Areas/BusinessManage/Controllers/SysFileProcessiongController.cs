@@ -13,6 +13,7 @@ using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.Web.Core;
 using MiniExcelLibs;
+using static Cappuccino.Common.Net.NetHelper;
 
 namespace Cappuccino.Web.Areas.BusinessManage.Controllers
 {
@@ -52,6 +53,24 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
                 {
                     ProcessProgressHub.SendProgress(progress);
                 };
+
+                if (compressFile == null || compressFile.ContentLength == 0)
+                {
+                    return WriteError("请选择要上传的压缩包文件");
+                }
+
+                // 文件格式/大小校验
+                string supportFormats = ConfigUtils.AppSetting.GetValue("CompressedFileFormats");
+                if (!FileHelper.IsValidFileExtension(compressFile.FileName, supportFormats, '|'))
+                {
+                    return WriteError($"当前不支持该文件类型，请尝试其他文件。支持格式：{supportFormats}");
+                }
+
+                int maxSize = ConfigUtils.AppSetting.GetValue("UploadMaxFileSize").ParseToInt();
+                if (compressFile.ContentLength > maxSize)
+                {
+                    return WriteError($"文件大小超出限制，最大支持{maxSize / 1024 / 1024}MB");
+                }
 
                 result = await _fileProcessService.ProcessCompressFileAsync(compressFile, extractRule, processType, batchId, progressAction).ConfigureAwait(false);
                 if (result.Status == 0)

@@ -91,7 +91,7 @@ namespace Cappuccino.Common.Helper
         }
 
         /// <summary>
-        /// 字符串转指定类型数组
+        /// 截取指定分隔符分割的字符串，并转换为指定类型的数组
         /// </summary>
         /// <param name="value"></param>
         /// <param name="split"></param>

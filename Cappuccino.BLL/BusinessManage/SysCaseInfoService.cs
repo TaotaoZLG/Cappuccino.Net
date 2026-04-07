@@ -68,10 +68,10 @@ namespace Cappuccino.BLL
             string batchId = GuidHelper.GetGuid(true);
 
             // 构建批次级临时目录（按批次隔离，避免并发冲突）
-            string virRootDir = ConfigUtils.AppSetting.GetValue("VirtualDirectory");
-            string tempWordVirDir = Path.Combine(virRootDir, "Upload", "TempCaseWord", batchId);
-            string tempWordPhysicalDir = FileHelper.GetPhysicalPath(tempWordVirDir);
-            FileHelper.CreateDirectory(tempWordPhysicalDir);
+            //string virRootDir = ConfigUtils.AppSetting.GetValue("VirtualDirectory");
+            //string tempWordVirDir = Path.Combine(virRootDir, "Upload", "TempCaseWord", batchId);
+            //string tempWordPhysicalDir = FileHelper.GetPhysicalPath(tempWordVirDir);
+            //FileHelper.CreateDirectory(tempWordPhysicalDir);
           
             // 遍历案件数据，批量生成Word
             try
@@ -84,28 +84,35 @@ namespace Cappuccino.BLL
                     long caseId = caseInfo.Id;
                     string custName = caseInfo?.CustName;
                     string custIDNumber = caseInfo?.CustIDNumber;
+                    string archiveVirtualPath = caseInfo.ArchiveVirtualPath;
 
                     string tempWordFileName = $"起诉书_{custName}_{custIDNumber}_{nextWord}.docx";
-                    string tempWordPath = Path.Combine(tempWordPhysicalDir, tempWordFileName);
+                    string tempWordPath = Path.Combine(archiveVirtualPath, tempWordFileName);
+                    string tempWordPhysical = FileHelper.GetPhysicalPath(tempWordPath);
+                    FileHelper.EnsureDirectoryExists(tempWordPhysical);
 
                     // 复制模板文件（覆盖模式）
-                    File.Copy(templatePhysicalPath, tempWordPath, true);
+                    File.Copy(templatePhysicalPath, tempWordPhysical, true);
 
                     // 获取案件图片
                     var imageFileList = _sysFileService.GetFilePathById(caseId);
 
                     // 使用NPOI替换Word域值
-                    WordHelper.ReplaceContent(tempWordPath, caseInfo, imageFileList);
+                    NpoiHelper.ReplaceContent(tempWordPhysical, caseInfo, imageFileList);
                 }
 
-                // 压缩为Zip并返回虚拟路径
-                string zipFileName = $"案件起诉书_{DateTime.Now:yyyyMMddHHmmss}_{batchId}.zip";
-                string zipFilePath = ZipHelper.CompressToZip(tempWordPhysicalDir, tempWordVirDir, zipFileName);
-
                 obj.Status = 1;
-                obj.Message = "起诉书生成成功";
-                obj.Data = zipFilePath;
+                obj.Message = $"起诉书生成成功，共{nextWord}条";
                 return obj;
+
+                // 压缩为Zip并返回虚拟路径
+                //string zipFileName = $"案件起诉书_{DateTime.Now:yyyyMMddHHmmss}_{batchId}.zip";
+                //string zipFilePath = ZipHelper.CompressToZip(tempWordPhysicalDir, tempWordVirDir, zipFileName);
+
+                //obj.Status = 1;
+                //obj.Message = "起诉书生成成功";
+                //obj.Data = zipFilePath;
+                //return obj;
             }
             catch (Exception ex)
             {
@@ -130,47 +137,28 @@ namespace Cappuccino.BLL
         {
             TData obj = new TData();
             try
-            {
-                if (file == null || file.ContentLength == 0)
-                {
-                    obj.Status = 0;
-                    obj.Message = "请选择要上传的压缩包文件";
-                    return obj;
-                }
-
-                // 文件格式/大小校验（原有逻辑保留）
+            {                
                 string unzipFileName = file.FileName;
-                string supportFormats = ConfigUtils.AppSetting.GetValue("CompressedFileFormats");
-                if (!FileHelper.IsValidFileExtension(unzipFileName, supportFormats, '|'))
-                {
-                    obj.Status = 0;
-                    obj.Message = $"当前不支持该文件类型，请尝试其他文件。支持格式：{supportFormats}";
-                    return obj;
-                }
-                int maxSize = ConfigUtils.AppSetting.GetValue("UploadMaxFileSize").ParseToInt();
-                if (file.ContentLength > maxSize)
-                {
-                    obj.Status = 0;
-                    obj.Message = $"文件大小超出限制，最大支持{maxSize / 1024 / 1024}MB";
-                    return obj;
-                }
-
                 string batchId = GuidHelper.GetGuid(true);
 
                 // 上传文件临时路径
                 string tempRootPath = ConfigUtils.AppSetting.GetValue("TempRootPath");
-                // 压缩包保存路径
-                string tempRootPathDir = Path.Combine(tempRootPath, batchId, unzipFileName);
+                string tempRootPathDir = Path.Combine(tempRootPath, batchId);
                 string tempRootPhysical = FileHelper.GetPhysicalPath(tempRootPathDir);
                 FileHelper.EnsureDirectoryExists(tempRootPhysical);
-                file.SaveAs(tempRootPhysical);
+
+                // 压缩包保存路径
+                string tempCompressDir = Path.Combine(tempRootPath, batchId, unzipFileName);
+                string tempCompressPhysical = FileHelper.GetPhysicalPath(tempCompressDir);
+                FileHelper.EnsureDirectoryExists(tempCompressPhysical);
+                file.SaveAs(tempCompressPhysical);
 
                 // 压缩包解压路径
                 string unzipPhysical = Path.Combine(tempRootPhysical, "unzip");
                 FileHelper.EnsureDirectoryExists(unzipPhysical);
 
                 // 解压压缩包
-                var unzipFiles = CompressHelper.UnzipCompressedFile(tempRootPhysical, unzipPhysical);
+                var unzipFiles = CompressHelper.UnzipCompressedFile(tempCompressPhysical, unzipPhysical);
 
                 if (unzipFiles.Status == 1)
                 {
@@ -181,18 +169,21 @@ namespace Cappuccino.BLL
                         string fileName = Path.GetFileName(path);
                         string fileNameWithoutExt = Path.GetFileNameWithoutExtension(path);
                         string fileExt = Path.GetExtension(path).ToLower();
+                        // 根据文件名解析案件信息（当前以文件名格式为：姓名_卡号.ext）
+                        string[] splitFileName = TextHelper.SplitToArray<string>(fileNameWithoutExt, '_');
+                        string xm = splitFileName[0];
+                        string cardNo = splitFileName[1];
 
                         // 查询案件信息（根据文件名匹配案件名称，实际业务可根据需要调整匹配规则）
-                        var caseInfoEntity = _sysCaseInfoDao.GetList(x => x.CustName == fileName).FirstOrDefault();
+                        var caseInfoEntity = _sysCaseInfoDao.GetList(x => x.CustName == xm && x.CustCardNo == cardNo).FirstOrDefault();
                         if (caseInfoEntity != null)
                         {
                             string archivePathDir = caseInfoEntity.ArchiveVirtualPath;
-                            string saveFileDir = Path.Combine(archivePathDir, saveDirectoryName, fileName);
-                            string saveFilePhysical = FileHelper.GetPhysicalPath(saveFileDir);
-                            FileHelper.CreateDirectory(saveFilePhysical);
+                            string archiveDir = Path.Combine(archivePathDir, saveDirectoryName);
+                            string archiveDirPhysical = FileHelper.GetPhysicalPath(archiveDir);
+                            FileHelper.CreateDirectory(archiveDirPhysical);
 
-                            // 记录移动任务
-                            moveTasks.Add((path, saveFilePhysical));
+                            moveTasks.Add((path, archiveDirPhysical));
                         }
                     }
 

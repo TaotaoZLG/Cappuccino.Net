@@ -17,7 +17,7 @@ namespace Cappuccino.Common.Helpers
     /// Word文档域值替换帮助类（基于实体DisplayName注解）
     /// 支持 NPOI 2.5.6+、C#7.3 | 新增图片插入功能
     /// </summary>
-    public static class WordHelper
+    public static class NpoiHelper
     {
         // 图片占位符关键字
         private const string IMAGE_PLACEHOLDER = "{图片}";

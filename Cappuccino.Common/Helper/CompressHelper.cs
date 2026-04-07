@@ -790,7 +790,7 @@ namespace Cappuccino.Common.Helper
                     allFiles.Add(entryFilePath);
                 }
 
-                obj.Status = 0;
+                obj.Status = 1;
                 obj.Data = allFiles;
                 obj.Message = "压缩包解压成功，共" + allFiles.Count + " 个文件";
                 return obj;

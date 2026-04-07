@@ -4,8 +4,8 @@
 
     var common = {
         /**
-        * 是否前后端分离
-        */
+         * 是否前后端分离
+         */
         isFrontendBackendSeparate: false,
         /**
          * 服务器地址
@@ -13,10 +13,11 @@
         baseUrl: "http://localhost:8080",
         /**
          * ajax()函数二次封装
-         * @param url
-         * @param type
-         * @param params
-         * @param load
+         * @param {string} url 接口地址（相对于baseUrl）
+         * @param {string} type 请求类型（get/post，默认为get）
+         * @param {object} params 请求参数（默认为空对象）
+         * @param {boolean} load 是否显示加载动画（默认为true）
+         * @param {boolean} async 是否异步请求（默认为true）
          * @returns {*|never|{always, promise, state, then}}
          */
         ajax: function (url, type, params, load, async) {

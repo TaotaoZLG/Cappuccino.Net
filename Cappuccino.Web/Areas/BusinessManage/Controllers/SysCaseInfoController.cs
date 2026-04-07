@@ -16,6 +16,7 @@ using Cappuccino.IBLL;
 using Cappuccino.Model;
 using Cappuccino.Web.Core;
 using Cappuccino.Web.Models;
+using static Cappuccino.Common.Net.NetHelper;
 
 namespace Cappuccino.Web.Areas.BusinessManage.Controllers
 {
@@ -56,25 +57,43 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
         /// </summary>
         [HttpPost]
         [CheckPermission("system.case.uploadfile")]
-        public async Task<ActionResult> UploadFileJson()
+        public async Task<ActionResult> UploadFileJson(string saveDirectoryName)
         {
             try
             {
-                HttpFileCollectionBase files = Request.Files;
-                foreach (var item in files.AllKeys)
+                //HttpFileCollectionBase files = Request.Files;
+                //foreach (var item in files.AllKeys)
+                //{
+                //    var file = files[item];
+                //    if (file != null && file.ContentLength > 0)
+                //    {
+                //        // 处理文件上传
+                //    }
+                //}
+                HttpPostedFileBase fileBase = Request.Files[0];
+                if (fileBase == null || fileBase.ContentLength == 0)
                 {
-                    var file = files[item];
-                    if (file != null && file.ContentLength > 0)
-                    {
-                        // 处理文件上传
-                    }
+                    return WriteError("请选择要上传的压缩包文件");
                 }
 
-                return WriteSuccess("任务处理成功");
+                string supportFormats = ConfigUtils.AppSetting.GetValue("CompressedFileFormats");
+                if (!FileHelper.IsValidFileExtension(fileBase.FileName, supportFormats, '|'))
+                {
+                    return WriteError($"当前不支持该文件类型，请尝试其他文件。支持格式：{supportFormats}");
+                }
+
+                int maxSize = ConfigUtils.AppSetting.GetValue("UploadMaxFileSize").ParseToInt();
+                if (fileBase.ContentLength > maxSize)
+                {
+                    return WriteError($"文件大小超出限制，最大支持{maxSize / 1024 / 1024}MB");
+                }
+
+                var obj = await _sysCaseInfoService.UploadFiles(fileBase, saveDirectoryName);
+                return WriteJson(obj);
             }
             catch (Exception ex)
             {
-                return WriteError("任务启动失败：" + ex.Message);
+                return WriteError("任务上传文件：" + ex.Message);
             }
         }
 
@@ -97,7 +116,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
                 var caseInfoList = _sysCaseInfoService.GetList(queries.AsExpression<SysCaseInfoEntity>()).ToList();
 
                 var data = await _sysCaseInfoService.IndictmentAsync(caseInfoList, templateId).ConfigureAwait(false);
-                return Json(data);
+                return WriteJson(data);
             }
             catch (Exception ex)
             {

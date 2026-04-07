@@ -13,7 +13,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">保存目录名</label>
                 <div class="layui-input-block">
-                    <input type="text" name="directoryName" lay-verify="required" lay-reqtext="请输入保存目录名称" autocomplete="off" placeholder="请输入保存目录名称" class="layui-input">
+                    <input type="text" name="directoryName" id="directoryName" autocomplete="off" placeholder="请输入保存目录名称" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -50,7 +50,6 @@
             var common = layui.common;
             var upload = layui.upload;
 
-
             // 执行实例
             var uploadInst = upload.render({
                 elem: '#chooseFileBtn',
@@ -59,7 +58,6 @@
                 exts: 'zip|rar|7z', // 限制文件后缀
                 auto: false, // 选择文件后自动上传
                 multiple: false,
-                url: '/BusinessManage/SysFileProcessiong/UploadAndProcess',
                 data: { // 额外参数
                     saveDirectoryName: function () { return $('#directoryName').val(); }
                 },
@@ -70,12 +68,12 @@
                         $('#fileNameInput').val(`${file.name}（${fileSize}MB）`);
                     });
                 },
-                done: function (res) {
+                done: function (response) {
                     // 上传成功回调
-                    if (res.Status === 1) {
-                        layer.msg('上传成功');
+                    if (response.status === 1) {
+                        ys.msgSuccess('上传成功');
                     } else {
-                        layer.alert(res.Message);
+                        ys.alertError(response.message);
                     }
                 },
                 error: function () {

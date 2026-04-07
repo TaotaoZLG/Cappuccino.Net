@@ -39,30 +39,7 @@ namespace Cappuccino.BLL
             try
             {
                 var userId = UserManager.GetCurrentUserInfo().Id;
-
-                if (file == null || file.ContentLength == 0)
-                {
-                    obj.Status = 0;
-                    obj.Message = "请选择要上传的压缩包文件";
-                    return obj;
-                }
-
-                // 文件格式/大小校验（原有逻辑保留）
-                string fileName = file.FileName;
-                string supportFormats = ConfigUtils.AppSetting.GetValue("CompressedFileFormats");
-                if (!FileHelper.IsValidFileExtension(fileName, supportFormats, '|'))
-                {
-                    obj.Status = 0;
-                    obj.Message = $"当前不支持该文件类型，请尝试其他文件。支持格式：{supportFormats}";
-                    return obj;
-                }
-                int maxSize = ConfigUtils.AppSetting.GetValue("UploadMaxFileSize").ParseToInt();
-                if (file.ContentLength > maxSize)
-                {
-                    obj.Status = 0;
-                    obj.Message = $"文件大小超出限制，最大支持{maxSize / 1024 / 1024}MB";
-                    return obj;
-                }
+                string fileName = file.FileName;                
 
                 // 上传文件临时路径
                 string tempRootPath = ConfigUtils.AppSetting.GetValue("TempRootPath");
@@ -377,7 +354,7 @@ namespace Cappuccino.BLL
                                 if (allImagesList.Any())
                                 {
                                     string wordPath = Path.Combine(targetPhysicalPath, $"{userName}{cardNo}_图片资料归档.docx");
-                                    WordHelper.CreateWordWithImages(allImagesList, wordPath);
+                                    NpoiHelper.CreateWordWithImages(allImagesList, wordPath);
                                 }
 
                                 // OCR识别获取地址信息（地址截屏目录下Word 仅第一张图片）
@@ -393,7 +370,7 @@ namespace Cappuccino.BLL
                                         if (!string.IsNullOrEmpty(firstWordPath))
                                         {
                                             // 提取Word中的第一张图片
-                                            (string result, string tempImgPath, string wordFileName, string imageFileName) = WordHelper.ExtractFirstImageFromWord(firstWordPath, exportRootPhysical);
+                                            (string result, string tempImgPath, string wordFileName, string imageFileName) = NpoiHelper.ExtractFirstImageFromWord(firstWordPath, exportRootPhysical);
 
                                             // OCR识别
                                             //ocrResult = await AIRecognitionHelper.ImageOcrRecognizeAsync(tempImgPath, batchId, progressAction).ConfigureAwait(false);
@@ -524,8 +501,8 @@ namespace Cappuccino.BLL
 
                 obj.Status = 0;
                 obj.Message = $"处理失败：{ex.Message}";
-                return obj;
             }
+            return obj;
         }
     }
 }
