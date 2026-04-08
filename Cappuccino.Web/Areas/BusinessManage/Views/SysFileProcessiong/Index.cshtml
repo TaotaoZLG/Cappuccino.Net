@@ -1,4 +1,5 @@
-﻿@{
+﻿@using Cappuccino.Common;
+@{
     ViewBag.Title = "压缩包图片处理";
     Layout = "~/Views/Shared/_LayoutIndex.cshtml";
 }
@@ -259,7 +260,7 @@
                                 </div>
                             </div>
                             <div class="upload-tip-info">
-                                <i class="layui-icon layui-icon-tips"></i> 支持格式：ZIP/RAR/7Z | 最大大小：100MB
+                                <i class="layui-icon layui-icon-tips"></i> 支持格式：@GlobalContext.SystemConfig.CompressedFileFormats | 最大大小：@GlobalContext.SystemConfig.UploadMaxFileSize
                             </div>
                         </div>
                         <hr />
@@ -475,7 +476,7 @@
             form.on("submit(uploadFileBtn)", function (data) {
                 uploadInst.upload();
                 return false;
-            });            
+            });
 
             // ========== 清空日志 ==========
             window.clearLog = function () {

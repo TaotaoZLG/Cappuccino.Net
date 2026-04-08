@@ -95,7 +95,7 @@ namespace Cappuccino.Web
             return new HtmlString(string.Format(@"<div class='layui-form-item'>
                     <label class='layui-form-label'>选择文件</label>
                     <div class='layui-input-block' style='display: flex; align-items: center;'>
-                        <input type='text' class='layui-input' id='fileNameInput' placeholder='请选择文件' readonly
+                        <input type='text' class='layui-input' id='fileNameInput' placeholder='请选择文件' readonly lay-verify='required' lay-reqtext='请选择文件'
                                style='border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;' />
                         <button type='button' class='layui-btn layui-btn-normal' id='chooseFileBtn'
                                 style='border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px;'>

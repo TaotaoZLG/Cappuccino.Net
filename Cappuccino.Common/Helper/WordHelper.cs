@@ -23,6 +23,11 @@ namespace Cappuccino.Common.Helpers
         private const string IMAGE_PLACEHOLDER = "{图片}";
         private const int MAX_WIDTH = 500000;
 
+        // A4纸宽21cm，左右边距各2.54cm，可用宽度约14.65cm
+        private const float PAGE_WIDTH_CM = 14.65f;
+        // A4纸高29.7cm，上下边距各2.54cm，可用高度约24cm
+        private const float PAGE_HEIGHT_CM = 24.0f;
+
         /// <summary>
         /// 批量替换Word文档中的占位符 {占位符名称} + 插入图片
         /// </summary>
@@ -68,32 +73,91 @@ namespace Cappuccino.Common.Helpers
         /// </summary>
         public static void CreateWordWithImages(List<string> imagePaths, string savePath)
         {
-            // 创建Word文档（.docx格式）
             XWPFDocument document = new XWPFDocument();
 
-            // 添加标题
-            //var titleParagraph = document.CreateParagraph();
-            //titleParagraph.Alignment = ParagraphAlignment.CENTER;
-            //var titleRun = titleParagraph.CreateRun();
-            //titleRun.SetText("案件归档图片文档");
-            //titleRun.IsBold = true;
-            //titleRun.FontSize = 16;
-
-            // 批量插入图片
             foreach (var imgPath in imagePaths)
             {
-                // 换行
-                document.CreateParagraph();
-                var para = document.CreateParagraph();
-                para.Alignment = ParagraphAlignment.CENTER;
-                var run = para.CreateRun();
+                if (!File.Exists(imgPath)) continue;
 
-                // 插入图片（设置宽度：400px，自适应高度）
-                using (FileStream fs = new FileStream(imgPath, FileMode.Open, FileAccess.Read))
+                FileInfo fileInfo = new FileInfo(imgPath);
+                bool isLargeImage = fileInfo.Length > 100 * 1024; // 判断是否大于100KB
+
+                try
                 {
-                    run.AddPicture(fs, (int)GetPictureType(imgPath), Path.GetFileName(imgPath),
-                        Units.ToEMU(400), Units.ToEMU(300));
+                    using (Image img = Image.FromFile(imgPath))
+                    {
+                        // 1. 获取图片原始尺寸信息
+                        float imgWidthPx = img.Width;
+                        float imgHeightPx = img.Height;
+                        float ratio = imgHeightPx / imgWidthPx; // 高宽比
+
+                        // 2. 定义目标插入尺寸（厘米）
+                        float targetWidthCm;
+                        float targetHeightCm;
+
+                        if (isLargeImage)
+                        {
+                            // --- 大图逻辑：竖版（旋转90度） ---
+                            // 视觉上旋转90度，意味着图片的“宽”变成了“高”，“高”变成了“宽”
+                            // 我们希望图片的长边（旋转后的高）适配页面高度，或者短边适配页面宽度
+
+                            // 策略：让图片宽度（旋转后的短边）占满页面宽度
+                            targetWidthCm = PAGE_WIDTH_CM;
+                            targetHeightCm = PAGE_WIDTH_CM * ratio; // 保持比例
+
+                            // 如果高度超过了页面可用高度，则按高度缩放
+                            if (targetHeightCm > PAGE_HEIGHT_CM)
+                            {
+                                targetHeightCm = PAGE_HEIGHT_CM;
+                                targetWidthCm = PAGE_HEIGHT_CM / ratio;
+                            }
+                        }
+                        else
+                        {
+                            // --- 小图逻辑：正常横版 ---
+                            // 策略：宽度占满页面
+                            targetWidthCm = PAGE_WIDTH_CM;
+                            targetHeightCm = PAGE_WIDTH_CM * ratio;
+
+                            // 防止超高图片（如全景图）超出页面
+                            if (targetHeightCm > PAGE_HEIGHT_CM)
+                            {
+                                targetHeightCm = PAGE_HEIGHT_CM;
+                                targetWidthCm = PAGE_HEIGHT_CM / ratio;
+                            }
+                        }
+
+                        // 3. 单位转换：厘米 -> EMU (NPOI需要的单位)
+                        // 注意：AddPicture需要int类型
+                        int widthEmu = (int)(targetWidthCm * 360000);
+                        int heightEmu = (int)(targetHeightCm * 360000);
+
+                        // 4. 写入Word
+                        //XWPFParagraph paragraph = document.CreateParagraph();
+                        //paragraph.Alignment = ParagraphAlignment.CENTER; // 居中
+                        //XWPFRun run = paragraph.CreateRun();
+
+                        document.CreateParagraph();
+                        var para = document.CreateParagraph();
+                        para.Alignment = ParagraphAlignment.CENTER;
+                        var run = para.CreateRun();
+
+                        using (FileStream fs = new FileStream(imgPath, FileMode.Open, FileAccess.Read))
+                        {
+                            // 插入图片
+                            run.AddPicture(fs, GetPictureTypeToInt(imgPath), Path.GetFileName(imgPath), widthEmu, heightEmu);
+                        }
+                    }
                 }
+                catch (Exception)
+                {
+                    // 记录错误但不中断循环
+                    continue;
+                }
+
+                // 每个图片后分页（可选）
+                //XWPFParagraph pageBreakPara = document.CreateParagraph();
+                //pageBreakPara.CreateRun().AddBreak(BreakType.PAGE);
             }
 
             // 保存Word文档
@@ -253,6 +317,28 @@ namespace Cappuccino.Common.Helpers
                     break;
             }
             return picType;
+        }
+
+        private static int GetPictureTypeToInt(string fileName)
+        {
+            string ext = Path.GetExtension(fileName).ToLower();
+            switch (ext)
+            {
+                case ".emf": return (int)PictureType.EMF;
+                case ".wmf": return (int)PictureType.WMF;
+                case ".pict": return (int)PictureType.PICT;
+                case ".jpeg":
+                case ".jpg": return (int)PictureType.JPEG;
+                case ".png": return (int)PictureType.PNG;
+                case ".dib": return (int)PictureType.DIB;
+                case ".gif": return (int)PictureType.GIF;
+                case ".tif":
+                case ".tiff": return (int)PictureType.TIFF;
+                case ".eps": return (int)PictureType.EPS;
+                case ".bmp": return (int)PictureType.BMP;
+                case ".wpg": return (int)PictureType.WPG;
+                default: return (int)PictureType.JPEG;
+            }
         }
         #endregion
 

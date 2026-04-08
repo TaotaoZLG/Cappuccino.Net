@@ -17,13 +17,13 @@ namespace Cappuccino.DataAccess.Mapping
             //指定索引，不能重复
             this.HasIndex(c => c.UserName).IsUnique();
             this.Property(x => x.UserName).HasMaxLength(50).IsRequired();
-            this.Property(x => x.NickName).HasMaxLength(50).IsRequired();
+            this.Property(x => x.NickName).HasMaxLength(50).IsOptional();
             this.Property(x => x.DepartmentId).IsOptional();
             this.Property(x => x.PasswordHash).HasMaxLength(50).IsRequired();
             this.Property(x => x.PasswordSalt).HasMaxLength(50).IsRequired();
-            this.Property(x => x.HeadIcon).HasMaxLength(50).IsRequired();
+            this.Property(x => x.HeadIcon).HasMaxLength(50).IsOptional();
             this.Property(x => x.MobilePhone).HasMaxLength(11).IsOptional();
-            this.Property(x => x.Email).HasMaxLength(50).IsRequired();
+            this.Property(x => x.Email).HasMaxLength(50).IsOptional();
             this.Property(x => x.UserStatus).IsRequired();
         }
     }
