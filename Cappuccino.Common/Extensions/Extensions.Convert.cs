@@ -257,12 +257,12 @@ namespace Cappuccino.Common.Extensions
         private static readonly string[] _allSupportedFormats = new[]
         {
             // 带分隔符 - 时间+日期
-            "yyyy/M/d H:mm:ss",
-            "yyyy/M/d HH:mm:ss",
-            "yyyy/MM/dd HH:mm:ss",
-            "yyyy-M-d H:mm:ss",
-            "yyyy-M-d HH:mm:ss",
             "yyyy-MM-dd HH:mm:ss",
+            "yyyy-M-d HH:mm:ss",
+            "yyyy/MM/dd HH:mm:ss",
+            "yyyy/M/d HH:mm:ss",
+            "yyyy/M/d H:mm:ss",
+            "yyyy-M-d H:mm:ss",
             // 带分隔符 - 仅日期
             "yyyy/M/d",
             "yyyy/MM/dd",

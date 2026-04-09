@@ -9,14 +9,9 @@ using System.Reflection;
 using NPOI.Util;
 using NPOI.XWPF.UserModel;
 using Xceed.Words.NET;
-using static SharpCompress.Compressors.Filters.BranchExecFilter;
 
 namespace Cappuccino.Common.Helpers
 {
-    /// <summary>
-    /// Word文档域值替换帮助类（基于实体DisplayName注解）
-    /// 支持 NPOI 2.5.6+、C#7.3 | 新增图片插入功能
-    /// </summary>
     public static class NpoiHelper
     {
         // 图片占位符关键字
@@ -29,7 +24,7 @@ namespace Cappuccino.Common.Helpers
         private const float PAGE_HEIGHT_CM = 24.0f;
 
         /// <summary>
-        /// 批量替换Word文档中的占位符 {占位符名称} + 插入图片
+        /// 批量替换Word文档中的占位符 {占位符名称} + 插入图片（基于实体DisplayName注解）
         /// </summary>
         /// <typeparam name="T">实体类型</typeparam>
         /// <param name="wordFilePath">Word文件物理路径</param>

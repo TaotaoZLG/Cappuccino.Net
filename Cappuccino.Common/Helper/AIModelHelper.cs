@@ -13,12 +13,12 @@ namespace Cappuccino.Common.Helper
     /// <summary>
     /// AI识别工具类（对接千问AI OCR接口）
     /// </summary>
-    public static class AIRecognitionHelper
+    public static class AIModelHelper
     {
         // 静态HttpClient单例，避免Socket耗尽
         private static readonly HttpClient _httpClient;
 
-        static AIRecognitionHelper()
+        static AIModelHelper()
         {
             string timeoutStr = ConfigUtils.AppSetting.GetValue("AITimeout");
             int timeout = timeoutStr.ParseToInt() > 0 ? timeoutStr.ParseToInt() : 360;

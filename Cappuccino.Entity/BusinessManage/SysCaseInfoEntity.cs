@@ -268,11 +268,11 @@ namespace Cappuccino.Entity
         public DateTime? InterestEndDate { get; set; }
 
         /// <summary>
-        /// 截止至日
+        /// 截止日期
         /// </summary>
-        [DisplayName("截止至日")]
-        [ExcelColumnName("截止至日")]
-        public DateTime? EndDate { get; set; }
+        [DisplayName("截止日期")]
+        [ExcelColumnName("截止日期")]
+        public string ExpirationDate { get; set; }
 
         /// <summary>
         /// 诉讼费

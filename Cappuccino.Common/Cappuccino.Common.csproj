@@ -223,7 +223,7 @@
     <Compile Include="Extensions\PathExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="GlobalContext.cs" />
-    <Compile Include="Helper\AIRecognitionHelper.cs" />
+    <Compile Include="Helper\AIModelHelper.cs" />
     <Compile Include="Helper\AsyncTaskHelper.cs" />
     <Compile Include="Helper\CompressHelper.cs" />
     <Compile Include="Helper\CookieHelper.cs" />

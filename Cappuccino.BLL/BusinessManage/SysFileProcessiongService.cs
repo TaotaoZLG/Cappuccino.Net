@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using Cappuccino.Common.Extensions;
@@ -380,7 +382,7 @@ namespace Cappuccino.BLL
                                             (string result, string tempImgPath, string wordFileName, string imageFileName) = NpoiHelper.ExtractFirstImageFromWord(firstWordPath, exportRootPhysical);
 
                                             // OCR识别
-                                            //ocrResult = await AIRecognitionHelper.ImageOcrRecognizeAsync(tempImgPath, batchId, progressAction).ConfigureAwait(false);
+                                            //ocrResult = await AIModelHelper.ImageOcrRecognizeAsync(tempImgPath, batchId, progressAction).ConfigureAwait(false);
 
                                             ocrResult = "{\"detail\": \"不支持的图片格式：docx\"}";
                                             var objData = JsonHelper.ToJObject(ocrResult);
@@ -512,6 +514,25 @@ namespace Cappuccino.BLL
             return obj;
         }
 
+        /// <summary>
+        /// 1.文件上传与解压：接收压缩文件，保存到临时目录，解压到指定位置
+        /// 2.Excel多表合并（processType=0）：
+        ///   读取"申请材料"Sheet（姓名、卡号、案件号），按姓名+卡号去重
+        ///   读取"申请编号"Sheet，与申请材料关联，插入案件号
+        ///   读取"金额拆分"Sheet，将指定4列（证件号码、申请编号、来源代码、案件号）插入到最前面
+        /// 3.文件智能归档：
+        ///   为每个客户创建独立归档文件夹
+        ///   从不同目录（影像金额、电子章、地址截屏）匹配并复制相关文件
+        ///   生成Word文档汇总图片资料
+        /// 4.OCR识别：对PDF文件进行OCR识别，提取账户信息
+        /// 5.数据持久化：将处理结果批量插入数据库，生成导出文件
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="extractRule"></param>
+        /// <param name="processType"></param>
+        /// <param name="batchId"></param>
+        /// <param name="progressAction"></param>
+        /// <returns></returns>
         public async Task<TData<string>> ProcessCompressFileAsync(HttpPostedFileBase file, int extractRule, int processType, string batchId, Action<ProcessProgress> progressAction)
         {
             TData<string> obj = new TData<string>();
@@ -716,7 +737,6 @@ namespace Cappuccino.BLL
 
                             // 保存合并数据到Excel
                             MiniExcelHelper.ExportToExcel(finalMergeList, saveFullPath);
-                            //MiniExcel.SaveAs(saveFullPath, finalMergeList);
                             // 复制到导出目录
                             File.Copy(saveFullPath, Path.Combine(exportRootPhysical, saveFileName));
                             #endregion
@@ -735,17 +755,29 @@ namespace Cappuccino.BLL
                             // 遍历最终合并数据，逐个归档
                             foreach (var data in finalMergeList)
                             {
+                                SysCaseInfoEntity caseInfoEntity = new SysCaseInfoEntity();
+
                                 // 读取关键字段（增加空值保护）
                                 data.TryGetValue("姓名", out string userName);
                                 data.TryGetValue("卡号", out string cardNo);
                                 data.TryGetValue("证件号码", out string idNumber);
                                 data.TryGetValue("案件号", out string caseNo);
                                 data.TryGetValue("申请编号", out string applyNo);
-                                data.TryGetValue("人民币消费本金余额", out string principalAmount);
-                                data.TryGetValue("人民币消费利息余额", out string interestAmount);
+                                //data.TryGetValue("人民币消费本金余额", out string principalAmount);
+                                //data.TryGetValue("人民币消费利息余额", out string interestAmount);                                    
 
                                 var (Gender, BirthDate) = OtherHelper.ParseIdCard(idNumber);
                                 string last4Card = cardNo.Length >= 4 ? cardNo.Substring(cardNo.Length - 4) : cardNo;
+
+                                caseInfoEntity.Id = IdGeneratorHelper.Instance.NextId();
+                                caseInfoEntity.CustName = userName;
+                                caseInfoEntity.CustCardNo = cardNo;
+                                caseInfoEntity.CustIDNumber = idNumber;
+                                caseInfoEntity.CaseNumber = caseNo;
+                                caseInfoEntity.CustBirthdate = BirthDate?.ParseToDateTime();
+                                caseInfoEntity.CustGender = Gender;
+                                caseInfoEntity.ApplayNumber = applyNo;
+
                                 // 存储OCR识别结果
                                 string ocrResult = string.Empty;
 
@@ -758,9 +790,9 @@ namespace Cappuccino.BLL
                                 // 创建分类子文件夹
                                 string targetImageDir = Path.Combine(targetPhysicalPath, "影像图片");
                                 Directory.CreateDirectory(targetImageDir);
-
-                                // 地址截屏集合（后续OCR识别）初始化
-                                IEnumerable<string> targetScreenshotFiles = Enumerable.Empty<string>();
+                                
+                                // 电子章集合（后续OCR识别）初始化
+                                IEnumerable<string> targetSealFiles = Enumerable.Empty<string>();
 
                                 // 过滤图片集合
                                 List<string> imageFiles = new List<string>();
@@ -803,8 +835,6 @@ namespace Cappuccino.BLL
                                 // ============== 2. 电子章 → 先匹配子文件夹名，再取文件 ==============
                                 if (!string.IsNullOrEmpty(sealDir) && Directory.Exists(sealDir))
                                 {
-                                    IEnumerable<string> targetSealFiles = Enumerable.Empty<string>();
-
                                     // 步骤1：获取电子章下的所有直接子文件夹
                                     var subFolders = Directory.GetDirectories(sealDir, "*", SearchOption.TopDirectoryOnly);
                                     // 步骤2：筛选子文件夹名包含案件号的（核心修改）
@@ -824,82 +854,115 @@ namespace Cappuccino.BLL
                                     CompressHelper.CopyFiles(targetSealFiles, targetPhysicalPath);
 
                                     // 过滤图片
-                                    imageFiles = await CompressHelper.FilterImageFilesAsync(targetSealFiles.ToList(), batchId, progressAction).ConfigureAwait(false);
-                                    allImagesList.AddRange(imageFiles);
+                                    //imageFiles = await CompressHelper.FilterImageFilesAsync(targetSealFiles.ToList(), batchId, progressAction).ConfigureAwait(false);
+                                    //allImagesList.AddRange(imageFiles);
                                 }
 
                                 // ============== 3. 地址截屏（若有嵌套可参考上面修改）+ OCR识别 ==============
-                                if (!string.IsNullOrEmpty(addressDir) && Directory.Exists(addressDir))
-                                {
-                                    string matchKey = $"{userName}{last4Card}";
-                                    targetScreenshotFiles = Directory.GetFiles(addressDir, "*.*", SearchOption.AllDirectories).Where(f => Path.GetFileName(f).Contains(matchKey));
-                                    CompressHelper.CopyFiles(targetScreenshotFiles, targetPhysicalPath);
-                                }
+                                //if (!string.IsNullOrEmpty(addressDir) && Directory.Exists(addressDir))
+                                //{
+                                //    IEnumerable<string> targetScreenshotFiles = Enumerable.Empty<string>();
+                                //    string matchKey = $"{userName}{last4Card}";
+                                //    targetScreenshotFiles = Directory.GetFiles(addressDir, "*.*", SearchOption.AllDirectories).Where(f => Path.GetFileName(f).Contains(matchKey));
+                                //    CompressHelper.CopyFiles(targetScreenshotFiles, targetPhysicalPath);
+                                //}
 
                                 // 创建Word文档并将图片插入
                                 if (allImagesList.Any())
                                 {
-                                    string wordPath = Path.Combine(targetPhysicalPath, $"{userName}{cardNo}_图片资料归档.docx");
+                                    string wordPath = Path.Combine(targetPhysicalPath, $"{userName}{cardNo}_图片资料.docx");
                                     NpoiHelper.CreateWordWithImages(allImagesList, wordPath);
                                 }
 
-                                // OCR识别获取地址信息（地址截屏目录下Word 仅第一张图片）
-                                if (targetScreenshotFiles.Any())
+                                // OCR识别获取地址信息（电子章目录下Pdf文件，固定格式：案号_卡号后四位_后缀命名.pdf）
+                                if (targetSealFiles.Any())
                                 {
-                                    string[] WordExtensions = { ".docx", ".doc" };
-                                    var addressWordFiles = targetScreenshotFiles.Where(f => WordExtensions.Contains(Path.GetExtension(f).ToLower())).ToList();
+                                    string targetPdfName = $"{caseNo}_{last4Card}";
+                                    string targetPdfFullName = $"{targetPdfName}_BALANCE_STATEMENT";
 
-                                    if (addressWordFiles.Any())
+                                    var targetPdfFiles = Directory.GetFiles(sealDir, "*.*", SearchOption.AllDirectories).Where(f => Path.GetFileName(f).Contains(targetPdfName));
+
+                                    //var targetPdfFiles = Directory.GetFiles(sealDir, "*.pdf", SearchOption.AllDirectories).Where(f => Path.GetFileName(f).Equals(targetPdfName, StringComparison.OrdinalIgnoreCase));
+
+                                    if (targetPdfFiles.Any())
                                     {
-                                        string firstWordPath = addressWordFiles.FirstOrDefault();
+                                        string firstIdentifyPath = targetPdfFiles.FirstOrDefault();
 
-                                        if (!string.IsNullOrEmpty(firstWordPath))
+                                        foreach (var item in targetPdfFiles.ToList())
                                         {
-                                            // 提取Word中的第一张图片
-                                            (string result, string tempImgPath, string wordFileName, string imageFileName) = NpoiHelper.ExtractFirstImageFromWord(firstWordPath, exportRootPhysical);
+                                            string pdfFileName = Path.GetFileNameWithoutExtension(item); // 原始文件名
 
                                             // OCR识别
-                                            //ocrResult = await AIRecognitionHelper.ImageOcrRecognizeAsync(tempImgPath, batchId, progressAction).ConfigureAwait(false);
+                                            //ocrResult = await AIModelHelper.ImageOcrRecognizeAsync(item, batchId, progressAction).ConfigureAwait(false);
 
-                                            ocrResult = "{\"detail\": \"不支持的图片格式：docx\"}";
+                                            ocrResult = "{\"detail\": \"不支持的图片格式\"}";
                                             var objData = JsonHelper.ToJObject(ocrResult);
-                                            string residentialAddress = objData.Value<string>("住宅地址");
-                                            string unitAddress = objData.Value<string>("单位地址");
-                                            string mailingAddress = objData.Value<string>("邮寄地址");
-                                            string phone = objData.Value<string>("手机");
 
+                                            if (pdfFileName.Equals(targetPdfFullName, StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                string expirationDate = objData.Value<string>("截止日期");
+                                                string principalAmount = objData.Value<string>("人民币本金");
+                                                string interestAmount = objData.Value<string>("人民币利息");
+                                                string feeAmount = objData.Value<string>(" 人民币费用");
+                                                string accountBalance = objData.Value<string>(" 人民币账户余额");
+
+                                                caseInfoEntity.ExpirationDate = expirationDate;
+                                                caseInfoEntity.PrincipalAmount = principalAmount?.ParseToDecimal();
+                                                caseInfoEntity.InterestAmount = interestAmount?.ParseToDecimal();
+                                                caseInfoEntity.RMBFeeAmount = feeAmount?.ParseToDecimal();
+                                            }
+                                            else
+                                            {
+                                                string residentialAddress = objData.Value<string>("开户日");
+                                                string phone = objData.Value<string>("手机");
+                                                string homePhone = objData.Value<string>("家庭号码");
+                                                string unitName = objData.Value<string>("单位名称");
+                                                string unitPhone = objData.Value<string>("单位号码");
+                                                string unitAddress = objData.Value<string>("单位地址");
+                                                string homeAddress = objData.Value<string>("家庭地址");
+                                                string householdRegisterAddress = objData.Value<string>("户籍地址");
+                                                string reconciliationAddress = objData.Value<string>("对账单地址");
+                                                string mailAddress = objData.Value<string>("邮箱地址");
+
+                                                caseInfoEntity.AccountOpenDate = residentialAddress?.ParseToDateTime();
+                                                caseInfoEntity.ContactPhone = phone;
+                                                caseInfoEntity.Remark1 = homePhone;
+                                                caseInfoEntity.Remark2 = unitName;
+                                                caseInfoEntity.Remark3 = unitPhone;
+                                                caseInfoEntity.CompanyAddress = unitAddress;
+                                                caseInfoEntity.HomeAddress = residentialAddress;
+                                                caseInfoEntity.HouseholdAddress = householdRegisterAddress;
+                                                caseInfoEntity.MailingAddress = reconciliationAddress;
+                                                caseInfoEntity.CustEmail = mailAddress;
+                                            }
+                                           
                                             ocrRecordList.Add(new
                                             {
-                                                图片所在Word文件名 = wordFileName,
-                                                图片文件名 = imageFileName,
+                                                识别文件名 = pdfFileName,
                                                 识别结果 = ocrResult,
                                                 识别时间 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                                             });
-
-                                            // 组装入库数据
-                                            caseInfoList.Add(new SysCaseInfoEntity
-                                            {
-                                                Id = IdGeneratorHelper.Instance.NextId(),
-                                                CustName = userName,
-                                                CustCardNo = cardNo,
-                                                CustIDNumber = idNumber,
-                                                CaseNumber = caseNo,
-                                                CustBirthdate = BirthDate.ParseToDateTime(),
-                                                CustGender = Gender,
-                                                ApplayNumber = applyNo,
-                                                PrincipalAmount = principalAmount.ParseToDecimal(),
-                                                InterestAmount = interestAmount.ParseToDecimal(),
-                                                ContactPhone = phone,
-                                                MailingAddress = mailingAddress,
-                                                CompanyAddress = unitAddress,
-                                                HomeAddress = residentialAddress,
-                                                CreateTime = DateTime.Now,
-                                                CreateUserId = userId,
-                                                ArchiveVirtualPath = targetVirtualPath
-                                            });
-                                        }
+                                        }                                                              
                                     }
+                                    else
+                                    {
+                                        progressAction.Invoke(new ProcessProgress
+                                        {
+                                            BatchId = batchId,
+                                            Progress = 50,
+                                            Type = "Recognize",
+                                            Message = $"未找到匹配的PDF文件进行OCR识别，预期文件名包含：_BALANCE_STATEMENT|_CUST_TEL_ADDR_CONFIRM"
+                                        });
+                                    }                                    
                                 }
+
+                                caseInfoEntity.BusinessBatchId = batchId;
+                                caseInfoEntity.ArchiveVirtualPath = targetVirtualPath;
+                                caseInfoEntity.CreateTime = DateTime.Now;
+                                caseInfoEntity.CreateUserId = userId;
+
+                                // 组装入库数据
+                                caseInfoList.Add(caseInfoEntity);
                             }
                             #endregion
 
