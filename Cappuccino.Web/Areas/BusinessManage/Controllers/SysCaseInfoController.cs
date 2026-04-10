@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Helper;
@@ -56,7 +57,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
         /// 上传文件
         /// </summary>
         [HttpPost]
-        [CheckPermission("system.case.uploadfile")]
+        [CheckPermission("system.case.upload")]
         public async Task<ActionResult> UploadFileJson(string saveDirectoryName)
         {
             try
@@ -94,6 +95,33 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
             catch (Exception ex)
             {
                 return WriteError("任务上传文件：" + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 下载文件
+        /// </summary>
+        [HttpPost]
+        [CheckPermission("system.case.download")]
+        public async Task<ActionResult> DownLoadFileJson(SysCaseInfoModel viewModel, string idsStr)
+        {
+            var queries = BuildUserQueries(viewModel);
+
+            if (!string.IsNullOrEmpty(idsStr))
+            {
+                var ids = idsStr.Split(',');
+                queries.Add(new Query { Name = "Id", Operator = Query.Operators.In, Value = ids });
+            }
+
+            var caseInfoList = _sysCaseInfoService.GetList(queries.AsExpression<SysCaseInfoEntity>()).ToList();
+            if (caseInfoList.Any())
+            {
+                var obj = await _sysCaseInfoService.DownloadFiles(caseInfoList);
+                return WriteJson(obj);
+            }
+            else
+            {
+                return WriteError("未找到相关案件信息");
             }
         }
 

@@ -25,7 +25,7 @@ namespace Cappuccino.BLL
         private ISysTemplateService _sysTemplateService;
 
         #region 依赖注入
-        public SysCaseInfoService(ISysCaseInfoDao sysCaseInfoDao, ISysTemplateService sysTemplateService,ISysFileService sysFileService)
+        public SysCaseInfoService(ISysCaseInfoDao sysCaseInfoDao, ISysTemplateService sysTemplateService, ISysFileService sysFileService)
         {
             _sysCaseInfoDao = sysCaseInfoDao;
             _sysTemplateService = sysTemplateService;
@@ -72,7 +72,7 @@ namespace Cappuccino.BLL
             //string tempWordVirDir = Path.Combine(virRootDir, "Upload", "TempCaseWord", batchId);
             //string tempWordPhysicalDir = FileHelper.GetPhysicalPath(tempWordVirDir);
             //FileHelper.CreateDirectory(tempWordPhysicalDir);
-          
+
             // 遍历案件数据，批量生成Word
             try
             {
@@ -128,7 +128,7 @@ namespace Cappuccino.BLL
         }
 
         /// <summary>
-        /// 上传文件（支持压缩包上传，解压后返回文件列表）
+        /// 上传压缩包文件，解析文件并根据文件名关联案件数据（文件命名规则：姓名_卡号），可选将文件保存到指定目录
         /// </summary>
         /// <param name="file"></param>
         /// <param name="saveDirectoryName"></param>
@@ -137,7 +137,7 @@ namespace Cappuccino.BLL
         {
             TData obj = new TData();
             try
-            {                
+            {
                 string unzipFileName = file.FileName;
                 string batchId = GuidHelper.GetGuid(true);
 
@@ -203,6 +203,60 @@ namespace Cappuccino.BLL
             {
                 obj.Status = 0;
                 obj.Message = "文件上传失败：" + ex.Message;
+            }
+            return obj;
+        }
+
+        public async Task<TData<string>> DownloadFiles(List<SysCaseInfoEntity> caseInfoList)
+        {
+            TData<string> obj = new TData<string>();
+            try
+            {
+                string batchId = GuidHelper.GetGuid(true);
+                List<string> filePaths = new List<string>();
+
+                foreach (var item in caseInfoList)
+                {
+                    string archivePath = item.ArchiveVirtualPath;
+                    string archivePathPhysical = FileHelper.GetPhysicalPath(archivePath);
+
+                    filePaths.Add(archivePathPhysical);
+                }
+
+                // 导出文件路径
+                string exportRootPath = ConfigUtils.AppSetting.GetValue("ExportRootPath");
+                string exportRootDir = Path.Combine(exportRootPath, batchId);
+                string exportRootPhysical = Path.Combine(FileHelper.GetPhysicalPath(exportRootPath), batchId);
+                FileHelper.CreateDirectory(exportRootPhysical);
+
+                // 导出Zip文件路径
+                string finalZipFileName = string.Format("下载文件_{0}.zip", DateTime.Now.ToString("yyyyMMdd_HHmmssffff"));
+                string finalZipPathDir = Path.Combine(exportRootPath, string.Format("final_{0}", finalZipFileName));
+                string finalZipPathPhysical = FileHelper.GetPhysicalPath(finalZipPathDir);
+
+                try
+                {
+                    // 批量复制文件到导出目录
+                    FileHelper.DirectoriesCopy(filePaths, exportRootPhysical);
+
+                    // 打包文件夹为Zip
+                    await CompressHelper.PackFolderToZipAsync(exportRootDir, finalZipPathDir).ConfigureAwait(false);
+
+                    obj.Status = 1;
+                    obj.Message = "文件下载成功";
+                    obj.Data = finalZipPathDir; // 返回Zip虚拟路径
+                }
+                finally
+                {
+                    // 清理导出目录
+                    //FileHelper.DeleteDirectory(exportRootPhysical);
+                    //FileHelper.DeleteDirectory(finalZipPathPhysical);
+                }
+            }
+            catch (Exception ex)
+            {
+                obj.Status = 0;
+                obj.Message = "文件下载失败：" + ex.Message;
             }
             return obj;
         }

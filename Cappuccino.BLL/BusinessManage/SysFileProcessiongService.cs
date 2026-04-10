@@ -784,7 +784,7 @@ namespace Cappuccino.BLL
                                 // 生成归档文件夹：姓名+卡号（过滤非法字符）
                                 string folderName = new string($"{userName}{cardNo}".Where(c => !invalidChars.Contains(c)).ToArray());
                                 string targetPhysicalPath = Path.Combine(archivePhysicalRoot, folderName);  //归档存储物理路径
-                                string targetVirtualPath = $"{archiveVirtualRoot}/{folderName}/";  //归档存储虚拟路径
+                                string targetVirtualPath = $"{archiveVirtualRoot}/{folderName}";  //归档存储虚拟路径
                                 Directory.CreateDirectory(targetPhysicalPath);
 
                                 // 创建分类子文件夹
@@ -893,9 +893,9 @@ namespace Cappuccino.BLL
                                             string pdfFileName = Path.GetFileNameWithoutExtension(item); // 原始文件名
 
                                             // OCR识别
-                                            //ocrResult = await AIModelHelper.ImageOcrRecognizeAsync(item, batchId, progressAction).ConfigureAwait(false);
+                                            ocrResult = await AIModelHelper.ImageOcrRecognizeAsync(item, batchId, progressAction).ConfigureAwait(false);
 
-                                            ocrResult = "{\"detail\": \"不支持的图片格式\"}";
+                                            //ocrResult = "{\"detail\": \"不支持的图片格式\"}";
                                             var objData = JsonHelper.ToJObject(ocrResult);
 
                                             if (pdfFileName.Equals(targetPdfFullName, StringComparison.OrdinalIgnoreCase))

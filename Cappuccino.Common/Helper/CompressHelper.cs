@@ -683,39 +683,7 @@ namespace Cappuccino.Common.Helper
                     }
                 }
             });
-        }
-
-        /// <summary>
-        /// 递归复制目录
-        /// </summary>
-        public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
-        {
-            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
-            if (!dir.Exists)
-            {
-                throw new DirectoryNotFoundException("源目录不存在或无法访问: " + sourceDirName);
-            }
-
-            // 统一创建目标目录
-            FileHelper.EnsureDirectoryExists(destDirName);
-
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files)
-            {
-                string tempPath = Path.Combine(destDirName, file.Name);
-                file.CopyTo(tempPath, true);
-            }
-
-            if (copySubDirs)
-            {
-                DirectoryInfo[] dirs = dir.GetDirectories();
-                foreach (DirectoryInfo subdir in dirs)
-                {
-                    string tempPath = Path.Combine(destDirName, subdir.Name);
-                    DirectoryCopy(subdir.FullName, tempPath, copySubDirs);
-                }
-            }
-        }
+        }        
 
         /// <summary>
         /// 批量复制文件（覆盖已存在文件）
@@ -799,6 +767,48 @@ namespace Cappuccino.Common.Helper
             {
                 archive?.Dispose();
             }
+        }
+
+        /// <summary>
+        /// 打包文件夹为ZIP
+        /// </summary>
+        /// <param name="sourceDir">待打包目录（虚拟路径）</param>
+        /// <param name="outputZipPath">输出ZIP路径（虚拟路径）</param>
+        /// <returns></returns>
+        public static async Task PackFolderToZipAsync(string sourceDir, string outputZipPath)
+        {
+            // 将虚拟路径转换为物理路径
+            string sourceDirPhysical = FileHelper.GetPhysicalPath(sourceDir);
+            string outputZipPathPhysical = FileHelper.GetPhysicalPath(outputZipPath);
+
+            // 确保输出目录存在
+            FileHelper.EnsureDirectoryExists(outputZipPathPhysical);
+
+            await Task.Run(() =>
+            {
+                // 删除已存在的ZIP文件
+                if (File.Exists(outputZipPathPhysical))
+                {
+                    File.Delete(outputZipPathPhysical);
+                }
+
+                // 打包目录
+                using (var archive = ZipArchive.Create())
+                {
+                    var allFiles = Directory.GetFiles(sourceDirPhysical, "*.*", SearchOption.AllDirectories);
+                    int total = allFiles.Length;
+
+                    foreach (var file in allFiles)
+                    {
+                        // 计算相对路径
+                        string relativePath = file.Substring(sourceDirPhysical.Length).TrimStart(Path.DirectorySeparatorChar);
+                        archive.AddEntry(relativePath, file);
+                    }
+
+                    // 保存到物理路径
+                    archive.SaveTo(outputZipPathPhysical, CompressionType.Deflate);
+                }
+            });
         }
         #endregion
     }

@@ -389,7 +389,7 @@ namespace Cappuccino.Common.Helper
         }
 
         /// <summary>
-        /// 复制文件到指定文件夹
+        /// 复制文件到指定文件夹，并返回复制后的完整文件路径
         /// </summary>
         /// <param name="sourceFilePath">源文件路径</param>
         /// <param name="destinationFolder">目标文件夹路径</param>
@@ -419,7 +419,7 @@ namespace Cappuccino.Common.Helper
 
                 // 复制文件
                 File.Copy(sourceFilePath, destinationFilePath, overwrite);
-                
+
             }
             catch (Exception ex)
             {
@@ -455,52 +455,161 @@ namespace Cappuccino.Common.Helper
             return copiedFiles;
         }
 
-        public static class FileCopyHelper
+        /// <summary>
+        /// 批量复制文件（并行）
+        /// </summary>
+        /// <param name="copyTasks">复制任务列表，包含源文件路径和目标目录</param>
+        /// <param name="overwrite">是否覆盖已存在的文件</param>
+        /// <param name="batchSize">每批次处理的文件数量（可选）</param>
+        /// <returns>操作结果，包含状态、消息和详细结果</returns>
+        public static TData BatchCopyFiles(List<(string source, string destination)> copyTasks, bool overwrite = false, int batchSize = 100)
         {
-            /// <summary>
-            /// 批量复制文件
-            /// </summary>
-            /// <param name="copyTasks">复制任务列表，包含源文件路径和目标目录</param>
-            /// <param name="overwrite">是否覆盖已存在的文件</param>
-            /// <param name="batchSize">每批次处理的文件数量（可选）</param>
-            /// <returns>操作结果，包含状态、消息和详细结果</returns>
-            public static TData BatchCopyFiles(List<(string source, string destination)> copyTasks, bool overwrite = false, int batchSize = 100)
+            var result = new TData
             {
-                var result = new TData
-                {
-                    Status = 1,
-                    Message = "文件批量复制成功"
-                };
+                Status = 1,
+                Message = "文件批量复制成功"
+            };
 
+            try
+            {
+                // 分批次处理
+                for (int i = 0; i < copyTasks.Count; i += batchSize)
+                {
+                    var batch = copyTasks.Skip(i).Take(batchSize).ToList();
+
+                    // 并行处理当前批次
+                    Parallel.ForEach(batch, task =>
+                    {
+                        try
+                        {
+                            CopyFileToDirectory(task.source, task.destination, overwrite);
+                        }
+                        catch (Exception ex)
+                        {
+                            // 记录单个文件复制失败
+                            result.Status = 0;
+                            result.Message = $"部分文件复制失败: {ex.Message}";
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Status = 0;
+                result.Message = "文件批量复制失败: " + ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 递归复制目录（复制单个目录及其所有子目录和文件）
+        /// </summary>
+        /// <param name="sourceDir">源目录路径</param>
+        /// <param name="targetDir">目标目录路径</param>
+        /// <param name="copySubDirs">是否复制子目录</param>
+        /// <exception cref="DirectoryNotFoundException"></exception>
+        public static void DirectoryCopy(string sourceDir, string targetDir, bool copySubDirs = true)
+        {
+            DirectoryInfo dir = new DirectoryInfo(sourceDir);
+            if (!dir.Exists)
+            {
+                throw new DirectoryNotFoundException("源目录不存在或无法访问: " + sourceDir);
+            }
+
+            // 统一创建目标目录
+            FileHelper.EnsureDirectoryExists(targetDir);
+
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string tempPath = Path.Combine(targetDir, file.Name);
+                file.CopyTo(tempPath, true);
+            }
+
+            if (copySubDirs)
+            {
+                // 递归复制所有子目录
+                DirectoryInfo[] dirs = dir.GetDirectories();
+                foreach (DirectoryInfo subdir in dirs)
+                {
+                    string tempPath = Path.Combine(targetDir, subdir.Name);
+                    DirectoryCopy(subdir.FullName, tempPath, copySubDirs);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 递归复制目录（复制单个目录及其所有子目录和文件）
+        /// </summary>
+        /// <param name="sourceDir">源目录路径</param>
+        /// <param name="targetDir">目标目录路径</param>
+        /// <param name="copySubDirs">是否复制子目录</param>
+        /// <param name="overwrite">是否覆盖已存在的文件</param>
+        /// <exception cref="DirectoryNotFoundException"></exception>
+        public static void DirectoryCopy(string sourceDir, string targetDir, bool copySubDirs = true, bool overwrite = true)
+        {
+            DirectoryInfo dir = new DirectoryInfo(sourceDir);
+            if (!dir.Exists)
+            {
+                throw new DirectoryNotFoundException("源目录不存在或无法访问: " + sourceDir);
+            }
+
+            // 统一创建目标目录
+            FileHelper.EnsureDirectoryExists(targetDir);
+
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string tempPath = Path.Combine(targetDir, file.Name);
+                // 使用overwrite参数控制文件覆盖行为
+                file.CopyTo(tempPath, overwrite);
+            }
+
+            if (copySubDirs)
+            {
+                // 递归复制所有子目录
+                DirectoryInfo[] dirs = dir.GetDirectories();
+                foreach (DirectoryInfo subdir in dirs)
+                {
+                    string tempPath = Path.Combine(targetDir, subdir.Name);
+                    // 递归调用时传递相同的overwrite参数
+                    DirectoryCopy(subdir.FullName, tempPath, copySubDirs, overwrite);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 批量复制多个目录及其子目录和文件
+        /// </summary>
+        /// <param name="sourceDirs">源目录路径列表</param>
+        /// <param name="targetBaseDir">目标基础目录路径</param>
+        /// <param name="copySubDirs">是否复制子目录</param>
+        /// <param name="overwrite">是否覆盖已存在的文件</param>
+        /// <returns>成功复制的目录数量</returns>
+        public static void DirectoriesCopy(IEnumerable<string> sourceDirs, string targetBaseDir, bool copySubDirs = true, bool overwrite = true)
+        {
+            // 确保目标基础目录存在
+            if (!Directory.Exists(targetBaseDir))
+            {
+                Directory.CreateDirectory(targetBaseDir);
+            }
+
+            foreach (string sourceDir in sourceDirs)
+            {
                 try
                 {
-                    // 分批次处理
-                    for (int i = 0; i < copyTasks.Count; i += batchSize)
-                    {
-                        var batch = copyTasks.Skip(i).Take(batchSize).ToList();
+                    // 提取源目录名称作为目标目录名称
+                    string dirName = Path.GetFileName(sourceDir);
+                    string targetDir = Path.Combine(targetBaseDir, dirName);
 
-                        // 并行处理当前批次
-                        Parallel.ForEach(batch, task =>
-                        {
-                            try
-                            {
-                                CopyFileToDirectory(task.source, task.destination, overwrite);
-                            }
-                            catch (Exception ex)
-                            {
-                                // 记录单个文件复制失败
-                                result.Status = 0;
-                                result.Message = $"部分文件复制失败: {ex.Message}";
-                            }
-                        });
-                    }
+                    // 复制单个目录（使用扩展后的DirectoryCopy方法）
+                    DirectoryCopy(sourceDir, targetDir, copySubDirs, overwrite);
                 }
                 catch (Exception ex)
                 {
-                    result.Status = 0;
-                    result.Message = "文件批量复制失败: " + ex.Message;
+                    // 记录错误但继续处理其他目录
+                    Log4netHelper.Warn($"复制目录 {sourceDir} 时出错: {ex.Message}");
                 }
-                return result;
             }
         }
 
@@ -668,7 +777,7 @@ namespace Cappuccino.Common.Helper
             {
                 throw new IOException($"获取目录信息失败: {ex.Message}", ex);
             }
-        }        
+        }
         #endregion
 
         #region 文件信息操作
@@ -744,7 +853,7 @@ namespace Cappuccino.Common.Helper
                 }
             }
             return len;
-        }              
+        }
 
         /// <summary>
         /// 格式化文件大小
@@ -884,7 +993,27 @@ namespace Cappuccino.Common.Helper
 
         #endregion
 
-        #region 文件名和扩展名操作
+        #region 目录名、文件名和扩展名操作
+
+        /// <summary>
+        /// 安全提取目录路径的最后一级目录名
+        /// </summary>
+        /// <param name="dirPath">目录路径</param>
+        /// <returns>最后一级目录名</returns>
+        public static string GetDirectoryName(string dirPath)
+        {
+            // 确保路径不为空
+            if (string.IsNullOrEmpty(dirPath))
+            {
+                throw new ArgumentException("目录路径不能为空");
+            }
+
+            // 移除路径末尾的分隔符
+            string cleanPath = dirPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+            // 提取最后一级目录名
+            return Path.GetFileName(cleanPath);
+        }
 
         /// <summary>
         /// 获取文件名（不带扩展名）
