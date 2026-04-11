@@ -47,3 +47,37 @@
 	box-shadow: 0px 0px 3px 1px #F56C6C !important;
 	border: #F56C6C 1px solid;
 }
+/*
+.layui-input-wrap {
+	position: relative;
+	line-height: 38px;
+}
+
+	.layui-input-wrap .layui-input-prefix, .layui-input-wrap .layui-input-split, .layui-input-wrap .layui-input-suffix {
+		pointer-events: none;
+	}
+
+.layui-input-prefix {
+	left: 0;
+	border-radius: 2px 0 0 2px;
+}
+
+.layui-input-prefix, .layui-input-split, .layui-input-suffix, .layui-input-suffix .layui-input-affix {
+	position: absolute;
+	right: 0;
+	top: 0;
+	padding: 0 10px;
+	width: 35px;
+	height: 100%;
+	text-align: center;
+	transition: all .3s;
+	box-sizing: border-box;
+}
+
+.layui-input-wrap .layui-input-prefix + .layui-input, .layui-input-wrap .layui-input-prefix ~ * .layui-input {
+	padding-left: 35px;
+}
+
+.layui-input-wrap .layui-input {
+	padding-right: 35px;
+}*/

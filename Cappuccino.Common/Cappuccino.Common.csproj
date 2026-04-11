@@ -236,6 +236,7 @@
     <Compile Include="Helper\GuidHelper.cs" />
     <Compile Include="Helper\ImageHelper.cs" />
     <Compile Include="Helper\OtherHelper.cs" />
+    <Compile Include="Helper\PdfHelper.cs" />
     <Compile Include="IdGenerator\IdGeneratorHelper.cs" />
     <Compile Include="Helper\JsonHelper.cs" />
     <Compile Include="Helper\ReflectionHelper.cs" />

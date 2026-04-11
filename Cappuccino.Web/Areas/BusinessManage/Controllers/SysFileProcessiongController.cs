@@ -42,7 +42,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> UploadAndProcess(HttpPostedFileBase compressFile, int extractRule, int processType)
+        public async Task<ActionResult> UploadAndProcess(HttpPostedFileBase compressFile, int processType)
         {
             TData<string> result = new TData<string>();
             string batchId = GuidHelper.GetGuid(true);
@@ -72,7 +72,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
                     return WriteError($"文件大小超出限制，最大支持{maxSize / 1024 / 1024}MB");
                 }
 
-                result = await _fileProcessService.ProcessCompressFileAsync(compressFile, extractRule, processType, batchId, progressAction).ConfigureAwait(false);
+                result = await _fileProcessService.ProcessCompressFileAsync(compressFile, processType, batchId, progressAction).ConfigureAwait(false);
                 if (result.Status == 0)
                 {
                     return WriteError(result.Message);

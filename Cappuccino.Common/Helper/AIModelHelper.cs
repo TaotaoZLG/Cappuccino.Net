@@ -103,7 +103,7 @@ namespace Cappuccino.Common.Helper
                     bool success = jsonObj.Value<bool>("success");
                     if (jsonObj.HasValues && success)
                     {
-                        responseContent = jsonObj.Value<string>("data").ToString();
+                        responseContent = jsonObj.Value<JToken>("data").ToString();
                     }
                 }
             }

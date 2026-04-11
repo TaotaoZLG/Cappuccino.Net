@@ -533,7 +533,7 @@ namespace Cappuccino.BLL
         /// <param name="batchId"></param>
         /// <param name="progressAction"></param>
         /// <returns></returns>
-        public async Task<TData<string>> ProcessCompressFileAsync(HttpPostedFileBase file, int extractRule, int processType, string batchId, Action<ProcessProgress> progressAction)
+        public async Task<TData<string>> ProcessCompressFileAsync(HttpPostedFileBase file, int processType, string batchId, Action<ProcessProgress> progressAction)
         {
             TData<string> obj = new TData<string>();
             try
@@ -893,10 +893,10 @@ namespace Cappuccino.BLL
                                             string pdfFileName = Path.GetFileNameWithoutExtension(item); // 原始文件名
 
                                             // OCR识别
-                                            ocrResult = await AIModelHelper.ImageOcrRecognizeAsync(item, batchId, progressAction).ConfigureAwait(false);
+                                            //ocrResult = await AIModelHelper.ImageOcrRecognizeAsync(item, batchId, progressAction).ConfigureAwait(false);
 
-                                            //ocrResult = "{\"detail\": \"不支持的图片格式\"}";
-                                            var objData = JsonHelper.ToJObject(ocrResult);
+                                            ocrResult = "{\"detail\": \"不支持的图片格式\"}";
+                                            var objData = JObject.Parse(ocrResult);
 
                                             if (pdfFileName.Equals(targetPdfFullName, StringComparison.OrdinalIgnoreCase))
                                             {

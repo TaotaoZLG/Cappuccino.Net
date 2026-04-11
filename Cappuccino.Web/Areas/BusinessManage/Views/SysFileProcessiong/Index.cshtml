@@ -220,15 +220,15 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">处理类型</label>
                         <div class="layui-input-block">
-                            <select name="processType" id="processType" lay-verify="required" lay-reqtext="请选择处理类型">
+                            <select name="processType" id="processType" lay-verify="required" lay-reqtext="请选择处理类型" disabled>
                                 <option value="">请选择处理类型</option>
-                                <option value="0" selected>Excel解析 + 文件打包</option>
-                                <option value="1">图片OCR识别 + 文件打包</option>
+                                <option value="0" selected>Excel解析 + 文件归档</option>
+                                <option value="1">图片OCR识别 + 文件归档</option>
                             </select>
                         </div>
                     </div>
                     <hr />
-                    <div class="layui-form-item">
+                    @*<div class="layui-form-item">
                         <label class="layui-form-label">归档规则</label>
                         <div class="layui-input-block">
                             <select name="extractRule" id="extractRule" lay-verify="required" lay-reqtext="请选择归档规则">
@@ -240,7 +240,7 @@
                             </select>
                         </div>
                     </div>
-                    <hr />
+                    <hr />*@
                     <div class="layui-upload">
                         <div class="file-select-box">
                             <div class="layui-form-item">
@@ -416,7 +416,6 @@
                 auto: false,
                 multiple: false,
                 data: {
-                    extractRule: $('#extractRule').val(),
                     processType: $('#processType').val()
                 },
                 choose: function (obj) {
