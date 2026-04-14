@@ -1,4 +1,4 @@
-.pear-nav-tree {
+﻿.pear-nav-tree {
 	width: 230px;
 	border-radius: 0px;
 	background-color: #28333E;
@@ -124,10 +124,8 @@
 .pear-nav-tree .layui-nav-hover dd a span {
 	margin-left: 0px !important;
 }
-/** 亮 样 式*/
 
 /** 亮 样 式*/
-
 .dark-theme .layui-nav-tree{
 	background-color: #28333E!important; 
 }

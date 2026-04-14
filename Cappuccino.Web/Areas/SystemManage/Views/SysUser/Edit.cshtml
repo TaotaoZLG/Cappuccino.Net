@@ -73,7 +73,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">角色</label>
                 <div class="layui-input-block">
-                    @Html.DropDownList("RoleIds", (IEnumerable<SelectListItem>)ViewBag.RoleSelectList, "请选择角色", new Dictionary<string, object> { { "xm-select", "RoleIds" }, { "xm-select-skin", "default" } })
+                    @Html.DropDownList("RoleIds", (IEnumerable<SelectListItem>)ViewBag.RoleSelectList, "请选择角色", new Dictionary<string, object> { { "lay-verify", "required" }, { "lay-reqtext", "请选择角色！" }, { "lay-search", "true" } })
                 </div>
             </div>
         </div>

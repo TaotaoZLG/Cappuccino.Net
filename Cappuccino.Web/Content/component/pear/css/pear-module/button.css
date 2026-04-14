@@ -1,4 +1,4 @@
-/** Buttom 默认*/
+﻿/** Buttom 默认*/
 .pear-btn {
 	display: inline-block;
 	line-height: 38px;
@@ -122,6 +122,13 @@
 .pear-btn-md {
 	height: 34px;
 	line-height: 34px;
+	padding: 0 10px;
+	font-size: 12.5px;
+}
+
+form .pear-btn-md {
+	height: 36px;
+	line-height: 36px;
 	padding: 0 10px;
 	font-size: 12.5px;
 }

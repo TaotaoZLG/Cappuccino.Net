@@ -79,19 +79,17 @@
 						sideMenu.selectItem(id);
 					})
 					$("body").on("click", ".refresh", function() {
-						$(".refresh a").removeClass("layui-icon-refresh-1");
-						$(".refresh a").addClass("layui-anim");
-						$(".refresh a").addClass("layui-anim-rotate");
-						$(".refresh a").addClass("layui-anim-loop");
-						$(".refresh a").addClass("layui-icon-loading");
-						bodyTab.refresh(100);
-						setTimeout(function() {
-							$(".refresh a").addClass("layui-icon-refresh-1");
-							$(".refresh a").removeClass("layui-anim");
-							$(".refresh a").removeClass("layui-anim-rotate");
-							$(".refresh a").removeClass("layui-anim-loop");
-							$(".refresh a").removeClass("layui-icon-loading");
-						}, 300)
+						const $refreshIcon = $(".refresh a");
+						// 1. 点击后立即显示加载动画
+						$refreshIcon.removeClass("layui-icon-refresh-1")
+							.addClass("layui-anim layui-anim-rotate layui-anim-loop layui-icon-loading");
+
+						// 2. 执行刷新，传入回调（刷新完成后移除动画）
+						bodyTab.refresh(100, function () {
+							// 真实刷新完成后执行
+							$refreshIcon.addClass("layui-icon-refresh-1")
+								.removeClass("layui-anim layui-anim-rotate layui-anim-loop layui-icon-loading");
+						});
 					})
 					sideMenu.click(function(dom, data) {
 						bodyTab.addTabOnly({
@@ -250,19 +248,40 @@
 
 		$("body").on("click", ".fullScreen", function() {
 			fullscreen.isFullscreen() ? fullscreen.fullClose() : fullscreen.fullScreen();
+
+			//var document = fullscreen.isFullscreen();
+			//if (document) {
+			//	$(".fullScreen").removeClass("layui-icon-screen-restore");
+			//	fullscreen.fullClose()
+			//} else {
+			//	$(".fullScreen").addClass('layui-icon-screen-restore');
+			//	fullscreen.fullScreen();
+			//}
 		});
 
-		$("body").on("click",'[user-menu-id]',function(){
-			if(config.tab.muiltTab){
+		$("body").on("click",'a[menu-url]',function(){
+			if (config.tab.muiltTab) {
+				var $this = $(this);
+				var menuUrl = $this.attr("menu-url");
+
+				// 安全检查：确保URL存在
+				if (!menuUrl || menuUrl.trim() === "") {
+					console.warn("缺少menu-url属性，无法打开页面");
+					return;
+				}
+
+				var tabId = $this.attr("menu-id") || "tab_" + Date.now();
+				var tabTitle = $this.attr("menu-title") || "新选项卡";
+
 				bodyTab.addTabOnly({
-					id: $(this).attr("user-menu-id"),
-					title: $(this).attr("user-menu-title"),
-					url: $(this).attr("user-menu-url"),
+					id: tabId,
+					title: tabTitle,
+					url: menuUrl,
 					icon: "",
 					close: true
 				}, 300);
-			}else{
-				bodyFrame.changePage($(this).attr("user-menu-url"), "", true);
+			} else {
+				bodyFrame.changePage(menuUrl, "", true);
 			}
 		});
 

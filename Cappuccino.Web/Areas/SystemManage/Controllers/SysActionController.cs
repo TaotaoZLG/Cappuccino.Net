@@ -232,8 +232,9 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                     x.ParentId,
                     x.Type,
                     x.SortCode,
-                    x.SysActionMenu.Url
-                }).ToList();
+                    x.SysActionMenu.Url,
+                    x.SysActionMenu.Icon
+            }).ToList();
             var result = new { code = 0, count = list.Count(), data = list };
             return Json(result, JsonRequestBehavior.AllowGet);
         }

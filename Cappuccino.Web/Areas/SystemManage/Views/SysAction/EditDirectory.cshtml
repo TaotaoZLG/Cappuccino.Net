@@ -77,7 +77,6 @@
                 "name": "@Model.Name",
                 "code": "@Model.Code",
                 "sortCode": "@Model.SortCode",
-                "icon": "@Model.SysActionMenu.Icon"
             });
 
             iconPicker.render({
@@ -86,6 +85,7 @@
                 search: true,
                 page: true,
                 limit: 16,
+                value: "@Model.SysActionMenu.Icon",
                 click: function (data) {
                     console.log(data);
                 },
@@ -93,8 +93,6 @@
                     console.log(d);
                 }
             });
-
-            iconPicker.checkIcon('iconPicker', '@Model.SysActionMenu.Icon');
 
             dtree.render({
                 elem: "#parentIdSelect",

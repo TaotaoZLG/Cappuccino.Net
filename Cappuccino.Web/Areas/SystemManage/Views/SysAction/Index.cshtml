@@ -88,6 +88,11 @@
                         [
                             { type: 'checkbox' },
                             { field: 'name', minWidth: 200, title: '菜单名称' }, 
+                            {
+                                field: 'icon', title: '图标', templet: function myfunction(d) {
+                                    return '<i class="layui-icon ' + d.icon + '"></i>';
+                                }
+                            },
                             { field: 'type', title: '类型', templet: '#typeTpl' },
                             { field: 'url', minWidth: 200, title: '请求地址' }, 
                             { field: 'code', title: '权限标识' },
@@ -142,7 +147,6 @@
                 if (obj.event === 'delete') {
                     window.delete(obj);
                 } else if (obj.event === 'edit') {
-                    console.log(obj);
                     window.edit(obj.data.id);
                 }
             })

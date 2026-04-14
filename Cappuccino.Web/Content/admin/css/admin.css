@@ -277,7 +277,7 @@
 	height: 30px;
 	border-radius: 3px;
 	float: left;
-	margin-left: 20px;
+	margin: 0 0 10px 20px;
 	color: white;
 	font-size: 18px;
 	text-align: center;
@@ -306,8 +306,8 @@
 }
 
 .layui-btn-sm {
-	height: 33px;
-	line-height: 33px;
+	height: 34px;
+	line-height: 34px;
 	padding: 0 10px;
-	font-size: 13px;
+	font-size: 12.5px;
 }

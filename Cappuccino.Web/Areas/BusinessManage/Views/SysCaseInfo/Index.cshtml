@@ -7,19 +7,15 @@
     <div class="layui-card-body">
         <form class="layui-form" action="" lay-filter="formIndex">
             <div class="layui-form-item">
-                <div class="layui-form-item layui-inline">
-                    <label class="layui-form-label">客户姓名</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="custName" placeholder="请输入客户姓名" class="layui-input">
-                    </div>
+                <label class="layui-form-label">客户姓名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="custName" placeholder="请输入客户姓名" class="layui-input">
                 </div>
-                <div class="layui-form-item layui-inline">
-                    <label class="layui-form-label">身份证号</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="custIDNumber" placeholder="请输入身份证号" class="layui-input">
-                    </div>
+                <label class="layui-form-label">身份证号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="custIDNumber" placeholder="请输入身份证号" class="layui-input">
                 </div>
-                <div class="layui-form-item layui-inline">
+                <div class="layui-inline">
                     @Html.SearchBtnHtml()
                     @Html.ResetBtnHtml()
                 </div>
@@ -80,17 +76,7 @@
                         { title: '开户日期', field: 'accountOpenDate', },
                         { title: '开卡日期', field: 'cardOpenDate', },
                         { title: '账户激活日期', field: 'accountActivateDate', },
-                        { title: '账单日', field: 'billDay', },                       
-                        //{
-                        //    title: '调解开始日期', field: 'mediationStartDate', formatter: function (value, row, index) {
-                        //        return ys.formatDate(value);
-                        //    }
-                        //},
-                        //{
-                        //    title: '调解结束日期', field: 'mediationEndDate', formatter: function (value, row, index) {
-                        //        return ys.formatDate(value);
-                        //    }
-                        //},
+                        { title: '账单日', field: 'billDay', },
                         { title: '案件备注1', field: 'remark1', },
                         { title: '案件备注2', field: 'remark2', },
                         { title: '案件备注3', field: 'remark3', },
@@ -130,7 +116,7 @@
                         ys.exportExcel(url, postData);
                     });
                 }
-                else if (obj.event === 'indictment') {       
+                else if (obj.event === 'indictment') {
                     layer.open({
                         type: 2,
                         title: '诉状生成',

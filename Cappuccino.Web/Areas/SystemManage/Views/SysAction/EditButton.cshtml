@@ -106,6 +106,7 @@
                 search: true,
                 page: true,
                 limit: 16,
+                value: "@Model.SysActionMenu.Icon",
                 click: function (data) {
                     console.log(data);
                 },
@@ -113,8 +114,6 @@
                     console.log(d);
                 }
             });
-
-            iconPicker.checkIcon('buttonIcon', '@Model.SysActionButton.ButtonIcon');
 
             dtree.render({
                 elem: "#parentIdSelect",

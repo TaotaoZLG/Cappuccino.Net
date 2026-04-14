@@ -30,8 +30,16 @@
                 dataType: "json",
                 async: async || true,
                 beforeSend: function () {
+                    console.log(url);
                     if (load) {
-                        loadIndex = layer.load(0, { shade: false });
+                        if (url && url.indexOf('/Account/Login') !== -1) {
+                            loadIndex = layer.msg('正在验证登录，请稍候...', {
+                                icon: 16,   // loading图标
+                                shade: 0.01 // 极浅的遮罩
+                            });
+                        } else {
+                            loadIndex = layer.load(0, { shade: false });
+                        }
                     }
                 },
                 success: function (response) {

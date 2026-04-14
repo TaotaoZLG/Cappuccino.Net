@@ -31,12 +31,14 @@
             success = opts.success,
             // json数据
             data = {},
+            // 当前选中的值，不设置value - 默认不选中任何图标
+            value = opts.value || '',
             // 唯一标识
             tmp = new Date().getTime(),
             // 是否使用的class数据
             isFontClass = opts.type === 'fontClass',
             // 初始化时input的值
-            ORIGINAL_ELEM_VALUE = $(elem).val(),
+            ORIGINAL_ELEM_VALUE = value || $(elem).val(),
             TITLE = 'layui-select-title',
             TITLE_ID = 'layui-select-title-' + tmp,
             ICON_BODY = 'layui-iconpicker-' + tmp,
@@ -77,26 +79,25 @@
                 return a;
             },
             /**
-             * 绘制select下拉选择框
+             * 绘制select下拉选择框，并根据value值显示对应的图标（如果value有值的话），否则显示空图标
+             * 2026-04-14
              */
             createSelect: function () {
-                var oriIcon = '<i class="layui-icon">';
-                
-                // 默认图标
-                if(ORIGINAL_ELEM_VALUE === '') {
-                    if(isFontClass) {
-                        ORIGINAL_ELEM_VALUE = 'layui-icon-circle-dot';
-                    } else {
-                        ORIGINAL_ELEM_VALUE = '&#xe617;';
-                    }
-                }
+                var oriIcon = '<i class="layui-icon"></i>';
 
-                if (isFontClass) {
-                    oriIcon = '<i class="layui-icon '+ ORIGINAL_ELEM_VALUE +'">';
+                // 核心逻辑修改：只有当value有值时才渲染对应的图标，否则显示空图标
+                if (value) {
+                    if (isFontClass) {
+                        // 字体类模式：value应该是完整的类名，如 "layui-icon-star"
+                        oriIcon = '<i class="layui-icon ' + value + '"></i>';
+                    } else {
+                        // Unicode模式：value应该是Unicode编码，如 "&#xe600;"
+                        oriIcon = '<i class="layui-icon">' + value + '</i>';
+                    }
                 } else {
-                    oriIcon += ORIGINAL_ELEM_VALUE; 
+                    // value为空时，显示空图标（不选中任何图标）
+                    oriIcon = '<i class="layui-icon"></i>';
                 }
-                oriIcon += '</i>';
 
                 var selectHtml = '<div class="layui-iconpicker layui-unselect layui-form-select" id="'+ ICON_BODY +'">' +
                     '<div class="'+ TITLE +'" id="'+ TITLE_ID +'">' +
@@ -344,7 +345,7 @@
              * 加载样式表
              */
             loadCss: function () {
-                var css = '.layui-iconpicker {max-width: 280px;}.layui-iconpicker .layui-anim{display:none;width:280px;position:absolute;left:0;top:42px;padding:5px 0;z-index:899;min-width:100%;border:1px solid #d2d2d2;max-height:300px;overflow-y:auto;background-color:#fff;border-radius:2px;box-shadow:0 2px 4px rgba(0,0,0,.12);box-sizing:border-box;}.layui-iconpicker-item{border:1px solid #e6e6e6;width:90px;height:38px;border-radius:4px;cursor:pointer;position:relative;}.layui-iconpicker-icon{border-right:1px solid #e6e6e6;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;display:block;width:60px;height:100%;float:left;text-align:center;background:#fff;transition:all .3s;}.layui-iconpicker-icon i{line-height:38px;font-size:18px;}.layui-iconpicker-item > .layui-edge{left:70px;}.layui-iconpicker-item:hover{border-color:#D2D2D2!important;}.layui-iconpicker-item:hover .layui-iconpicker-icon{border-color:#D2D2D2!important;}.layui-iconpicker.layui-form-selected .layui-anim{display:block;}.layui-iconpicker-body{padding:6px;}.layui-iconpicker .layui-iconpicker-list{background-color:#fff;border:1px solid #ccc;border-radius:4px;}.layui-iconpicker .layui-iconpicker-icon-item{display:inline-block;width:21.1%;line-height:36px;text-align:center;cursor:pointer;vertical-align:top;height:36px;margin:4px;border:1px solid #ddd;border-radius:2px;transition:300ms;}.layui-iconpicker .layui-iconpicker-icon-item i.layui-icon{font-size:17px;}.layui-iconpicker .layui-iconpicker-icon-item:hover{background-color:#eee;border-color:#ccc;-webkit-box-shadow:0 0 2px #aaa,0 0 2px #fff inset;-moz-box-shadow:0 0 2px #aaa,0 0 2px #fff inset;box-shadow:0 0 2px #aaa,0 0 2px #fff inset;text-shadow:0 0 1px #fff;}.layui-iconpicker-search{position:relative;margin:0 0 6px 0;border:1px solid #e6e6e6;border-radius:2px;transition:300ms;}.layui-iconpicker-search:hover{border-color:#D2D2D2!important;}.layui-iconpicker-search .layui-input{cursor:text;display:inline-block;width:86%;border:none;padding-right:0;margin-top:1px;}.layui-iconpicker-search .layui-icon{position:absolute;top:11px;right:4%;}.layui-iconpicker-tips{text-align:center;padding:8px 0;cursor:not-allowed;}.layui-iconpicker-page{margin-top:6px;margin-bottom:-6px;font-size:12px;padding:0 2px;}.layui-iconpicker-page-count{display:inline-block;}.layui-iconpicker-page-operate{display:inline-block;float:right;cursor:default;}.layui-iconpicker-page-operate .layui-icon{font-size:12px;cursor:pointer;}.layui-iconpicker-body-page .layui-iconpicker-icon-limit{display:none;}.layui-iconpicker-body-page .layui-iconpicker-icon-limit:first-child{display:block;}';
+                var css = '.layui-iconpicker {max-width: 280px;}.layui-iconpicker .layui-anim{display:none;width:280px;position:absolute;left:0;top:42px;padding:5px 0;z-index:899;min-width:100%;border:1px solid #d2d2d2;max-height:300px;overflow-y:auto;background-color:#fff;border-radius:2px;box-shadow:0 2px 4px rgba(0,0,0,.12);box-sizing:border-box;}.layui-iconpicker-item{border:1px solid #e6e6e6;width:90px;height:34px;border-radius:4px;cursor:pointer;position:relative;}.layui-iconpicker-icon{border-right:1px solid #e6e6e6;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;display:block;width:60px;height:100%;float:left;text-align:center;background:#fff;transition:all .3s;}.layui-iconpicker-icon i{line-height:34px;font-size:18px;}.layui-iconpicker-item > .layui-edge{left:70px;}.layui-iconpicker-item:hover{border-color:#D2D2D2!important;}.layui-iconpicker-item:hover .layui-iconpicker-icon{border-color:#D2D2D2!important;}.layui-iconpicker.layui-form-selected .layui-anim{display:block;}.layui-iconpicker-body{padding:6px;}.layui-iconpicker .layui-iconpicker-list{background-color:#fff;border:1px solid #ccc;border-radius:4px;}.layui-iconpicker .layui-iconpicker-icon-item{display:inline-block;width:21.1%;line-height:36px;text-align:center;cursor:pointer;vertical-align:top;height:36px;margin:4px;border:1px solid #ddd;border-radius:2px;transition:300ms;}.layui-iconpicker .layui-iconpicker-icon-item i.layui-icon{font-size:17px;}.layui-iconpicker .layui-iconpicker-icon-item:hover{background-color:#eee;border-color:#ccc;-webkit-box-shadow:0 0 2px #aaa,0 0 2px #fff inset;-moz-box-shadow:0 0 2px #aaa,0 0 2px #fff inset;box-shadow:0 0 2px #aaa,0 0 2px #fff inset;text-shadow:0 0 1px #fff;}.layui-iconpicker-search{position:relative;margin:0 0 6px 0;border:1px solid #e6e6e6;border-radius:2px;transition:300ms;}.layui-iconpicker-search:hover{border-color:#D2D2D2!important;}.layui-iconpicker-search .layui-input{cursor:text;display:inline-block;width:86%;border:none;padding-right:0;margin-top:1px;}.layui-iconpicker-search .layui-icon{position:absolute;top:11px;right:4%;}.layui-iconpicker-tips{text-align:center;padding:8px 0;cursor:not-allowed;}.layui-iconpicker-page{margin-top:6px;margin-bottom:-6px;font-size:12px;padding:0 2px;}.layui-iconpicker-page-count{display:inline-block;}.layui-iconpicker-page-operate{display:inline-block;float:right;cursor:default;}.layui-iconpicker-page-operate .layui-icon{font-size:12px;cursor:pointer;}.layui-iconpicker-body-page .layui-iconpicker-icon-limit{display:none;}.layui-iconpicker-body-page .layui-iconpicker-icon-limit:first-child{display:block;}';
                 var $style = $('head').find('style[iconpicker]');
                 if ($style.length === 0) {
                     $('head').append('<style rel="stylesheet" iconpicker>'+css+'</style>');

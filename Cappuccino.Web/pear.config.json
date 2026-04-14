@@ -44,6 +44,22 @@
 		{
 			"id": "5",
 			"color": "darkgray"
+		},
+		{
+			"id": "cyan",
+			"color": "#13C2C2"
+		},
+		{
+			"id": "pink",
+			"color": "#EB2F96"
+		},
+		{
+			"id": "brown",
+			"color": "#8C6138"
+		},
+		{
+			"id": "gray",
+			"color": "#8C8C8C"
 		}
 	],
 	"links": [],

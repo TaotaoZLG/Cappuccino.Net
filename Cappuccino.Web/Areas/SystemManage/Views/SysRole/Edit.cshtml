@@ -84,27 +84,6 @@
                 } else if (data.elem.id === 'checkAllCb') {
                     // 全选/全不选（联动模式下会同步处理父子节点）
                     data.elem.checked ? treeIns.checkAllNode("assignDataTree") : treeIns.cancelCheckedNode("assignDataTree");
-                } else if (data.elem.id === 'linkageCheck') {
-                    // 父子联动切换（核心修改）
-                    var oldCheckedIds = [];
-                    // 1. 保存当前已勾选节点ID（避免切换后勾选状态丢失）
-                    var checkedNodes = dtree.getCheckbarNodesParam("assignDataTree");
-                    if (checkedNodes.length > 0) {
-                        oldCheckedIds = checkedNodes.map(item => item.nodeId).join(",");
-                    }
-
-                    // 2. 修改联动配置并刷新树
-                    treeConfig.checkbarType = data.elem.checked ? "all" : "self";
-                    treeIns = dtree.reload("assignDataTree", treeConfig);
-
-                    // 3. 恢复之前的勾选状态
-                    if (oldCheckedIds) {
-                        treeIns.chooseDataInit(oldCheckedIds);
-                        // 4. 联动模式下，初始化父子节点状态（子节点同步父节点勾选）
-                        if (data.elem.checked) {
-                            treeIns.initAllCheck();
-                        }
-                    }
                 }
             });
 

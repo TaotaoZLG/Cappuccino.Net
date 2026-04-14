@@ -28,20 +28,20 @@
                 <div class="layui-form-item">
                     <div class="input-wrap">
                         <i class="layui-icon layui-icon-username input-icon"></i>
-                        <input type="text" name="LoginName" value="@Model.LoginName" lay-verify="required" lay-reqtext="请输入用户名" placeholder="用户名" autocomplete="off" hover class="layui-input" />
+                        <input type="text" name="LoginName" value="@Model.LoginName" lay-verify="required" lay-reqtext="请输入用户名" placeholder="用户名" autocomplete="off" class="layui-input" />
                     </div>
                 </div>
             </div>
             <div class="layui-form-item">
                 <div class="input-wrap">
                     <i class="layui-icon layui-icon-password input-icon"></i>
-                    <input type="password" name="LoginPassword" lay-verify="required" lay-reqtext="请输入密码" placeholder="密  码 " autocomplete="off" hover class="layui-input" />
+                    <input type="password" name="LoginPassword" lay-verify="required" lay-reqtext="请输入密码" placeholder="密  码 " autocomplete="off" class="layui-input" />
                 </div>
             </div>
             <div class="layui-form-item verify-code-group">
                 <div class="input-wrap">
                     <i class="layui-icon layui-icon-vercode input-icon"></i>
-                    <input type="text" name="VerifyCode" lay-verify="required" lay-reqtext="请输入验证码" placeholder="验证码" autocomplete="off" hover class="code layui-input layui-input-inline" />
+                    <input type="text" name="VerifyCode" lay-verify="required" lay-reqtext="请输入验证码" placeholder="验证码" autocomplete="off" class="code layui-input layui-input-inline" />
                 </div>
                 <img src="/Account/CreateVerifyCode" alt="验证码" class="codeImage" onclick="resetVCode()" />
             </div>

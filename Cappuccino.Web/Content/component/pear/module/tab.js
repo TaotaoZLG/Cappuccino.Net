@@ -278,34 +278,75 @@
 
 
 	// 刷 新 指 定 的 选 项 卡
-	pearTab.prototype.refresh = function(time) {
+	pearTab.prototype.refresh = function (time, callback) {
+		// 兼容：如果第一个参数是函数，视为仅传回调（不破坏原有调用方式）
+		if (typeof time === 'function') {
+			callback = time;
+			time = 0;
+		}
+		// 初始化实例内的index（替代全局index，避免污染）
+		if (!this.index) this.index = 0;
+		// 保存this指向，避免setTimeout中丢失
+		const self = this;
+		// 缓存elem，减少重复取值
+		const elem = self.option.elem;
+		// 缓存iframe元素（避免重复DOM查询）
+		const $iframe = $(`.layui-tab[lay-filter='${elem}'] .layui-tab-content .layui-show`).find("iframe");
+		const iframeDom = $iframe.length ? $iframe[0] : null;
 
 		// 刷 新 指 定 的 选 项 卡
 		if (time != false && time != 0) {
-
-			var load = '<div id="pear-tab-loading' + index + '" class="pear-tab-loading">' +
+			var load = '<div id="pear-tab-loading' + self.index + '" class="pear-tab-loading">' +
 				'<div class="ball-loader">' +
 				'<span></span><span></span><span></span><span></span>' +
 				'</div>' +
-				'</div>'
+				'</div>';
 
-            var elem =  this.option.elem;
-			$("#" + this.option.elem).find(".pear-tab").append(load);
-			var pearLoad = $("#" + this.option.elem).find("#pear-tab-loading" + index);
+			$("#" + elem).find(".pear-tab").append(load);
+			var pearLoad = $("#" + elem).find("#pear-tab-loading" + self.index);
 			pearLoad.css({
 				display: "block"
 			});
-			index++;
-			setTimeout(function() {
-				pearLoad.fadeOut(500,function(){
+			self.index++; // 实例内自增，替代全局index
+			setTimeout(function () {
+				pearLoad.fadeOut(500, function () {
 					pearLoad.remove();
-				});       
+				});
 			}, time);
-			$(".layui-tab[lay-filter='" + elem + "'] .layui-tab-content .layui-show").find("iframe")[0].contentWindow
-				.location.reload(true);
+
+			// 刷新iframe + 触发回调
+			if (iframeDom) {
+				refreshIframe(iframeDom, callback);
+			} else if (typeof callback === 'function') {
+				callback(); // 无iframe时兜底执行回调
+			}
 		} else {
-			$(".layui-tab[lay-filter='" + this.option.elem + "'] .layui-tab-content .layui-show").find("iframe")[0].contentWindow
-				.location.reload(true);
+			// 无loading时直接刷新
+			if (iframeDom) {
+				refreshIframe(iframeDom, callback);
+			} else if (typeof callback === 'function') {
+				callback();
+			}
+		}
+
+		// 封装iframe刷新+回调逻辑（内部复用）
+		function refreshIframe(iframe, cb) {
+			// 移除旧监听，避免重复触发
+			$(iframe).off("load", handleLoad);
+			// 监听iframe加载完成
+			$(iframe).on("load", handleLoad);
+			// 强制刷新iframe
+			iframe.contentWindow.location.reload(true);
+			// 超时兜底（10秒），防止加载卡死
+			const timeout = setTimeout(() => {
+				handleLoad();
+			}, 10000);
+
+			function handleLoad() {
+				clearTimeout(timeout); // 清除超时
+				$(iframe).off("load", handleLoad); // 移除监听
+				if (typeof cb === 'function') cb(); // 执行回调
+			}
 		}
 	}
 	
