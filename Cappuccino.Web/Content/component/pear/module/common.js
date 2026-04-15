@@ -30,9 +30,8 @@
                 dataType: "json",
                 async: async || true,
                 beforeSend: function () {
-                    console.log(url);
                     if (load) {
-                        if (url && url.indexOf('/Account/Login') !== -1) {
+                        if (url && url === "/Account/Login") {
                             loadIndex = layer.msg('正在验证登录，请稍候...', {
                                 icon: 16,   // loading图标
                                 shade: 0.01 // 极浅的遮罩

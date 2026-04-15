@@ -179,173 +179,204 @@
 
 
 	/** 添 加 唯 一 选 项 卡 */
-	pearTab.prototype.addTabOnly = function(opt, time) {
-
+	pearTab.prototype.addTabOnly = function(opt, time, callback) {
 		var title = '';
-
 		if (opt.close) {
-
 			title += '<span class="pear-tab-active"></span><span class="able-close">' + opt.title +
 				'</span><i class="layui-icon layui-unselect layui-tab-close">ဆ</i>'
-
 		} else {
-
 			title += '<span class="pear-tab-active"></span><span class="disable-close">' + opt.title +
 				'</span><i class="layui-icon layui-unselect layui-tab-close">ဆ</i>'
-
 		}
 
-		if ($(".layui-tab[lay-filter='" + this.option.elem + "'] .layui-tab-title li[lay-id]").length <= 0) {
+		var elem = this.option.elem;
+		var hasCallback = callback && typeof callback === 'function';
+		var $tabTitle = $(".layui-tab[lay-filter='" + elem + "'] .layui-tab-title li[lay-id]");
+		var needAddTab = false;
+		var pearLoad = null;
 
-			if (time != false && time != 0) {
-
-				var load = '<div id="pear-tab-loading' + index + '" class="pear-tab-loading">' +
-					'<div class="ball-loader">' +
-					'<span></span><span></span><span></span><span></span>' +
-					'</div>' +
-					'</div>'
-
-				$("#" + this.option.elem).find(".pear-tab").append(load);
-				var pearLoad = $("#" + this.option.elem).find("#pear-tab-loading" + index);
-				pearLoad.css({
-					display: "block"
-				});
-
-				setTimeout(function() {
-					pearLoad.fadeOut(500);
-				}, time);
-				index++;
-			}
-			element.tabAdd(this.option.elem, {
-				title: title,
-				content: '<iframe id="' + opt.id + '" data-frameid="' + opt.id + '" scrolling="auto" frameborder="0" src="' +
-					opt.url + '" style="width:100%;height:100%;"></iframe>',
-				id: opt.id
-			});
+		if ($tabTitle.length <= 0) {
+			needAddTab = true;
 		} else {
-
-			var isData = false;
-
 			//查询当前选项卡数量
-			if ($(".layui-tab[lay-filter='" + this.option.elem + "'] .layui-tab-title li[lay-id]").length >= this.option.tabMax) {
+			if ($tabTitle.length >= this.option.tabMax) {
 				layer.msg("最多打开" + this.option.tabMax + "个标签页", {
 					icon: 2,
 					time: 1000,
-					shift : 6 //抖动效果
+					shift: 6 //抖动效果
 				});
 				return false;
 			}
 
-			$.each($(".layui-tab[lay-filter='" + this.option.elem + "'] .layui-tab-title li[lay-id]"), function() {
-
+			var isData = false;
+			$.each($tabTitle, function() {
 				if ($(this).attr("lay-id") == opt.id) {
-
 					isData = true;
 				}
-			})
+			});
 			if (isData == false) {
+				needAddTab = true;
+			}
+		}
 
-				if (time != false && time != 0) {
+		// 需要添加标签页时处理动画和回调
+		if (needAddTab) {
+			// 方式1：加载动画 + 回调（time为数字，0或正数 且 有回调）
+			if ((typeof time === 'number' && time >= 0) && hasCallback) {
+				var load = '<div id="pear-tab-loading' + index + '" class="pear-tab-loading">' +
+					'<div class="ball-loader">' +
+					'<span></span><span></span><span></span><span></span>' +
+					'</div>' +
+					'</div>';
+				$("#" + elem).find(".pear-tab").append(load);
+				pearLoad = $("#" + elem).find("#pear-tab-loading" + index);
+				pearLoad.css({ display: "block" });
+				index++;
 
-					var load = '<div id="pear-tab-loading' + index + '" class="pear-tab-loading">' +
-						'<div class="ball-loader">' +
-						'<span></span><span></span><span></span><span></span>' +
-						'</div>' +
-						'</div>'
-
-					$("#" + this.option.elem).find(".pear-tab").append(load);
-					var pearLoad = $("#" + this.option.elem).find("#pear-tab-loading" + index);
-					pearLoad.css({
-						display: "block"
-					});
-
-					setTimeout(function() {
-						pearLoad.fadeOut(500);
-					}, time);
-					index++;
-				}
-
-				element.tabAdd(this.option.elem, {
+				// 添加标签页
+				element.tabAdd(elem, {
 					title: title,
 					content: '<iframe id="' + opt.id + '" data-frameid="' + opt.id + '" scrolling="auto" frameborder="0" src="' +
 						opt.url + '" style="width:100%;height:100%;"></iframe>',
 					id: opt.id
 				});
+
+				// 获取新增的iframe并绑定回调
+				var iframe = $("#" + opt.id)[0];
+				iframe.onload = function() {
+					callback(); // 执行回调
+					// time=0时回调完成关闭动画，否则按时间关闭
+					if (time === 0) {
+						pearLoad.fadeOut(500);
+					} else {
+						setTimeout(function() {
+							pearLoad.fadeOut(500);
+						}, time);
+					}
+				};
+			}
+			// 方式2：不加载动画，只回调（time=false 且 有回调）
+			else if (time === false && hasCallback) {
+				// 添加标签页
+				element.tabAdd(elem, {
+					title: title,
+					content: '<iframe id="' + opt.id + '" data-frameid="' + opt.id + '" scrolling="auto" frameborder="0" src="' +
+						opt.url + '" style="width:100%;height:100%;"></iframe>',
+					id: opt.id
+				});
+
+				// 绑定回调
+				var iframe = $("#" + opt.id)[0];
+				iframe.onload = function() {
+					callback();
+				};
+			}
+			// 方式3：只加载动画，无回调（time为数字，0或正数 且 无回调）
+			else if (typeof time === 'number' && time >= 0 && !hasCallback) {
+				var load = '<div id="pear-tab-loading' + index + '" class="pear-tab-loading">' +
+					'<div class="ball-loader">' +
+					'<span></span><span></span><span></span><span></span>' +
+					'</div>' +
+					'</div>';
+				$("#" + elem).find(".pear-tab").append(load);
+				pearLoad = $("#" + elem).find("#pear-tab-loading" + index);
+				pearLoad.css({ display: "block" });
+				index++;
+
+				// 添加标签页
+				element.tabAdd(elem, {
+					title: title,
+					content: '<iframe id="' + opt.id + '" data-frameid="' + opt.id + '" scrolling="auto" frameborder="0" src="' +
+						opt.url + '" style="width:100%;height:100%;"></iframe>',
+					id: opt.id
+				});
+
+				// 关闭动画：time=0立即，否则按时间
+				if (time === 0) {
+					pearLoad.fadeOut(500);
+				} else {
+					setTimeout(function() {
+						pearLoad.fadeOut(500);
+					}, time);
+				}
 			}
 		}
-		element.tabChange(this.option.elem, opt.id);
+
+		// 切换到该标签页
+		element.tabChange(elem, opt.id);
 	}
 
-
 	// 刷 新 指 定 的 选 项 卡
-	pearTab.prototype.refresh = function (time, callback) {
-		// 兼容：如果第一个参数是函数，视为仅传回调（不破坏原有调用方式）
-		if (typeof time === 'function') {
-			callback = time;
-			time = 0;
-		}
-		// 初始化实例内的index（替代全局index，避免污染）
-		if (!this.index) this.index = 0;
-		// 保存this指向，避免setTimeout中丢失
-		const self = this;
-		// 缓存elem，减少重复取值
-		const elem = self.option.elem;
-		// 缓存iframe元素（避免重复DOM查询）
-		const $iframe = $(`.layui-tab[lay-filter='${elem}'] .layui-tab-content .layui-show`).find("iframe");
-		const iframeDom = $iframe.length ? $iframe[0] : null;
+	pearTab.prototype.refresh = function(time, callback) {
+		var elem = this.option.elem;
+		var iframe = $(".layui-tab[lay-filter='" + elem + "'] .layui-tab-content .layui-show").find("iframe")[0];
+		var hasCallback = callback && typeof callback === 'function';
 
-		// 刷 新 指 定 的 选 项 卡
-		if (time != false && time != 0) {
-			var load = '<div id="pear-tab-loading' + self.index + '" class="pear-tab-loading">' +
+		// 方式1：加载动画 + 回调（time为数字，0或正数）
+		if ((typeof time === 'number' && time >= 0) && hasCallback) {
+			var load = '<div id="pear-tab-loading' + index + '" class="pear-tab-loading">' +
 				'<div class="ball-loader">' +
 				'<span></span><span></span><span></span><span></span>' +
 				'</div>' +
 				'</div>';
-
 			$("#" + elem).find(".pear-tab").append(load);
-			var pearLoad = $("#" + elem).find("#pear-tab-loading" + self.index);
-			pearLoad.css({
-				display: "block"
-			});
-			self.index++; // 实例内自增，替代全局index
-			setTimeout(function () {
-				pearLoad.fadeOut(500, function () {
+			var pearLoad = $("#" + elem).find("#pear-tab-loading" + index);
+			pearLoad.css({ display: "block" });
+			index++;
+
+			// 刷新iframe
+			iframe.contentWindow.location.reload(true);
+
+			// 绑定onload事件处理回调和动画关闭
+			iframe.onload = function() {
+				callback(); // 执行回调
+				// time=0时，回调完成后关闭动画；time>0时，按指定时间关闭
+				if (time === 0) {
+					pearLoad.fadeOut(function() {
+						pearLoad.remove();
+					});
+				} else {
+					setTimeout(function() {
+						pearLoad.fadeOut(function() {
+							pearLoad.remove();
+						});
+					}, time);
+				}
+			};
+		}
+		// 方式2：不加载动画，只回调（time=false 且有回调）
+		else if (time === false && hasCallback) {
+			iframe.onload = function() {
+				callback();
+			};
+			iframe.contentWindow.location.reload(true);
+		}
+		// 方式3：只加载动画，无回调（time为数字，0或正数 且 无回调）
+		else if (typeof time === 'number' && time >= 0 && !hasCallback) {
+			var load = '<div id="pear-tab-loading' + index + '" class="pear-tab-loading">' +
+				'<div class="ball-loader">' +
+				'<span></span><span></span><span></span><span></span>' +
+				'</div>' +
+				'</div>';
+			$("#" + elem).find(".pear-tab").append(load);
+			var pearLoad = $("#" + elem).find("#pear-tab-loading" + index);
+			pearLoad.css({ display: "block" });
+			index++;
+
+			// 刷新iframe
+			iframe.contentWindow.location.reload(true);
+
+			// 关闭动画：time=0立即关闭，否则按指定时间
+			if (time === 0) {
+				pearLoad.fadeOut(function() {
 					pearLoad.remove();
 				});
-			}, time);
-
-			// 刷新iframe + 触发回调
-			if (iframeDom) {
-				refreshIframe(iframeDom, callback);
-			} else if (typeof callback === 'function') {
-				callback(); // 无iframe时兜底执行回调
-			}
-		} else {
-			// 无loading时直接刷新
-			if (iframeDom) {
-				refreshIframe(iframeDom, callback);
-			} else if (typeof callback === 'function') {
-				callback();
-			}
-		}
-
-		// 封装iframe刷新+回调逻辑（内部复用）
-		function refreshIframe(iframe, cb) {
-			// 移除旧监听，避免重复触发
-			$(iframe).off("load", handleLoad);
-			// 监听iframe加载完成
-			$(iframe).on("load", handleLoad);
-			// 强制刷新iframe
-			iframe.contentWindow.location.reload(true);
-			// 超时兜底（10秒），防止加载卡死
-			const timeout = setTimeout(() => {
-				handleLoad();
-			}, 10000);
-
-			function handleLoad() {
-				clearTimeout(timeout); // 清除超时
-				$(iframe).off("load", handleLoad); // 移除监听
-				if (typeof cb === 'function') cb(); // 执行回调
+			} else {
+				setTimeout(function() {
+					pearLoad.fadeOut(function() {
+						pearLoad.remove();
+					});
+				}, time);
 			}
 		}
 	}

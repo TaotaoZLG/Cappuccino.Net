@@ -79,16 +79,14 @@
 						sideMenu.selectItem(id);
 					})
 					$("body").on("click", ".refresh", function() {
-						const $refreshIcon = $(".refresh a");
-						// 1. 点击后立即显示加载动画
-						$refreshIcon.removeClass("layui-icon-refresh-1")
-							.addClass("layui-anim layui-anim-rotate layui-anim-loop layui-icon-loading");
+						var $refreshIcon = $(".refresh a");
+						// 点击后立即显示加载动画
+						$refreshIcon.removeClass("layui-icon-refresh-1").addClass("layui-anim layui-anim-rotate layui-anim-loop layui-icon-loading");
 
-						// 2. 执行刷新，传入回调（刷新完成后移除动画）
-						bodyTab.refresh(100, function () {
+						// 执行刷新，传入回调（刷新完成后移除动画）
+						bodyTab.refresh(0, function () {
 							// 真实刷新完成后执行
-							$refreshIcon.addClass("layui-icon-refresh-1")
-								.removeClass("layui-anim layui-anim-rotate layui-anim-loop layui-icon-loading");
+							$refreshIcon.addClass("layui-icon-refresh-1").removeClass("layui-anim layui-anim-rotate layui-anim-loop layui-icon-loading");
 						});
 					})
 					sideMenu.click(function(dom, data) {
@@ -98,7 +96,7 @@
 							url: data.menuUrl,
 							icon: data.menuIcon,
 							close: true
-						}, 300);
+                        }, 300, function () { });
 						compatible();
 					})
 				} else {
@@ -110,19 +108,15 @@
 						height: '100%'
 					});
 					$("body").on("click", ".refresh", function() {
-						$(".refresh a").removeClass("layui-icon-refresh-1");
-						$(".refresh a").addClass("layui-anim");
-						$(".refresh a").addClass("layui-anim-rotate");
-						$(".refresh a").addClass("layui-anim-loop");
-						$(".refresh a").addClass("layui-icon-loading");
-						bodyFrame.refresh(400);
-						setTimeout(function() {
-							$(".refresh a").addClass("layui-icon-refresh-1");
-							$(".refresh a").removeClass("layui-anim");
-							$(".refresh a").removeClass("layui-anim-rotate");
-							$(".refresh a").removeClass("layui-anim-loop");
-							$(".refresh a").removeClass("layui-icon-loading");
-						}, 600)
+						var $refreshIcon = $(".refresh a");
+						// 点击后立即显示加载动画
+						$refreshIcon.removeClass("layui-icon-refresh-1").addClass("layui-anim layui-anim-rotate layui-anim-loop layui-icon-loading");
+
+						// 执行刷新，传入回调（刷新完成后移除动画）
+						bodyFrame.refresh(0, function () {
+							// 真实刷新完成后执行
+							$refreshIcon.addClass("layui-icon-refresh-1").removeClass("layui-anim layui-anim-rotate layui-anim-loop layui-icon-loading");
+						});
 					})
 					sideMenu.click(function(dom, data) {
 						bodyFrame.changePage(data.menuUrl, data.menuPath, true);
@@ -134,7 +128,7 @@
 			this.keepLoad = function(param) {
 				compatible()
 				setTimeout(function() {
-					$(".loader-main").fadeOut(200);
+					$(".loader-main").fadeOut(100);
 				}, param.other.keepLoad)
 			}
 			
@@ -228,7 +222,7 @@
 					url: option.url,
 					icon: option.icon || "",
 					close: option.close !== undefined ? option.close : true
-				}, 300);
+				}, 300, function () { });
 				compatible();
 			};
 		};
@@ -263,14 +257,17 @@
 			if (config.tab.muiltTab) {
 				var $this = $(this);
 				var menuUrl = $this.attr("menu-url");
+				var tabId = $this.attr("menu-id");
 
 				// 安全检查：确保URL存在
 				if (!menuUrl || menuUrl.trim() === "") {
 					console.warn("缺少menu-url属性，无法打开页面");
 					return;
 				}
-
-				var tabId = $this.attr("menu-id") || "tab_" + Date.now();
+				if (!tabId || tabId.trim() === "") {
+					console.warn("缺少menu-id属性，无法打开页面");
+					return;
+				}
 				var tabTitle = $this.attr("menu-title") || "新选项卡";
 
 				bodyTab.addTabOnly({
@@ -279,7 +276,8 @@
 					url: menuUrl,
 					icon: "",
 					close: true
-				}, 300);
+				}, 300, function () { });
+				compatible();
 			} else {
 				bodyFrame.changePage(menuUrl, "", true);
 			}

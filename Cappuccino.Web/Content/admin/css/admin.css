@@ -33,7 +33,11 @@
 	line-height: 60px;
 	position: relative;
 	background-color: #28333E;
-
+	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	will-change: transform;
 }
 
 .pear-admin .layui-logo img {
@@ -310,4 +314,45 @@
 	line-height: 34px;
 	padding: 0 10px;
 	font-size: 12.5px;
+}
+
+/* 通用列表容器样式 */
+.list-group {
+	padding-top: 15px;
+	margin-top: 10px;
+	border-top: 1px solid #eee;
+	list-style: none;
+	padding-left: 0;
+	margin-bottom: 0;
+}
+
+/* 单条信息样式 - 使用flex布局实现左右排版 */
+.list-group-item {
+	display: flex;
+	justify-content: space-between;
+	padding: 8px 0;
+	border-bottom: 1px solid #f5f5f5;
+	align-items: center;
+}
+
+	.list-group-item:last-child {
+		border-bottom: none;
+	}
+
+/* 信息标签样式 */
+.list-item-left {
+	font-weight: 600;
+	color: #666;
+	flex: 0 0 80px; /* 固定宽度，确保对齐 */
+	font-size: 13px;
+}
+
+/* 信息值样式 */
+.list-item-right {
+	flex: 1;
+	text-align: right;
+	color: #333;
+	font-size: 13px;
+	word-break: break-all;
+	padding-left: 10px;
 }

@@ -8,22 +8,49 @@
     <div class="mainBox">
         <div class="main-container">
             <div class="layui-form-item">
-                <label class="layui-form-label">角色名</label>
+                <label class="layui-form-label">任务名称</label>
                 <div class="layui-input-block">
-                    <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入角色名" class="layui-input" value="@Model.Name">
+                    <input type="text" name="JobName" lay-verify="required" autocomplete="off" placeholder="请输入任务名称" class="layui-input" value="@Model.JobName">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">角色编码</label>
+                <label class="layui-form-label">任务分组</label>
                 <div class="layui-input-block">
-                    <input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请输入编码" class="layui-input" value="@Model.Code">
+                    <input type="text" name="JobGroup" class="layui-input" value="@Model.JobGroup">
                 </div>
             </div>
-            @Html.EnabledMarkRadioHtml()
             <div class="layui-form-item">
-                <label class="layui-form-label">备注</label>
+                <label class="layui-form-label">Cron表达式 <span class="layui-red">*</span></label>
                 <div class="layui-input-block">
-                    <textarea name="remark" required lay-verify="required" placeholder="请输入" class="layui-textarea">@Model.Remark</textarea>
+                    <input type="text" name="CronExpression" lay-verify="required" placeholder="例如：0 0/5 * * * ?" class="layui-input" value="@Model.CronExpression">
+                    <div class="layui-form-mid layui-word-aux">Cron表达式生成工具：<a href="https://cron.qqe2.com/" target="_blank">点击访问</a></div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">执行类名 <span class="layui-red">*</span></label>
+                <div class="layui-input-block">
+                    <input type="text" name="JobClassName" lay-verify="required" placeholder="包含命名空间的完整类名" class="layui-input" value="@Model.JobClassName">
+                    <div class="layui-form-mid layui-word-aux">例如：Cappuccino.Web.Tasks.SampleTask</div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">开始时间</label>
+                <div class="layui-input-block">
+                    <input type="text" name="StartTime" placeholder="请选择开始时间" class="layui-input time-input" data-type="datetime" value="@Model.StartTime">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">结束时间</label>
+                <div class="layui-input-block">
+                    <input type="text" name="EndTime" placeholder="请选择结束时间" class="layui-input time-input" data-type="datetime" value="@Model.EndTime">
+                </div>
+            </div>
+            @Html.EnabledMarkRadioHtml("JobStatus")
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务描述</label>
+                <div class="layui-input-block">
+                    <textarea name="Description" class="layui-textarea" value="@Model.Description"></textarea>
                 </div>
             </div>
         </div>
@@ -47,10 +74,6 @@
             let form = layui.form;
             let $ = layui.jquery;
             let common = layui.common;
-
-             form.val("formEdit", {
-                "enabledMark": "@Model.EnabledMark"
-             });
 
             form.on("submit(edit)", function (data) {
                 common.ajax("/SystemManage/SysAutoJob/Edit", "post", data.field, true, true).done(function (response) {

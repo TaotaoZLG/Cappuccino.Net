@@ -100,3 +100,46 @@
 	right: 30px;
 	font-size: 12px;
 }
+
+.layui-form-item .layui-input-inline {
+	width: 320px;
+}
+
+.user-info-list {
+	padding: 5px 10px 5px 10px;
+	margin-top: 15px;
+	border-top: 1px solid #e6e6e6;
+	list-style: none;
+	margin-bottom: 0;
+}
+
+/* 单条信息样式 - 使用flex布局实现左右排版 */
+.user-info-item {
+	display: flex;
+	justify-content: space-between;
+	padding: 8px 0;
+	border-bottom: 1px solid #e6e6e6;
+	align-items: center;
+}
+
+.user-info-item:last-child {
+	border-bottom: none;
+}
+
+/* 信息标签样式 */
+.info-label {
+	font-weight: 600;
+	color: #666;
+	flex: 0 0 80px; /* 固定宽度，确保对齐 */
+	font-size: 13px;
+}
+
+/* 信息值样式 */
+.info-value {
+	flex: 1;
+	text-align: right;
+	color: #333;
+	font-size: 13px;
+	word-break: break-all;
+	padding-left: 10px;
+}

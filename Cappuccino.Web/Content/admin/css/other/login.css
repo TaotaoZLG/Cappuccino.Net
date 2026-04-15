@@ -99,7 +99,7 @@ body {
 	color: #ccc;
 }
 
-/* 覆盖原有login.css的padding-left，留出图标空间 */
+/* 留出图标空间 */
 .layui-form-item .input-wrap .layui-input {
 	padding-left: 40px !important;
 }

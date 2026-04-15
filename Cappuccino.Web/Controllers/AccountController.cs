@@ -55,7 +55,10 @@ namespace Cappuccino.Web.Controllers
 
         public ActionResult Person()
         {
-            return View();
+            var userId = UserManager.GetCurrentUserInfo().Id;
+            var entity = _sysUserService.GetList(x => x.Id == userId).FirstOrDefault();
+            var viewModel = entity.EntityMap();
+            return View(viewModel);
         }
         #endregion
 

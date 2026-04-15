@@ -174,3 +174,10 @@ form .pear-btn-md {
 	padding: 0 25px;
 	font-size: 16px;
 }
+
+.layui-btn-sm {
+	height: 34px;
+	line-height: 34px;
+	padding: 0 10px;
+	font-size: 12.5px;
+}
