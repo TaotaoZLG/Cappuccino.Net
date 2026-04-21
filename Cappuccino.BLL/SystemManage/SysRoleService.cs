@@ -35,12 +35,12 @@ namespace Cappuccino.BLL
         /// <param name="menuPermissions"></param>
         public void SaveMenuPermissions(SysRoleEntity roleEntity, List<DtreeResponse> menuPermissions)
         {            
+            // 删除旧菜单权限
+            roleEntity.SysActions.Clear();
+
             // 处理新菜单权限
             if (menuPermissions != null && menuPermissions.Any())
             {
-                // 删除旧菜单权限
-                roleEntity.SysActions.Clear();
-
                 var actionIds = menuPermissions.Select(p => long.Parse(p.NodeId)).Distinct().ToList();
                 var actionList = _actionDao.GetList(x => actionIds.Contains(x.Id)).ToList();
                 actionList.ForEach(action => roleEntity.SysActions.Add(action));

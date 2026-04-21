@@ -19,9 +19,9 @@
         <div class="layui-form-item">
             <img class="logo" src="~/Content/admin/images/logo.png" />
             <div class="title">Cappuccino</div>
-            @*<div class="desc">
-                ASP.NET MVC 5 + Entity Framework 6
-            </div>*@
+            <div class="desc">
+                删繁就简三秋树，领异标新二月花
+            </div>
         </div>
         <div class="demo-login-container">
             <div class="layui-form-item">
@@ -68,9 +68,6 @@
             form.on('submit(login)', function (data) {
                 common.ajax("@Url.Action("Login","Account")", "post", data.field, true, true).done(function (response) {
                     window.location = "/Home";
-                    //popup.success("登录成功", function() {
-                    //  window.location = "/Home";
-                    //});
                 }).fail(function (error) {
                     console.log(error)
                     //刷新二维码

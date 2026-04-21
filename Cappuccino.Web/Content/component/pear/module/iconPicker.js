@@ -38,7 +38,7 @@
             // 是否使用的class数据
             isFontClass = opts.type === 'fontClass',
             // 初始化时input的值
-            ORIGINAL_ELEM_VALUE = value || $(elem).val(),
+            ORIGINAL_ELEM_VALUE = opts.value || $(elem).val(),
             TITLE = 'layui-select-title',
             TITLE_ID = 'layui-select-title-' + tmp,
             ICON_BODY = 'layui-iconpicker-' + tmp,
