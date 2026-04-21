@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.Common.Enum;
@@ -81,7 +82,7 @@ namespace Cappuccino.Web.Controllers
                 if (result)
                 {
                     SysUserEntity userInfo = _sysUserService.GetList(x => x.UserName == loginModel.LoginName).FirstOrDefault();
-                    string userLoginId = Guid.NewGuid().ToString();
+                    string userLoginId = GuidHelper.GetGuid(true);
 
                     // 若选择"记住登录"（IsMember为true），缓存10天，Cookie长期有效
                     if (loginModel.IsMember)
@@ -92,7 +93,8 @@ namespace Cappuccino.Web.Controllers
                             "0"
                         };
                         CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), TimeSpan.FromDays(10));
-                        CacheManager.Set(userLoginId, userInfo, TimeSpan.FromDays(10));
+                        // 指定绝对过期
+                        CacheManager.Set(userLoginId, userInfo, TimeSpan.FromDays(10), CacheExpirationTypeEnum.Absolute);
                     }
                     else
                     {
@@ -104,7 +106,8 @@ namespace Cappuccino.Web.Controllers
                             "1"
                         };
                         CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), TimeSpan.FromMinutes(30));
-                        CacheManager.Set(userLoginId, userInfo, TimeSpan.FromMinutes(30));
+                        // 不记住密码仍用滑动过期
+                        CacheManager.Set(userLoginId, userInfo, TimeSpan.FromMinutes(30), CacheExpirationTypeEnum.Sliding);
                     }
 
                     _sysLogLogonService.WriteLogonLog(new SysLogLogonEntity
@@ -222,9 +225,6 @@ namespace Cappuccino.Web.Controllers
                                     CacheManager.Set(list[0], userInfo, expiresTime);
                                     CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), expiresTime);
                                 }
-
-                                // 无论是否记住，都写入Session（避免立即过期）
-                                SessionHelper.Set(KeyManager.UserInfo, userInfo);
                             }
                         }
                     }
@@ -235,6 +235,28 @@ namespace Cappuccino.Web.Controllers
             {
                 return WriteError("密码修改失败：" + ex.Message);
             }
+        }
+
+        [HttpPost, CheckPermission("system.user.edit")]
+        [LogOperate(Title = "编辑个人基础信息", BusinessType = (int)OperateType.Update)]
+        public ActionResult EditUserInfo(long id, SysUserModel viewModel)
+        {
+            SysUserEntity userEntity = _sysUserService.GetList(x => x.Id == id).FirstOrDefault();
+            if (userEntity == null)
+            {
+                return WriteError("该账号不存在");
+            }
+
+            userEntity.NickName = viewModel.NickName;
+            userEntity.MobilePhone = viewModel.MobilePhone;
+            userEntity.Email = viewModel.Email;
+            userEntity.UpdateTime = DateTime.Now;
+            userEntity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
+            _sysUserService.Update(userEntity, new string[] { "NickName", "MobilePhone", "Email", "UpdateTime", "UpdateUserId" });
+
+            // 刷新缓存
+
+            return WriteSuccess();
         }
         #endregion
 

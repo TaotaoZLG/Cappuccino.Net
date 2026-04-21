@@ -74,7 +74,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
 
         #region 私有方法
         /// <summary>
-        /// 复用查询条件构建逻辑（与GetList统一，避免重复代码）
+        /// 复用查询条件构建逻辑
         /// </summary>
         private QueryCollection BuildUserQueries(SysLogOperateModel viewModel)
         {

@@ -213,6 +213,7 @@
     <Compile Include="Caching\RedisCache\RedisCacheManager.cs" />
     <Compile Include="Enum\ActionTypeEnum.cs" />
     <Compile Include="Enum\AjaxStateEnum.cs" />
+    <Compile Include="Enum\CacheExpirationTypeEnum.cs" />
     <Compile Include="Enum\EnabledMarkEnum.cs" />
     <Compile Include="Enum\OperateType.cs" />
     <Compile Include="Enum\PositionEnum.cs" />

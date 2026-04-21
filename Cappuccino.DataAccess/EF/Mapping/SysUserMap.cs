@@ -21,7 +21,7 @@ namespace Cappuccino.DataAccess.Mapping
             this.Property(x => x.DepartmentId).IsOptional();
             this.Property(x => x.PasswordHash).HasMaxLength(50).IsRequired();
             this.Property(x => x.PasswordSalt).HasMaxLength(50).IsRequired();
-            this.Property(x => x.HeadIcon).HasMaxLength(50).IsOptional();
+            this.Property(x => x.HeadIcon).HasMaxLength(100).IsOptional();
             this.Property(x => x.MobilePhone).HasMaxLength(11).IsOptional();
             this.Property(x => x.Email).HasMaxLength(50).IsOptional();
             this.Property(x => x.UserStatus).IsRequired();

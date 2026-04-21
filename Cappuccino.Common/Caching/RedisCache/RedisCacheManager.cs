@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using Cappuccino.Common.Enum;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
@@ -108,6 +109,35 @@ namespace Cappuccino.Common.Caching
 
             string json = JsonConvert.SerializeObject(value, _jsonSettings);
             _database.StringSet(key, json, cacheTime);
+        }
+
+        /// <summary>
+        /// 将指定的键和对象添加到缓存（指定过期类型）
+        /// </summary>
+        /// <param name="key">缓存键</param>
+        /// <param name="value">缓存值</param>
+        /// <param name="expirationTime">过期时间</param>
+        /// <param name="expirationType">过期类型（绝对/滑动）</param>
+        public void Set(string key, object value, TimeSpan expirationTime, CacheExpirationTypeEnum expirationType)
+        {
+            if (string.IsNullOrEmpty(key) || value == null) return;
+
+            string json = JsonConvert.SerializeObject(value, _jsonSettings);
+
+            // Redis 仅支持绝对过期，滑动过期需业务层自行处理（访问时重置过期时间）
+            if (expirationType == CacheExpirationTypeEnum.Absolute)
+            {
+                _database.StringSet(key, json, DateTime.Now.Add(expirationTime));
+            }
+            else
+            {
+                // Redis 模拟滑动过期：先设置绝对过期，业务层访问时重新设置过期时间
+                _database.StringSet(key, json, expirationTime);
+
+                // 可选：添加注释说明 Redis 滑动过期的实现限制
+                // 注意：Redis 原生不支持滑动过期，此处通过绝对过期模拟，
+                // 需在每次 Get 操作后调用 Set 重置过期时间
+            }
         }
 
         /// <summary>

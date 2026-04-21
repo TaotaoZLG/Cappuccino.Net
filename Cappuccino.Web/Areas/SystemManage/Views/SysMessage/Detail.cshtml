@@ -1,0 +1,27 @@
+﻿@model Cappuccino.Model.SysDictDetailModel
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+<div class="layui-fluid" id="LAY-app-message-detail">
+    <div class="layui-card layuiAdmin-msg-detail">
+        <script type="text/html" template lay-url="{{ layui.setter.paths.base }}json/message/detail.js?id={{ layui.router().search.id }}">
+            <div class="layui-card-header">
+                <h1>{{ d.data.title }}</h1>
+                <p>
+                    <span>{{ layui.util.timeAgo(d.data.time) }}</span>
+                </p>
+            </div>
+            <div class="layui-card-body layui-text">
+                <div class="layadmin-text">
+                    {{- d.data.content }}
+                </div>
+
+                <div style="padding-top: 30px;">
+                    <a href="javascript:;" layadmin-event="back" class="layui-btn layui-btn-primary layui-btn-sm">返回上级</a>
+                </div>
+            </div>
+        </script>
+    </div>
+</div>

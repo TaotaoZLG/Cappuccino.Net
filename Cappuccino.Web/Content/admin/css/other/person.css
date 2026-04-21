@@ -143,3 +143,10 @@
 	word-break: break-all;
 	padding-left: 10px;
 }
+
+.layui-btn-sm {
+	height: 34px;
+	line-height: 34px;
+	padding: 0 10px;
+	font-size: 12.5px;
+}

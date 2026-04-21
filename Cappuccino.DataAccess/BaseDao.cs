@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Transactions;
+using Cappuccino.Common.Log;
 using Cappuccino.DataAccess;
 
 namespace Cappuccino.DataAccess
@@ -48,24 +50,23 @@ namespace Cappuccino.DataAccess
 
         public int SaveChanges()
         {
-            return Db.SaveChanges();
-            //try
-            //{
-            //    return Db.SaveChanges();
-            //}
-            //catch (DbEntityValidationException ex)
-            //{
-            //    // 遍历验证错误，输出详细信息
-            //    foreach (var validationErrors in ex.EntityValidationErrors)
-            //    {
-            //        foreach (var validationError in validationErrors.ValidationErrors)
-            //        {
-            //            // 输出：实体类型 + 字段名 + 错误信息
-            //            Log4netHelper.Error($"验证失败：{validationErrors.Entry.Entity.GetType().Name} - {validationError.PropertyName}: {validationError.ErrorMessage}");
-            //        }
-            //    }
-            //    throw; // 重新抛出异常
-            //}
+            try
+            {
+                return Db.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                // 遍历验证错误，输出详细信息
+                foreach (var validationErrors in ex.EntityValidationErrors)
+                {
+                    foreach (var validationError in validationErrors.ValidationErrors)
+                    {
+                        // 输出：实体类型 + 字段名 + 错误信息
+                        Log4netHelper.Error($"验证失败：{validationErrors.Entry.Entity.GetType().Name} - {validationError.PropertyName}: {validationError.ErrorMessage}");
+                    }
+                }
+                throw; // 重新抛出异常
+            }
         }
 
         /// <summary>
@@ -487,21 +488,63 @@ namespace Cappuccino.DataAccess
             return entity;
         }
 
+        //public virtual T Update(T entity, string[] propertys)
+        //{
+        //    if (entity != null)
+        //    {
+        //        if (propertys.Any() != false)
+        //        {
+        //            //将model追击到EF容器
+        //            Db.Entry(entity).State = EntityState.Unchanged;
+        //            foreach (var item in propertys)
+        //            {
+        //                Db.Entry(entity).Property(item).IsModified = true;
+        //            }
+
+        //            //关闭EF对于实体的合法性验证参数
+        //            Db.Configuration.ValidateOnSaveEnabled = false;
+        //        }
+        //    }
+
+        //    return entity;
+        //}
+
         public virtual T Update(T entity, string[] propertys)
         {
-            if (entity != null)
+            // 空值校验
+            if (entity == null)
             {
-                if (propertys.Any() != false)
+                throw new ArgumentNullException(nameof(entity), "待更新的实体不能为空");
+            }
+
+            if (propertys?.Any() == true) // 更安全的空数组判断
+            {
+                // 保存原始验证配置，避免全局修改影响其他操作
+                bool originalValidateState = Db.Configuration.ValidateOnSaveEnabled;
+                try
                 {
-                    //将model追击到EF容器
-                    Db.Entry(entity).State = EntityState.Unchanged;
-                    foreach (var item in propertys)
+                    // 临时关闭验证（建议尽量通过数据注解做验证，而非全局关闭）
+                    Db.Configuration.ValidateOnSaveEnabled = false;
+
+                    // 处理实体跟踪状态（适配不同上下文场景）
+                    var entry = Db.Entry(entity);
+                    if (entry.State == EntityState.Detached)
                     {
-                        Db.Entry(entity).Property(item).IsModified = true;
+                        // 若实体未被上下文跟踪，先附加到上下文
+                        Db.Set<T>().Attach(entity);
+                        entry.State = EntityState.Unchanged;
                     }
 
-                    //关闭EF对于实体的合法性验证参数
-                    Db.Configuration.ValidateOnSaveEnabled = false;
+                    // 标记指定字段为「已修改」（EF 仅更新这些字段）
+                    foreach (var propName in propertys)
+                    {
+                        entry.Property(propName).IsModified = true;
+                    }
+                }
+                finally
+                {
+                    // 恢复原始验证配置，无论是否异常都执行
+                    Db.Configuration.ValidateOnSaveEnabled = originalValidateState;
                 }
             }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using Autofac;
 using Cappuccino.Common;
@@ -33,41 +34,43 @@ namespace Cappuccino.Web.Core.Filters
                     ToLogin(filterContext);
                     return;
                 }
-                SysUserEntity userInfo = CacheManager.Get<SysUserEntity>(list[0]);
-                if (userInfo != null)
+
+                string userCacheKey = list[0];
+                string expireFlag = list[1];
+
+                SysUserEntity userInfo = CacheManager.Get<SysUserEntity>(userCacheKey);
+                if (userInfo == null)
+                {
+                    ToLogin(filterContext);
+                    return;
+                }
+                else
                 {
                     TimeSpan expiresTime = TimeSpan.Zero;
+                    string encryptData = DESUtils.Encrypt(list.ToJson());
 
-                    // 0为永久key
-                    if (list[1] == "0")
+                    // 0为永久key（绝对过期，过期时间为10天（相当于永久，除非用户清除cookie或缓存），登录后续期（每次访问续期））
+                    if (expireFlag == "0")
                     {
                         expiresTime = TimeSpan.FromDays(10);
 
-                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), expiresTime);
-                        CacheManager.Set(list[0], userInfo, expiresTime);
+                        CookieHelper.Set(KeyManager.IsMember, encryptData, expiresTime);
+                        CacheManager.Set(userCacheKey, userInfo, expiresTime, CacheExpirationTypeEnum.Absolute);
                     }
-                    // 1为滑动key（30分钟过期，每次访问续期）
-                    else if (list[1] == "1")
+                    // 1为滑动key（滑动过期，过期时间为30分钟，每次访问续期）
+                    else if (expireFlag == "1")
                     {
                         expiresTime = TimeSpan.FromMinutes(30);
 
-                        CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), expiresTime);
-                        CacheManager.Set(list[0], userInfo, expiresTime);
+                        CookieHelper.Set(KeyManager.IsMember, encryptData, expiresTime);
+                        CacheManager.Set(userCacheKey, userInfo, expiresTime, CacheExpirationTypeEnum.Sliding);
                     }
                     else
                     {
                         ToLogin(filterContext);
                         return;
                     }
-
-                    // 无论是否记住，都写入Session（避免立即过期）
-                    SessionHelper.Set(KeyManager.UserInfo, userInfo);
-                }
-                else
-                {
-                    ToLogin(filterContext);
-                    return;
-                }
+                }                
             }
             else
             {
@@ -104,8 +107,8 @@ namespace Cappuccino.Web.Core.Filters
 
         private static void ToLogin(AuthorizationContext filterContext)
         {
-            bool isAjaxRequst = filterContext.HttpContext.Request.IsAjaxRequest();
-            if (isAjaxRequst)
+            bool isAjaxRequest = filterContext.HttpContext.Request.IsAjaxRequest();
+            if (isAjaxRequest)
             {
                 JsonResult json = new JsonResult();
                 json.Data = new { status = (int)AjaxStateEnum.NoLogin, msg = "您未登录或登录已失效，请重新登录" };
@@ -122,8 +125,8 @@ namespace Cappuccino.Web.Core.Filters
 
         private static void NoPermission(AuthorizationContext filterContext)
         {
-            bool isAjaxRequst = filterContext.HttpContext.Request.IsAjaxRequest();
-            if (isAjaxRequst)
+            bool isAjaxRequest = filterContext.HttpContext.Request.IsAjaxRequest();
+            if (isAjaxRequest)
             {
                 JsonResult json = new JsonResult
                 {
@@ -141,6 +144,5 @@ namespace Cappuccino.Web.Core.Filters
                 filterContext.Result = view;
             }
         }
-
     }
 }

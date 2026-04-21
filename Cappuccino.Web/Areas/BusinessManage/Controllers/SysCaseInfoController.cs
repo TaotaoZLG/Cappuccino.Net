@@ -17,7 +17,6 @@ using Cappuccino.IBLL;
 using Cappuccino.Model;
 using Cappuccino.Web.Core;
 using Cappuccino.Web.Models;
-using static Cappuccino.Common.Net.NetHelper;
 
 namespace Cappuccino.Web.Areas.BusinessManage.Controllers
 {
@@ -174,7 +173,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
 
         #region 私有方法
         /// <summary>
-        /// 复用查询条件构建逻辑（与GetList统一，避免重复代码）
+        /// 复用查询条件构建逻辑
         /// </summary>
         private QueryCollection BuildUserQueries(SysCaseInfoModel viewModel)
         {

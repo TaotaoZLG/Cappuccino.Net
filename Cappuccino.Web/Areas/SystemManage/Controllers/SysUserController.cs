@@ -163,8 +163,6 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             entity.MobilePhone = viewModel.MobilePhone;
             entity.Email = viewModel.Email;
             entity.UserStatus = viewModel.UserStatus.Value;
-            entity.MobilePhone = viewModel.MobilePhone;
-            entity.Email = viewModel.Email;
             entity.UpdateTime = DateTime.Now;
             entity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
             _sysUserService.Update(entity);

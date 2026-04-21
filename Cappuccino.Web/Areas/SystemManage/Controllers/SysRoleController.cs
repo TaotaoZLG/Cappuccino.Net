@@ -105,8 +105,11 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             roleEntity.UpdateUserId = UserManager.GetCurrentUserInfo().Id;
             _sysRoleService.Update(roleEntity, new string[] { "Name", "Code", "EnabledMark", "Remark", "UpdateTime", "UpdateUserId" });
 
-            // 保存菜单权限
-            _sysRoleService.SaveMenuPermissions(roleEntity, menuPermissions);
+            if (menuPermissions != null)
+            {
+                // 保存菜单权限
+                _sysRoleService.SaveMenuPermissions(roleEntity, menuPermissions);
+            }
 
             return WriteSuccess();
         }

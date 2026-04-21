@@ -1,4 +1,5 @@
 ﻿using System;
+using Cappuccino.Common.Enum;
 
 namespace Cappuccino.Common.Caching
 {
@@ -26,6 +27,15 @@ namespace Cappuccino.Common.Caching
         /// <param name="value">Data</param>
         /// <param name="cacheTime">缓存时间</param>
         void Set(string key, object value, TimeSpan cacheTime);
+
+        /// <summary>
+        /// 将指定的键和对象添加到缓存（指定过期类型）
+        /// </summary>
+        /// <param name="key">缓存键</param>
+        /// <param name="value">缓存值</param>
+        /// <param name="expirationTime">过期时间</param>
+        /// <param name="expirationType">过期类型（绝对/滑动）</param>
+        void Set(string key, object value, TimeSpan expirationTime, CacheExpirationTypeEnum expirationType);
 
         /// <summary>
         /// 将指定的键和对象添加到缓存。(永不过期)

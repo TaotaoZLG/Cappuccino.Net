@@ -195,6 +195,7 @@
     <Compile Include="Areas\SystemManage\Controllers\SysDictDetailController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\SysDictController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\SysLogOperateController.cs" />
+    <Compile Include="Areas\SystemManage\Controllers\SysMessageController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\SysRoleController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\SysUserController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\SysUserActionController.cs" />
@@ -693,6 +694,8 @@
     <Content Include="Areas\BusinessManage\Views\SysFileProcessiong\Index.cshtml" />
     <Content Include="Areas\BusinessManage\Views\web.config" />
     <Content Include="Areas\BusinessManage\Views\SysCaseInfo\Index.cshtml" />
+    <Content Include="Areas\SystemManage\Views\SysMessage\Index.cshtml" />
+    <Content Include="Areas\SystemManage\Views\SysMessage\Detail.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\Tip.cshtml" />

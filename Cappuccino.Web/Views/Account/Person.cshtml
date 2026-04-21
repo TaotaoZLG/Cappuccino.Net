@@ -62,6 +62,7 @@
                         <div class="layui-tab-item layui-show">
                             <div class="layui-row layui-col-space10">
                                 <form class="layui-form" lay-filter="formEdit">
+                                    @Html.HiddenFor(x => x.Id)
                                     <div class="main-container">
                                         <div class="layui-form-item">
                                             <label class="layui-form-label">昵称</label>
@@ -118,11 +119,12 @@
 
 @section Scripts {
     <script>
-        layui.use(['form', 'jquery', 'layer', 'element'], function () {
+        layui.use(['form', 'jquery', 'layer', 'element', 'common'], function () {
             var form = layui.form;
             var $ = layui.jquery;
             var layer = layui.layer;
             var element = layui.element;
+            var common = layui.common;
 
             // 点击头像弹出裁剪弹窗
             $('#userInfoHead').on('click', function () {
@@ -135,12 +137,11 @@
             });
 
             form.on("submit(editUser)", function (data) {
-                //common.ajax("/SystemManage/SysUser/Edit", "post", data.field, true, true).done(function (response) {
-                //    layer.msg(response.message, { icon: 1, time: 1000 }, function () {
-                //    });
-                //}).fail(function (error) {
-                //    console.log(error)
-                //});
+                common.ajax("/Account/EditUserInfo", "post", data.field, true, true).done(function (response) {
+                    layer.msg(response.message, { icon: 1, time: 1000 });
+                }).fail(function (error) {
+                    console.log(error)
+                });
                 return false;
             });
         })

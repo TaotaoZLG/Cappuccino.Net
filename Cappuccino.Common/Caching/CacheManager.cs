@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using Cappuccino.Common.Enum;
 
 namespace Cappuccino.Common.Caching
 {
@@ -15,7 +16,7 @@ namespace Cappuccino.Common.Caching
         public static ICacheManager CreateCacheManager()
         {
             // 从配置文件读取缓存类型
-            var cacheType = ConfigurationManager.AppSettings["CacheType"] ?? "HttpRuntime";
+            var cacheType = ConfigurationManager.AppSettings["CacheType"] ?? "Memory";
 
             switch (cacheType.ToLower())
             {
@@ -49,9 +50,15 @@ namespace Cappuccino.Common.Caching
             Cache.Remove(key);
         }
 
-        public static void Set(string key, object value, TimeSpan cacheTime)
+        public static void Set(string key, object value, TimeSpan expiration)
         {
-            Cache.Set(key, value, cacheTime);
+            Cache.Set(key, value, expiration);
+        }
+
+        public static void Set(string key, object value, TimeSpan expirationTime, CacheExpirationTypeEnum expirationType)
+        {
+            // 调用重载方法，指定「绝对过期」（解决记住密码闲置失效）
+            Cache.Set(key, value, expirationTime, CacheExpirationTypeEnum.Absolute);
         }
 
         public static void Set(string key, object value)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Caching;
+using Cappuccino.Common.Enum;
 
 namespace Cappuccino.Common.Caching
 {
@@ -66,11 +67,46 @@ namespace Cappuccino.Common.Caching
         /// </summary>
         /// <param name="key">缓存键</param>
         /// <param name="value">缓存值</param>
-        /// <param name="cacheTime">滑动过期时间</param>
-        public void Set(string key, object value, TimeSpan cacheTime)
+        /// <param name="expiration">滑动过期时长</param>
+        public void Set(string key, object value, TimeSpan expiration)
         {
-            var policy = new CacheItemPolicy { SlidingExpiration = cacheTime };
+            var policy = new CacheItemPolicy();
+            policy.SlidingExpiration = expiration;
+            // 高优先级：防止内存压力下被主动清理
+            policy.Priority = CacheItemPriority.NotRemovable;
+
             _cache.Set(new CacheItem(key, value), policy);
+        }
+
+        /// <summary>
+        /// 将指定的键和对象添加到缓存（指定过期类型）
+        /// </summary>
+        /// <param name="key">缓存键</param>
+        /// <param name="value">缓存值</param>
+        /// <param name="expirationTime">过期时间</param>
+        /// <param name="expirationType">过期类型（绝对/滑动）</param>
+        public void Set(string key, object value, TimeSpan expirationTime, CacheExpirationTypeEnum expirationType)
+        {
+            if (string.IsNullOrEmpty(key) || value == null) return;
+
+            var cachePolicy = new CacheItemPolicy
+            {
+                // 高优先级：防止内存压力下被主动清理
+                Priority = CacheItemPriority.NotRemovable
+            };
+
+            // 设置过期策略
+            if (expirationType == CacheExpirationTypeEnum.Absolute)
+            {
+                cachePolicy.AbsoluteExpiration = DateTime.Now.Add(expirationTime);
+            }
+            else
+            {
+                cachePolicy.SlidingExpiration = expirationTime;
+            }
+
+            // 写入缓存
+            _cache.Set(key, value, cachePolicy);
         }
 
         /// <summary>
