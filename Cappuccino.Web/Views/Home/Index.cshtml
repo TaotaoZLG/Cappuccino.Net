@@ -25,20 +25,29 @@
         <div class="layui-header">
             <!-- 顶 部 左 侧 功 能 -->
             <ul class="layui-nav layui-layout-left">
-                <li class="collaspe layui-nav-item"><a href="javascript:;" class="layui-icon layui-icon-shrink-right"></a></li>
-                <li class="refresh layui-nav-item"><a href="javascript:;" class="layui-icon layui-icon-refresh-1" title="刷新"></a></li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" class="layui-icon layui-icon-shrink-right" pear-event="collaspe" title="侧边伸缩"></a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" class="layui-icon layui-icon-refresh-1" pear-event="refresh" title="刷新"></a>
+                </li>
             </ul>
             <!-- 顶 部 右 侧 菜 单 -->
             <div id="control" class="layui-layout-control"></div>
             <ul class="layui-nav layui-layout-right">
                 <li class="layui-nav-item layui-hide-xs">
-                    <a href="javascript:;" menu-url="@Url.Content("/SystemManage/SysMessage/Index")" menu-id="435818600364904448" menu-title="消息中心">
-                        <i class="layui-icon layui-icon-notice"></i>
+                    <a href="javascript:;" class="layui-icon layui-icon-notice" menu-url="@Url.Content("/SystemManage/SysMessage/Index")" menu-id="435818600364904448" menu-title="消息中心">
                         <span class="layui-badge-dot"></span>
                     </a>
                 </li>
-                <li class="layui-nav-item layui-hide-xs"><a href="javascript:;" class="fullScreen layui-icon layui-icon-screen-full"></a></li>
-                <li class="layui-nav-item layui-hide-xs"><a href="https://github.com/Goosander/Cappuccino.Net" class="layui-icon layui-icon-website"></a></li>
+                <li class="layui-nav-item layui-hide-xs">
+                    <a href="javascript:;" class="layui-icon layui-icon-theme" pear-event="theme"></a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs">
+                    <a href="javascript:;" class="layui-icon layui-icon-screen-full" pear-event="fullScreen"></a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs">
+                    <a href="http://www.baidu.com/" target="_blank" class="layui-icon layui-icon-website"></a></li>
                 <li class="layui-nav-item">
                     <!-- 头 像 -->
                     <a href="javascript:;">
@@ -49,11 +58,13 @@
                     <dl class="layui-nav-child">
                         <dd><a href="javascript:;" menu-url="@Url.Action("Person","Account")" menu-id="5552" menu-title="个人中心">个人中心</a></dd>
                         <dd><a href="javascript:;" menu-url="@Url.Action("ChangePassword","Account")" menu-id="5553" menu-title="修改密码">修改密码</a></dd>
-                        <hr style="margin:5px 0;"/>
+                        <hr style="margin:5px 0;" />
                         <dd><a href="@Url.Action("Logout","Account")">注销登录</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item setting"><a href="javascript:;" class="layui-icon layui-icon-more-vertical"></a></li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" class="layui-icon layui-icon-more-vertical"></a>
+                </li>
             </ul>
         </div>
         <!-- 侧 边 区 域 -->

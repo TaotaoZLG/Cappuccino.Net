@@ -20,9 +20,26 @@
 		}
 	},
 	"theme": {
-		"defaultColor": "3",
-		"defaultMenu": "light-theme",
-		"allowCustom": true
+		"allowCustom": true,
+		"defaultMenu": "dark-theme",
+		"defaultColor": "1",
+		"initColorIndex": 0,
+		"colors": [
+			{
+				"theme": "dark-theme",
+				"topLeft": "#28333E",
+				"topRight": "white",
+				"bottomLeft": "#28333E",
+				"bottomRight": "#f4f5f7"
+			},
+			{
+				"theme": "light-theme",
+				"topLeft": "white",
+				"topRight": "white",
+				"bottomLeft": "white",
+				"bottomRight": "#f4f5f7"
+			}
+		]
 	},
 	"colors": [
 		{

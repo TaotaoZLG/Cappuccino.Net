@@ -68,10 +68,10 @@ namespace Cappuccino.BLL
             string batchId = GuidHelper.GetGuid(true);
 
             // 构建批次级临时目录（按批次隔离，避免并发冲突）
-            //string virRootDir = ConfigUtils.AppSetting.GetValue("VirtualDirectory");
-            //string tempWordVirDir = Path.Combine(virRootDir, "Upload", "TempCaseWord", batchId);
-            //string tempWordPhysicalDir = FileHelper.GetPhysicalPath(tempWordVirDir);
-            //FileHelper.CreateDirectory(tempWordPhysicalDir);
+            string virRootDir = ConfigUtils.AppSetting.GetValue("VirtualDirectory");
+            string tempWordVirDir = Path.Combine(virRootDir, "Upload", "TempCaseWord", batchId);
+            string tempWordPhysicalDir = FileHelper.GetPhysicalPath(tempWordVirDir);
+            FileHelper.CreateDirectory(tempWordPhysicalDir);
 
             // 遍历案件数据，批量生成Word
             try
@@ -93,6 +93,7 @@ namespace Cappuccino.BLL
 
                     // 复制模板文件（覆盖模式）
                     File.Copy(templatePhysicalPath, tempWordPhysical, true);
+                    //FileHelper.CopyFileToDirectory(templatePhysicalPath, tempWordPhysical, true);
 
                     // 获取案件图片
                     var imageFileList = _sysFileService.GetFilePathById(caseId);
@@ -101,18 +102,14 @@ namespace Cappuccino.BLL
                     NpoiHelper.ReplaceContent(tempWordPhysical, caseInfo, imageFileList);
                 }
 
+                // 压缩为Zip并返回虚拟路径
+                string zipFileName = $"案件起诉书_{DateTime.Now:yyyyMMddHHmmss}_{batchId}.zip";
+                string zipFilePath = ZipHelper.CompressToZip(tempWordPhysicalDir, tempWordVirDir, zipFileName);
+
                 obj.Status = 1;
                 obj.Message = $"起诉书生成成功，共{nextWord}条";
+                obj.Data = zipFilePath;
                 return obj;
-
-                // 压缩为Zip并返回虚拟路径
-                //string zipFileName = $"案件起诉书_{DateTime.Now:yyyyMMddHHmmss}_{batchId}.zip";
-                //string zipFilePath = ZipHelper.CompressToZip(tempWordPhysicalDir, tempWordVirDir, zipFileName);
-
-                //obj.Status = 1;
-                //obj.Message = "起诉书生成成功";
-                //obj.Data = zipFilePath;
-                //return obj;
             }
             catch (Exception ex)
             {
@@ -122,7 +119,7 @@ namespace Cappuccino.BLL
             finally
             {
                 // 清理临时Word文件
-                //FileHelper.DeleteDirectory(tempWordVirDir);
+                FileHelper.DeleteDirectory(tempWordVirDir);
             }
             return obj;
         }

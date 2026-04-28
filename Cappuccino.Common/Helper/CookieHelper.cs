@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Web;
 
 namespace Cappuccino.Common.Helper
@@ -19,6 +20,8 @@ namespace Cappuccino.Common.Helper
                 cookie = new HttpCookie(strName);
             }
             cookie.Value = strValue;
+            // 设置到站点根路径，保证所有路径都能携带此 Cookie
+            cookie.Path = "/";
             HttpContext.Current.Response.AppendCookie(cookie);
         }
         /// <summary>
@@ -36,6 +39,8 @@ namespace Cappuccino.Common.Helper
             }
             cookie.Value = strValue;
             cookie.Expires = DateTime.Now.AddMinutes(expires);
+            // 设置到站点根路径，保证所有路径都能携带此 Cookie
+            cookie.Path = "/";
             HttpContext.Current.Response.AppendCookie(cookie);
         }
         /// <summary>
@@ -53,6 +58,8 @@ namespace Cappuccino.Common.Helper
             }
             cookie.Value = strValue;
             cookie.Expires = DateTime.Now.Add(expires);
+            // 设置到站点根路径，保证所有路径都能携带此 Cookie
+            cookie.Path = "/";
             HttpContext.Current.Response.AppendCookie(cookie);
         }
         /// <summary>
@@ -74,9 +81,11 @@ namespace Cappuccino.Common.Helper
         /// <param name="CookiesName">Cookie对象名称</param>
         public static void Remove(string CookiesName)
         {
-            HttpCookie objCookie = new HttpCookie(CookiesName.Trim());
-            objCookie.Expires = DateTime.Now.AddYears(-5);
-            HttpContext.Current.Response.Cookies.Add(objCookie);
+            HttpCookie cookie = new HttpCookie(CookiesName.Trim());
+            cookie.Expires = DateTime.Now.AddYears(-5);
+            // 设置到站点根路径，保证所有路径都能携带此 Cookie
+            cookie.Path = "/";
+            HttpContext.Current.Response.Cookies.Add(cookie);
         }
         #endregion
     }

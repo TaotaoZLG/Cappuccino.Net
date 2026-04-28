@@ -154,7 +154,7 @@
     // 根菜单渲染（添加层级参数：level=1）
     function createMenu(option) {
         var menuHtml = '<ul lay-filter="' + option.elem +
-            '" class="layui-nav arrow   pear-menu layui-nav-tree pear-nav-tree">'
+            '" class="layui-nav arrow pear-menu layui-nav-tree pear-nav-tree">'
         $.each(option.data, function (i, item) {
             var content = '<li class="layui-nav-item" >';
             if (i == option.defaultOpen) {

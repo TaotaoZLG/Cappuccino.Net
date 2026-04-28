@@ -307,77 +307,86 @@
 	}
 
 	// 刷 新 指 定 的 选 项 卡
-	pearTab.prototype.refresh = function(time, callback) {
+	pearTab.prototype.refresh = function (time, callback) {
 		var elem = this.option.elem;
 		var iframe = $(".layui-tab[lay-filter='" + elem + "'] .layui-tab-content .layui-show").find("iframe")[0];
 		var hasCallback = callback && typeof callback === 'function';
 
-		// 方式1：加载动画 + 回调（time为数字，0或正数）
-		if ((typeof time === 'number' && time >= 0) && hasCallback) {
+		// ===================== 优化：实例自身状态（无需原型预定义） =====================
+		// 首次执行自动初始化，杜绝报错
+		this.isRefreshing = this.isRefreshing || false;
+		this._refreshTimeout = this._refreshTimeout || null;
+
+		// 防重复点击：正在刷新则直接拦截
+		if (this.isRefreshing) return;
+		// 上锁
+		this.isRefreshing = true;
+
+		// 清理所有残留加载动画 + 定时器
+		$(".pear-tab-loading").remove();
+		clearTimeout(this._refreshTimeout);
+
+		// 统一封装：创建加载动画
+		var pearLoad;
+		var createLoading = function () {
 			var load = '<div id="pear-tab-loading' + index + '" class="pear-tab-loading">' +
 				'<div class="ball-loader">' +
 				'<span></span><span></span><span></span><span></span>' +
 				'</div>' +
 				'</div>';
 			$("#" + elem).find(".pear-tab").append(load);
-			var pearLoad = $("#" + elem).find("#pear-tab-loading" + index);
+			pearLoad = $("#pear-tab-loading" + index);
 			pearLoad.css({ display: "block" });
 			index++;
-
-			// 刷新iframe
-			iframe.contentWindow.location.reload(true);
-
-			// 绑定onload事件处理回调和动画关闭
-			iframe.onload = function() {
-				callback(); // 执行回调
-				// time=0时，回调完成后关闭动画；time>0时，按指定时间关闭
-				if (time === 0) {
-					pearLoad.fadeOut(function() {
-						pearLoad.remove();
-					});
-				} else {
-					setTimeout(function() {
-						pearLoad.fadeOut(function() {
-							pearLoad.remove();
-						});
-					}, time);
-				}
-			};
 		}
-		// 方式2：不加载动画，只回调（time=false 且有回调）
-		else if (time === false && hasCallback) {
-			iframe.onload = function() {
-				callback();
-			};
-			iframe.contentWindow.location.reload(true);
-		}
-		// 方式3：只加载动画，无回调（time为数字，0或正数 且 无回调）
-		else if (typeof time === 'number' && time >= 0 && !hasCallback) {
-			var load = '<div id="pear-tab-loading' + index + '" class="pear-tab-loading">' +
-				'<div class="ball-loader">' +
-				'<span></span><span></span><span></span><span></span>' +
-				'</div>' +
-				'</div>';
-			$("#" + elem).find(".pear-tab").append(load);
-			var pearLoad = $("#" + elem).find("#pear-tab-loading" + index);
-			pearLoad.css({ display: "block" });
-			index++;
 
-			// 刷新iframe
-			iframe.contentWindow.location.reload(true);
-
-			// 关闭动画：time=0立即关闭，否则按指定时间
-			if (time === 0) {
-				pearLoad.fadeOut(function() {
+		// 统一封装：关闭加载动画 + 解锁
+		var hideLoading = function () {
+			if (pearLoad) {
+				pearLoad.fadeOut(function () {
 					pearLoad.remove();
 				});
 			} else {
-				setTimeout(function() {
-					pearLoad.fadeOut(function() {
-						pearLoad.remove();
-					});
-				}, time);
+				$(".pear-tab-loading").fadeOut(function () {
+					$(this).remove();
+				});
 			}
+			// 解锁 + 清理定时器
+			this.isRefreshing = false;
+			clearTimeout(this._refreshTimeout);
+		}.bind(this);
+
+		// ===================== 强制保底机制：10秒超时自动关闭（防卡死） =====================
+		this._refreshTimeout = setTimeout(function () {
+			hideLoading();
+			console.warn("标签页刷新超时，强制关闭加载动画");
+		}, 10000);
+
+		// ===================== 保留原有3种调用方式，完全兼容 =====================
+		// 方式1：加载动画 + 回调
+		if ((typeof time === 'number' && time >= 0) && hasCallback) {
+			createLoading();
+			iframe.contentWindow.location.reload(true);
+			// 成功/失败 都关闭动画
+			iframe.onload = iframe.onerror = function () {
+				callback();
+				time === 0 ? hideLoading() : setTimeout(hideLoading, time);
+			};
+		}
+		// 方式2：无动画，仅回调
+		else if (time === false && hasCallback) {
+			iframe.contentWindow.location.reload(true);
+			iframe.onload = iframe.onerror = function () {
+				callback();
+				this.isRefreshing = false;
+				clearTimeout(this._refreshTimeout);
+			}.bind(this);
+		}
+		// 方式3：仅加载动画，无回调
+		else if (typeof time === 'number' && time >= 0 && !hasCallback) {
+			createLoading();
+			iframe.contentWindow.location.reload(true);
+			time === 0 ? hideLoading() : setTimeout(hideLoading, time);
 		}
 	}
 	
