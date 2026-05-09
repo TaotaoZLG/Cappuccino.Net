@@ -7,29 +7,30 @@
     <div class="mainBox">
         <div class="main-container">
             <div class="layui-form-item">
-                <label class="layui-form-label">任务名称</label>
+                <label class="layui-form-label">标题</label>
                 <div class="layui-input-block">
                     <input type="text" name="JobName" required lay-verify="required" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">任务分组</label>
+                <label class="layui-form-label">类型</label>
                 <div class="layui-input-block">
-                    <input type="text" name="JobGroup" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">Cron表达式 <span class="layui-red">*</span></label>
+                <label class="layui-form-label">内容</label>
                 <div class="layui-input-block">
                     <input type="text" name="CronExpression" lay-verify="required" placeholder="例如：0 0/5 * * * ?" class="layui-input">
                     <div class="layui-form-mid layui-word-aux">Cron表达式生成工具：<a href="https://cron.qqe2.com/" target="_blank">点击访问</a></div>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">执行类名 <span class="layui-red">*</span></label>
+                <label class="layui-form-label">状态</label>
                 <div class="layui-input-block">
-                    <input type="text" name="JobClassName" lay-verify="required" placeholder="包含命名空间的完整类名" class="layui-input">
-                    <div class="layui-form-mid layui-word-aux">例如：Cappuccino.Web.Tasks.SampleTask</div>
+                    <select name="Type" lay-verify="required" lay-reqtext="请选择参数类型">
+                        <option value="2" @(Model?.configType == 2 ? "selected" : "")>自定义</option>
+                        <option value="1" @(Model?.configType == 1 ? "selected" : "")>系统内置（不可删除）</option>
+                    </select>
                 </div>
             </div>
             <div class="layui-form-item">

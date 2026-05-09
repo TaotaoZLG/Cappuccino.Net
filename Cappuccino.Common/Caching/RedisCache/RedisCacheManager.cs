@@ -127,7 +127,7 @@ namespace Cappuccino.Common.Caching
             // Redis 仅支持绝对过期，滑动过期需业务层自行处理（访问时重置过期时间）
             if (expirationType == CacheExpirationTypeEnum.Absolute)
             {
-                _database.StringSet(key, json, DateTime.Now.Add(expirationTime));
+                _database.StringSet(key, json, expirationTime);
             }
             else
             {

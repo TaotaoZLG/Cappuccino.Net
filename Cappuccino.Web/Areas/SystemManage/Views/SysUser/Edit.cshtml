@@ -152,7 +152,7 @@
                 myPhone: [/(^$)|^1\d{10}$/, '请输入正确的手机号'],
             });
 
-            form.on("submit(edit)", function (data) {
+            form.on("submit(edit)", function (data) {               
                 data.field.departmentId = ys.filterNullField(data.field.departmentId);
                 common.ajax("/SystemManage/SysUser/Edit", "post", data.field, true, true).done(function (response) {
                     layer.msg(response.message, { icon: 1, time: 1000 }, function () {

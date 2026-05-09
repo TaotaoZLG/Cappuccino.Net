@@ -18,5 +18,10 @@
         /// 用于缓存IP黑名单的key
         /// </summary>
         public const string IpBlackCacheKey = "Cappuccino@IpBlackList";
+
+        /// <summary>
+        /// 数据权限缓存key
+        /// </summary>
+        public const string UserDataPermission = "Cappuccino@UserDataPermission";
     }
 }

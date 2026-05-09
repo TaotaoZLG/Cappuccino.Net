@@ -18,6 +18,11 @@ namespace Cappuccino.Entity
         public string Name { get; set; }
 
         /// <summary>
+        /// 备注
+        /// </summary>
+        public string Remark { get; set; }
+
+        /// <summary>
         /// 排序码
         /// </summary>
         public int SortCode { get; set; }

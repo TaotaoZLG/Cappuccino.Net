@@ -8,10 +8,6 @@
 
         public int NoticeType { get; set; }
 
-        public long NoticeSender { get; set; }
-
-        public int NoticeAccept { get; set; }
-
         public int SortCode { get; set; }
 
         public string Remark { get; set; }

@@ -24,12 +24,15 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
     {
         private ISysCaseInfoService _sysCaseInfoService;
         private ISysTemplateService _sysTemplateService;
+        private readonly ISysDataAuthorizeService _sysDataAuthorizeService;
 
-        public SysCaseInfoController(ISysCaseInfoService sysCaseInfoService, ISysTemplateService sysTemplateService )
+        public SysCaseInfoController(ISysCaseInfoService sysCaseInfoService, ISysTemplateService sysTemplateService, ISysDataAuthorizeService sysDataAuthorizeService)
         {
             _sysCaseInfoService = sysCaseInfoService;
             _sysTemplateService = sysTemplateService;
+            _sysDataAuthorizeService = sysDataAuthorizeService;
             this.AddDisposableObject(_sysCaseInfoService);
+            this.AddDisposableObject(_sysDataAuthorizeService);
         }
 
         #region 视图
@@ -185,6 +188,12 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
             if (!string.IsNullOrEmpty(viewModel.CustName))
             {
                 queries.Add(new Query { Name = "CustName", Operator = Query.Operators.Equal, Value = viewModel.CustName });
+            }
+            var allowedDeptIds = _sysDataAuthorizeService.GetEffectiveDataIdsForUser(2);
+            if (allowedDeptIds != null && allowedDeptIds.Any())
+            {
+                var deptIds = allowedDeptIds.Select(x => x).ToArray();
+                queries.Add(new Query { Name = "DepartmentId", Operator = Query.Operators.In, Value = deptIds });
             }
             return queries;
         }

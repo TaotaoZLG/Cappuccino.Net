@@ -144,6 +144,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                 x.Id,
                 x.Name,
                 x.Code,
+                x.Remark,
                 x.SortCode,
                 x.CreateTime
             }).ToList();

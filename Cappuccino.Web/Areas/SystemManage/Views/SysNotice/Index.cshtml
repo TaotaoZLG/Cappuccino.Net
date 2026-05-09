@@ -71,13 +71,18 @@
                         },
                         {
                             field: 'noticeType', title: '公告类型', templet: function (d) {
-                                return d.noticeType;
+                                return top.getDataDictValue("sys_notice_type", d.noticeType);
                             }
                         },
-                        { field: 'noticeSender', title: '公告发送人' },
-                        { field: 'noticeAccept', title: '公告接收人' },
+                        {
+                            field: 'noticeStatus', title: '公告状态', templet: function (d) {
+                                return top.getDataDictValue("sys_enable_status", d.noticeStatus);
+                            }
+                        },
                         { field: 'sortCode', title: '排序' },
                         { field: 'remark', title: '备注' },
+                        { field: 'remark', title: '创建人' },
+                        { field: 'remark', title: '创建时间' },
                         { title: '操作', toolbar: '#operationTpl', align: 'center', width: 195 }
                     ]
                 ],

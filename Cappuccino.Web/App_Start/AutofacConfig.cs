@@ -6,6 +6,7 @@ using Cappuccino.AutoJob;
 using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
+using Cappuccino.Common.Log;
 using Cappuccino.IBLL;
 
 namespace Cappuccino.Web
@@ -31,7 +32,20 @@ namespace Cappuccino.Web
             //告诉autofac框架注册数据仓储层所在程序集中的所有类的对象实例
             Assembly respAss = Assembly.Load("Cappuccino.DAL");
             //创建DAL中的所有类的instance以此类的实现接口存储
-            builder.RegisterTypes(respAss.GetTypes()).AsImplementedInterfaces();
+            try
+            {
+                builder.RegisterTypes(respAss.GetTypes()).AsImplementedInterfaces();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                var loaderExceptions = ex.LoaderExceptions;
+                foreach (var e in loaderExceptions)
+                {
+                    // 建议用日志记录或调试输出
+                    Log4netHelper.Error(e.Message);
+                }
+                throw; // 重新抛出异常，便于调试
+            }
 
             //告诉autofac框架注册业务逻辑层所在程序集中的所有类的对象实例
             Assembly serAss = Assembly.Load("Cappuccino.BLL");

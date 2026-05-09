@@ -119,8 +119,6 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
                 x.NoticeTitle,
                 x.NoticeContents,
                 x.SortCode,
-                x.NoticeSender,
-                x.NoticeAccept,
                 x.Remark
             }).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);

@@ -656,6 +656,19 @@
             return count;
         },
 
+        reloadTable: function (tableId) {
+            var tableId = tableId || 'tableId';
+            try {
+                // 这里的 table 变量来自当前 layui.use(...) 闭包内
+                table.reload(tableId);
+            } catch (e) {
+                // 兜底：如果闭包中 table 不可用，可以尝试通过 layui 全局访问
+                if (window.layui && window.layui.table) {
+                    window.layui.table.reload(tableId);
+                }
+            }
+        },        
+
         // Html.Raw()方法会提示语法错误，所以用这个函数包装一下
         getJson: function (value) {
             return value;

@@ -65,7 +65,7 @@ namespace Cappuccino.Web.Controllers
 
         #region 提交数据
         [HttpPost, SkipCheckLogin]
-        [LogOperate(Title = "登录", BusinessType = (int)OperateType.Login)]
+        [LogOperate(Title = "登录系统", BusinessType = (int)OperateType.Login)]
         public ActionResult Login(LoginModel loginModel)
         {
             try
@@ -215,14 +215,14 @@ namespace Cappuccino.Web.Controllers
                                 {
                                     expiresTime = TimeSpan.FromDays(10);
 
-                                    CacheManager.Set(list[0], userInfo, expiresTime);
+                                    CacheManager.Set(list[0], userInfo, expiresTime, CacheExpirationTypeEnum.Absolute);
                                     CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), expiresTime);
                                 }
                                 else if (list[1] == "1")   //不记住密码（30分钟）
                                 {
                                     expiresTime = TimeSpan.FromMinutes(30);
 
-                                    CacheManager.Set(list[0], userInfo, expiresTime);
+                                    CacheManager.Set(list[0], userInfo, expiresTime, CacheExpirationTypeEnum.Absolute);
                                     CookieHelper.Set(KeyManager.IsMember, DESUtils.Encrypt(list.ToJson()), expiresTime);
                                 }
                             }

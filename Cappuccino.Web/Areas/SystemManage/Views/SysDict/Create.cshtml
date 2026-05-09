@@ -16,12 +16,19 @@
                 <label class="layui-form-label">字典编码</label>
                 <div class="layui-input-block">
                     <input type="text" name="code" lay-verify="required" lay-reqtext="请输入字典编码" autocomplete="off" placeholder="请输入字典编码" class="layui-input">
+                    <div class="layui-form-mid layui-word-aux"><i class="layui-icon layui-icon-tips"></i> 数据存储中的Key值，如：sys_user_sex</div>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">排序码</label>
                 <div class="layui-input-block">
                     <input type="text" name="sortCode" placeholder="排序码" autocomplete="off" class="layui-input" lay-verify="number" maxlength="2">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <textarea name="remark" placeholder="请输入备注" class="layui-textarea" style="resize:none;"></textarea>
                 </div>
             </div>
         </div>

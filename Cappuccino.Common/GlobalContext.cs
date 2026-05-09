@@ -16,7 +16,6 @@ namespace Cappuccino.Common
         /// <summary>
         /// 全局Autofac容器实例（静态持有，不序列化）
         /// </summary>
-        //[JsonIgnore]
         public static IContainer Container { get; private set; }
 
         public static SystemConfig SystemConfig { get; set; }

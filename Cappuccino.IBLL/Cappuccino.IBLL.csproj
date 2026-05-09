@@ -49,6 +49,7 @@
     <Compile Include="IBaseService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemManage\ISysAutoJobLogService.cs" />
+    <Compile Include="SystemManage\ISysDataAuthorizeService.cs" />
     <Compile Include="SystemManage\ISysNoticeService.cs" />
     <Compile Include="SystemManage\ISysDepartmentService.cs" />
     <Compile Include="SystemManage\ISysActionService.cs" />

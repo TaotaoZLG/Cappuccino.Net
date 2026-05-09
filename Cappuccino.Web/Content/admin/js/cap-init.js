@@ -1,8 +1,9 @@
 ﻿// 等待DOM加载完成后执行（确保能获取到页面元素）
 $(function () {
-    layui.define(['laydate'], function (exports) {
+    layui.define(['laydate', 'element'], function (exports) {
         "use strict";
         var laydate = layui.laydate;
+        var element = layui.element;
 
         // laydate 时间控件绑定（.select-time）
         if ($(".select-time").length > 0) {
@@ -88,6 +89,55 @@ $(function () {
         }
     });
 });
+
+/**
+    * 获取当前激活Tab中的iframe window对象
+    * @param {String} tabContainerSelector - Tab容器选择器（默认layui默认Tab容器）
+    * @returns {Window|null} 成功返回iframe window，失败返回null
+    */
+function getActiveTabIframeWindow(tabContainerSelector = '.layui-tab') {
+    try {
+        // 1. 【精准匹配你的项目结构】定位 Pear Admin 激活的Tab面板
+        const $activePanel = $('.pear-tab .layui-tab-item.layui-show');
+        console.log('【调试】激活的Tab面板元素：', $activePanel);
+
+        if (!$activePanel.length) {
+            console.warn('未找到激活的Tab面板');
+            return null;
+        }
+
+        // 2. 查找面板内的 iframe（你的结构里只有1个，精准获取）
+        const $iframe = $activePanel.find('iframe');
+        console.log('【调试】找到的iframe元素：', $iframe);
+
+        if (!$iframe.length) {
+            console.warn('激活面板中没有iframe');
+            return null;
+        }
+
+        // 3. 获取原生iframe对象 + contentWindow
+        const iframeDom = $iframe[0];
+        const iframeWindow = iframeDom.contentWindow;
+        console.log('【调试】iframe contentWindow：', iframeWindow);
+
+        if (!iframeWindow) {
+            console.warn('iframe 未加载完成，无法获取window');
+            return null;
+        }
+
+        // ✅ 成功返回
+        console.log('✅ 成功获取激活Tab的iframe Window');
+        return iframeWindow;
+
+    } catch (error) {
+        console.error('❌ 获取失败：', error);
+        // 跨域是最常见的禁止访问原因
+        if (error.message?.includes('cross-origin') || error.message?.includes('权限')) {
+            console.error('💥 跨域限制！浏览器禁止访问不同源的iframe contentWindow');
+        }
+        return null;
+    }
+}
 
 /** 密码规则范围验证 */
 function checkpwd(chrtype, password) {
