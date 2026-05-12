@@ -71,10 +71,10 @@
                 done: function (response) {
                     // 上传成功回调
                     if (response.status === 1) {
-                        ys.msgSuccess('上传成功');
+                        cap.msgSuccess('上传成功');
                         parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
                     } else {
-                        ys.alertError(response.message);
+                        cap.alertError(response.message);
                     }
                 },
                 error: function () {

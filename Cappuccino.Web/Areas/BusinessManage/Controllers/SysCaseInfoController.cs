@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -156,20 +157,32 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
         #endregion
 
         #region 获取数据
-        [CheckPermission("system.case.list")]
+        [CheckPermission("business.case.list")]
         public JsonResult GetList(SysCaseInfoModel viewModel, PageInfo pageInfo)
         {
-            //var coreSql = $@"
-            //    SELECT * FROM dbo.SysCaseInfo c
-            //    WHERE 1=1
-            //    {(!string.IsNullOrEmpty(viewModel.CustIDNumber) ? $"AND c.CustIDNumber LIKE '%{viewModel.CustIDNumber}%'" : "")}
-            //    {(!string.IsNullOrEmpty(viewModel.CustName) ? $"AND c.CustName LIKE '%{viewModel.CustName}%'" : "")}
-            //";
-            //var list = DapperHelper.QueryPage<dynamic>(coreSql, pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount);
-            //return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
-
             var queries = BuildUserQueries(viewModel);
-            var list = _sysCaseInfoService.GetListByPage(queries.AsExpression<SysCaseInfoEntity>(), pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).ToList();
+            Expression<Func<SysCaseInfoEntity, bool>> baseExpr = queries.AsExpression<SysCaseInfoEntity>(Query.Condition.AndAlso);
+
+            // 获取生效的部门与用户集合（如果返回 null，退换为空集合）
+            var dataAuthorize = _sysDataAuthorizeService.GetEffectiveDataIdsForUser();
+
+            Expression<Func<SysCaseInfoEntity, bool>> finalExpr = baseExpr;
+
+            if (dataAuthorize.ChildrenDepartmentIdList.Any() || dataAuthorize.ChildrenUserIdList.Any())
+            {
+                Expression<Func<SysCaseInfoEntity, bool>> permExpr = c =>
+                    ((dataAuthorize.ChildrenDepartmentIdList.Contains(c.DepartmentId.Value)) ||
+                     (dataAuthorize.ChildrenUserIdList.Contains(c.CreateUserId.Value)));
+
+                finalExpr = finalExpr == null ? permExpr : finalExpr.AndAlsoEx(permExpr);
+            }
+            else
+            {
+                // 未指定权限（超级管理员），确保最终表达式不为 null，避免被翻译成 WHERE 1=0
+                finalExpr = finalExpr ?? (c => true);
+            }
+
+            var list = _sysCaseInfoService.GetListByPage(finalExpr, pageInfo.Field, pageInfo.Order, pageInfo.Limit, pageInfo.Page, out int totalCount).ToList();
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
         }
         #endregion
@@ -188,12 +201,6 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
             if (!string.IsNullOrEmpty(viewModel.CustName))
             {
                 queries.Add(new Query { Name = "CustName", Operator = Query.Operators.Equal, Value = viewModel.CustName });
-            }
-            var allowedDeptIds = _sysDataAuthorizeService.GetEffectiveDataIdsForUser(2);
-            if (allowedDeptIds != null && allowedDeptIds.Any())
-            {
-                var deptIds = allowedDeptIds.Select(x => x).ToArray();
-                queries.Add(new Query { Name = "DepartmentId", Operator = Query.Operators.In, Value = deptIds });
             }
             return queries;
         }

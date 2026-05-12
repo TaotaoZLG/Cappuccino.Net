@@ -142,19 +142,19 @@ function getActiveTabIframeWindow(tabContainerSelector = '.layui-tab') {
 /** 密码规则范围验证 */
 function checkpwd(chrtype, password) {
     if (chrtype == 1) {
-        if (!ys.numValid(password) || !/^.{6,12}$/.test(password)) {
+        if (!cap.numValid(password) || !/^.{6,12}$/.test(password)) {
             return "密码只能为0-9数字，且长度6-12位";
         }
     } else if (chrtype == 2) {
-        if (!ys.enValid(password) || !/^.{6,12}$/.test(password)) {
+        if (!cap.enValid(password) || !/^.{6,12}$/.test(password)) {
             return "密码只能为a-z和A-Z字母，且长度6-12位";
         }
     } else if (chrtype == 3) {
-        if (!ys.enNumValid(password) || !/^.{8,18}$/.test(password)) {
+        if (!cap.enNumValid(password) || !/^.{8,18}$/.test(password)) {
             return "密码必须包含字母以及数字，且长度8-18位";
         }
     } else if (chrtype == 4) {
-        if (!ys.charValid(password) || !/^.{8,18}$/.test(password)) {
+        if (!cap.charValid(password) || !/^.{8,18}$/.test(password)) {
             return "密码必须包含字母、数字、以及特殊符号<font color='red'>~!@#$%^&*()-=_+</font>，且长度8-18位";
         }
     }

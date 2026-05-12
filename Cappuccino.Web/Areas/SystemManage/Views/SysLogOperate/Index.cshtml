@@ -101,14 +101,14 @@
                     var selectRow = checkStatus.data;
                     var msg = "确定要根据搜索条件导出操作日志吗？";
                     var postData = { viewModel: obj.field };
-                    if (ys.checkRowData(selectRow)) {
+                    if (cap.checkRowData(selectRow)) {
                         msg = "确定要将选中的操作日志导出吗？"
-                        var id = ys.getIds(selectRow);
+                        var id = cap.getIds(selectRow);
                         postData = { idsStr: id };
                     }
-                    ys.confirm(msg, function () {
+                    cap.confirm(msg, function () {
                         var url = MODULE_PATH + "ExportLogOperate";
-                        ys.exportExcel(url, postData);
+                        cap.exportExcel(url, postData);
                     });
                 }
             });

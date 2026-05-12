@@ -121,10 +121,10 @@
             window.batchDel = function (obj) {
                 let selectRow = table.checkStatus(obj.config.id).data;
                 if (selectRow.length === 0) {
-                    ys.msgWarning("未选中数据");
+                    cap.msgWarning("未选中数据");
                     return false;
                 }
-                let ids = ys.getIds(selectRow);
+                let ids = cap.getIds(selectRow);
                 layer.confirm('确定要删除选中的业务模板吗', { icon: 3, title: '提示' }, function (index) {
                     common.ajax(MODULE_PATH + "batchDel", "post", { idsStr: ids }, true, true).done(function (response) {
                         layer.msg(response.message, { icon: 1, time: 1000 }, function () {

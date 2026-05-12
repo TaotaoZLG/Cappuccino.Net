@@ -40,12 +40,12 @@
                 var searchField = parent.layui.form.val('formIndex');
                 var msg = "确定要根据搜索条件生成诉状吗？";
                 var postData = { viewModel: searchField, templateId: data.field.templateName };
-                if (ys.checkRowData(selectRow)) {
+                if (cap.checkRowData(selectRow)) {
                     msg = "确定要将选中的生成诉状吗？"
-                    var ids = ys.getIds(selectRow);
+                    var ids = cap.getIds(selectRow);
                     postData.idsStr = ids;
                 }
-                ys.confirm(msg, function () {
+                cap.confirm(msg, function () {
                     
                     common.ajax("/BusinessManage/SysCaseInfo/IndictmentJson", "post", postData, true, true).done(function (response) {
                         layer.msg(response.message, { icon: 1, time: 1000 }, function () {
@@ -57,7 +57,7 @@
                     return false;
 
                     //var url = "/BusinessManage/SysCaseInfo/IndictmentJson";
-                    //ys.exportExcel(url, postData);
+                    //cap.exportExcel(url, postData);
                 });
                 return false;
             });

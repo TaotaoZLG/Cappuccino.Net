@@ -211,6 +211,7 @@
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\MemoryCache\MemoryCacheManager.cs" />
     <Compile Include="Caching\RedisCache\RedisCacheManager.cs" />
+    <Compile Include="Enum\AuthorizeTypeEnum.cs" />
     <Compile Include="Enum\ActionTypeEnum.cs" />
     <Compile Include="Enum\AjaxStateEnum.cs" />
     <Compile Include="Enum\CacheExpirationTypeEnum.cs" />
@@ -219,6 +220,7 @@
     <Compile Include="Enum\PositionEnum.cs" />
     <Compile Include="Enum\UploadFileType.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Extensions\ExpressionExtensions.cs" />
     <Compile Include="Extensions\Extension.Enum.cs" />
     <Compile Include="Extensions\Extensions.Convert.cs" />
     <Compile Include="Extensions\PathExtensions.cs" />

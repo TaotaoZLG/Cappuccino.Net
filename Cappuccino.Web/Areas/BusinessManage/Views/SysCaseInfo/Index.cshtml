@@ -92,7 +92,7 @@
                     window.refresh();
                 }
                 else if (obj.event === 'uploadfile') {
-                    ys.openDialog({
+                    cap.openDialog({
                         title: "上传文件",
                         content: MODULE_PATH + "UploadFile",
                         height: "350px",
@@ -106,14 +106,14 @@
                     var selectRow = checkStatus.data;
                     var msg = "确定要根据搜索条件下载案件文件吗？";
                     var postData = { viewModel: obj.field };
-                    if (ys.checkRowData(selectRow)) {
+                    if (cap.checkRowData(selectRow)) {
                         msg = "确定要将选中的下载案件文件吗？"
-                        var id = ys.getIds(selectRow);
+                        var id = cap.getIds(selectRow);
                         postData = { idsStr: id };
                     }
-                    ys.confirm(msg, function () {
+                    cap.confirm(msg, function () {
                         var url = MODULE_PATH + "DownLoadFileJson";
-                        ys.exportExcel(url, postData);
+                        cap.exportExcel(url, postData);
                     });
                 }
                 else if (obj.event === 'indictment') {

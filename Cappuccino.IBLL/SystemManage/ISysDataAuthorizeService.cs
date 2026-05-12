@@ -12,12 +12,6 @@ namespace Cappuccino.IBLL
         /// DataType: 1-机构，2-部门，3-用户
         /// userId 可省略：服务内部会使用当前登录用户 UserManager.GetCurrentUserInfo().Id
         /// </summary>
-        HashSet<long> GetEffectiveDataIdsForUser(long? userId = null, int? dataType = null);
-
-        /// <summary>
-        /// 清除缓存（赋权后可以调用以保证即时生效）
-        /// 可省略 userId：默认针对当前登录用户
-        /// </summary>
-        void ClearCache(long? userId = null, int? dataType = null);
+        DataAuthorizeInfo GetEffectiveDataIdsForUser(SysUserEntity userEntity = null);
     }
 }

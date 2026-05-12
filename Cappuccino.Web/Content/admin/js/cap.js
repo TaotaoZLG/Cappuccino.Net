@@ -1,12 +1,12 @@
-﻿// 添加到页面的window对象上面，在页面中用ys.进行访问
-; window.ys = {};
-(function ($, ys) {
+﻿// 添加到页面的window对象上面，在页面中用cap.进行访问
+; window.cap = {};
+(function ($, cap) {
     "use strict";
-    $.extend(ys, {
+    $.extend(cap, {
         // url
         openDialog: function (option) {
             // 如果是移动端，就使用自适应大小弹窗
-            if (ys.isMobile()) {
+            if (cap.isMobile()) {
                 option.width = 'auto';
                 option.height = 'auto';
             }
@@ -49,7 +49,7 @@
         // html
         openDialogContent: function (option) {
             // 如果是移动端，就使用自适应大小弹窗
-            if (ys.isMobile()) {
+            if (cap.isMobile()) {
                 option.width = 'auto';
                 option.height = 'auto';
             }
@@ -92,7 +92,7 @@
         // 弹出层全屏
         openFull: function (option) {
             // 如果是移动端，就使用自适应大小弹窗
-            if (ys.isMobile()) {
+            if (cap.isMobile()) {
                 option.width = 'auto';
                 option.height = 'auto';
             }
@@ -145,7 +145,7 @@
         },
         // 右侧弹出窗口打开
         popupRight: function (title, url, width) {
-            width = ys.isEmpty(width) ? 150 : width;
+            width = cap.isEmpty(width) ? 150 : width;
             if (top.location !== self.location) {
                 if ($(top.window).outerWidth() < 400) {
                     width = 50;
@@ -165,7 +165,7 @@
         },
         // 关闭窗体
         close: function (index) {
-            if (ys.isNullOrEmpty(index)) {
+            if (cap.isNullOrEmpty(index)) {
                 var index = parent.layer.getFrameIndex(window.name);
                 parent.layer.close(index);
             } else {
@@ -190,14 +190,14 @@
         },
         // 成功消息
         msgSuccess: function (content) {
-            if (ys.isNullOrEmpty(content)) {
+            if (cap.isNullOrEmpty(content)) {
                 content = "操作成功";
             }
             top.layer.msg(content, { icon: 1, time: 1000, shift: 5 });
         },
         // 错误消息
         msgError: function (content) {
-            if (ys.isNullOrEmpty(content)) {
+            if (cap.isNullOrEmpty(content)) {
                 content = "操作失败";
             }
             top.layer.msg(content, { icon: 2, time: 3000, shift: 5 });
@@ -249,12 +249,12 @@
                 shade: [0.1, '#8F8F8F']
             },
                 function () {
-                    ys.reload();
+                    cap.reload();
                 });
         },
         // 获取iframe页的DOM
         getChildFrame: function (index) {
-            if (ys.isEmpty(index)) {
+            if (cap.isEmpty(index)) {
                 var index = parent.layer.getFrameIndex(window.name);
                 return parent.layer.getChildFrame('body', index);
             } else {
@@ -289,9 +289,9 @@
         // 判断是否选择编辑行
         checkRowEdit: function (row) {
             if (row.length == 0) {
-                ys.msgError("您没有选择任何行！");
+                cap.msgError("您没有选择任何行！");
             } else if (row.length > 1) {
-                ys.msgError("您的选择大于1行！");
+                cap.msgError("您的选择大于1行！");
             } else if (row.length == 1) {
                 return true;
             }
@@ -300,7 +300,7 @@
         // 判断是否选择删除行
         checkRowDelete: function (row) {
             if (row.length == 0) {
-                ys.msgError("您没有选择任何行！");
+                cap.msgError("您没有选择任何行！");
             } else if (row.length > 0) {
                 return true;
             }
@@ -309,7 +309,7 @@
         // 判断是否有选中行 zlg
         checkRowData: function (row) {
             if (row.length == 0) {
-                ys.msgError("您没有选择任何行！");
+                cap.msgError("您没有选择任何行！");
             } else if (row.length > 0) {
                 return true;
             }
@@ -323,20 +323,20 @@
                 type: "get",
                 data: option.data || {},
                 dataType: option.dataType || "json",
-                error: function (xhr, status, obj) { ys.alertError("系统出错了"); },
+                error: function (xhr, status, obj) { cap.alertError("系统出错了"); },
                 success: function (rdata) {
-                    ys.msgSuccess();
+                    cap.msgSuccess();
                 },
                 beforeSend: function (xhr) {
-                    ys.showLoading("正在处理中...");
+                    cap.showLoading("正在处理中...");
                 },
                 complete: function (xhr, status) {
-                    ys.closeLoading();
+                    cap.closeLoading();
                 }
             }, option);
 
-            if (ys.isNullOrEmpty(opt.url)) {
-                ys.alertError("url 参数不能为空");
+            if (cap.isNullOrEmpty(opt.url)) {
+                cap.alertError("url 参数不能为空");
                 return;
             }
             $.ajax({
@@ -360,25 +360,25 @@
                     console.log(xhr);
                     console.log(status);
                     console.log(obj);
-                    ys.alertError("系统出错了");
+                    cap.alertError("系统出错了");
                 },
                 success: function (rdata) {
-                    ys.msgSuccess();
+                    cap.msgSuccess();
                 },
                 beforeSend: function (xhr) {
-                    ys.showLoading("正在处理中...");
+                    cap.showLoading("正在处理中...");
                 },
                 complete: function (xhr, status) {
-                    ys.closeLoading();
+                    cap.closeLoading();
                 }
             }, option);
 
-            if (ys.isNullOrEmpty(opt.url)) {
-                ys.alertError("url 参数不能为空");
+            if (cap.isNullOrEmpty(opt.url)) {
+                cap.alertError("url 参数不能为空");
                 return;
             }
-            if (ys.isNullOrEmpty(opt.data)) {
-                ys.alertError("data 参数不能为空");
+            if (cap.isNullOrEmpty(opt.data)) {
+                cap.alertError("data 参数不能为空");
                 return;
             }
             $.ajax({
@@ -395,7 +395,7 @@
         },
         // 导出数据
         exportExcel: function (url, postData) {
-            ys.ajax({
+            cap.ajax({
                 url: url,
                 type: "post",
                 data: postData,
@@ -404,11 +404,11 @@
                         window.location.href = "/File/DownloadFile?filePath=" + obj.data + "&delete=1";
                     }
                     else {
-                        ys.msgError(obj.message);
+                        cap.msgError(obj.message);
                     }
                 },
                 beforeSend: function (xhr) {
-                    ys.showLoading("正在导出数据，请稍后...");
+                    cap.showLoading("正在导出数据，请稍后...");
                 }
             });
         },
@@ -471,7 +471,7 @@
         },
         // 判断一个字符串是否为非空串
         isNotEmpty: function (value) {
-            return !ys.isEmpty(value);
+            return !cap.isEmpty(value);
         },
         // 是否为空串
         isNullOrEmpty: function (obj) {
@@ -493,7 +493,7 @@
         },
         // 空对象转字符串
         nullToStr: function (value) {
-            if (ys.isNullOrEmpty(value)) {
+            if (cap.isNullOrEmpty(value)) {
                 return "-";
             }
             return value;
@@ -523,7 +523,7 @@
         },
         // 是否显示数据 为空默认为显示
         visible: function (value) {
-            if (ys.isEmpty(value) || value == true) {
+            if (cap.isEmpty(value) || value == true) {
                 return true;
             }
             return false;
@@ -614,7 +614,7 @@
         },
         // 数组中的所有元素放入一个字符串
         join: function (array, separator) {
-            if (ys.isEmpty(array)) {
+            if (cap.isEmpty(array)) {
                 return null;
             }
             return array.join(separator);
@@ -634,13 +634,13 @@
         // 数据字典转下拉框
         dictToSelect: function (datas, value, name) {
             var actions = [];
-            actions.push(ys.sprintf("<select class='form-control' name='%s'>", name));
+            actions.push(cap.sprintf("<select class='form-control' name='%s'>", name));
             $.each(datas, function (index, dict) {
-                actions.push(ys.sprintf("<option value='%s'", dict.dictValue));
+                actions.push(cap.sprintf("<option value='%s'", dict.dictValue));
                 if (dict.dictValue == ('' + value)) {
                     actions.push(' selected');
                 }
-                actions.push(ys.sprintf(">%s</option>", dict.dictLabel));
+                actions.push(cap.sprintf(">%s</option>", dict.dictLabel));
             });
             actions.push('</select>');
             return actions.join('');
@@ -692,7 +692,7 @@
             return value;
         },
         getLastValue: function (str) {
-            if (!ys.isNullOrEmpty(str)) {
+            if (!cap.isNullOrEmpty(str)) {
                 var arr = str.toString().split(',');
                 return arr[arr.length - 1];
             }
@@ -700,7 +700,7 @@
         },
         // 状态显示样式初始化
         formatStatus: function (datas, value) {
-            if (ys.isEmpty(datas) || ys.isEmpty(value)) {
+            if (cap.isEmpty(datas) || cap.isEmpty(value)) {
                 return '';
             }
             var actions = [];
@@ -720,20 +720,20 @@
         },
         // 回显数据字典
         selectDictLabel: function (datas, value) {
-            if (ys.isEmpty(datas) || ys.isEmpty(value)) {
+            if (cap.isEmpty(datas) || cap.isEmpty(value)) {
                 return '';
             }
             var actions = [];
             $.each(datas, function (index, dict) {
                 if (dict.Key == ('' + value)) {
-                    var listClass = ys.equals("default", dict.ListClass) || ys.isEmpty(dict.ListClass) ? "" : "badge badge-" + dict.ListClass;
-                    var cssClass = ys.isNotEmpty(dict.cssClass) ? dict.cssClass : listClass;
-                    actions.push(ys.sprintf("<span class='%s'>%s</span>", cssClass, dict.DictValue));
+                    var listClass = cap.equals("default", dict.ListClass) || cap.isEmpty(dict.ListClass) ? "" : "badge badge-" + dict.ListClass;
+                    var cssClass = cap.isNotEmpty(dict.cssClass) ? dict.cssClass : listClass;
+                    actions.push(cap.sprintf("<span class='%s'>%s</span>", cssClass, dict.DictValue));
                     return false;
                 }
             });
             if (actions.length === 0) {
-                actions.push(ys.sprintf("<span>%s</span>", value))
+                actions.push(cap.sprintf("<span>%s</span>", value))
             }
             return actions.join('');
         },
@@ -826,7 +826,7 @@
             for (var item in obj) {
                 if (obj[item][key] == id) {
                     destArr.push(obj[item]);
-                    return ys.recursion(obj, obj[item][parentKey], destArr, key, parentKey);
+                    return cap.recursion(obj, obj[item][parentKey], destArr, key, parentKey);
                 }
             }
         },
@@ -866,17 +866,17 @@
         },
         // 列超出指定长度浮动提示 target（copy单击复制文本 open弹窗打开文本）
         tooltip: function (value, length, target) {
-            var _length = ys.isNullOrEmpty(length) ? 20 : length;
+            var _length = cap.isNullOrEmpty(length) ? 20 : length;
             var _text = "";
-            var _value = ys.toString(value);
-            var _target = ys.isNullOrEmpty(target) ? 'copy' : target;
+            var _value = cap.toString(value);
+            var _target = cap.isNullOrEmpty(target) ? 'copy' : target;
             if (_value.length > _length) {
                 _text = _value.substr(0, _length) + "...";
                 _value = _value.replace(/\'/g, "&apos;");
                 _value = _value.replace(/\"/g, "&quot;");
                 var actions = [];
-                actions.push(ys.sprintf('<input style="opacity: 0;position: absolute;width:5px;z-index:-1" type="text" value="%s"/>', _value));
-                actions.push(ys.sprintf('<a href="###" class="tooltip-show" data-toggle="tooltip" data-target="%s" title="%s">%s</a>', _target, _value, _text));
+                actions.push(cap.sprintf('<input style="opacity: 0;position: absolute;width:5px;z-index:-1" type="text" value="%s"/>', _value));
+                actions.push(cap.sprintf('<a href="###" class="tooltip-show" data-toggle="tooltip" data-target="%s" title="%s">%s</a>', _target, _value, _text));
                 return actions.join('');
             } else {
                 _text = _value;
@@ -915,17 +915,17 @@
         operate: {
             // 删除信息
             remove: function (id, url) {
-                ys.confirm('确定删除该条数据吗？', function () {
-                    ys.ajax({
+                cap.confirm('确定删除该条数据吗？', function () {
+                    cap.ajax({
                         url: url + '?ids=' + id,
                         type: 'post',
                         success: function (obj) {
                             if (obj.Code == 1) {
-                                ys.msgSuccess(obj.Message);
-                                ys.searchGrid();
+                                cap.msgSuccess(obj.Message);
+                                cap.searchGrid();
                             }
                             else {
-                                ys.msgError(obj.Message);
+                                cap.msgError(obj.Message);
                             }
                         }
                     });
@@ -933,17 +933,17 @@
             },
             // 删除树结构
             removeTree: function (id, url) {
-                ys.confirm('确定删除该条数据吗？', function () {
-                    ys.ajax({
+                cap.confirm('确定删除该条数据吗？', function () {
+                    cap.ajax({
                         url: url + '?ids=' + id,
                         type: 'post',
                         success: function (obj) {
                             if (obj.Code == 1) {
-                                ys.msgSuccess(obj.Message);
-                                ys.searchTreeGrid();
+                                cap.msgSuccess(obj.Message);
+                                cap.searchTreeGrid();
                             }
                             else {
-                                ys.msgError(obj.Message);
+                                cap.msgError(obj.Message);
                             }
                         }
                     });
@@ -951,7 +951,7 @@
             },
             // 编辑
             edit: function (id, url) {
-                ys.openDialog({
+                cap.openDialog({
                     title: '编辑',
                     content: url + '?id=' + id,
                     callback: function (index, layero) {
@@ -962,7 +962,7 @@
             },
             // 全屏编辑
             editFull: function (id, url) {
-                ys.openFull({
+                cap.openFull({
                     title: '编辑',
                     content: url + '?id=' + id,
                     callback: function (index, layero) {
@@ -973,8 +973,8 @@
             },
             view: function (id, url, width) {
                 var url = url + '?id=' + id;
-                ys.popupRight("信息详情", url, width);
+                cap.popupRight("信息详情", url, width);
             },
         }
     });
-})(window.jQuery, window.ys);
+})(window.jQuery, window.cap);

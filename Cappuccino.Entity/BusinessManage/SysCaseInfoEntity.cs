@@ -351,5 +351,8 @@ namespace Cappuccino.Entity
         [ExcelColumnName("备注信息3")]
         public string Remark3 { get; set; }
 
+        [ForeignKey("CreateUserId")]
+        public virtual SysUserEntity SysUser { get; set; }
+
     }
 }

@@ -80,14 +80,14 @@
                         filePath = response.data;
                     }
                     else {
-                        ys.msgError(response.message)
+                        cap.msgError(response.message)
                     }
                 }
             });
 
             form.on("submit(create)", function (data) {
                 if (!filePath) {
-                    ys.alertError('文件未上传或者上传失败');
+                    cap.alertError('文件未上传或者上传失败');
                     return;
                 }
 
