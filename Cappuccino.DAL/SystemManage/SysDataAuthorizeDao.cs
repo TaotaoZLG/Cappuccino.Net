@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Cappuccino.DataAccess;
 using Cappuccino.Entity;
 using Cappuccino.IDAL;
@@ -16,6 +17,12 @@ namespace Cappuccino.DAL
             {
                 Delete(entities);
             }
+        }
+
+        public HashSet<SysDataAuthorizeEntity> GetAuthorizeList()
+        {
+            var dataAuthorizeList = GetList(x => true).ToHashSet();
+            return dataAuthorizeList;
         }
     }
 }

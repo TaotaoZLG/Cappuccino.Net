@@ -52,6 +52,10 @@ namespace Cappuccino.Web
             //创建BLL中的所有类的instance以此类的实现接口存储
             builder.RegisterTypes(serAss.GetTypes()).AsImplementedInterfaces();
 
+            Assembly cacheAss = Assembly.Load("Cappuccino.Cache");
+            //创建Cache中的所有类
+            builder.RegisterTypes(cacheAss.GetTypes()).AsSelf();
+
             // 注册操作日志服务
             builder.RegisterType<SysLogOperateService>().As<ISysLogOperateService>().AsImplementedInterfaces();
 

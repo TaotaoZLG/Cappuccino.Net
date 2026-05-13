@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cappuccino.Cache;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.Common.Enum;
-using Cappuccino.Common.Extensions;
 using Cappuccino.Entity;
 using Cappuccino.IBLL;
 using Cappuccino.IDAL;
@@ -17,40 +17,34 @@ namespace Cappuccino.BLL
     {
         #region 依赖注入
 
-        private readonly ISysDataAuthorizeDao _dataAuthorizeDao;
-        private readonly ISysRoleDao _roleDao;
         private readonly ISysUserDao _userDao;
-        private readonly ISysDepartmentDao _departmentDao;
+        private DataAuthorizeCache _dataAuthorizeCache;
         private static readonly TimeSpan CacheTtl = TimeSpan.FromSeconds(30);
 
-        public SysDataAuthorizeService(ISysDataAuthorizeDao dataAuthorizeDao, ISysRoleDao roleDao, ISysUserDao userDao, ISysDepartmentDao departmentDao)
+        public SysDataAuthorizeService(ISysUserDao userDao, DataAuthorizeCache dataAuthorizeCache)
         {
-            _dataAuthorizeDao = dataAuthorizeDao;
-            _roleDao = roleDao;
             _userDao = userDao;
-            _departmentDao = departmentDao;
-            base.CurrentDao = _dataAuthorizeDao;
-            this.AddDisposableObject(this.CurrentDao);
+            _dataAuthorizeCache = dataAuthorizeCache;
         }
         #endregion
 
         /// <summary>
-        /// 获取用户对指定 DataType 的生效数据 Id 集合。
-        /// - 只查找【部门】和【用户】数据权限（DataType=2,3），并集返回。
-        /// - 如果用户角色为【超级管理员】，直接返回所有部门和用户Id，无需查权限。
+        /// 获取用户的数据权限 Id 集合。
+        /// 如果用户角色为【超级管理员】，直接返回所有部门和用户Id，无需查权限。
         /// </summary>
-        public DataAuthorizeInfo GetEffectiveDataIdsForUser(SysUserEntity userEntity = null)
+        public DataAuthorizeInfo GetAuthorizeList(SysUserEntity userEntity = null)
         {
             userEntity = userEntity ?? UserManager.GetCurrentUserInfo();
             if (userEntity == null || userEntity.Id == 0)
             {
                 return new DataAuthorizeInfo();
             }
+            
             var result = new DataAuthorizeInfo();
-            string cacheKey = KeyManager.UserDataPermission;
+            string cacheKey = KeyManager.DataPermission;
             var cached = CacheManager.Get<DataAuthorizeInfo>(cacheKey);
             if (cached != null) return cached;
-
+            
             // 查询用户角色
             bool isSuperAdmin = userEntity.SysRoles.Any(r => r.Code == "Administrator");
             if (isSuperAdmin)
@@ -62,8 +56,10 @@ namespace Cappuccino.BLL
             // 先取出角色Id集合，避免EF无法解析导航属性
             var roleIds = userEntity.SysRoles.Select(r => r.Id).ToList();
 
-            // 普通用户，查找【部门】和【用户】数据权限
-            var dataAuthorizeList = _dataAuthorizeDao.GetList(x =>
+            // 从缓存中获取数据授权列表，过滤出与用户角色或用户Id相关的授权项
+            var dataAuthorizeCacheList = _dataAuthorizeCache.GetList();
+            
+            var dataAuthorizeList = dataAuthorizeCacheList.Where(x =>
                 (x.DataType == (int)AuthorizeTypeEnum.User || x.DataType == (int)AuthorizeTypeEnum.Department) &&
                 (
                     (x.AuthorizeType == (int)AuthorizeTypeEnum.Role && roleIds.Contains(x.AuthorizeId.Value)) ||
@@ -72,17 +68,15 @@ namespace Cappuccino.BLL
             ).ToHashSet();
 
             // 提取部门Id和用户Id，合并去重
-            result.ChildrenDepartmentIdList = new HashSet<long>(
-                dataAuthorizeList
+            result.ChildrenDepartmentIdList = dataAuthorizeList
                     .Where(x => x.DataType == (int)AuthorizeTypeEnum.Department && x.DataId.HasValue)
                     .Select(x => x.DataId.Value)
-            );
+                    .ToHashSet();
 
-            result.ChildrenUserIdList = new HashSet<long>(
-                dataAuthorizeList
+            result.ChildrenUserIdList = dataAuthorizeList
                     .Where(x => x.DataType == (int)AuthorizeTypeEnum.User && x.DataId.HasValue)
                     .Select(x => x.DataId.Value)
-            );
+                    .ToHashSet();
 
             // 若无授权，默认至少包含用户所在部门和用户自己
             if (result.ChildrenDepartmentIdList.Count == 0 && result.ChildrenUserIdList.Count == 0)

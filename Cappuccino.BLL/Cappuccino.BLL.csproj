@@ -77,6 +77,10 @@
       <Project>{1686EAA5-0C86-46F5-BC73-7926F2F93310}</Project>
       <Name>Cappuccino.AutoJob</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Cappuccino.Cache\Cappuccino.Cache.csproj">
+      <Project>{3201ae33-3be8-47f5-aed9-826c245959de}</Project>
+      <Name>Cappuccino.Cache</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cappuccino.Common\Cappuccino.Common.csproj">
       <Project>{471e7f22-fdc4-4f8c-b985-3336d4b14e0b}</Project>
       <Name>Cappuccino.Common</Name>
@@ -106,6 +110,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CacheManage\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

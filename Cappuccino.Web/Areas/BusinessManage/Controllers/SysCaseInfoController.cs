@@ -164,7 +164,7 @@ namespace Cappuccino.Web.Areas.BusinessManage.Controllers
             Expression<Func<SysCaseInfoEntity, bool>> baseExpr = queries.AsExpression<SysCaseInfoEntity>(Query.Condition.AndAlso);
 
             // 获取生效的部门与用户集合（如果返回 null，退换为空集合）
-            var dataAuthorize = _sysDataAuthorizeService.GetEffectiveDataIdsForUser();
+            DataAuthorizeInfo dataAuthorize = _sysDataAuthorizeService.GetAuthorizeList();
 
             Expression<Func<SysCaseInfoEntity, bool>> finalExpr = baseExpr;
 

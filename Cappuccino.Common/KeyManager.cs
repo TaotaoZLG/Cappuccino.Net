@@ -22,6 +22,6 @@
         /// <summary>
         /// 数据权限缓存key
         /// </summary>
-        public const string UserDataPermission = "Cappuccino@UserDataPermission";
+        public const string DataPermission = "Cappuccino@DataPermission";
     }
 }
