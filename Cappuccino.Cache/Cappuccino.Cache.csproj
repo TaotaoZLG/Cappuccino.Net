@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseCache.cs" />
+    <Compile Include="DataDictDetailCache.cs" />
+    <Compile Include="DataDictCache.cs" />
     <Compile Include="DataAuthorizeCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

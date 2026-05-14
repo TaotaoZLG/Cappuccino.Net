@@ -89,7 +89,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             // 如果修改的是IP黑名单配置，刷新缓存
             if (entity.ConfigKeys == "sys_ipBlackList")
             {
-                CacheManager.Remove(KeyManager.IpBlackCacheKey);
+                CacheManager.Remove(KeyManager.IpBlackCache);
             }
 
             return WriteSuccess();
@@ -114,7 +114,7 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             // 如果修改的是IP黑名单配置，刷新缓存
             if (entity.ConfigKeys == "sys_ipBlackList")
             {
-                CacheManager.Remove(KeyManager.IpBlackCacheKey);
+                CacheManager.Remove(KeyManager.IpBlackCache);
             }
 
             return WriteSuccess();

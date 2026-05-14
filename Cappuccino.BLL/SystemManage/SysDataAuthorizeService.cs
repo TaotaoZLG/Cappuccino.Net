@@ -19,7 +19,6 @@ namespace Cappuccino.BLL
 
         private readonly ISysUserDao _userDao;
         private DataAuthorizeCache _dataAuthorizeCache;
-        private static readonly TimeSpan CacheTtl = TimeSpan.FromSeconds(30);
 
         public SysDataAuthorizeService(ISysUserDao userDao, DataAuthorizeCache dataAuthorizeCache)
         {
@@ -41,7 +40,7 @@ namespace Cappuccino.BLL
             }
             
             var result = new DataAuthorizeInfo();
-            string cacheKey = KeyManager.DataPermission;
+            string cacheKey = KeyManager.DataPermissionCache;
             var cached = CacheManager.Get<DataAuthorizeInfo>(cacheKey);
             if (cached != null) return cached;
             
@@ -81,7 +80,7 @@ namespace Cappuccino.BLL
             // 若无授权，默认至少包含用户所在部门和用户自己
             if (result.ChildrenDepartmentIdList.Count == 0 && result.ChildrenUserIdList.Count == 0)
             {
-                var user = _userDao.GetList(u => u.Id == userEntity.Id).FirstOrDefault();
+                var user = userEntity ?? _userDao.GetList(u => u.Id == userEntity.Id).FirstOrDefault();
                 if (user != null)
                 {
                     if (user.DepartmentId.HasValue) result.ChildrenDepartmentIdList.Add(user.DepartmentId.Value);
@@ -89,7 +88,7 @@ namespace Cappuccino.BLL
                 }
             }
 
-            CacheManager.Set(cacheKey, result, CacheTtl);
+            CacheManager.Set(cacheKey, result);
             return result;
         }
 

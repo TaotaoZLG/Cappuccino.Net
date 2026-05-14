@@ -46,7 +46,7 @@ namespace Cappuccino.Web.Core.Filters
         private List<string> GetIpBlackListFromCache()
         {
             // 从缓存获取
-            var blackList = CacheManager.Get<List<string>>(KeyManager.IpBlackCacheKey);
+            var blackList = CacheManager.Get<List<string>>(KeyManager.IpBlackCache);
             if (blackList != null)
             {
                 return blackList;
@@ -66,7 +66,7 @@ namespace Cappuccino.Web.Core.Filters
             }
 
             // 存入缓存（永不过期）
-            CacheManager.Set(KeyManager.IpBlackCacheKey, blackList);
+            CacheManager.Set(KeyManager.IpBlackCache, blackList);
 
             return blackList;
         }

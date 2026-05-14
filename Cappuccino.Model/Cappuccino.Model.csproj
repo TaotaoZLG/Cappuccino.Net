@@ -44,7 +44,8 @@
   <ItemGroup>
     <Compile Include="Account\ChangePasswordModel.cs" />
     <Compile Include="Account\LoginModel.cs" />
-    <Compile Include="DataAuthorizeInfo.cs" />
+    <Compile Include="Result\DataDictInfo.cs" />
+    <Compile Include="Result\DataAuthorizeInfo.cs" />
     <Compile Include="BaseEntity.cs" />
     <Compile Include="BusinessManage\SysCaseInfoModel.cs" />
     <Compile Include="BusinessManage\SysTemplateModel.cs" />
@@ -79,5 +80,6 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

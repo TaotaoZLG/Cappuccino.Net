@@ -17,11 +17,21 @@
         /// <summary>
         /// 用于缓存IP黑名单的key
         /// </summary>
-        public const string IpBlackCacheKey = "Cappuccino@IpBlackList";
+        public const string IpBlackCache = "Cappuccino@IpBlackList";
 
         /// <summary>
         /// 数据权限缓存key
         /// </summary>
-        public const string DataPermission = "Cappuccino@DataPermission";
+        public const string DataPermissionCache = "Cappuccino@DataPermission";
+
+        /// <summary>
+        /// 字典缓存key
+        /// </summary>
+        public const string DataDictCache = "Cappuccino@DataDict";
+
+        /// <summary>
+        /// 字典详情缓存key
+        /// </summary>
+        public const string DataDictDetailCache = "Cappuccino@DataDictDetail";
     }
 }

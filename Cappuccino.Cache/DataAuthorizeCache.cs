@@ -15,7 +15,7 @@ namespace Cappuccino.Cache
     {
         private readonly ISysDataAuthorizeDao _sysDataAuthorizeDao;
 
-        public override string CacheKey => KeyManager.DataPermission;
+        public override string CacheKey => KeyManager.DataPermissionCache;
 
         public DataAuthorizeCache(ISysDataAuthorizeDao sysDataAuthorizeDao)
         { 
@@ -36,6 +36,5 @@ namespace Cappuccino.Cache
                 return cacheList;
             }
         }
-
     }
 }

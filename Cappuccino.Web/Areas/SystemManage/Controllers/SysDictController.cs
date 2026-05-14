@@ -151,29 +151,11 @@ namespace Cappuccino.Web.Areas.SystemManage.Controllers
             return Json(Pager.Paging(list, totalCount), JsonRequestBehavior.AllowGet);
         }
 
-        [HttpGet, CheckPermission("system.dict.list")]
+        //[HttpGet, CheckPermission("system.dict.list")]
         public ActionResult GetDataDictList()
         {
-            // 获取所有字典类型
-            List<SysDictEntity> dictList = _sysDictService.GetList(x => true).ToList();
-            // 按类型Code分组，关联字典项
-            var result = dictList.Select(type => new
-            {
-                TypeCode = type.Code,  // 字典类型编码
-                TypeName = type.Name,  // 字典类型名称
-                Dicts = _sysDictDetailService.GetList(d => d.DictId == type.Id)
-                    .Select(d => new
-                    {
-                        Label = d.Name,  // 字典项名称
-                        Value = d.Code,  // 字典项值
-                        Sort = d.SortCode,  // 排序号
-                        Class = d.ListClass  // 显示样式
-                    })
-                    .OrderBy(d => d.Sort)
-                    .ToList()
-            }).ToDictionary(x => x.TypeCode);
-
-            return WriteSuccess("查询成功", result);
+            var dictList = _sysDictService.GetDataDictList();
+            return WriteSuccess("查询成功", dictList);
         }
 
         public ActionResult GetMaxSortCode()
