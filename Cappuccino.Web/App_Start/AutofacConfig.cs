@@ -32,20 +32,7 @@ namespace Cappuccino.Web
             //告诉autofac框架注册数据仓储层所在程序集中的所有类的对象实例
             Assembly respAss = Assembly.Load("Cappuccino.DAL");
             //创建DAL中的所有类的instance以此类的实现接口存储
-            try
-            {
-                builder.RegisterTypes(respAss.GetTypes()).AsImplementedInterfaces();
-            }
-            catch (ReflectionTypeLoadException ex)
-            {
-                var loaderExceptions = ex.LoaderExceptions;
-                foreach (var e in loaderExceptions)
-                {
-                    // 建议用日志记录或调试输出
-                    Log4netHelper.Error(e.Message);
-                }
-                throw; // 重新抛出异常，便于调试
-            }
+            builder.RegisterTypes(respAss.GetTypes()).AsImplementedInterfaces();
 
             //告诉autofac框架注册业务逻辑层所在程序集中的所有类的对象实例
             Assembly serAss = Assembly.Load("Cappuccino.BLL");
@@ -56,27 +43,15 @@ namespace Cappuccino.Web
             //创建Cache中的所有类
             builder.RegisterTypes(cacheAss.GetTypes()).AsSelf();
 
-            // 注册操作日志服务
-            builder.RegisterType<SysLogOperateService>().As<ISysLogOperateService>().AsImplementedInterfaces();
-
-            // 注册MVC控制器并启用属性注入
-            builder.RegisterControllers(Assembly.GetExecutingAssembly())
-                   .PropertiesAutowired();  // 关键：允许控制器中的过滤器属性被注入
+            // 注册MVC控制器并启用过滤器属性注入
+            builder.RegisterControllers(Assembly.GetExecutingAssembly()).PropertiesAutowired();
 
             // 注册过滤器提供者
             builder.RegisterFilterProvider();
 
-            // 注册业务服务（单例）
-            builder.RegisterType<SysAutoJobService>().As<ISysAutoJobService>().SingleInstance();
-            builder.RegisterType<SysAutoJobLogService>().As<ISysAutoJobLogService>().SingleInstance();
-
-            // 注册JobExecutor
-            builder.RegisterType<JobExecutor>().InstancePerDependency();
-
-            // 注册调度器（单例）
+            // 注册Quartz为单例
+            builder.RegisterType<JobExecutor>().AsSelf().SingleInstance();
             builder.RegisterType<JobScheduler>().As<IJobScheduler>().SingleInstance();
-
-            // 注册JobCenter（单例）
             builder.RegisterType<JobCenter>().AsSelf().SingleInstance();
 
             //创建一个Autofac的容器

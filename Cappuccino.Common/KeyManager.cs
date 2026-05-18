@@ -20,6 +20,11 @@
         public const string IpBlackCache = "Cappuccino@IpBlackList";
 
         /// <summary>
+        /// 操作菜单缓存key
+        /// </summary>
+        public const string ActionMenuCache = "Cappuccino@ActionMenu";
+
+        /// <summary>
         /// 数据权限缓存key
         /// </summary>
         public const string DataPermissionCache = "Cappuccino@DataPermission";

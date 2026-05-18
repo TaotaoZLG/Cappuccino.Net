@@ -143,7 +143,7 @@ namespace Cappuccino.AutoJob
 
                 // 调度任务
                 await _scheduler.ScheduleJob(jobDetail, trigger);  //将创建的任务和触发器条件添加到创建的任务调度器当中
-                await _scheduler.Start();  //启动任务调度器
+                //await _scheduler.Start();  //启动任务调度器
                 Log4netHelper.Info($"任务 [{jobEntity.JobGroup}.{jobEntity.JobName}] 已添加，Cron 表达式：{jobEntity.CronExpression}");
                 return true;
             }

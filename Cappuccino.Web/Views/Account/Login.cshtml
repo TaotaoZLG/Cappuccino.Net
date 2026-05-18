@@ -67,7 +67,9 @@
             // 登 录 提 交
             form.on('submit(login)', function (data) {
                 common.ajax("@Url.Action("Login","Account")", "post", data.field, true, true).done(function (response) {
-                    window.location = "/Home";
+                    if (response.status === 1) {
+                        window.location = "/Home";
+                    }
                 }).fail(function (error) {
                     console.log(error)
                     //刷新二维码

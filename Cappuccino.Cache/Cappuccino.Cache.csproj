@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseCache.cs" />
+    <Compile Include="ActionMenuCache.cs" />
     <Compile Include="DataDictDetailCache.cs" />
     <Compile Include="DataDictCache.cs" />
     <Compile Include="DataAuthorizeCache.cs" />

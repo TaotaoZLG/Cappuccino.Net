@@ -91,10 +91,10 @@ $(function () {
 });
 
 /**
-    * 获取当前激活Tab中的iframe window对象
-    * @param {String} tabContainerSelector - Tab容器选择器（默认layui默认Tab容器）
-    * @returns {Window|null} 成功返回iframe window，失败返回null
-    */
+* 获取当前激活Tab中的iframe window对象
+* @param {string} tabContainerSelector - Tab容器选择器（默认layui默认Tab容器）
+* @returns {Window|null} 成功返回iframe window，失败返回null
+*/
 function getActiveTabIframeWindow(tabContainerSelector = '.layui-tab') {
     try {
         // 1. 【精准匹配你的项目结构】定位 Pear Admin 激活的Tab面板
@@ -125,7 +125,6 @@ function getActiveTabIframeWindow(tabContainerSelector = '.layui-tab') {
             return null;
         }
 
-        // ✅ 成功返回
         console.log('✅ 成功获取激活Tab的iframe Window');
         return iframeWindow;
 
@@ -139,7 +138,12 @@ function getActiveTabIframeWindow(tabContainerSelector = '.layui-tab') {
     }
 }
 
-/** 密码规则范围验证 */
+/**
+ * 密码规则范围验证
+ * @param {int} chrtype - 1:纯数字，2:纯字母，3:字母数字，4:字母数字特殊符号
+ * @param {string} password - 待验证的密码字符串
+ * @returns 
+ */
 function checkpwd(chrtype, password) {
     if (chrtype == 1) {
         if (!cap.numValid(password) || !/^.{6,12}$/.test(password)) {
@@ -158,4 +162,5 @@ function checkpwd(chrtype, password) {
             return "密码必须包含字母、数字、以及特殊符号<font color='red'>~!@#$%^&*()-=_+</font>，且长度8-18位";
         }
     }
+    return "未知密码规则";
 }

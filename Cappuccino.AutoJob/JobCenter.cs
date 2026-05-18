@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cappuccino.Common.Log;
@@ -20,22 +21,19 @@ namespace Cappuccino.AutoJob
 
         public void Start()
         {
-            Task.Run(async () =>
+            try
             {
                 List<SysAutoJobEntity> jobList = _sysAutoJobService.GetList(x => x.JobStatus == 1).ToList();
                 if (jobList.Any())
                 {
-                    // 并行添加任务以提高效率
-                    //var tasks = jobList.Select(job => _jobScheduler.AddScheduleJob(job)).ToList();
-                    //await Task.WhenAll(tasks);
-
+                    // 同步添加任务
                     foreach (var obj in jobList)
                     {
-                        await _jobScheduler.AddScheduleJob(obj);
+                        _jobScheduler.AddScheduleJob(obj).Wait(); // 同步等待
                     }
 
                     // 启动调度器（只启动一次）
-                    //await _jobScheduler.StartAsync();
+                    _jobScheduler.Start();
 
                     Log4netHelper.Info($"共加载了 {jobList.Count} 个定时任务");
                 }
@@ -43,7 +41,11 @@ namespace Cappuccino.AutoJob
                 {
                     Log4netHelper.Info("没有启用的定时任务");
                 }
-            });
+            }
+            catch (Exception ex)
+            {
+                Log4netHelper.Error("启动定时任务失败", ex);
+            }
         }
 
         public async Task StartAsync()
@@ -51,17 +53,13 @@ namespace Cappuccino.AutoJob
             List<SysAutoJobEntity> jobList = _sysAutoJobService.GetList(x => x.JobStatus == 1).ToList();
             if (jobList.Any())
             {
-                // 并行添加任务以提高效率
-                //var tasks = jobList.Select(job => _jobScheduler.AddScheduleJob(job)).ToList();
-                //await Task.WhenAll(tasks);
-
                 foreach (var obj in jobList)
                 {
                     await _jobScheduler.AddScheduleJob(obj);
                 }
 
                 // 启动调度器
-                //await _jobScheduler.StartAsync();
+                _jobScheduler.Start(); // 或者实现 StartAsync
 
                 Log4netHelper.Info($"共加载了 {jobList.Count} 个定时任务");
             }

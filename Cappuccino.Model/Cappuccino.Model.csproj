@@ -49,8 +49,8 @@
     <Compile Include="BaseEntity.cs" />
     <Compile Include="BusinessManage\SysCaseInfoModel.cs" />
     <Compile Include="BusinessManage\SysTemplateModel.cs" />
-    <Compile Include="Layui\DtreeModel.cs" />
-    <Compile Include="Layui\PearMenuModel.cs" />
+    <Compile Include="Result\DtreeModel.cs" />
+    <Compile Include="Result\PearMenuModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemManage\ActionModel.cs" />
     <Compile Include="SystemManage\ButtonModel.cs" />

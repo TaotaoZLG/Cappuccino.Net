@@ -6,6 +6,7 @@ using Cappuccino.BLL;
 using Cappuccino.Common;
 using Cappuccino.Common.Caching;
 using Cappuccino.Common.Enum;
+using Cappuccino.Common.Extensions;
 using Cappuccino.Common.Helper;
 using Cappuccino.Common.Net;
 using Cappuccino.Common.Util;
@@ -50,7 +51,7 @@ namespace Cappuccino.Web.Controllers
         public ActionResult ChangePassword()
         {
             ViewBag.UserName = UserManager.GetCurrentUserInfo().UserName;
-            ViewBag.ChrType = _sysConfigService.GetConfigByKey("sys_chrtype").ConfigValue;
+            ViewBag.ChrType = _sysConfigService.GetConfigByKey("sys_chrtype").ConfigValue.ParseToInt();
             return View();
         }
 

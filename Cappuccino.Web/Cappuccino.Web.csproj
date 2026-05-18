@@ -722,10 +722,6 @@
       <Project>{471e7f22-fdc4-4f8c-b985-3336d4b14e0b}</Project>
       <Name>Cappuccino.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cappuccino.DAL\Cappuccino.DAL.csproj">
-      <Project>{f122a9bc-f278-408f-b1db-e0bf92923c56}</Project>
-      <Name>Cappuccino.DAL</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Cappuccino.DataAccess\Cappuccino.DataAccess.csproj">
       <Project>{0C3210E2-68B6-4E93-B160-C87E1963BACD}</Project>
       <Name>Cappuccino.DataAccess</Name>
@@ -737,6 +733,10 @@
     <ProjectReference Include="..\Cappuccino.IBLL\Cappuccino.IBLL.csproj">
       <Project>{2d44cce2-a040-4a43-9ad3-6b4cab0fe740}</Project>
       <Name>Cappuccino.IBLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cappuccino.IDAL\Cappuccino.IDAL.csproj">
+      <Project>{94c73821-31d6-4f89-887a-ffc96ffab5d7}</Project>
+      <Name>Cappuccino.IDAL</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cappuccino.Model\Cappuccino.Model.csproj">
       <Project>{a42fc2ef-0277-4ed7-b6a2-223323d52efc}</Project>

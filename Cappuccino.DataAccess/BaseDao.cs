@@ -511,12 +511,6 @@ namespace Cappuccino.DataAccess
 
         public virtual T Update(T entity, string[] propertys)
         {
-            // 空值校验
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity), "待更新的实体不能为空");
-            }
-
             if (propertys?.Any() == true) // 更安全的空数组判断
             {
                 // 保存原始验证配置，避免全局修改影响其他操作
